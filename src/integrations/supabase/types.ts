@@ -1,0 +1,746 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.18"
+  }
+  public: {
+    Tables: {
+      clients: {
+        Row: {
+          ai_summary: string | null
+          bedrooms: number[] | null
+          broker_id: string
+          budget_max_aed: number | null
+          budget_min_aed: number | null
+          created_at: string | null
+          email: string | null
+          full_name: string
+          handover_before: string | null
+          id: string
+          last_contact_at: string | null
+          nationality: string | null
+          notes: string | null
+          payment_preference: string | null
+          phone: string | null
+          preferred_areas: string[] | null
+          preferred_location: string | null
+          purpose: string | null
+          source: string | null
+          stage: string | null
+          temperature: string | null
+          unit_types: string[] | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          bedrooms?: number[] | null
+          broker_id?: string
+          budget_max_aed?: number | null
+          budget_min_aed?: number | null
+          created_at?: string | null
+          email?: string | null
+          full_name: string
+          handover_before?: string | null
+          id?: string
+          last_contact_at?: string | null
+          nationality?: string | null
+          notes?: string | null
+          payment_preference?: string | null
+          phone?: string | null
+          preferred_areas?: string[] | null
+          preferred_location?: string | null
+          purpose?: string | null
+          source?: string | null
+          stage?: string | null
+          temperature?: string | null
+          unit_types?: string[] | null
+        }
+        Update: {
+          ai_summary?: string | null
+          bedrooms?: number[] | null
+          broker_id?: string
+          budget_max_aed?: number | null
+          budget_min_aed?: number | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string
+          handover_before?: string | null
+          id?: string
+          last_contact_at?: string | null
+          nationality?: string | null
+          notes?: string | null
+          payment_preference?: string | null
+          phone?: string | null
+          preferred_areas?: string[] | null
+          preferred_location?: string | null
+          purpose?: string | null
+          source?: string | null
+          stage?: string | null
+          temperature?: string | null
+          unit_types?: string[] | null
+        }
+        Relationships: []
+      }
+      followups: {
+        Row: {
+          broker_id: string
+          client_id: string | null
+          created_at: string | null
+          done: boolean | null
+          due_at: string | null
+          id: string
+          title: string | null
+        }
+        Insert: {
+          broker_id?: string
+          client_id?: string | null
+          created_at?: string | null
+          done?: boolean | null
+          due_at?: string | null
+          id?: string
+          title?: string | null
+        }
+        Update: {
+          broker_id?: string
+          client_id?: string | null
+          created_at?: string | null
+          done?: boolean | null
+          due_at?: string | null
+          id?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "followups_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          ai_summary: string | null
+          broker_id: string
+          client_id: string | null
+          created_at: string | null
+          id: string
+          starts_at: string | null
+          summary: string | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          broker_id?: string
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          starts_at?: string | null
+          summary?: string | null
+        }
+        Update: {
+          ai_summary?: string | null
+          broker_id?: string
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          starts_at?: string | null
+          summary?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          attachments: Json | null
+          body: string | null
+          broker_id: string
+          channel: string | null
+          client_id: string | null
+          created_at: string | null
+          direction: string | null
+          id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          body?: string | null
+          broker_id?: string
+          channel?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          direction?: string | null
+          id?: string
+        }
+        Update: {
+          attachments?: Json | null
+          body?: string | null
+          broker_id?: string
+          channel?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          direction?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parking: {
+        Row: {
+          bedrooms: number | null
+          id: string
+          project_id: number | null
+          spaces: number | null
+          unit_type: string | null
+        }
+        Insert: {
+          bedrooms?: number | null
+          id?: string
+          project_id?: number | null
+          spaces?: number | null
+          unit_type?: string | null
+        }
+        Update: {
+          bedrooms?: number | null
+          id?: string
+          project_id?: number | null
+          spaces?: number | null
+          unit_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parking_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_plan_steps: {
+        Row: {
+          id: string
+          name: string | null
+          parent_step_id: string | null
+          percentage: number | null
+          plan_id: string | null
+          position: number | null
+          stage_type: string | null
+        }
+        Insert: {
+          id?: string
+          name?: string | null
+          parent_step_id?: string | null
+          percentage?: number | null
+          plan_id?: string | null
+          position?: number | null
+          stage_type?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string | null
+          parent_step_id?: string | null
+          percentage?: number | null
+          plan_id?: string | null
+          position?: number | null
+          stage_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_plan_steps_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "payment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_plans: {
+        Row: {
+          applies_to_bedrooms: number[] | null
+          has_post_handover: boolean | null
+          id: string
+          name: string | null
+          project_id: number | null
+        }
+        Insert: {
+          applies_to_bedrooms?: number[] | null
+          has_post_handover?: boolean | null
+          id?: string
+          name?: string | null
+          project_id?: number | null
+        }
+        Update: {
+          applies_to_bedrooms?: number[] | null
+          has_post_handover?: boolean | null
+          id?: string
+          name?: string | null
+          project_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_files: {
+        Row: {
+          id: string
+          name: string | null
+          project_id: number | null
+          type: string | null
+          url: string | null
+        }
+        Insert: {
+          id?: string
+          name?: string | null
+          project_id?: number | null
+          type?: string | null
+          url?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string | null
+          project_id?: number | null
+          type?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          amenities: string[] | null
+          broker_agency: Json | null
+          build_progress_pct: number | null
+          construction_start: string | null
+          cover_image_url: string | null
+          developer_description: string | null
+          developer_logo_url: string | null
+          developer_name: string | null
+          district: string | null
+          dld: Json | null
+          emirate_or_country: string | null
+          escrow: Json | null
+          floors_text: string | null
+          furnishing: string | null
+          handover_date: string | null
+          id: number
+          latitude: number | null
+          longitude: number | null
+          media: Json | null
+          name: string
+          overview: string | null
+          sale_status: string | null
+          service_charge: string | null
+          total_area_sqft: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          broker_agency?: Json | null
+          build_progress_pct?: number | null
+          construction_start?: string | null
+          cover_image_url?: string | null
+          developer_description?: string | null
+          developer_logo_url?: string | null
+          developer_name?: string | null
+          district?: string | null
+          dld?: Json | null
+          emirate_or_country?: string | null
+          escrow?: Json | null
+          floors_text?: string | null
+          furnishing?: string | null
+          handover_date?: string | null
+          id: number
+          latitude?: number | null
+          longitude?: number | null
+          media?: Json | null
+          name: string
+          overview?: string | null
+          sale_status?: string | null
+          service_charge?: string | null
+          total_area_sqft?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          amenities?: string[] | null
+          broker_agency?: Json | null
+          build_progress_pct?: number | null
+          construction_start?: string | null
+          cover_image_url?: string | null
+          developer_description?: string | null
+          developer_logo_url?: string | null
+          developer_name?: string | null
+          district?: string | null
+          dld?: Json | null
+          emirate_or_country?: string | null
+          escrow?: Json | null
+          floors_text?: string | null
+          furnishing?: string | null
+          handover_date?: string | null
+          id?: number
+          latitude?: number | null
+          longitude?: number | null
+          media?: Json | null
+          name?: string
+          overview?: string | null
+          sale_status?: string | null
+          service_charge?: string | null
+          total_area_sqft?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      shortlists: {
+        Row: {
+          broker_id: string
+          client_id: string | null
+          created_at: string | null
+          id: string
+          project_id: number | null
+          reason: string | null
+          score: number | null
+          sent_at: string | null
+          status: string | null
+          unit_id: number | null
+        }
+        Insert: {
+          broker_id?: string
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          project_id?: number | null
+          reason?: string | null
+          score?: number | null
+          sent_at?: string | null
+          status?: string | null
+          unit_id?: number | null
+        }
+        Update: {
+          broker_id?: string
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          project_id?: number | null
+          reason?: string | null
+          score?: number | null
+          sent_at?: string | null
+          status?: string | null
+          unit_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shortlists_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shortlists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shortlists_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      units: {
+        Row: {
+          bedrooms: number | null
+          building_id: number | null
+          floor_label: string | null
+          floor_plan_urls: string[] | null
+          id: number
+          is_typical: boolean | null
+          layout_name: string | null
+          listing_type: string | null
+          price_aed: number | null
+          price_per_sqft: number | null
+          project_id: number | null
+          size_sqft: number | null
+          status: string | null
+          unit_number: string | null
+          unit_type: string | null
+        }
+        Insert: {
+          bedrooms?: number | null
+          building_id?: number | null
+          floor_label?: string | null
+          floor_plan_urls?: string[] | null
+          id: number
+          is_typical?: boolean | null
+          layout_name?: string | null
+          listing_type?: string | null
+          price_aed?: number | null
+          price_per_sqft?: number | null
+          project_id?: number | null
+          size_sqft?: number | null
+          status?: string | null
+          unit_number?: string | null
+          unit_type?: string | null
+        }
+        Update: {
+          bedrooms?: number | null
+          building_id?: number | null
+          floor_label?: string | null
+          floor_plan_urls?: string[] | null
+          id?: number
+          is_typical?: boolean | null
+          layout_name?: string | null
+          listing_type?: string | null
+          price_aed?: number | null
+          price_per_sqft?: number | null
+          project_id?: number | null
+          size_sqft?: number | null
+          status?: string | null
+          unit_number?: string | null
+          unit_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "units_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      get_property_pack: {
+        Args: { p_project_id: number; p_unit_id?: number }
+        Returns: Json
+      }
+      match_client: {
+        Args: { p_client_id: string; p_limit?: number }
+        Returns: {
+          bedrooms: number
+          cover_image_url: string
+          developer: string
+          district: string
+          handover_date: string
+          has_brochure: boolean
+          has_floor_plan: boolean
+          has_post_handover: boolean
+          location: string
+          price_aed: number
+          price_per_sqft: number
+          project_id: number
+          project_name: string
+          score: number
+          size_sqft: number
+          unit_id: number
+          unit_number: string
+          unit_type: string
+        }[]
+      }
+      search_units: {
+        Args: {
+          p_areas?: string[]
+          p_bedrooms?: number[]
+          p_budget_max?: number
+          p_budget_min?: number
+          p_handover_before?: string
+          p_limit?: number
+          p_location?: string
+          p_post_handover?: boolean
+          p_unit_types?: string[]
+        }
+        Returns: {
+          bedrooms: number
+          cover_image_url: string
+          developer: string
+          district: string
+          handover_date: string
+          has_brochure: boolean
+          has_floor_plan: boolean
+          has_post_handover: boolean
+          location: string
+          price_aed: number
+          price_per_sqft: number
+          project_id: number
+          project_name: string
+          score: number
+          size_sqft: number
+          unit_id: number
+          unit_number: string
+          unit_type: string
+        }[]
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
