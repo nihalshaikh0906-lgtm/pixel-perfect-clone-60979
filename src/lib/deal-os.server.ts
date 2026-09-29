@@ -32,11 +32,18 @@ function describeStatus(status: number): string {
 
 async function chatCompletion(body: Json): Promise<Json> {
   const { key, url, model } = aiConfig();
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model, ...body }),
-  });
+  let res: Response;
+  for (let attempt = 0; ; attempt++) {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model, ...body }),
+    });
+    const retryable = res.status === 429 || res.status >= 500;
+    if (!retryable || attempt >= 2) break;
+    console.log(`[deal-os] AI provider ${res.status}, retrying (${attempt + 1}/2)`);
+    await new Promise((r) => setTimeout(r, 1500 * (attempt + 1) + Math.random() * 500));
+  }
   const text = await res.text();
   if (!res.ok) {
     let msg = text;
