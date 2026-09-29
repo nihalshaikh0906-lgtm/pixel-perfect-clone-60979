@@ -48,11 +48,11 @@ function gatewayError(error: unknown): Error {
 
 function shortenPack(pack: unknown) {
   if (!pack || typeof pack !== "object") return pack;
-  const p = { ...(pack as Record<string, unknown>) };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const p: any = { ...(pack as object) };
   if (Array.isArray(p.photos)) p.photos = p.photos.slice(0, 5);
-  const project = p.project as Record<string, unknown> | undefined;
-  if (project && typeof project.overview === "string") {
-    p.project = { ...project, overview: project.overview.slice(0, 1500) };
+  if (p.project && typeof p.project.overview === "string") {
+    p.project = { ...p.project, overview: p.project.overview.slice(0, 1500) };
   }
   return p;
 }
