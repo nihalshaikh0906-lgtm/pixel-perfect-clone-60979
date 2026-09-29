@@ -36,9 +36,11 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
             <Building2 className="size-8" />
           </div>
         )}
-        <span className="absolute right-3 top-3 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-xs font-semibold text-primary backdrop-blur">
-          {Math.min(99, Math.round(row.score ?? 0))}% match
-        </span>
+        {row.score != null && Math.round(row.score) > 0 ? (
+          <span className="absolute right-3 top-3 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-xs font-semibold text-primary backdrop-blur">
+            {Math.min(99, Math.round(row.score))}% match
+          </span>
+        ) : null}
       </div>
       <div className="space-y-2 p-4">
         <div>
