@@ -28,7 +28,12 @@ export const Route = createFileRoute("/api/chat")({
         const parsed = bodySchema.safeParse(await request.json().catch(() => null));
         if (!parsed.success) return Response.json({ error: "Invalid request" }, { status: 400 });
 
-        const { streamChat } = await import("@/lib/deal-os.server");
+        const { streamChat, loadAiConfig } = await import("@/lib/deal-os.server");
+        try {
+          loadAiConfig();
+        } catch (err) {
+          return Response.json({ error: (err as Error).message }, { status: 500 });
+        }
         const encoder = new TextEncoder();
         const stream = new ReadableStream({
           async start(controller) {
