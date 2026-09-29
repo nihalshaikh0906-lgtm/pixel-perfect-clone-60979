@@ -132,6 +132,17 @@ function Dossier() {
   }
 
   async function fetchRows(refs: { project_id: number; unit_id: number; score: number }[]) {
+    // Look up the real client-fit score for units the AI returned without one.
+    const scores = new Map<number, number>();
+    for (const r of refs) if (r.score > 0) scores.set(r.unit_id, r.score);
+    const known = new Map((sessionUnits ?? []).map((u) => [u.unit_id, u.score ?? 0]));
+    for (const r of refs) if (!scores.has(r.unit_id) && (known.get(r.unit_id) ?? 0) > 0) scores.set(r.unit_id, known.get(r.unit_id)!);
+    if (refs.some((r) => !scores.has(r.unit_id))) {
+      const { data: ranked } = await supabase.rpc("match_client", { p_client_id: id, p_limit: 500 });
+      for (const m of (ranked ?? []) as unknown as MatchRow[]) {
+        if (!scores.has(Number(m.unit_id)) && (m.score ?? 0) > 0) scores.set(Number(m.unit_id), Number(m.score));
+      }
+    }
     const { data } = await supabase
       .from("units")
       .select("id, project_id, bedrooms, size_sqft, price_aed, projects(name, developer_name, district, handover_date, cover_image_url)")
