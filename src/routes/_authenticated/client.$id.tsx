@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Bot, CalendarCheck, CheckSquare, Flame, Loader2, Send, Sparkles, User } from "lucide-react";
@@ -11,8 +11,13 @@ import { UnitCard, type MatchRow } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { askAssistant, endMeeting } from "@/lib/assistant.functions";
+import { endMeeting } from "@/lib/assistant.functions";
 import { aed, quarterOf, timeAgo } from "@/lib/format";
+
+function mergeUnits(prev: MatchRow[], add: MatchRow[]) {
+  const seen = new Set(prev.map((u) => u.unit_id));
+  return [...prev, ...add.filter((u) => !seen.has(u.unit_id))];
+}
 
 export const Route = createFileRoute("/_authenticated/client/$id")({
   head: () => ({
@@ -39,7 +44,6 @@ type ChatMessage = { role: "user" | "assistant"; content: string; at: string };
 function Dossier() {
   const { id } = Route.useParams();
   const queryClient = useQueryClient();
-  const ask = useServerFn(askAssistant);
   const wrapUp = useServerFn(endMeeting);
 
   const [chat, setChat] = useState<ChatMessage[]>([]);
@@ -85,47 +89,145 @@ function Dossier() {
     },
   });
 
-  const askMutation = useMutation({
-    mutationFn: async (question: string) => {
-      const history = [...chat, { role: "user" as const, content: question }].map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
-      return ask({ data: { client_id: id, messages: history } });
-    },
-    onSuccess: async (result) => {
-      setChat((prev) => [
-        ...prev,
-        { role: "assistant", content: result.reply, at: new Date().toISOString() },
-      ]);
-      if (result.units.length) {
-        const ids = result.units.map((u) => u.unit_id);
-        const { data } = await supabase
-          .from("units")
-          .select("id, project_id, bedrooms, size_sqft, price_aed, projects(name, developer_name, district, handover_date, cover_image_url)")
-          .in("id", ids);
-        const rows: MatchRow[] = (data ?? []).map((u) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const p = (u as any).projects ?? {};
-          return {
-            unit_id: Number(u.id),
-            project_id: Number(u.project_id),
-            project_name: p.name ?? null,
-            developer: p.developer_name ?? null,
-            district: p.district ?? null,
-            price_aed: u.price_aed as number | null,
-            bedrooms: u.bedrooms as number | null,
-            size_sqft: u.size_sqft as number | null,
-            handover_date: p.handover_date ?? null,
-            cover_image_url: p.cover_image_url ?? null,
-            score: result.units.find((r) => r.unit_id === Number(u.id))?.score ?? 0,
-          };
+  // Session context: every unit shown this session (Top 4 + AI-found), packs cached once.
+  const [sessionUnits, setSessionUnits] = useState<MatchRow[]>([]);
+  useEffect(() => {
+    if (matchQuery.data) setSessionUnits((prev) => mergeUnits(prev, matchQuery.data));
+  }, [matchQuery.data]);
+
+  const packQueries = useQueries({
+    queries: sessionUnits.map((u) => ({
+      queryKey: ["pack", u.project_id, u.unit_id],
+      staleTime: Infinity,
+      gcTime: Infinity,
+      queryFn: async () => {
+        const { data, error } = await supabase.rpc("get_property_pack", {
+          p_project_id: u.project_id,
+          p_unit_id: u.unit_id,
         });
-        if (rows.length) setAiUnits(rows);
-      }
-    },
-    onError: (error: Error) => toast.error(error.message),
+        if (error) throw new Error(error.message);
+        return data;
+      },
+    })),
   });
+
+  function buildContext() {
+    return sessionUnits
+      .map((u, i) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pack = packQueries[i]?.data as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const plan = Array.isArray(pack?.payment_plans) ? pack.payment_plans[0] : null;
+        const steps = Array.isArray(plan?.steps)
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            plan.steps.map((s: any) => `${s.step} ${s.percent}%`).join(", ")
+          : "unknown";
+        const docs = Array.isArray(pack?.documents)
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            [...new Set(pack.documents.map((d: any) => d.type))].join(", ") || "none"
+          : "unknown";
+        return `${i + 1}. ${u.project_name} (${u.developer ?? "?"}) project_id=${u.project_id} unit_id=${u.unit_id} | ${u.district ?? "?"} | ${u.bedrooms ?? "?"}BR | ${u.size_sqft ?? "?"} sqft | AED ${u.price_aed ?? "?"} | handover ${quarterOf(u.handover_date)} | match ${Math.round(u.score ?? 0)}% | plan: ${plan?.name ?? "?"}: ${steps} | docs: ${docs}`;
+      })
+      .join("\n");
+  }
+
+  async function fetchRows(refs: { project_id: number; unit_id: number; score: number }[]) {
+    const { data } = await supabase
+      .from("units")
+      .select("id, project_id, bedrooms, size_sqft, price_aed, projects(name, developer_name, district, handover_date, cover_image_url)")
+      .in("id", refs.map((r) => r.unit_id));
+    return (data ?? []).map((u) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const p = (u as any).projects ?? {};
+      return {
+        unit_id: Number(u.id),
+        project_id: Number(u.project_id),
+        project_name: p.name ?? null,
+        developer: p.developer_name ?? null,
+        district: p.district ?? null,
+        price_aed: u.price_aed as number | null,
+        bedrooms: u.bedrooms as number | null,
+        size_sqft: u.size_sqft as number | null,
+        handover_date: p.handover_date ?? null,
+        cover_image_url: p.cover_image_url ?? null,
+        score: refs.find((r) => r.unit_id === Number(u.id))?.score ?? 0,
+      } as MatchRow;
+    });
+  }
+
+  const [pending, setPending] = useState(false);
+  const [streaming, setStreaming] = useState(false);
+  const [askError, setAskError] = useState<Error | null>(null);
+
+  async function ask(question: string) {
+    setPending(true);
+    setStreaming(false);
+    setAskError(null);
+    const history = [...chat, { role: "user" as const, content: question }]
+      .slice(-8)
+      .map((m) => ({ role: m.role, content: m.content }));
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${sess.session?.access_token ?? ""}`,
+        },
+        body: JSON.stringify({ client_id: id, messages: history, context: buildContext() }),
+      });
+      if (!res.ok || !res.body) {
+        const j = await res.json().catch(() => null);
+        throw new Error(`Error ${res.status}: ${j?.error ?? res.statusText}`);
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      let started = false;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let nl;
+        while ((nl = buf.indexOf("\n")) >= 0) {
+          const line = buf.slice(0, nl);
+          buf = buf.slice(nl + 1);
+          if (!line.trim()) continue;
+          const ev = JSON.parse(line);
+          if (ev.type === "text") {
+            if (!started) {
+              started = true;
+              setStreaming(true);
+              setChat((prev) => [...prev, { role: "assistant", content: "", at: new Date().toISOString() }]);
+            }
+            setChat((prev) => {
+              const next = [...prev];
+              const last = next[next.length - 1];
+              if (last) next[next.length - 1] = { ...last, content: last.content + ev.delta };
+              return next;
+            });
+          } else if (ev.type === "units") {
+            const rows = await fetchRows(ev.units);
+            if (rows.length) {
+              setAiUnits(rows);
+              setSessionUnits((prev) => mergeUnits(prev, rows));
+            }
+          } else if (ev.type === "error") {
+            throw new Error(ev.message);
+          }
+        }
+      }
+    } catch (e) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      setAskError(err);
+      toast.error(err.message);
+    } finally {
+      setPending(false);
+      setStreaming(false);
+    }
+  }
+
+  const askMutation = { isPending: pending && !streaming, error: askError };
 
   const endMeetingMutation = useMutation({
     mutationFn: async () =>
@@ -145,14 +247,14 @@ function Dossier() {
   useEffect(() => {
     const el = messagesRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [chat, askMutation.isPending]);
+  }, [chat, pending]);
 
   function send() {
     const question = input.trim();
-    if (!question || askMutation.isPending) return;
+    if (!question || pending) return;
     setChat((prev) => [...prev, { role: "user", content: question, at: new Date().toISOString() }]);
     setInput("");
-    askMutation.mutate(question);
+    void ask(question);
   }
 
   return (

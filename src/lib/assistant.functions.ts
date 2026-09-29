@@ -8,15 +8,6 @@ const messageSchema = z.object({
   content: z.string(),
 });
 
-export const askAssistant = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data) =>
-    z.object({ client_id: z.string().uuid(), messages: z.array(messageSchema).min(1) }).parse(data),
-  )
-  .handler(async ({ data, context }) => {
-    const { runAssistant } = await import("./deal-os.server");
-    return runAssistant(context.supabase, data.client_id, data.messages);
-  });
 
 export const endMeeting = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

@@ -121,104 +121,215 @@ function clampLimit(v: unknown) {
   return Number.isFinite(n) ? Math.min(8, Math.max(1, Math.round(n))) : 4;
 }
 
-/** Runs the Investment Engineer assistant with inventory tools, returns reply + recommended units. */
-export async function runAssistant(
+// Fixed text so the provider's prefix cache applies. Changing context goes after it.
+const CHAT_SYSTEM = [
+  "You are the Investment Engineer, a Dubai real-estate sales co-pilot for a broker.",
+  "Use the provided context first. Call a tool only if the answer is not in the context. Never invent projects, prices or ROI.",
+  "Only use tools for a different budget, area, bedrooms, unit type, handover, or a project not in the context.",
+  "Never invent metro distances or yields. When recommending, give price, size, handover, payment plan steps and which documents exist.",
+  "Be short, concrete and sales-ready. Reply in the broker's language. Plain sentences and short dash bullets, no tables or headings.",
+].join("\n");
+
+const chatTools = toolDefs.filter((t) => t.function.name !== "match_client");
+
+type StreamResult = {
+  text: string;
+  toolCalls: { id: string; name: string; args: string }[];
+  usage: Json;
+};
+
+async function openStream(body: Json): Promise<Response> {
+  const { key, url, model } = aiConfig();
+  const send = (extra: Json) =>
+    fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        stream: true,
+        stream_options: { include_usage: true },
+        max_tokens: 600,
+        temperature: 0.3,
+        ...extra,
+        ...body,
+      }),
+    });
+  let res: Response = await send({ thinking: { type: "disabled" } });
+  // Provider may not know the "thinking" switch — retry without it.
+  if (res.status === 400) res = await send({});
+  for (let attempt = 0; (res.status === 429 || res.status >= 500) && attempt < 2; attempt++) {
+    await new Promise((r) => setTimeout(r, 1500 * (attempt + 1) + Math.random() * 500));
+    res = await send({});
+  }
+  if (!res.ok) {
+    const text = await res.text();
+    let msg = text;
+    try {
+      const j = JSON.parse(text);
+      msg = j?.error?.message ?? j?.message ?? text;
+    } catch {
+      /* raw */
+    }
+    console.error(`[deal-os] AI provider ${res.status}: ${msg}`);
+    throw new Error(`AI provider error ${res.status} (${describeStatus(res.status)}): ${String(msg).slice(0, 400)}`);
+  }
+  return res;
+}
+
+async function readStream(res: Response, onDelta: (t: string) => void): Promise<StreamResult> {
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  let text = "";
+  let usage: Json = null;
+  const calls: Record<number, { id: string; name: string; args: string }> = {};
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    let nl;
+    while ((nl = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, nl).trim();
+      buf = buf.slice(nl + 1);
+      if (!line.startsWith("data:")) continue;
+      const payload = line.slice(5).trim();
+      if (payload === "[DONE]") continue;
+      let j: Json;
+      try {
+        j = JSON.parse(payload);
+      } catch {
+        continue;
+      }
+      if (j.usage) usage = j.usage;
+      const delta = j.choices?.[0]?.delta;
+      if (!delta) continue;
+      if (delta.content) {
+        text += delta.content;
+        onDelta(delta.content);
+      }
+      for (const tc of delta.tool_calls ?? []) {
+        const c = (calls[tc.index ?? 0] ??= { id: "", name: "", args: "" });
+        if (tc.id) c.id = tc.id;
+        if (tc.function?.name) c.name += tc.function.name;
+        if (tc.function?.arguments) c.args += tc.function.arguments;
+      }
+    }
+  }
+  return { text, toolCalls: Object.values(calls), usage };
+}
+
+export type ChatEvent =
+  | { type: "text"; delta: string }
+  | { type: "units"; units: UnitRef[] }
+  | { type: "error"; message: string }
+  | { type: "done" };
+
+/** Streams one chat answer. Uses the browser-sent context first; at most 1 tool round. */
+export async function streamChat(
   supabase: Db,
   clientId: string,
   history: ChatMsg[],
-): Promise<{ reply: string; units: UnitRef[] }> {
+  context: string,
+  emit: (e: ChatEvent) => void,
+): Promise<void> {
+  const started = Date.now();
   const { data: client, error: clientError } = await supabase
     .from("clients")
-    .select("*")
+    .select("full_name, budget_min_aed, budget_max_aed, purpose, preferred_areas, preferred_location, handover_before, payment_preference, nationality, notes")
     .eq("id", clientId)
     .maybeSingle();
   if (clientError) throw new Error(clientError.message);
   if (!client) throw new Error("Client not found.");
 
-  let lastUnits: UnitRef[] = [];
-  const capture = (rows: Json) => {
-    if (!Array.isArray(rows)) return;
-    const refs = rows
-      .filter((r: Json) => r?.unit_id && r?.project_id)
-      .map((r: Json) => ({
-        project_id: Number(r.project_id),
-        unit_id: Number(r.unit_id),
-        score: Number(r.score ?? 0),
-      }));
-    if (refs.length) lastUnits = refs;
+  const messages: Json[] = [
+    { role: "system", content: CHAT_SYSTEM },
+    { role: "system", content: `Client: ${JSON.stringify(client)}\n\nSession context (units already shown):\n${context || "(none)"}` },
+    ...history.slice(-8),
+  ];
+
+  const toolsUsed: string[] = [];
+  let inTok = 0;
+  let outTok = 0;
+  let cached = 0;
+  const addUsage = (u: Json) => {
+    inTok += Number(u?.prompt_tokens ?? 0);
+    outTok += Number(u?.completion_tokens ?? 0);
+    cached += Number(u?.prompt_cache_hit_tokens ?? u?.prompt_tokens_details?.cached_tokens ?? 0);
   };
 
-  async function runTool(name: string, args: Json): Promise<Json> {
-    let res;
-    if (name === "match_client") {
-      res = await supabase.rpc("match_client", { p_client_id: clientId, p_limit: clampLimit(args.limit) });
-    } else if (name === "search_units") {
-      res = await supabase.rpc("search_units", {
-        p_budget_min: args.budget_min ?? null,
-        p_budget_max: args.budget_max ?? null,
-        p_bedrooms: args.bedrooms ?? null,
-        p_unit_types: args.unit_types ?? null,
-        p_areas: args.areas ?? null,
-        p_location: args.location ?? "Dubai",
-        p_handover_before: args.handover_before ?? null,
-        p_post_handover: args.post_handover ?? null,
-        p_limit: clampLimit(args.limit),
-      });
-    } else if (name === "get_property_pack") {
-      res = await supabase.rpc("get_property_pack", {
-        p_project_id: Number(args.project_id),
-        p_unit_id: args.unit_id == null ? null : Number(args.unit_id),
-      });
-    } else {
-      console.log(`[deal-os] tool ${name}: unknown tool`);
-      return { error: `Unknown tool ${name}` };
-    }
-    if (res.error) {
-      console.log(`[deal-os] tool ${name} ${JSON.stringify(args)}: ERROR ${res.error.message}`);
-      return { error: res.error.message };
-    }
-    const data = res.data;
-    const count = Array.isArray(data) ? data.length : data ? 1 : 0;
-    console.log(`[deal-os] tool ${name} ${JSON.stringify(args)}: ${count} rows`);
-    if (name === "get_property_pack") return shortenPack(data);
-    capture(data);
-    return data;
-  }
-
-  const system = [
-    "You are the Investment Engineer: a Dubai real-estate sales co-pilot for a broker.",
-    "Only recommend units returned by your tools. Never invent projects, prices, metro distances, ROI or yields.",
-    "Always state price, size, handover, payment plan steps, and which documents exist (use get_property_pack).",
-    "Be short, concrete and sales-ready. Reply in the same language the broker writes in. Plain sentences and short dash bullets only — no markdown tables or headings.",
-    `Client profile: ${JSON.stringify(client)}`,
-  ].join("\n");
-
-  const messages: Json[] = [{ role: "system", content: system }, ...history];
-
-  for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
-    const finalRound = round === MAX_TOOL_ROUNDS;
-    const completion = await chatCompletion(
-      finalRound ? { messages } : { messages, tools: toolDefs, tool_choice: "auto" },
+  try {
+    const first = await readStream(
+      await openStream({ messages, tools: chatTools, tool_choice: "auto" }),
+      (d) => emit({ type: "text", delta: d }),
     );
-    const msg = completion?.choices?.[0]?.message;
-    if (!msg) throw new Error("AI provider returned no message.");
-    const calls = msg.tool_calls ?? [];
-    if (!calls.length || finalRound) {
-      return { reply: String(msg.content ?? "").trim() || "(no answer)", units: lastUnits };
-    }
-    messages.push({ role: "assistant", content: msg.content ?? null, tool_calls: calls });
-    for (const call of calls) {
-      let args: Json = {};
-      try {
-        args = JSON.parse(call.function?.arguments || "{}");
-      } catch {
-        /* empty args */
+    addUsage(first.usage);
+
+    if (first.toolCalls.length) {
+      messages.push({
+        role: "assistant",
+        content: first.text || null,
+        tool_calls: first.toolCalls.map((c) => ({
+          id: c.id,
+          type: "function",
+          function: { name: c.name, arguments: c.args || "{}" },
+        })),
+      });
+      const newUnits: UnitRef[] = [];
+      for (const call of first.toolCalls) {
+        let args: Json = {};
+        try {
+          args = JSON.parse(call.args || "{}");
+        } catch {
+          /* empty */
+        }
+        toolsUsed.push(call.name);
+        let result: Json;
+        if (call.name === "search_units") {
+          const res = await supabase.rpc("search_units", {
+            p_budget_min: args.budget_min ?? null,
+            p_budget_max: args.budget_max ?? null,
+            p_bedrooms: args.bedrooms ?? null,
+            p_unit_types: args.unit_types ?? null,
+            p_areas: args.areas ?? null,
+            p_location: args.location ?? "Dubai",
+            p_handover_before: args.handover_before ?? null,
+            p_post_handover: args.post_handover ?? null,
+            p_limit: clampLimit(args.limit),
+          });
+          result = res.error ? { error: res.error.message } : res.data;
+          const rows = Array.isArray(res.data) ? res.data : [];
+          console.log(`[deal-os] tool search_units ${JSON.stringify(args)}: ${res.error ? "ERROR " + res.error.message : rows.length + " rows"}`);
+          for (const r of rows as Json[]) {
+            if (r?.unit_id && r?.project_id)
+              newUnits.push({ project_id: Number(r.project_id), unit_id: Number(r.unit_id), score: Number(r.score ?? 0) });
+          }
+        } else if (call.name === "get_property_pack") {
+          const res = await supabase.rpc("get_property_pack", {
+            p_project_id: Number(args.project_id),
+            p_unit_id: args.unit_id == null ? null : Number(args.unit_id),
+          });
+          result = res.error ? { error: res.error.message } : shortenPack(res.data);
+          console.log(`[deal-os] tool get_property_pack ${JSON.stringify(args)}: ${res.error ? "ERROR " + res.error.message : res.data ? "1 rows" : "0 rows"}`);
+          if (!res.error && args.unit_id != null)
+            newUnits.push({ project_id: Number(args.project_id), unit_id: Number(args.unit_id), score: 0 });
+        } else {
+          result = { error: `Unknown tool ${call.name}` };
+        }
+        messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result ?? null) });
       }
-      const result = await runTool(call.function?.name, args);
-      messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result ?? null) });
+      if (newUnits.length) emit({ type: "units", units: newUnits });
+
+      if (first.text) emit({ type: "text", delta: "\n\n" });
+      const second = await readStream(await openStream({ messages }), (d) =>
+        emit({ type: "text", delta: d }),
+      );
+      addUsage(second.usage);
     }
+  } finally {
+    console.log(
+      `[deal-os] chat client=${clientId} tool_used=${toolsUsed.length ? "yes" : "no"} tools=${toolsUsed.join(",") || "-"} input_tokens=${inTok} cached_input_tokens=${cached} output_tokens=${outTok} ms=${Date.now() - started}`,
+    );
   }
-  return { reply: "(no answer)", units: lastUnits };
 }
 
 /** Writes a 5-line meeting wrap-up. */
