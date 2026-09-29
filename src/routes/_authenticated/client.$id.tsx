@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Bot, CalendarCheck, CheckSquare, Flame, Loader2, Send, Sparkles, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
@@ -46,6 +46,7 @@ function Dossier() {
   const [input, setInput] = useState("");
   const [aiUnits, setAiUnits] = useState<MatchRow[] | null>(null);
   const [openUnit, setOpenUnit] = useState<MatchRow | null>(null);
+  const messagesRef = useRef<HTMLDivElement | null>(null);
 
   const clientQuery = useQuery({
     queryKey: ["client", id],
@@ -140,6 +141,11 @@ function Dossier() {
 
   const client = clientQuery.data?.client;
   const units = aiUnits ?? matchQuery.data ?? [];
+
+  useEffect(() => {
+    const el = messagesRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [chat, askMutation.isPending]);
 
   function send() {
     const question = input.trim();
@@ -265,8 +271,8 @@ function Dossier() {
         </div>
 
         {/* Right: AI chat */}
-        <div className="flex min-h-[70vh] flex-col panel">
-          <div className="flex-1 space-y-5 overflow-y-auto p-6">
+        <div className="panel flex h-[calc(100dvh-9rem)] min-h-[420px] flex-col self-start lg:sticky lg:top-24">
+          <div ref={messagesRef} className="flex-1 space-y-5 overflow-y-auto p-6">
             {chat.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Ask the Investment Engineer anything about this client. It only answers from your
@@ -333,6 +339,7 @@ function Dossier() {
               </Button>
             </div>
             <Button
+              size="sm"
               className="w-full"
               onClick={() => endMeetingMutation.mutate()}
               disabled={endMeetingMutation.isPending}
