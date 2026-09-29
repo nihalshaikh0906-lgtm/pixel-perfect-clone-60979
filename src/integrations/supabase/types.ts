@@ -36,6 +36,7 @@ export type Database = {
           purpose: string | null
           source: string | null
           stage: string | null
+          telegram_chat_id: string | null
           temperature: string | null
           unit_types: string[] | null
         }
@@ -60,6 +61,7 @@ export type Database = {
           purpose?: string | null
           source?: string | null
           stage?: string | null
+          telegram_chat_id?: string | null
           temperature?: string | null
           unit_types?: string[] | null
         }
@@ -84,6 +86,7 @@ export type Database = {
           purpose?: string | null
           source?: string | null
           stage?: string | null
+          telegram_chat_id?: string | null
           temperature?: string | null
           unit_types?: string[] | null
         }
@@ -205,6 +208,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      n8n_chat_histories: {
+        Row: {
+          id: number
+          message: Json
+          session_id: string
+        }
+        Insert: {
+          id?: number
+          message: Json
+          session_id: string
+        }
+        Update: {
+          id?: number
+          message?: Json
+          session_id?: string
+        }
+        Relationships: []
       }
       parking: {
         Row: {
@@ -552,6 +573,58 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bot_find_options: {
+        Args: {
+          p_areas?: string
+          p_bedrooms?: string
+          p_budget_max?: number
+          p_budget_min?: number
+          p_handover_year?: number
+          p_location?: string
+          p_post_handover?: boolean
+          p_unit_type?: string
+        }
+        Returns: {
+          area: string
+          availability: string
+          project: string
+          unit: string
+        }[]
+      }
+      bot_log_message: {
+        Args: {
+          p_body: string
+          p_broker_email?: string
+          p_chat_id: string
+          p_direction: string
+          p_name?: string
+          p_username?: string
+        }
+        Returns: Json
+      }
+      bot_parse_beds: { Args: { p: string }; Returns: number[] }
+      bot_parse_list: { Args: { p: string }; Returns: string[] }
+      bot_parse_type: { Args: { p: string }; Returns: string[] }
+      bot_save_lead: {
+        Args: {
+          p_areas?: string
+          p_bedrooms?: string
+          p_broker_email?: string
+          p_budget_max?: number
+          p_budget_min?: number
+          p_chat_id: string
+          p_full_name?: string
+          p_handover_year?: number
+          p_location?: string
+          p_meeting_at?: string
+          p_payment_preference?: string
+          p_phone?: string
+          p_purpose?: string
+          p_summary?: string
+          p_unit_type?: string
+        }
+        Returns: Json
+      }
       get_property_pack: {
         Args: { p_project_id: number; p_unit_id?: number }
         Returns: Json
