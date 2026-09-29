@@ -10,7 +10,7 @@ import { aed, beds, quarterOf, sqft } from "@/lib/format";
 
 type PackDoc = { type: string; name: string | null; url: string | null };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Pack = Record<string, any>;
+type Pack = any;
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -54,7 +54,8 @@ export function PropertyPackDrawer({
   async function copyPitch() {
     const plan = data?.payment_plans?.[0];
     const steps: string[] = Array.isArray(plan?.steps)
-      ? plan.steps.map((s: Record<string, unknown>) => `  • ${s.step}: ${s.percent}%`)
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      plan.steps.map((s: any) => `  • ${s.step}: ${s.percent}%`)
       : [];
     const pitch = [
       `${unit?.project_name} — ${unit?.developer ?? ""}`.trim(),
@@ -184,7 +185,7 @@ export function PropertyPackDrawer({
           {Array.isArray(data?.payment_plans) && data!.payment_plans.length ? (
             <Section title="Payment plan">
               <div className="space-y-3">
-                {data!.payment_plans.map((plan: Record<string, unknown>, i: number) => (
+                {data!.payment_plans.map((plan: Pack, i: number) => (
                   <div key={i} className="panel p-4">
                     <p className="font-semibold">{String(plan.name ?? "Plan")}</p>
                     {plan.post_handover ? (
@@ -192,7 +193,7 @@ export function PropertyPackDrawer({
                     ) : null}
                     <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
                       {(Array.isArray(plan.steps) ? plan.steps : []).map(
-                        (s: Record<string, unknown>, j: number) => (
+                        (s: Pack, j: number) => (
                           <li key={j} className="flex justify-between gap-3">
                             <span className="truncate">{String(s.step ?? "")}</span>
                             <span className="text-foreground">{String(s.percent ?? "")}%</span>
@@ -209,16 +210,16 @@ export function PropertyPackDrawer({
           {Array.isArray(data?.available_units) && data!.available_units.length ? (
             <Section title="Units available">
               <div className="space-y-2">
-                {data!.available_units.map((u: Record<string, unknown>, i: number) => (
+                {data!.available_units.map((u: Pack, i: number) => (
                   <div
                     key={i}
                     className="flex items-center justify-between rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm"
                   >
                     <span>
-                      {beds(u.bedrooms as number)} · {String(u.unit_type ?? "")} ({String(u.units ?? "")})
+                      {beds(u.bedrooms)} · {String(u.unit_type ?? "")} ({String(u.units ?? "")})
                     </span>
                     <span className="text-muted-foreground">
-                      {aed(u.from_price as number)} – {aed(u.to_price as number)}
+                      {aed(u.from_price)} – {aed(u.to_price)}
                     </span>
                   </div>
                 ))}
@@ -229,13 +230,13 @@ export function PropertyPackDrawer({
           {Array.isArray(data?.parking) && data!.parking.length ? (
             <Section title="Parking">
               <div className="flex flex-wrap gap-2">
-                {data!.parking.map((p: Record<string, unknown>, i: number) => (
+                {data!.parking.map((p: Pack, i: number) => (
                   <span
                     key={i}
                     className="flex items-center gap-1.5 rounded-md border border-border bg-secondary/40 px-2.5 py-1 text-xs"
                   >
                     <CarFront className="size-3.5" />
-                    {beds(p.bedrooms as number)} · {String(p.spaces ?? "")} space(s)
+                    {beds(p.bedrooms)} · {String(p.spaces ?? "")} space(s)
                   </span>
                 ))}
               </div>
