@@ -203,7 +203,7 @@ function Dossier() {
             setChat((prev) => {
               const next = [...prev];
               const last = next[next.length - 1];
-              next[next.length - 1] = { ...last, content: last.content + ev.delta };
+              if (last) next[next.length - 1] = { ...last, content: last.content + ev.delta };
               return next;
             });
           } else if (ev.type === "units") {
