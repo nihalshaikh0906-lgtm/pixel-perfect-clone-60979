@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BookOpen, CarFront, FileText, Loader2, MessageCircle, Star } from "lucide-react";
 import { toast } from "sonner";
 
+import { PackOverview } from "@/components/PackOverview";
 import type { MatchRow } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -244,11 +245,9 @@ export function PropertyPackDrawer({
             </Section>
           ) : null}
 
-          {data?.project?.overview ? (
+          {data?.project ? (
             <Section title="Overview">
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {String(data.project.overview)}
-              </p>
+              <PackOverview overview={String(data.project.overview ?? "")} project={data.project} />
             </Section>
           ) : null}
         </div>
