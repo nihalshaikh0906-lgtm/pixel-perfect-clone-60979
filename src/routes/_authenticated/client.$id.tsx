@@ -292,7 +292,17 @@ function Dossier() {
                     {m.role === "user" ? "You" : "Investment Engineer"} ·{" "}
                     {new Date(m.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
-                  <p className="whitespace-pre-line">{m.content}</p>
+                  <p className="whitespace-pre-line">
+                    {m.content.split(/(\*\*[^*]+\*\*)/g).map((part, k) =>
+                      part.startsWith("**") && part.endsWith("**") ? (
+                        <strong key={k} className="font-semibold text-foreground">
+                          {part.slice(2, -2)}
+                        </strong>
+                      ) : (
+                        <span key={k}>{part}</span>
+                      ),
+                    )}
+                  </p>
                 </div>
               </div>
             ))}
