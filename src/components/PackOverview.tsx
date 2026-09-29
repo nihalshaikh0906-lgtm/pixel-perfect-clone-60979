@@ -60,7 +60,7 @@ export function PackOverview({ overview, project }: { overview: string; project:
     ["Construction", project?.build_progress_pct != null ? `${project.build_progress_pct}%` : null],
     ["Service charge", project?.service_charge],
     ["Floors", project?.floors_text],
-    ["Furnishing", project?.furnishing],
+    ["Furnishing", project?.furnishing ? String(project.furnishing).replace(/_/g, " ") : null],
   ].filter(([, v]) => v != null && String(v).trim() !== "");
 
   return (
