@@ -1,55 +1,60 @@
-import { createOpenAI } from "@ai-sdk/openai";
-import { streamText, tool, stepCountIs, type ModelMessage } from "ai";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { z } from "zod";
-
-import { createLovableAiGatewayRunIdFetch } from "./ai-run-id.server";
-
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
-const MODEL = "openai/gpt-6-astra";
 
 export type UnitRef = { project_id: number; unit_id: number; score: number };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Db = SupabaseClient<any, any, any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json = any;
+type ChatMsg = { role: "user" | "assistant"; content: string };
 
-function createProvider() {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("AI is not configured (missing LOVABLE_API_KEY).");
-  const runIdFetch = createLovableAiGatewayRunIdFetch();
-  return createOpenAI({
-    baseURL: GATEWAY_URL,
-    apiKey,
-    headers: { "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
-    fetch: runIdFetch.fetch,
+const MAX_TOOL_ROUNDS = 5;
+
+function aiConfig() {
+  const key = process.env["AI_API_KEY"];
+  const base = process.env["AI_BASE_URL"];
+  const model = process.env["AI_MODEL"];
+  if (!key || !base || !model) {
+    throw new Error("AI is not configured: AI_API_KEY, AI_BASE_URL and AI_MODEL must be set.");
+  }
+  const url = `${base.endsWith("/") ? base : base + "/"}chat/completions`;
+  return { key, url, model };
+}
+
+function describeStatus(status: number): string {
+  if (status === 401) return "invalid API key";
+  if (status === 403) return "access denied";
+  if (status === 404) return "model or endpoint not found";
+  if (status === 429) return "rate limited";
+  if (status >= 500) return "provider error";
+  return "request failed";
+}
+
+async function chatCompletion(body: Json): Promise<Json> {
+  const { key, url, model } = aiConfig();
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ model, ...body }),
   });
+  const text = await res.text();
+  if (!res.ok) {
+    let msg = text;
+    try {
+      const j = JSON.parse(text);
+      msg = j?.error?.message ?? j?.message ?? text;
+    } catch {
+      /* keep raw text */
+    }
+    console.error(`[deal-os] AI provider ${res.status}: ${msg}`);
+    throw new Error(`AI provider error ${res.status} (${describeStatus(res.status)}): ${String(msg).slice(0, 400)}`);
+  }
+  return JSON.parse(text);
 }
 
-const providerOptions = {
-  openai: {
-    store: false,
-    forceReasoning: true,
-    reasoningEffort: "medium",
-    reasoningSummary: "auto",
-    include: ["reasoning.encrypted_content"],
-  },
-} as const;
-
-function gatewayError(error: unknown): Error {
-  const message = error instanceof Error ? error.message : String(error);
-  if (message.includes("402")) {
-    return new Error("AI credits are exhausted. Top up in Settings → Plans & credits.");
-  }
-  if (message.includes("429")) {
-    return new Error("The AI is rate limited right now. Try again in a moment.");
-  }
-  return new Error(message);
-}
-
-function shortenPack(pack: unknown) {
+function shortenPack(pack: Json) {
   if (!pack || typeof pack !== "object") return pack;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const p: any = { ...(pack as object) };
+  const p: Json = { ...pack };
   if (Array.isArray(p.photos)) p.photos = p.photos.slice(0, 5);
   if (p.project && typeof p.project.overview === "string") {
     p.project = { ...p.project, overview: p.project.overview.slice(0, 1500) };
@@ -57,11 +62,63 @@ function shortenPack(pack: unknown) {
   return p;
 }
 
+const toolDefs = [
+  {
+    type: "function",
+    function: {
+      name: "match_client",
+      description: "Top matching units for this client, ranked by fit score.",
+      parameters: {
+        type: "object",
+        properties: { limit: { type: "integer", description: "1-8, default 4" } },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "search_units",
+      description: "Search live inventory by budget, bedrooms, unit types, areas and handover.",
+      parameters: {
+        type: "object",
+        properties: {
+          budget_min: { type: "number" },
+          budget_max: { type: "number" },
+          bedrooms: { type: "array", items: { type: "number" } },
+          unit_types: { type: "array", items: { type: "string" } },
+          areas: { type: "array", items: { type: "string" } },
+          location: { type: "string", description: "Default Dubai" },
+          handover_before: { type: "string", description: "ISO date" },
+          post_handover: { type: "boolean" },
+          limit: { type: "integer", description: "1-8, default 4" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_property_pack",
+      description: "Full pack for one project/unit: photos, documents, payment plans, parking.",
+      parameters: {
+        type: "object",
+        properties: { project_id: { type: "number" }, unit_id: { type: "number" } },
+        required: ["project_id"],
+      },
+    },
+  },
+];
+
+function clampLimit(v: unknown) {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.min(8, Math.max(1, Math.round(n))) : 4;
+}
+
 /** Runs the Investment Engineer assistant with inventory tools, returns reply + recommended units. */
 export async function runAssistant(
   supabase: Db,
   clientId: string,
-  history: { role: "user" | "assistant"; content: string }[],
+  history: ChatMsg[],
 ): Promise<{ reply: string; units: UnitRef[] }> {
   const { data: client, error: clientError } = await supabase
     .from("clients")
@@ -72,128 +129,106 @@ export async function runAssistant(
   if (!client) throw new Error("Client not found.");
 
   let lastUnits: UnitRef[] = [];
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const capture = (rows: any) => {
-    if (!Array.isArray(rows)) return rows;
-    lastUnits = rows
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .filter((r: any) => r?.unit_id && r?.project_id)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((r: any) => ({
+  const capture = (rows: Json) => {
+    if (!Array.isArray(rows)) return;
+    const refs = rows
+      .filter((r: Json) => r?.unit_id && r?.project_id)
+      .map((r: Json) => ({
         project_id: Number(r.project_id),
         unit_id: Number(r.unit_id),
         score: Number(r.score ?? 0),
       }));
-    return rows;
+    if (refs.length) lastUnits = refs;
   };
 
-  const tools = {
-    match_client: tool({
-      description: "Top matching units for this client, ranked by fit score.",
-      inputSchema: z.object({ limit: z.number().int().min(1).max(8).default(4) }),
-      execute: async ({ limit }) => {
-        const { data, error } = await supabase.rpc("match_client", {
-          p_client_id: clientId,
-          p_limit: limit,
-        });
-        if (error) throw new Error(error.message);
-        return capture(data);
-      },
-    }),
-    search_units: tool({
-      description: "Search live inventory by budget, bedrooms, unit types, areas and handover.",
-      inputSchema: z.object({
-        budget_min: z.number().nullable().default(null),
-        budget_max: z.number().nullable().default(null),
-        bedrooms: z.array(z.number()).nullable().default(null),
-        unit_types: z.array(z.string()).nullable().default(null),
-        areas: z.array(z.string()).nullable().default(null),
-        location: z.string().default("Dubai"),
-        handover_before: z.string().nullable().default(null),
-        post_handover: z.boolean().nullable().default(null),
-        limit: z.number().int().min(1).max(8).default(4),
-      }),
-      execute: async (args) => {
-        const { data, error } = await supabase.rpc("search_units", {
-          p_budget_min: args.budget_min,
-          p_budget_max: args.budget_max,
-          p_bedrooms: args.bedrooms,
-          p_unit_types: args.unit_types,
-          p_areas: args.areas,
-          p_location: args.location,
-          p_handover_before: args.handover_before,
-          p_post_handover: args.post_handover,
-          p_limit: args.limit,
-        });
-        if (error) throw new Error(error.message);
-        return capture(data);
-      },
-    }),
-    get_property_pack: tool({
-      description: "Full pack for one project/unit: photos, documents, payment plans, parking.",
-      inputSchema: z.object({
-        project_id: z.number(),
-        unit_id: z.number().nullable().default(null),
-      }),
-      execute: async ({ project_id, unit_id }) => {
-        const { data, error } = await supabase.rpc("get_property_pack", {
-          p_project_id: project_id,
-          p_unit_id: unit_id,
-        });
-        if (error) throw new Error(error.message);
-        return shortenPack(data);
-      },
-    }),
-  };
+  async function runTool(name: string, args: Json): Promise<Json> {
+    let res;
+    if (name === "match_client") {
+      res = await supabase.rpc("match_client", { p_client_id: clientId, p_limit: clampLimit(args.limit) });
+    } else if (name === "search_units") {
+      res = await supabase.rpc("search_units", {
+        p_budget_min: args.budget_min ?? null,
+        p_budget_max: args.budget_max ?? null,
+        p_bedrooms: args.bedrooms ?? null,
+        p_unit_types: args.unit_types ?? null,
+        p_areas: args.areas ?? null,
+        p_location: args.location ?? "Dubai",
+        p_handover_before: args.handover_before ?? null,
+        p_post_handover: args.post_handover ?? null,
+        p_limit: clampLimit(args.limit),
+      });
+    } else if (name === "get_property_pack") {
+      res = await supabase.rpc("get_property_pack", {
+        p_project_id: Number(args.project_id),
+        p_unit_id: args.unit_id == null ? null : Number(args.unit_id),
+      });
+    } else {
+      console.log(`[deal-os] tool ${name}: unknown tool`);
+      return { error: `Unknown tool ${name}` };
+    }
+    if (res.error) {
+      console.log(`[deal-os] tool ${name} ${JSON.stringify(args)}: ERROR ${res.error.message}`);
+      return { error: res.error.message };
+    }
+    const data = res.data;
+    const count = Array.isArray(data) ? data.length : data ? 1 : 0;
+    console.log(`[deal-os] tool ${name} ${JSON.stringify(args)}: ${count} rows`);
+    if (name === "get_property_pack") return shortenPack(data);
+    capture(data);
+    return data;
+  }
 
   const system = [
     "You are the Investment Engineer: a Dubai real-estate sales co-pilot for a broker.",
     "Only recommend units returned by your tools. Never invent projects, prices, metro distances, ROI or yields.",
-    "Always state price, size, handover and payment plan steps, and which documents exist.",
-    "Be short, concrete and sales-ready. Reply in the same language the broker writes in. Write plain sentences and short dash bullets only — never markdown tables, headings or pipe characters.",
+    "Always state price, size, handover, payment plan steps, and which documents exist (use get_property_pack).",
+    "Be short, concrete and sales-ready. Reply in the same language the broker writes in. Plain sentences and short dash bullets only — no markdown tables or headings.",
     `Client profile: ${JSON.stringify(client)}`,
   ].join("\n");
 
-  const messages: ModelMessage[] = history.map((m) => ({ role: m.role, content: m.content }));
+  const messages: Json[] = [{ role: "system", content: system }, ...history];
 
-  try {
-    const result = streamText({
-      model: createProvider().responses(MODEL),
-      system,
-      messages,
-      tools,
-      stopWhen: stepCountIs(5),
-      providerOptions,
-    });
-    const reply = await result.text;
-    return { reply: reply.trim(), units: lastUnits };
-  } catch (error) {
-    throw gatewayError(error);
+  for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
+    const finalRound = round === MAX_TOOL_ROUNDS;
+    const completion = await chatCompletion(
+      finalRound ? { messages } : { messages, tools: toolDefs, tool_choice: "auto" },
+    );
+    const msg = completion?.choices?.[0]?.message;
+    if (!msg) throw new Error("AI provider returned no message.");
+    const calls = msg.tool_calls ?? [];
+    if (!calls.length || finalRound) {
+      return { reply: String(msg.content ?? "").trim() || "(no answer)", units: lastUnits };
+    }
+    messages.push({ role: "assistant", content: msg.content ?? null, tool_calls: calls });
+    for (const call of calls) {
+      let args: Json = {};
+      try {
+        args = JSON.parse(call.function?.arguments || "{}");
+      } catch {
+        /* empty args */
+      }
+      const result = await runTool(call.function?.name, args);
+      messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result ?? null) });
+    }
   }
+  return { reply: "(no answer)", units: lastUnits };
 }
 
 /** Writes a 5-line meeting wrap-up. */
-export async function runWrapUp(
-  transcript: { role: "user" | "assistant"; content: string }[],
-  clientName: string,
-): Promise<string> {
+export async function runWrapUp(transcript: ChatMsg[], clientName: string): Promise<string> {
   const conversation = transcript.map((m) => `${m.role}: ${m.content}`).join("\n");
-  try {
-    const result = streamText({
-      model: createProvider().responses(MODEL),
-      system:
-        "Write a wrap-up of this broker session in exactly 5 short lines: client intent, budget fit, units discussed, objections, next action. No preamble, no markdown headings.",
-      messages: [
-        {
-          role: "user",
-          content: `Client: ${clientName}\n\nSession notes:\n${conversation || "(no chat this session)"}`,
-        },
-      ],
-      providerOptions,
-    });
-    return (await result.text).trim();
-  } catch (error) {
-    throw gatewayError(error);
-  }
+  const completion = await chatCompletion({
+    messages: [
+      {
+        role: "system",
+        content:
+          "Write a wrap-up of this broker session in exactly 5 short lines: client intent, budget fit, units discussed, objections, next action. No preamble, no markdown headings.",
+      },
+      {
+        role: "user",
+        content: `Client: ${clientName}\n\nSession notes:\n${conversation || "(no chat this session)"}`,
+      },
+    ],
+  });
+  return String(completion?.choices?.[0]?.message?.content ?? "").trim();
 }
