@@ -161,7 +161,7 @@ function Dossier() {
         size_sqft: u.size_sqft as number | null,
         handover_date: p.handover_date ?? null,
         cover_image_url: p.cover_image_url ?? null,
-        score: refs.find((r) => r.unit_id === Number(u.id))?.score ?? 0,
+        score: scores.get(Number(u.id)) ?? null,
       } as MatchRow;
     });
   }
