@@ -46,6 +46,8 @@ function isH3SwallowedErrorBody(body: string): boolean {
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    // Keep runtime bindings reachable for code running after the request context (streams).
+    if (env && typeof env === "object") (globalThis as { __workerEnv?: unknown }).__workerEnv = env;
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

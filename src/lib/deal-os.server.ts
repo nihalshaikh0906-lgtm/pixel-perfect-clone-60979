@@ -16,7 +16,9 @@ let cachedConfig: AiConfig | null = null;
 function readEnv(name: string): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const g = globalThis as any;
-  const v = process.env[name] ?? g.Deno?.env?.get?.(name) ?? "";
+  const fromWorker = g.__workerEnv?.[name];
+  const v =
+    process.env[name] || (typeof fromWorker === "string" ? fromWorker : "") || g.Deno?.env?.get?.(name) || "";
   return String(v).trim();
 }
 
