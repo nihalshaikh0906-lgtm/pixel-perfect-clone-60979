@@ -35,6 +35,7 @@ export function PropertyPackDrawer({
   const { data, isLoading, error } = useQuery({
     queryKey: ["pack", unit?.project_id, unit?.unit_id],
     enabled: !!unit,
+    staleTime: Infinity,
     queryFn: async () => {
       const { data: pack, error: rpcError } = await supabase.rpc("get_property_pack", {
         p_project_id: unit!.project_id,
