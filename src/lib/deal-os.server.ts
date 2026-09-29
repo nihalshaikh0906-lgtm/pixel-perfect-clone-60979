@@ -10,15 +10,34 @@ type ChatMsg = { role: "user" | "assistant"; content: string };
 
 const MAX_TOOL_ROUNDS = 5;
 
-function aiConfig() {
-  const key = process.env["AI_API_KEY"];
-  const base = process.env["AI_BASE_URL"];
-  const model = process.env["AI_MODEL"];
-  if (!key || !base || !model) {
-    throw new Error("AI is not configured: AI_API_KEY, AI_BASE_URL and AI_MODEL must be set.");
+type AiConfig = { key: string; url: string; model: string };
+let cachedConfig: AiConfig | null = null;
+
+function readEnv(name: string): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const g = globalThis as any;
+  const v = process.env[name] ?? g.Deno?.env?.get?.(name) ?? "";
+  return String(v).trim();
+}
+
+/** Reads the AI secrets. Call at the start of a request handler (where env is available). */
+export function loadAiConfig(): AiConfig {
+  const key = readEnv("AI_API_KEY");
+  const base = readEnv("AI_BASE_URL");
+  const model = readEnv("AI_MODEL");
+  const missing = [!key && "AI_API_KEY", !base && "AI_BASE_URL", !model && "AI_MODEL"].filter(Boolean);
+  if (missing.length) {
+    if (cachedConfig) return cachedConfig;
+    console.error(`[deal-os] missing AI secrets: ${missing.join(", ")}`);
+    throw new Error(`AI is not configured: missing ${missing.join(", ")}.`);
   }
-  const url = `${base.endsWith("/") ? base : base + "/"}chat/completions`;
-  return { key, url, model };
+  const url = `${base.replace(/\/+$/, "")}/chat/completions`;
+  cachedConfig = { key, url, model };
+  return cachedConfig;
+}
+
+function aiConfig(): AiConfig {
+  return loadAiConfig();
 }
 
 function describeStatus(status: number): string {
