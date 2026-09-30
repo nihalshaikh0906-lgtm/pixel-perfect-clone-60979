@@ -1,7 +1,7 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Brain, Database, Flame, Search, Star, Wallet } from "lucide-react";
+import { ArrowRight, Brain, Flame, Search, Star, Wallet } from "lucide-react";
 
 import { TopBar } from "@/components/TopBar";
 import { supabase } from "@/integrations/supabase/client";
@@ -181,26 +181,14 @@ function CommandHub() {
   return (
     <div className="min-h-screen">
       <TopBar />
-      <main className="mx-auto max-w-[1500px] px-6 py-10">
-        <div className="flex justify-end">
-          <div className="panel flex items-center gap-3 px-5 py-3">
-            <Database className="size-5 text-primary" />
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider">Inventory sync</p>
-              <p className="metric text-sm text-muted-foreground">
-                {(data?.units ?? 0).toLocaleString("en-US")} units · {clients.length} leads · {hot} hot
-              </p>
-            </div>
-          </div>
-        </div>
-
+      <main className="mx-auto max-w-[1500px] px-6 py-6">
         {error ? (
-          <p className="mt-8 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <p className="mb-6 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {(error as Error).message}
           </p>
         ) : null}
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Kpi label="Active pipeline" value={aed(pipeline)} sub="Sum of open client budgets" icon={Wallet} />
           <Kpi
             label="AI brain status"

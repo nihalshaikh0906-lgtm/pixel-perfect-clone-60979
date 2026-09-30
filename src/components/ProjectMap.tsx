@@ -9,6 +9,10 @@ type Props = {
   district?: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  developer?: string | null;
+  /** When set, render only the modal, controlled from outside. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 function embedUrl({ name, district, latitude, longitude }: Props, hybrid: boolean, zoom: number) {
@@ -22,7 +26,10 @@ function embedUrl({ name, district, latitude, longitude }: Props, hybrid: boolea
 /** Interactive Google map with Map / Satellite-hybrid toggle and a fullscreen presentation mode. */
 export function ProjectMap(props: Props) {
   const [hybrid, setHybrid] = useState(true);
-  const [full, setFull] = useState(false);
+  const [fullState, setFullState] = useState(false);
+  const controlled = props.open !== undefined;
+  const full = controlled ? !!props.open : fullState;
+  const setFull = (v: boolean) => (controlled ? props.onOpenChange?.(v) : setFullState(v));
   const label = `${props.name}${props.district ? ` • ${props.district}` : ""}`.toUpperCase();
 
   const toggle = (
@@ -44,6 +51,28 @@ export function ProjectMap(props: Props) {
     </div>
   );
 
+  const modal = (
+      <Dialog open={full} onOpenChange={setFull}>
+        <DialogContent className="flex h-[92vh] max-w-[96vw] flex-col gap-3 p-4 sm:max-w-[96vw]">
+          <div className="flex flex-wrap items-center justify-between gap-3 pr-8">
+            <div>
+              <DialogTitle className="text-sm font-semibold uppercase tracking-wider">{label}</DialogTitle>
+              {props.developer ? <p className="eyebrow mt-1">{props.developer}</p> : null}
+            </div>
+            {toggle}
+          </div>
+          <iframe
+            title={`Fullscreen map of ${props.name}`}
+            src={embedUrl(props, hybrid, 13)}
+            className="w-full flex-1 rounded-lg border border-border"
+            allowFullScreen
+          />
+        </DialogContent>
+      </Dialog>
+  );
+
+  if (controlled) return modal;
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
@@ -63,19 +92,7 @@ export function ProjectMap(props: Props) {
       </div>
       <p className="eyebrow">{label}</p>
 
-      <Dialog open={full} onOpenChange={setFull}>
-        <DialogContent className="flex h-[92vh] max-w-[96vw] flex-col gap-3 p-4 sm:max-w-[96vw]">
-          <div className="flex items-center justify-between gap-3 pr-8">
-            <DialogTitle className="text-sm font-semibold uppercase tracking-wider">{label}</DialogTitle>
-            {toggle}
-          </div>
-          <iframe
-            title={`Fullscreen map of ${props.name}`}
-            src={embedUrl(props, hybrid, 16)}
-            className="w-full flex-1 rounded-lg border border-border"
-          />
-        </DialogContent>
-      </Dialog>
+      {modal}
     </div>
   );
 }

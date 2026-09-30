@@ -45,13 +45,13 @@ export function TopBar({
 
         <nav className="order-last flex w-full flex-wrap items-center justify-center gap-1 xl:order-none xl:w-auto xl:flex-1">
           <Link to="/" className={NAV_PILL} activeOptions={{ exact: true, includeHash: false }} activeProps={{ className: NAV_ACTIVE }}>
-            Home / Dashboard
+            Dashboard
           </Link>
           <Link to="/" hash="pipeline" className={NAV_PILL}>
-            Lead Pipeline
+            Leads
           </Link>
           <Link to="/inventory" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
-            Property Inventory
+            Inventory
           </Link>
           <Link to="/market" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
             Market Intel

@@ -34,6 +34,7 @@ const COUNTRY_CODES = ["+971", "+966", "+974", "+965", "+968", "+973", "+91", "+
 function LoginPage() {
   const router = useRouter();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [firstName, setFirstName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("+971");
@@ -62,7 +63,8 @@ function LoginPage() {
         options: {
           emailRedirectTo: window.location.origin,
           data: {
-            full_name: username.trim().toUpperCase(),
+            first_name: firstName.trim().toUpperCase(),
+            full_name: (username.trim() || firstName.trim()).toUpperCase(),
             phone: `${code} ${digits}`,
             instagram_handle: instagram.trim().replace(/^@/, "") || null,
           },
@@ -100,10 +102,16 @@ function LoginPage() {
         <form onSubmit={onSubmit} className="mt-8 space-y-4">
           {signup ? (
             <div className="space-y-2">
-              <Label htmlFor="username" className="eyebrow">Username (what we should call you)</Label>
+              <Label htmlFor="first" className="eyebrow">First name</Label>
+              <Input id="first" required maxLength={60} value={firstName} onChange={(e) => setFirstName(e.target.value.toUpperCase())} className="uppercase" placeholder="NIHAL" />
+            </div>
+          ) : null}
+          {signup ? (
+            <div className="space-y-2">
+              <Label htmlFor="username" className="eyebrow">Username (what we should call you - optional)</Label>
               <Input
                 id="username"
-                required
+                maxLength={60}
                 value={username}
                 onChange={(e) => setUsername(e.target.value.toUpperCase())}
                 className="uppercase"
@@ -139,7 +147,7 @@ function LoginPage() {
           </div>
           {signup ? (
             <div className="space-y-2">
-              <Label htmlFor="ig" className="eyebrow">Instagram handle (optional)</Label>
+              <Label htmlFor="ig" className="eyebrow">Instagram (optional)</Label>
               <div className="flex items-center rounded-md border border-input pl-3">
                 <span className="text-sm text-muted-foreground">@</span>
                 <Input id="ig" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="nihal.realty" />
