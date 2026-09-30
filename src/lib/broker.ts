@@ -18,7 +18,7 @@ export function brokerName(user: UserLike) {
   return cleaned ? cleaned.toUpperCase() : "BROKER";
 }
 
-export type BrokerProfile = { name: string; phone: string | null; instagram: string | null };
+export type BrokerProfile = { name: string; phone: string | null; instagram: string | null; email: string | null };
 
 export function brokerProfile(user: UserLike): BrokerProfile {
   const meta = user?.user_metadata ?? {};
@@ -27,6 +27,7 @@ export function brokerProfile(user: UserLike): BrokerProfile {
     name: brokerName(user),
     phone: str(meta["phone"]),
     instagram: ig ? `@${ig.replace(/^@/, "")}` : null,
+    email: user?.email ?? null,
   };
 }
 
