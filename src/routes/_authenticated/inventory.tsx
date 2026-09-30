@@ -32,10 +32,10 @@ function InventoryPage() {
     queryKey: ["inventory", applied],
     queryFn: async () => {
       const { data: rows, error: e } = await supabase.rpc("search_units", {
-        p_budget_max: applied.maxBudget ? Number(applied.maxBudget) : undefined,
-        p_bedrooms: applied.bedrooms ? [Number(applied.bedrooms)] : undefined,
-        p_areas: applied.area ? [applied.area] : undefined,
         p_limit: 50,
+        ...(applied.maxBudget ? { p_budget_max: Number(applied.maxBudget) } : {}),
+        ...(applied.bedrooms ? { p_bedrooms: [Number(applied.bedrooms)] } : {}),
+        ...(applied.area ? { p_areas: [applied.area] } : {}),
       });
       if (e) throw new Error(e.message);
       return rows ?? [];
