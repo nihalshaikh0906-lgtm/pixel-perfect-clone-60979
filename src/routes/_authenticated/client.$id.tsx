@@ -472,3 +472,47 @@ function Field({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function inlineBold(s: string) {
+  return s.split(/(\*\*[^*]+\*\*)/g).map((part, k) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={k} className="font-semibold text-foreground">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <span key={k}>{part}</span>
+    ),
+  );
+}
+
+function ChatText({ text }: { text: string }) {
+  const blocks: ({ kind: "p"; text: string } | { kind: "ol"; items: { n: string; text: string }[] })[] = [];
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (!line) continue;
+    const m = line.match(/^(\d+)[.)]\s+(.*)$/);
+    const last = blocks[blocks.length - 1];
+    if (m) {
+      if (last?.kind === "ol") last.items.push({ n: m[1], text: m[2] });
+      else blocks.push({ kind: "ol", items: [{ n: m[1], text: m[2] }] });
+    } else blocks.push({ kind: "p", text: line });
+  }
+  return (
+    <div className="space-y-2">
+      {blocks.map((b, i) =>
+        b.kind === "p" ? (
+          <p key={i}>{inlineBold(b.text)}</p>
+        ) : (
+          <ol key={i} className="my-3 space-y-3">
+            {b.items.map((it, j) => (
+              <li key={j} className="flex gap-2.5">
+                <span className="w-5 shrink-0 text-right font-bold text-primary">{it.n}.</span>
+                <span className="min-w-0">{inlineBold(it.text)}</span>
+              </li>
+            ))}
+          </ol>
+        ),
+      )}
+    </div>
+  );
+}
