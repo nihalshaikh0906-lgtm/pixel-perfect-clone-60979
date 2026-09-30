@@ -5,7 +5,6 @@ import { ArrowRight, Brain, Database, Flame, Search, Star, Wallet } from "lucide
 
 import { TopBar } from "@/components/TopBar";
 import { supabase } from "@/integrations/supabase/client";
-import { dubaiGreeting, useBroker, useDubaiClock } from "@/lib/broker";
 import { aed, beds, initials, timeAgo } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -128,8 +127,6 @@ type TopMatch = {
 
 function CommandHub() {
   const { data, isLoading, error } = useHubData();
-  const name = useBroker();
-  const clock = useDubaiClock();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
 
@@ -215,10 +212,10 @@ function CommandHub() {
           <Kpi label="Shortlists" value={String(data?.shortlists ?? 0)} sub="Units saved for clients" icon={Star} />
         </div>
 
-        <section className="panel mt-8 p-5">
+        <section id="pipeline" className="panel mt-8 scroll-mt-24 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="font-display text-2xl font-semibold">Client Pipeline</h2>
+              <h2 className="font-display text-2xl font-semibold uppercase tracking-wider">Client Pipeline</h2>
               <p className="text-sm text-muted-foreground">Every lead with its best-matched unit</p>
             </div>
             <label className="flex w-full items-center gap-2 rounded-full border border-primary/40 bg-card px-4 py-2 sm:w-72">
