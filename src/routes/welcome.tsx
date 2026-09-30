@@ -30,7 +30,7 @@ function Landing() {
             <div className="rounded-3xl border border-white/70 bg-white/60 p-6 backdrop-blur-xl" style={shadow}>
               <div className="flex items-center justify-between">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bronze)]">Active pipeline</p>
-                <span className="flex items-center gap-1.5 text-[11px] ${muted}"><span className="size-1.5 animate-pulse rounded-full bg-[var(--bronze)]" /> AI market scanner</span>
+                <span className={`flex items-center gap-1.5 text-[11px] ${muted}`}><span className="size-1.5 animate-pulse rounded-full bg-[var(--bronze)]" /> AI market scanner</span>
               </div>
               <div className="mt-5 grid grid-cols-3 gap-3">
                 {[["Open budgets", "AED 39M"], ["Hot leads", "4"], ["Units", "41,166"]].map(([l, v]) => (
