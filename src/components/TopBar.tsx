@@ -1,15 +1,17 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useBroker } from "@/lib/broker";
-import { initials } from "@/lib/format";
+import { useBrokerProfile } from "@/lib/broker";
+
+const NAV_PILL =
+  "rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground";
+const NAV_ACTIVE = "bg-secondary text-foreground";
 
 export function TopBar({
-  back,
   title,
   subtitle,
   right,
@@ -21,7 +23,7 @@ export function TopBar({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const name = useBroker();
+  const profile = useBrokerProfile();
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -32,7 +34,7 @@ export function TopBar({
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1720px] items-center gap-5 px-6 py-4">
+      <div className="mx-auto flex max-w-[1720px] flex-wrap items-center gap-4 px-6 py-3">
         <div className="flex items-center">
           <Link to="/" className="flex items-baseline gap-1 font-display text-2xl tracking-[0.25em]">
             PROPFLOW<span className="size-1.5 rounded-full bg-primary" />
@@ -40,38 +42,44 @@ export function TopBar({
           <span className="mx-3 hidden h-5 border-r border-border lg:block" />
           <AgencyBadge />
         </div>
-        {back ? (
-          <Button asChild variant="outline" size="sm" className="rounded-full border-primary/40">
-            <Link to="/">
-              <ArrowLeft className="size-4" />
-              Cockpit
-            </Link>
-          </Button>
-        ) : null}
-        <div className="hidden items-center gap-4 border-l border-border pl-5 text-xs text-muted-foreground xl:flex">
-          <GstClock />
-          <span className="flex items-center gap-2">
-            <span className="gold-pulse size-2 rounded-full bg-primary" />
-            AI Market Scanner Active
-          </span>
-        </div>
-        <div className="min-w-0 flex-1">
-          {title ? <div className="truncate text-lg font-semibold">{title}</div> : null}
-          {subtitle ? <div className="eyebrow truncate">{subtitle}</div> : null}
-        </div>
-        {right}
-        {name ? (
-          <div className="hidden items-center gap-2.5 sm:flex">
-            <span className="flex size-9 items-center justify-center rounded-full border border-primary bg-secondary text-xs font-semibold text-foreground">
-              {initials(name)}
-            </span>
-            <span className="font-display text-lg font-semibold">{name}</span>
+
+        <nav className="order-last flex w-full flex-wrap items-center justify-center gap-1 xl:order-none xl:w-auto xl:flex-1">
+          <Link to="/" className={NAV_PILL} activeOptions={{ exact: true, includeHash: false }} activeProps={{ className: NAV_ACTIVE }}>
+            Home / Dashboard
+          </Link>
+          <Link to="/" hash="pipeline" className={NAV_PILL}>
+            Lead Pipeline
+          </Link>
+          <Link to="/inventory" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
+            Property Inventory
+          </Link>
+          <Link to="/market" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
+            Market Intel
+          </Link>
+        </nav>
+
+        {title || subtitle ? (
+          <div className="hidden min-w-0 max-w-xs 2xl:block">
+            {title ? <div className="truncate text-sm font-semibold uppercase tracking-wider">{title}</div> : null}
+            {subtitle ? <div className="eyebrow truncate">{subtitle}</div> : null}
           </div>
         ) : null}
-        <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground">
-          <LogOut className="size-4" />
-          Log out
-        </Button>
+        {right}
+
+        <div className="ml-auto flex items-center gap-4 xl:ml-0">
+          {profile ? (
+            <div className="text-right leading-tight">
+              <p className="text-sm font-bold uppercase tracking-wider">{profile.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {[profile.phone, profile.instagram].filter(Boolean).join(" · ")}
+              </p>
+            </div>
+          ) : null}
+          <Button variant="ghost" size="sm" onClick={signOut} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <LogOut className="size-4" />
+            Log out
+          </Button>
+        </div>
       </div>
     </header>
   );

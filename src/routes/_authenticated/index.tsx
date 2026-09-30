@@ -5,7 +5,6 @@ import { ArrowRight, Brain, Database, Flame, Search, Star, Wallet } from "lucide
 
 import { TopBar } from "@/components/TopBar";
 import { supabase } from "@/integrations/supabase/client";
-import { dubaiGreeting, useBroker, useDubaiClock } from "@/lib/broker";
 import { aed, beds, initials, timeAgo } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -128,8 +127,6 @@ type TopMatch = {
 
 function CommandHub() {
   const { data, isLoading, error } = useHubData();
-  const name = useBroker();
-  const clock = useDubaiClock();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
 
@@ -185,31 +182,13 @@ function CommandHub() {
     <div className="min-h-screen">
       <TopBar />
       <main className="mx-auto max-w-[1500px] px-6 py-10">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-2xl">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-              <h1 className="font-display text-5xl font-semibold">
-                {clock ? dubaiGreeting(clock.hour) : "Welcome"}
-                {name ? `, ${name.split(" ")[0]}` : ""}
-              </h1>
-              {clock ? (
-                <span className="metric text-sm text-muted-foreground">
-                  GST {clock.label} • Dubai
-                </span>
-              ) : null}
-            </div>
-            <p className="mt-4 font-light text-muted-foreground">
-              {clients.length} active leads in your book • {hot} flagged hot by the AI. Market scan
-              updated {timeAgo(data?.inventoryUpdatedAt)}.
-            </p>
-          </div>
-          <div className="panel flex items-center gap-3 px-5 py-4">
+        <div className="flex justify-end">
+          <div className="panel flex items-center gap-3 px-5 py-3">
             <Database className="size-5 text-primary" />
             <div>
-              <p className="font-semibold">Inventory sync</p>
+              <p className="text-xs font-semibold uppercase tracking-wider">Inventory sync</p>
               <p className="metric text-sm text-muted-foreground">
-                {(data?.units ?? 0).toLocaleString("en-US")} units · updated{" "}
-                {timeAgo(data?.inventoryUpdatedAt)}
+                {(data?.units ?? 0).toLocaleString("en-US")} units · {clients.length} leads · {hot} hot
               </p>
             </div>
           </div>
@@ -233,10 +212,10 @@ function CommandHub() {
           <Kpi label="Shortlists" value={String(data?.shortlists ?? 0)} sub="Units saved for clients" icon={Star} />
         </div>
 
-        <section className="panel mt-8 p-5">
+        <section id="pipeline" className="panel mt-8 scroll-mt-24 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="font-display text-2xl font-semibold">Client Pipeline</h2>
+              <h2 className="font-display text-2xl font-semibold uppercase tracking-wider">Client Pipeline</h2>
               <p className="text-sm text-muted-foreground">Every lead with its best-matched unit</p>
             </div>
             <label className="flex w-full items-center gap-2 rounded-full border border-primary/40 bg-card px-4 py-2 sm:w-72">
