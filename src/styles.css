@@ -102,11 +102,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  @media (pointer: fine) {
-    body.lux-cursor, body.lux-cursor * {
-      cursor: none !important;
-    }
-  }
 
   h1,
   h2,
