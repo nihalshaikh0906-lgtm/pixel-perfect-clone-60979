@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import { Expand, Map as MapIcon, Satellite } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 

@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 /* Loads the Google Maps JavaScript API once (async, with callback) in the browser. */
 let loader: Promise<typeof google.maps> | null = null;
 
