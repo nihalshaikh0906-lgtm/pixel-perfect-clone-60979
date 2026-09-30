@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { PaymentPlanModal } from "@/components/PaymentPlanModal";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
 
+import { ProjectMap } from "@/components/ProjectMap";
 import { PackOverview } from "@/components/PackOverview";
 import type { MatchRow } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
@@ -182,6 +183,15 @@ export function PropertyPackDrawer({
               <Row label="Bedrooms" value={beds(unit?.bedrooms)} />
               <Row label="Handover" value={quarterOf(unit?.handover_date)} />
             </div>
+          </Section>
+
+          <Section title="Location">
+            <ProjectMap
+              name={unit?.project_name ?? "Project"}
+              district={unit?.district ?? data?.project?.district}
+              latitude={data?.project?.latitude ?? null}
+              longitude={data?.project?.longitude ?? null}
+            />
           </Section>
 
           {documents.length ? (
