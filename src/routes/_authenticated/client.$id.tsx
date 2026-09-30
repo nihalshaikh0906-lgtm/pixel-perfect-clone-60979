@@ -468,7 +468,7 @@ function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 border-b border-border/60 pb-2">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="text-right font-medium">{value}</dd>
+      <dd className="metric text-right">{value}</dd>
     </div>
   );
 }
@@ -506,7 +506,7 @@ function ChatText({ text }: { text: string }) {
           <ol key={i} className="my-3 space-y-3">
             {b.items.map((it, j) => (
               <li key={j} className="flex gap-2.5">
-                <span className="w-5 shrink-0 text-right font-bold text-primary">{it.n}.</span>
+                <span className="metric w-5 shrink-0 text-right font-semibold text-primary">{it.n}.</span>
                 <span className="min-w-0">{inlineBold(it.text)}</span>
               </li>
             ))}
