@@ -30,11 +30,13 @@ export const getNews = createServerFn({ method: "POST" })
     const j = JSON.parse(body);
     const raw: { title?: string; url?: string; snippet?: string; description?: string; date?: string; imageUrl?: string }[] =
       j?.data?.news ?? j?.data?.web ?? (Array.isArray(j?.data) ? j.data : []);
+    const clean = (t = "") =>
+      t.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[#*_>`]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 700);
     const found = raw.filter((r) => r.url && r.title).slice(0, 9);
     if (!found.length) return { day, items: [] as NewsItem[] };
 
     const { aiWrite } = await import("./deal-os.server");
-    const list = found.map((r, i) => `${i + 1}. ${r.title}\n${r.snippet ?? r.description ?? ""}`).join("\n\n");
+    const list = found.map((r, i) => `${i + 1}. ${r.title}\n${clean(r.snippet ?? r.description)}`).join("\n\n");
     const out = await aiWrite(
       "You write a morning briefing for Dubai real estate brokers. For each numbered story, write one clear headline and a 2-sentence summary with why it matters to a broker. Use ONLY facts in the story text; never add numbers that are not there. Reply with JSON only: {\"items\":[{\"n\":1,\"headline\":\"...\",\"summary\":\"...\"}]}",
       list,
@@ -51,7 +53,7 @@ export const getNews = createServerFn({ method: "POST" })
       return {
         id: r.url!,
         headline: p?.headline || r.title!,
-        summary: p?.summary || r.snippet || r.description || "",
+        summary: p?.summary || clean(r.snippet ?? r.description).slice(0, 240),
         source: new URL(r.url!).hostname.replace(/^www\./, ""),
         url: r.url!,
         image_url: r.imageUrl ?? null,
