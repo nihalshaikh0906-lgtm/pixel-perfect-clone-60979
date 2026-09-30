@@ -61,7 +61,7 @@ function Landing() {
           <span className="text-lg font-semibold tracking-[0.3em]">PROPFLOW</span>
           <nav className="flex gap-2">
             <a href="#plans" className="rounded-full border border-[var(--silk)]/30 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] hover:bg-[var(--silk)]/10">View plans</a>
-            <Link to="/login" className="rounded-full bg-[var(--champagne)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--obsidian)] hover:opacity-90">Login / Sign up</Link>
+            <Link to="/login" search={{ mode: undefined }} className="rounded-full bg-[var(--champagne)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--obsidian)] hover:opacity-90">Login / Sign up</Link>
           </nav>
         </header>
 
