@@ -1,7 +1,7 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Brain, Database, Flame, Search, Star, Wallet } from "lucide-react";
+import { ArrowRight, Brain, Flame, Search, Star, Wallet } from "lucide-react";
 
 import { TopBar } from "@/components/TopBar";
 import { supabase } from "@/integrations/supabase/client";
