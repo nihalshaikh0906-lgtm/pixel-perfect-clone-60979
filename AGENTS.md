@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Use Plus Jakarta Sans for both display and body typography, with lining tabular numerals globally, to keep the luxury interface restrained and numeric baselines uniform.

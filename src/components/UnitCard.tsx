@@ -37,7 +37,7 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
           </div>
         )}
         {row.score != null && Math.round(row.score) > 0 ? (
-          <span className="absolute right-3 top-3 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-xs font-semibold text-primary backdrop-blur">
+          <span className="metric absolute right-3 top-3 rounded-full border border-primary/40 bg-background/80 px-2.5 py-1 text-xs text-primary backdrop-blur">
             {Math.min(99, Math.round(row.score))}% match
           </span>
         ) : null}
@@ -49,12 +49,12 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
             {row.developer ?? row.district ?? "—"}
           </p>
         </div>
-        <p className="text-lg font-semibold text-primary">{aed(row.price_aed)}</p>
+        <p className="metric text-lg text-primary">{aed(row.price_aed)}</p>
         <div className="flex flex-wrap gap-1.5">
           {[beds(row.bedrooms), sqft(row.size_sqft), quarterOf(row.handover_date)].map((chip) => (
             <span
               key={chip}
-              className="rounded-md border border-border bg-secondary/60 px-2 py-1 text-xs text-muted-foreground"
+               className="metric rounded-md border border-border bg-secondary/60 px-2 py-1 text-xs text-muted-foreground"
             >
               {chip}
             </span>

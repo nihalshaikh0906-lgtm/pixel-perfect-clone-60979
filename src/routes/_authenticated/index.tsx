@@ -102,7 +102,7 @@ function Kpi({
         <p className="eyebrow">{label}</p>
         <Icon className="size-5 text-primary" />
       </div>
-      <p className="mt-4 font-display text-3xl font-semibold">{value}</p>
+      <p className="metric mt-4 text-3xl">{value}</p>
       <p className="mt-2 text-sm text-muted-foreground">{sub}</p>
     </div>
   );
@@ -193,7 +193,7 @@ function CommandHub() {
                 {name ? `, ${name.split(" ")[0]}` : ""}
               </h1>
               {clock ? (
-                <span className="text-sm tabular-nums text-muted-foreground">
+                <span className="metric text-sm text-muted-foreground">
                   GST {clock.label} • Dubai
                 </span>
               ) : null}
@@ -207,7 +207,7 @@ function CommandHub() {
             <Database className="size-5 text-primary" />
             <div>
               <p className="font-semibold">Inventory sync</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="metric text-sm text-muted-foreground">
                 {(data?.units ?? 0).toLocaleString("en-US")} units · updated{" "}
                 {timeAgo(data?.inventoryUpdatedAt)}
               </p>
@@ -307,7 +307,7 @@ function CommandHub() {
                           <span className="text-xs capitalize text-muted-foreground">{message.channel}</span>
                         ) : null}
                       </div>
-                      <p className="text-[15px] font-medium">
+                      <p className="metric text-[15px]">
                         {aed(client.budget_min_aed)} – {aed(client.budget_max_aed)}
                       </p>
                       {client.notes || message?.body ? (
@@ -330,7 +330,7 @@ function CommandHub() {
                             {m.project_name ?? "Project"}
                             {m.unit_number ? ` • ${m.unit_number}` : ""}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                           <p className="metric text-sm text-muted-foreground">
                             {beds(m.bedrooms)} • {aed(m.price_aed)}
                           </p>
                         </>
@@ -339,7 +339,7 @@ function CommandHub() {
                       )}
                     </div>
                     {m && score > 0 ? (
-                      <span className="shrink-0 rounded-full border border-primary px-2.5 py-1 text-xs font-semibold text-primary">
+                       <span className="metric shrink-0 rounded-full border border-primary px-2.5 py-1 text-xs text-primary">
                         {score}% Match
                       </span>
                     ) : null}

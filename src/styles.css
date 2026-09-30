@@ -4,10 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Midnight Obsidian design system.
- * Single dark theme. All colors are oklch semantic tokens.
- */
+/* PropFlow's restrained luxury design system. */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -48,7 +45,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --shadow-glow: 0 0 0 1px oklch(0.74 0.06 75 / 0.45), 0 18px 40px -22px oklch(0.6 0.06 70 / 0.45);
   --shadow-panel: 0 1px 2px oklch(0.4 0.02 60 / 0.04), 0 20px 50px -34px oklch(0.4 0.03 60 / 0.25);
 }
@@ -56,19 +53,19 @@
 :root {
   --radius: 0.75rem;
   --background: oklch(0.982 0.005 75);
-  --foreground: oklch(0.22 0.006 50);
+  --foreground: #1a1816;
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.006 50);
+  --card-foreground: #1a1816;
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.006 50);
+  --popover-foreground: #1a1816;
   --primary: oklch(0.74 0.06 75);
   --primary-foreground: oklch(0.99 0.004 75);
   --secondary: oklch(0.955 0.01 75);
-  --secondary-foreground: oklch(0.25 0.006 50);
+  --secondary-foreground: #1a1816;
   --muted: oklch(0.95 0.008 75);
-  --muted-foreground: oklch(0.6 0.017 60);
+  --muted-foreground: #5c554e;
   --accent: oklch(0.94 0.018 75);
-  --accent-foreground: oklch(0.22 0.006 50);
+  --accent-foreground: #1a1816;
   --destructive: oklch(0.55 0.19 27);
   --destructive-foreground: oklch(0.99 0.005 75);
   --hot: oklch(0.58 0.15 35);
@@ -81,11 +78,11 @@
   --orb-1: oklch(0.94 0.02 75);
   --orb-2: oklch(0.9 0.025 75);
   --sidebar: oklch(0.975 0.006 75);
-  --sidebar-foreground: oklch(0.22 0.006 50);
+  --sidebar-foreground: #1a1816;
   --sidebar-primary: oklch(0.74 0.06 75);
   --sidebar-primary-foreground: oklch(0.99 0.004 75);
   --sidebar-accent: oklch(0.955 0.01 75);
-  --sidebar-accent-foreground: oklch(0.22 0.006 50);
+  --sidebar-accent-foreground: #1a1816;
   --sidebar-border: oklch(0.92 0.014 75);
   --sidebar-ring: oklch(0.74 0.06 75);
 }
@@ -93,23 +90,35 @@
 @layer base {
   * {
     border-color: var(--color-border);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
   }
 
   body {
     background: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
-
 
   h1,
   h2,
   h3,
   .font-display {
     font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
   }
 }
 
@@ -122,11 +131,19 @@
 
 @utility eyebrow {
   font-family: var(--font-sans);
-  font-size: 0.66rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
+}
+
+@utility metric {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
 }
 
 @utility glow-ring {
