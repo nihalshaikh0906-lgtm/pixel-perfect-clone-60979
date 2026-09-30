@@ -10,3 +10,7 @@
 <!-- LOVABLE:END -->
 
 - Use Plus Jakarta Sans for both display and body typography, with lining tabular numerals globally, to keep the luxury interface restrained and numeric baselines uniform.
+
+- Private listings are JSON files at broker-logos/{userId}/listings/{id}.json — external DB tables must not be added.
+- All AI writing (chat, news summaries, market reports) goes through DeepSeek via deal-os.server (aiWrite/streamChat) — user asked for DeepSeek everywhere.
+- News = Firecrawl search (gateway) + DeepSeek summary, cached per Dubai day in memory — no news table exists.
