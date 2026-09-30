@@ -1,7 +1,7 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Bot, CalendarCheck, CheckSquare, Flame, Loader2, Send, Sparkles, User } from "lucide-react";
+import { Bot, CalendarCheck, FileDown, CheckSquare, Flame, Loader2, Send, Sparkles, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -411,7 +411,7 @@ function Dossier() {
                     {m.role === "user" ? "You" : "Investment Engineer"} ·{" "}
                     {new Date(m.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
-                  <ChatText text={m.content} />
+                  {m.role === "assistant" ? <AssistantBody text={m.content} /> : <ChatText text={m.content} />}
                 </div>
               </div>
             ))}
@@ -485,24 +485,90 @@ function inlineBold(s: string) {
   );
 }
 
+type Block =
+  | { kind: "p"; text: string }
+  | { kind: "h"; level: number; text: string }
+  | { kind: "ol"; items: { n: string; text: string }[] }
+  | { kind: "ul"; items: string[] }
+  | { kind: "table"; rows: string[][] };
+
+function cleanInline(s: string) {
+  return s.replace(/^#+\s*/, "").replace(/__/g, "");
+}
+
 function ChatText({ text }: { text: string }) {
-  const blocks: ({ kind: "p"; text: string } | { kind: "ol"; items: { n: string; text: string }[] })[] = [];
+  const blocks: Block[] = [];
   for (const raw of text.split("\n")) {
     const line = raw.trim();
-    if (!line) continue;
-    const m = line.match(/^(\d+)[.)]\s+(.*)$/);
+    if (!line || /^-{3,}$/.test(line)) continue;
     const last = blocks[blocks.length - 1];
+    if (line.startsWith("|")) {
+      const cells = line.replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      if (cells.every((c) => /^:?-{2,}:?$/.test(c))) continue;
+      if (last?.kind === "table") last.rows.push(cells);
+      else blocks.push({ kind: "table", rows: [cells] });
+      continue;
+    }
+    const h = line.match(/^(#{1,4})\s+(.*)$/);
+    if (h) {
+      blocks.push({ kind: "h", level: h[1]!.length, text: h[2] ?? "" });
+      continue;
+    }
+    const m = line.match(/^(\d+)[.)]\s+(.*)$/);
     if (m) {
       if (last?.kind === "ol") last.items.push({ n: m[1] ?? "", text: m[2] ?? "" });
       else blocks.push({ kind: "ol", items: [{ n: m[1] ?? "", text: m[2] ?? "" }] });
-    } else blocks.push({ kind: "p", text: line });
+      continue;
+    }
+    const b = line.match(/^[-*•]\s+(.*)$/);
+    if (b) {
+      if (last?.kind === "ul") last.items.push(b[1] ?? "");
+      else blocks.push({ kind: "ul", items: [b[1] ?? ""] });
+      continue;
+    }
+    blocks.push({ kind: "p", text: cleanInline(line) });
   }
   return (
     <div className="space-y-2">
-      {blocks.map((b, i) =>
-        b.kind === "p" ? (
-          <p key={i}>{inlineBold(b.text)}</p>
-        ) : (
+      {blocks.map((b, i) => {
+        if (b.kind === "p") return <p key={i}>{inlineBold(b.text)}</p>;
+        if (b.kind === "h")
+          return b.level === 1 ? (
+            <h3 key={i} className="pt-1 text-[15px] font-semibold uppercase tracking-[0.08em]">
+              {inlineBold(b.text)}
+            </h3>
+          ) : (
+            <h4 key={i} className="pt-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary">
+              {inlineBold(b.text)}
+            </h4>
+          );
+        if (b.kind === "ul")
+          return (
+            <ul key={i} className="list-disc space-y-1 pl-5">
+              {b.items.map((it, j) => (
+                <li key={j}>{inlineBold(it)}</li>
+              ))}
+            </ul>
+          );
+        if (b.kind === "table")
+          return (
+            <div key={i} className="overflow-x-auto">
+              <table className="w-full border-collapse text-[14px]">
+                <tbody>
+                  {b.rows.map((r, j) => (
+                    <tr key={j} className={j === 0 && b.rows.length > 1 ? "font-semibold" : ""}>
+                      {r.map((c, k) => (
+                        <td key={k} className="metric border border-border px-2 py-1 align-top">
+                          {inlineBold(c)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        return (
           <ol key={i} className="my-3 space-y-3">
             {b.items.map((it, j) => (
               <li key={j} className="flex gap-2.5">
@@ -511,8 +577,63 @@ function ChatText({ text }: { text: string }) {
               </li>
             ))}
           </ol>
-        ),
-      )}
+        );
+      })}
     </div>
+  );
+}
+
+async function downloadPdf(el: HTMLElement | null) {
+  if (!el) return;
+  try {
+    const html2pdf = (await import("html2pdf.js")).default;
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "padding:24px;font-family:'Plus Jakarta Sans',sans-serif;color:#1A1816;font-size:12px;line-height:1.6;background:#fff;width:720px";
+    const head = document.createElement("div");
+    head.style.cssText = "border-bottom:1px solid #B08D57;padding-bottom:10px;margin-bottom:16px;letter-spacing:0.18em;font-size:11px;font-weight:600;color:#8E7453";
+    head.textContent = "PROPFLOW PRIVATE CLIENT OFFICE • LUXURY DOSSIER";
+    const body = el.cloneNode(true) as HTMLElement;
+    body.querySelectorAll("td").forEach((td) => {
+      (td as HTMLElement).style.cssText = "border:1px solid #ddd3c6;padding:4px 8px;vertical-align:top";
+    });
+    body.querySelectorAll("table").forEach((t) => {
+      (t as HTMLElement).style.cssText = "border-collapse:collapse;width:100%;margin:6px 0";
+    });
+    const foot = document.createElement("div");
+    foot.style.cssText = "border-top:1px solid #ddd3c6;margin-top:20px;padding-top:8px;font-size:10px;color:#5C554E";
+    foot.textContent = `Generated ${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })} • Confidential — prepared for the named client only. Draft, subject to developer confirmation.`;
+    wrap.append(head, body, foot);
+    await html2pdf()
+      .set({
+        margin: 10,
+        filename: "PropFlow_Document_Draft.pdf",
+        image: { type: "jpeg", quality: 0.95 },
+        html2canvas: { scale: 2, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      })
+      .from(wrap)
+      .save();
+  } catch (err) {
+    toast.error(`PDF export failed: ${(err as Error).message}`);
+  }
+}
+
+function AssistantBody({ text }: { text: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <>
+      <div ref={ref}>
+        <ChatText text={text} />
+      </div>
+      {text.trim() ? (
+        <button
+          type="button"
+          onClick={() => downloadPdf(ref.current)}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-[#F4EFEA] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground hover:border-primary/60"
+        >
+          <FileDown className="size-3.5" /> Download as PDF
+        </button>
+      ) : null}
+    </>
   );
 }
