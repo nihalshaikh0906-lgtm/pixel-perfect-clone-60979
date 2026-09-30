@@ -162,3 +162,5 @@
   --champagne: #c5a880;
   --sand: #eae4dc;
 }
+
+html { scroll-behavior: smooth; }
