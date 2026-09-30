@@ -4,8 +4,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useBrokerProfile } from "@/lib/broker";
 
 const NAV_PILL =
-  "rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground";
-const NAV_ACTIVE = "bg-secondary text-foreground";
+  "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-secondary";
+const NAV_ACTIVE = "bg-secondary";
 
 export function TopBar({
   title,
@@ -42,6 +42,9 @@ export function TopBar({
           <Link to="/market" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
             Market Intel
           </Link>
+          <Link to="/news" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
+            News
+          </Link>
         </nav>
 
         {title || subtitle ? (
@@ -51,26 +54,6 @@ export function TopBar({
           </div>
         ) : null}
         {right}
-
-        <div className="ml-auto flex items-center gap-4 xl:ml-0">
-          {profile ? (
-            <Link
-              to="/settings"
-              title="Account settings"
-              className="flex items-center gap-3 rounded-full border border-border px-3 py-1.5 text-right leading-tight transition-colors hover:border-primary/60"
-            >
-              <span className="grid size-8 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                {profile.name.slice(0, 2)}
-              </span>
-              <span>
-              <p className="text-sm font-bold uppercase tracking-wider">{profile.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {[profile.phone, profile.instagram].filter(Boolean).join(" · ")}
-              </p>
-              </span>
-            </Link>
-          ) : null}
-        </div>
       </div>
     </header>
   );
