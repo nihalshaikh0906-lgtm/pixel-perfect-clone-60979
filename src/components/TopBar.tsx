@@ -1,8 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 
-import { supabase } from "@/integrations/supabase/client";
 import { useBrokerProfile } from "@/lib/broker";
 
 const NAV_PILL =
@@ -19,16 +17,6 @@ export function TopBar({
   subtitle?: ReactNode;
   right?: ReactNode;
 }) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const profile = useBrokerProfile();
-
-  async function signOut() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    router.navigate({ to: "/login", replace: true });
-  }
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-xl">
