@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, CarFront, FileText, Receipt, Loader2, MessageCircle, Star } from "lucide-react";
+import { BookOpen, MapPin, CarFront, FileText, Receipt, Loader2, MessageCircle, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -40,6 +40,7 @@ export function PropertyPackDrawer({
 }) {
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const [planOpen, setPlanOpen] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
   const { data, isLoading, error } = useQuery({
     queryKey: ["pack", unit?.project_id, unit?.unit_id],
     enabled: !!unit,
@@ -139,11 +140,14 @@ export function PropertyPackDrawer({
             </Button>
             <Button
               variant="outline"
-              className="col-span-2 border-primary/50"
+              className="border-primary/50"
               onClick={() => setPlanOpen(true)}
               disabled={!Array.isArray(data?.payment_plans) || !data.payment_plans.length}
             >
               <Receipt className="size-4" /> View Payment Plan
+            </Button>
+            <Button variant="outline" className="border-primary/50" onClick={() => setMapOpen(true)} disabled={!unit}>
+              <MapPin className="size-4" /> View Location
             </Button>
             <Button variant="outline" onClick={copyPitch}>
               <MessageCircle className="size-4" /> Copy Pitch & WhatsApp
@@ -288,6 +292,15 @@ export function PropertyPackDrawer({
           title={unit?.project_name ?? "Property"}
           onIndex={setPhotoIndex}
           onClose={() => setPhotoIndex(null)}
+        />
+        <ProjectMap
+          open={mapOpen}
+          onOpenChange={setMapOpen}
+          name={unit?.project_name ?? "Project"}
+          developer={unit?.developer ?? null}
+          district={unit?.district ?? data?.project?.district}
+          latitude={data?.project?.latitude ?? null}
+          longitude={data?.project?.longitude ?? null}
         />
         <PaymentPlanModal
           open={planOpen}

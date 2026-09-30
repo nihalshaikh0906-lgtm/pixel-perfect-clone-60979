@@ -11,7 +11,7 @@ function str(v: unknown) {
 /** Display name (uppercase) from user metadata, falling back to a cleaned email local part. */
 export function brokerName(user: UserLike) {
   const meta = user?.user_metadata ?? {};
-  const fromMeta = str(meta["full_name"]) ?? str(meta["name"]) ?? str(meta["display_name"]);
+  const fromMeta = str(meta["first_name"]) ?? str(meta["full_name"]) ?? str(meta["name"]) ?? str(meta["display_name"]);
   if (fromMeta) return fromMeta.toUpperCase();
   const local = (user?.email ?? "").split("@")[0] ?? "";
   const cleaned = local.replace(/\d+/g, "").replace(/[._\-+]+/g, " ").trim();
