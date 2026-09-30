@@ -301,7 +301,7 @@ function Dossier() {
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Sparkles className="size-4 text-primary" /> AI Client Summary
             </h2>
-            <dl className="mt-4 space-y-3 text-sm">
+            <dl className="mt-4 space-y-3 text-[15px]">
               <Field label="Budget" value={`${aed(client?.budget_min_aed)} – ${aed(client?.budget_max_aed)}`} />
               <Field label="Nationality" value={client?.nationality ?? "—"} />
               <Field label="Intent" value={client?.purpose ?? "—"} />
@@ -311,10 +311,10 @@ function Dossier() {
               <Field label="Phone" value={client?.phone ?? "—"} />
             </dl>
             {client?.notes ? (
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{client.notes}</p>
+              <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">{client.notes}</p>
             ) : null}
             {client?.ai_summary ? (
-              <p className="mt-4 whitespace-pre-line rounded-lg border border-border bg-secondary/40 p-3 text-sm text-muted-foreground">
+              <p className="mt-4 whitespace-pre-line rounded-lg border border-border bg-secondary/40 p-3 text-[15px] text-muted-foreground">
                 {client.ai_summary}
               </p>
             ) : null}
