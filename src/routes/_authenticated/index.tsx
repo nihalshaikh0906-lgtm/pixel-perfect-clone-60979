@@ -185,31 +185,13 @@ function CommandHub() {
     <div className="min-h-screen">
       <TopBar />
       <main className="mx-auto max-w-[1500px] px-6 py-10">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-2xl">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-              <h1 className="font-display text-5xl font-semibold">
-                {clock ? dubaiGreeting(clock.hour) : "Welcome"}
-                {name ? `, ${name.split(" ")[0]}` : ""}
-              </h1>
-              {clock ? (
-                <span className="metric text-sm text-muted-foreground">
-                  GST {clock.label} • Dubai
-                </span>
-              ) : null}
-            </div>
-            <p className="mt-4 font-light text-muted-foreground">
-              {clients.length} active leads in your book • {hot} flagged hot by the AI. Market scan
-              updated {timeAgo(data?.inventoryUpdatedAt)}.
-            </p>
-          </div>
-          <div className="panel flex items-center gap-3 px-5 py-4">
+        <div className="flex justify-end">
+          <div className="panel flex items-center gap-3 px-5 py-3">
             <Database className="size-5 text-primary" />
             <div>
-              <p className="font-semibold">Inventory sync</p>
+              <p className="text-xs font-semibold uppercase tracking-wider">Inventory sync</p>
               <p className="metric text-sm text-muted-foreground">
-                {(data?.units ?? 0).toLocaleString("en-US")} units · updated{" "}
-                {timeAgo(data?.inventoryUpdatedAt)}
+                {(data?.units ?? 0).toLocaleString("en-US")} units · {clients.length} leads · {hot} hot
               </p>
             </div>
           </div>
