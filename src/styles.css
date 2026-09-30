@@ -155,3 +155,10 @@
 @keyframes gold-pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 oklch(0.74 0.06 75 / 0.5); } 50% { opacity: .7; box-shadow: 0 0 0 6px oklch(0.74 0.06 75 / 0); } }
 
 @utility gold-pulse { animation: gold-pulse 2.4s ease-in-out infinite; }
+
+:root {
+  --silk: #faf8f5;
+  --obsidian: #1c1917;
+  --champagne: #c5a880;
+  --sand: #eae4dc;
+}

@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { setRemember } from "@/lib/remember";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => ({ mode: s["mode"] === "signup" ? ("signup" as const) : undefined }),
   head: () => ({
     meta: [
       { title: "Sign in · PropFlow" },
@@ -33,7 +35,9 @@ const COUNTRY_CODES = ["+971", "+966", "+974", "+965", "+968", "+973", "+91", "+
 
 function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const search = Route.useSearch();
+  const [mode, setMode] = useState<"signin" | "signup">(search.mode ?? "signin");
+  const [remember, setRem] = useState(true);
   const [firstName, setFirstName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -82,6 +86,7 @@ function LoginPage() {
       setLoading(false);
       if (e) return setError(e.message);
     }
+    setRemember(remember);
     await router.invalidate();
     router.navigate({ to: "/", replace: true });
   }
@@ -154,6 +159,11 @@ function LoginPage() {
               </div>
             </div>
           ) : null}
+
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+            <input type="checkbox" checked={remember} onChange={(e) => setRem(e.target.checked)} className="size-4 accent-primary" />
+            Remember my session (stay logged in automatically)
+          </label>
 
           {error ? (
             <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
