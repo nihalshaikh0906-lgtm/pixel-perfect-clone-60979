@@ -16,13 +16,22 @@ const ZONE =
 export function ProfileWidget() {
   const profile = useBrokerProfile();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const queryClient = useQueryClient();
   if (!profile) return null;
+  async function logout() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    router.navigate({ to: "/welcome", replace: true });
+  }
   return (
     <>
+      <div className="fixed bottom-6 left-6 z-50 flex items-center gap-3 rounded-full border border-border bg-card/90 p-2 pr-4 shadow-md backdrop-blur-md">
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-8 left-8 z-50 flex items-center gap-3 rounded-full border border-border bg-card/90 p-2 pr-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+        className="flex items-center gap-3"
       >
         <span className="grid size-10 place-items-center rounded-full border border-border bg-secondary text-sm font-bold text-foreground">
           {profile.name.slice(0, 2)}
@@ -30,6 +39,10 @@ export function ProfileWidget() {
         <span className="text-[11px] font-bold uppercase tracking-widest text-foreground">{profile.name}</span>
         <Settings size={14} className="text-muted-foreground" />
       </button>
+      <button type="button" onClick={logout} className="border-l border-border pl-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground">
+        Log out
+      </button>
+      </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border-border bg-background p-8 shadow-2xl [&>button]:hidden">
           <AccountForm onClose={() => setOpen(false)} />
@@ -125,7 +138,7 @@ function AccountForm({ onClose }: { onClose: () => void }) {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    router.navigate({ to: "/login", replace: true });
+    router.navigate({ to: "/welcome", replace: true });
   }
 
   const field = (label: string, key: keyof typeof form, type = "text") => (
