@@ -1,10 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { FileDown, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { TopBar } from "@/components/TopBar";
 import { supabase } from "@/integrations/supabase/client";
 import { aed } from "@/lib/format";
+import { useBrokerProfile } from "@/lib/broker";
+import { downloadPdf } from "@/lib/pdf";
+import { marketReport } from "@/lib/research.functions";
 
 export const Route = createFileRoute("/_authenticated/market")({
   head: () => ({
@@ -45,6 +51,23 @@ function MarketPage() {
     },
   });
 
+  const runReport = useServerFn(marketReport);
+  const broker = useBrokerProfile();
+  const [report, setReport] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const makeReport = async () => {
+    if (!data) return;
+    setBusy(true);
+    try {
+      const r = await runReport({ data: { rows: data } });
+      setReport(r.text);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <TopBar />
@@ -53,6 +76,19 @@ function MarketPage() {
         <p className="mt-1 text-sm text-muted-foreground">Top areas by available supply in a sample of up to 1,000 units from your inventory.</p>
         {error ? <p className="mt-6 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">{(error as Error).message}</p> : null}
         {isLoading ? <p className="mt-6 flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Analysing inventory…</p> : null}
+        {data ? (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button onClick={makeReport} disabled={busy} className="flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-xs font-medium uppercase tracking-wider text-primary-foreground disabled:opacity-50">
+              {busy ? <Loader2 className="size-3.5 animate-spin" /> : null} {busy ? "Writing report…" : "Write market report"}
+            </button>
+            {report ? (
+              <button onClick={() => downloadPdf(report, broker)} className="flex items-center gap-2 rounded-full border border-border px-5 py-2 text-xs uppercase tracking-wider hover:bg-secondary">
+                <FileDown className="size-3.5" /> Download as PDF
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+        {report ? <div className="panel mt-4 whitespace-pre-wrap p-6 text-[15px] leading-[1.7]">{report.replace(/[*#]/g, "")}</div> : null}
         {data ? (
           <div className="panel mt-6 overflow-x-auto">
             <table className="w-full text-sm">
