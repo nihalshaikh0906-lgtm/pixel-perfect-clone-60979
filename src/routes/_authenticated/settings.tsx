@@ -55,27 +55,27 @@ function SettingsPage() {
     });
   }, []);
 
-  async function upload(file: File) {
-    if (!file.type.startsWith("image/")) return toast.error("Please choose an image file.");
-    if (file.size > 2 * 1024 * 1024) return toast.error("Logo must be under 2 MB.");
+  async function upload(file: File): Promise<void> {
+    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2 MB."); return; }
     setUploading(true);
     const ext = file.name.split(".").pop() || "png";
     const path = `${userId}/logo-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("broker-logos").upload(path, file, { upsert: true, contentType: file.type });
     if (error) {
       setUploading(false);
-      return toast.error(`Upload failed: ${error.message}`);
+      { toast.error(`Upload failed: ${error.message}`); return; }
     }
     const { error: e2 } = await supabase.auth.updateUser({ data: { company_logo_path: path } });
     setUploading(false);
-    if (e2) return toast.error(e2.message);
+    if (e2) { toast.error(e2.message); return; }
     if (logoPath) void supabase.storage.from("broker-logos").remove([logoPath]);
     setLogoPath(path);
     setLogoPreview(URL.createObjectURL(file));
     toast.success("Logo saved");
   }
 
-  async function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     setSaving(true);
     const emailChanged = form.email.trim() && form.email.trim() !== origEmail;
@@ -84,7 +84,7 @@ function SettingsPage() {
       data: { company_name: form.company.trim(), first_name: form.name.trim(), phone: form.phone.trim() },
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(emailChanged ? "Saved. Check your new inbox to confirm the email change." : "Profile saved");
     router.invalidate();
   }
