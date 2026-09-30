@@ -583,38 +583,54 @@ function ChatText({ text }: { text: string }) {
   );
 }
 
-async function downloadPdf(el: HTMLElement | null) {
-  if (!el) return;
+async function downloadPdf(content: string) {
   try {
-    const html2pdf = (await import("html2pdf.js")).default;
-    const wrap = document.createElement("div");
-    wrap.style.cssText = "padding:24px;font-family:'Plus Jakarta Sans',sans-serif;color:#1A1816;font-size:12px;line-height:1.6;background:#fff;width:720px";
-    const head = document.createElement("div");
-    head.style.cssText = "border-bottom:1px solid #B08D57;padding-bottom:10px;margin-bottom:16px;letter-spacing:0.18em;font-size:11px;font-weight:600;color:#8E7453";
-    head.textContent = "PROPFLOW PRIVATE CLIENT OFFICE • LUXURY DOSSIER";
-    const body = el.cloneNode(true) as HTMLElement;
-    body.querySelectorAll("td").forEach((td) => {
-      (td as HTMLElement).style.cssText = "border:1px solid #ddd3c6;padding:4px 8px;vertical-align:top";
-    });
-    body.querySelectorAll("table").forEach((t) => {
-      (t as HTMLElement).style.cssText = "border-collapse:collapse;width:100%;margin:6px 0";
-    });
-    const foot = document.createElement("div");
-    foot.style.cssText = "border-top:1px solid #ddd3c6;margin-top:20px;padding-top:8px;font-size:10px;color:#5C554E";
-    foot.textContent = `Generated ${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })} • Confidential — prepared for the named client only. Draft, subject to developer confirmation.`;
-    wrap.append(head, body, foot);
-    await html2pdf()
-      .set({
-        margin: 10,
-        filename: "PropFlow_Document_Draft.pdf",
-        image: { type: "jpeg", quality: 0.95 },
-        html2canvas: { scale: 2, backgroundColor: "#ffffff" },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      })
-      .from(wrap)
-      .save();
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(26, 24, 22);
+    doc.text("PROPFLOW | PRIVATE CLIENT DOSSIER", 15, 20);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(142, 116, 83);
+    doc.text(`CONFIDENTIAL CLIENT DOCUMENT • GENERATED ${new Date().toLocaleDateString("en-GB")}`, 15, 26);
+    doc.setDrawColor(220, 210, 200);
+    doc.setLineWidth(0.5);
+    doc.line(15, 29, 195, 29);
+    doc.setFontSize(10);
+    doc.setTextColor(40, 40, 40);
+    const clean = content
+      .replace(/^\s*\|?\s*:?-{2,}.*$/gm, "")
+      .replace(/^\s*\|(.*)\|\s*$/gm, (_m, row: string) => row.split("|").map((c) => c.trim()).join("   "))
+      .replace(/#{1,6}\s?/g, "")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/[^\x20-\x7E\n•–—]/g, "")
+      .replace(/\n{3,}/g, "\n\n");
+    const lines: string[] = doc.splitTextToSize(clean, 180);
+    let y = 36;
+    const pageH = doc.internal.pageSize.height;
+    for (const line of lines) {
+      if (y > pageH - 20) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, 15, y);
+      y += 6;
+    }
+    doc.save(`PropFlow_Document_${Date.now()}.pdf`);
   } catch (err) {
-    toast.error(`PDF export failed: ${(err as Error).message}`);
+    console.error("PDF generation failed:", err);
+    toast.error(`PDF export failed: ${(err as Error).message} — downloading as text instead.`);
+    const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `PropFlow_Document_${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 }
 
@@ -628,7 +644,7 @@ function AssistantBody({ text }: { text: string }) {
       {text.trim() ? (
         <button
           type="button"
-          onClick={() => downloadPdf(ref.current)}
+          onClick={() => downloadPdf(text)}
           className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-[#F4EFEA] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground hover:border-primary/60"
         >
           <FileDown className="size-3.5" /> Download as PDF
