@@ -44,8 +44,8 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
       </div>
       <div className="space-y-2 p-4">
         <div>
-          <h3 className="truncate text-base font-semibold">{row.project_name ?? "Project"}</h3>
-          <p className="truncate text-sm text-muted-foreground">
+          <h3 className="truncate font-display text-xl font-semibold">{row.project_name ?? "Project"}</h3>
+          <p className="truncate text-[15px] text-muted-foreground">
             {row.developer ?? row.district ?? "—"}
           </p>
         </div>

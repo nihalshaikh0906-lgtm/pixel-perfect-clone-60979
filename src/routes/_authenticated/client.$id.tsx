@@ -301,7 +301,7 @@ function Dossier() {
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Sparkles className="size-4 text-primary" /> AI Client Summary
             </h2>
-            <dl className="mt-4 space-y-3 text-sm">
+            <dl className="mt-4 space-y-3 text-[15px]">
               <Field label="Budget" value={`${aed(client?.budget_min_aed)} – ${aed(client?.budget_max_aed)}`} />
               <Field label="Nationality" value={client?.nationality ?? "—"} />
               <Field label="Intent" value={client?.purpose ?? "—"} />
@@ -311,10 +311,10 @@ function Dossier() {
               <Field label="Phone" value={client?.phone ?? "—"} />
             </dl>
             {client?.notes ? (
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{client.notes}</p>
+              <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">{client.notes}</p>
             ) : null}
             {client?.ai_summary ? (
-              <p className="mt-4 whitespace-pre-line rounded-lg border border-border bg-secondary/40 p-3 text-sm text-muted-foreground">
+              <p className="mt-4 whitespace-pre-line rounded-lg border border-border bg-secondary/40 p-3 text-[15px] text-muted-foreground">
                 {client.ai_summary}
               </p>
             ) : null}
@@ -401,7 +401,7 @@ function Dossier() {
                   {m.role === "user" ? <User className="size-4" /> : <Bot className="size-4" />}
                 </span>
                 <div
-                  className={`max-w-[78%] rounded-2xl border px-4 py-3 text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl border px-4 py-3 text-[16px] leading-[1.65] ${
                     m.role === "user"
                       ? "border-primary/40 bg-primary/15"
                       : "border-border bg-secondary/45"
@@ -411,17 +411,7 @@ function Dossier() {
                     {m.role === "user" ? "You" : "Investment Engineer"} ·{" "}
                     {new Date(m.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
-                  <p className="whitespace-pre-line">
-                    {m.content.split(/(\*\*[^*]+\*\*)/g).map((part, k) =>
-                      part.startsWith("**") && part.endsWith("**") ? (
-                        <strong key={k} className="font-semibold text-foreground">
-                          {part.slice(2, -2)}
-                        </strong>
-                      ) : (
-                        <span key={k}>{part}</span>
-                      ),
-                    )}
-                  </p>
+                  <ChatText text={m.content} />
                 </div>
               </div>
             ))}
@@ -479,6 +469,50 @@ function Field({ label, value }: { label: string; value: string }) {
     <div className="flex justify-between gap-4 border-b border-border/60 pb-2">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="text-right font-medium">{value}</dd>
+    </div>
+  );
+}
+
+function inlineBold(s: string) {
+  return s.split(/(\*\*[^*]+\*\*)/g).map((part, k) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={k} className="font-semibold text-foreground">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <span key={k}>{part}</span>
+    ),
+  );
+}
+
+function ChatText({ text }: { text: string }) {
+  const blocks: ({ kind: "p"; text: string } | { kind: "ol"; items: { n: string; text: string }[] })[] = [];
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (!line) continue;
+    const m = line.match(/^(\d+)[.)]\s+(.*)$/);
+    const last = blocks[blocks.length - 1];
+    if (m) {
+      if (last?.kind === "ol") last.items.push({ n: m[1] ?? "", text: m[2] ?? "" });
+      else blocks.push({ kind: "ol", items: [{ n: m[1] ?? "", text: m[2] ?? "" }] });
+    } else blocks.push({ kind: "p", text: line });
+  }
+  return (
+    <div className="space-y-2">
+      {blocks.map((b, i) =>
+        b.kind === "p" ? (
+          <p key={i}>{inlineBold(b.text)}</p>
+        ) : (
+          <ol key={i} className="my-3 space-y-3">
+            {b.items.map((it, j) => (
+              <li key={j} className="flex gap-2.5">
+                <span className="w-5 shrink-0 text-right font-bold text-primary">{it.n}.</span>
+                <span className="min-w-0">{inlineBold(it.text)}</span>
+              </li>
+            ))}
+          </ol>
+        ),
+      )}
     </div>
   );
 }
