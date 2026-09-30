@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
@@ -24,9 +27,24 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -72,7 +90,10 @@ const AuthenticatedClientIdRoute = AuthenticatedClientIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
+  '/about': typeof AboutRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/welcome': typeof WelcomeRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/market': typeof AuthenticatedMarketRoute
@@ -82,7 +103,10 @@ export interface FileRoutesByFullPath {
   '/client/$id': typeof AuthenticatedClientIdRoute
 }
 export interface FileRoutesByTo {
+  '/about': typeof AboutRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/welcome': typeof WelcomeRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/market': typeof AuthenticatedMarketRoute
@@ -95,7 +119,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/welcome': typeof WelcomeRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
@@ -109,7 +136,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/faq'
     | '/login'
+    | '/pricing'
     | '/welcome'
     | '/inventory'
     | '/market'
@@ -119,7 +149,10 @@ export interface FileRouteTypes {
     | '/client/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/about'
+    | '/faq'
     | '/login'
+    | '/pricing'
     | '/welcome'
     | '/inventory'
     | '/market'
@@ -131,7 +164,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/about'
+    | '/faq'
     | '/login'
+    | '/pricing'
     | '/welcome'
     | '/_authenticated/inventory'
     | '/_authenticated/market'
@@ -144,7 +180,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  FaqRoute: typeof FaqRoute
   LoginRoute: typeof LoginRoute
+  PricingRoute: typeof PricingRoute
   WelcomeRoute: typeof WelcomeRoute
   ApiChatRoute: typeof ApiChatRoute
 }
@@ -158,11 +197,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/welcome': {
@@ -247,7 +307,10 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
+  FaqRoute: FaqRoute,
   LoginRoute: LoginRoute,
+  PricingRoute: PricingRoute,
   WelcomeRoute: WelcomeRoute,
   ApiChatRoute: ApiChatRoute,
 }
