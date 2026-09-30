@@ -384,3 +384,18 @@ export async function runWrapUp(transcript: ChatMsg[], clientName: string): Prom
   });
   return String(completion?.choices?.[0]?.message?.content ?? "").trim();
 }
+
+/** One-shot DeepSeek call used by news, reports and other writing tasks. */
+export async function aiWrite(system: string, user: string, maxTokens = 1200): Promise<string> {
+  loadAiConfig();
+  const completion = await chatCompletion({
+    temperature: 0.3,
+    max_tokens: maxTokens,
+    thinking: { type: "disabled" },
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+  });
+  return String(completion?.choices?.[0]?.message?.content ?? "").trim();
+}

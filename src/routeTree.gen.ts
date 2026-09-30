@@ -17,6 +17,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
+import { Route as AuthenticatedListingsRouteImport } from './routes/_authenticated/listings'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedNewsRouteImport } from './routes/_authenticated/news'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -62,6 +63,11 @@ const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedListingsRoute = AuthenticatedListingsRouteImport.update({
+  id: '/listings',
+  path: '/listings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
   id: '/market',
   path: '/market',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/welcome': typeof WelcomeRoute
   '/inventory': typeof AuthenticatedInventoryRoute
+  '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/welcome': typeof WelcomeRoute
   '/inventory': typeof AuthenticatedInventoryRoute
+  '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/welcome': typeof WelcomeRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
+  '/_authenticated/listings': typeof AuthenticatedListingsRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/news': typeof AuthenticatedNewsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/welcome'
     | '/inventory'
+    | '/listings'
     | '/market'
     | '/news'
     | '/settings'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/welcome'
     | '/inventory'
+    | '/listings'
     | '/market'
     | '/news'
     | '/settings'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/welcome'
     | '/_authenticated/inventory'
+    | '/_authenticated/listings'
     | '/_authenticated/market'
     | '/_authenticated/news'
     | '/_authenticated/settings'
@@ -246,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInventoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/listings': {
+      id: '/_authenticated/listings'
+      path: '/listings'
+      fullPath: '/listings'
+      preLoaderRoute: typeof AuthenticatedListingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/market': {
       id: '/_authenticated/market'
       path: '/market'
@@ -286,6 +305,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
+  AuthenticatedListingsRoute: typeof AuthenticatedListingsRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedNewsRoute: typeof AuthenticatedNewsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -295,6 +315,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
+  AuthenticatedListingsRoute: AuthenticatedListingsRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedNewsRoute: AuthenticatedNewsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,

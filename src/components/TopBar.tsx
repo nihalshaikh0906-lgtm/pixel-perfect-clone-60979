@@ -39,6 +39,9 @@ export function TopBar({
           <Link to="/inventory" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
             Inventory
           </Link>
+          <Link to="/listings" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
+            My Listings
+          </Link>
           <Link to="/market" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
             Market Intel
           </Link>
