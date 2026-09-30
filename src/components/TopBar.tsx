@@ -1,10 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { Link, useRouter } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { useBrokerProfile } from "@/lib/broker";
 
 const NAV_PILL =
@@ -21,17 +17,7 @@ export function TopBar({
   subtitle?: ReactNode;
   right?: ReactNode;
 }) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const profile = useBrokerProfile();
-
-  async function signOut() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    router.navigate({ to: "/login", replace: true });
-  }
-
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1720px] flex-wrap items-center gap-4 px-6 py-3">
@@ -40,7 +26,7 @@ export function TopBar({
             PROPFLOW<span className="size-1.5 rounded-full bg-primary" />
           </Link>
           <span className="mx-3 hidden h-5 border-r border-border lg:block" />
-          <AgencyBadge />
+          <AgencyBadge company={profile?.company ?? null} />
         </div>
 
         <nav className="order-last flex w-full flex-wrap items-center justify-center gap-1 xl:order-none xl:w-auto xl:flex-1">
@@ -68,17 +54,22 @@ export function TopBar({
 
         <div className="ml-auto flex items-center gap-4 xl:ml-0">
           {profile ? (
-            <div className="text-right leading-tight">
+            <Link
+              to="/settings"
+              title="Account settings"
+              className="flex items-center gap-3 rounded-full border border-border px-3 py-1.5 text-right leading-tight transition-colors hover:border-primary/60"
+            >
+              <span className="grid size-8 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                {profile.name.slice(0, 2)}
+              </span>
+              <span>
               <p className="text-sm font-bold uppercase tracking-wider">{profile.name}</p>
               <p className="text-xs text-muted-foreground">
                 {[profile.phone, profile.instagram].filter(Boolean).join(" · ")}
               </p>
-            </div>
+              </span>
+            </Link>
           ) : null}
-          <Button variant="ghost" size="sm" onClick={signOut} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            <LogOut className="size-4" />
-            Log out
-          </Button>
         </div>
       </div>
     </header>
@@ -88,13 +79,14 @@ export function TopBar({
 const AGENCY_KEY = "propflow.agency";
 const DEFAULT_AGENCY = "Private Client Office";
 
-function AgencyBadge() {
+function AgencyBadge({ company }: { company: string | null }) {
   const [agency, setAgency] = useState(DEFAULT_AGENCY);
   const [editing, setEditing] = useState(false);
   useEffect(() => {
     const saved = localStorage.getItem(AGENCY_KEY);
-    if (saved) setAgency(saved);
-  }, []);
+    if (company) setAgency(company);
+    else if (saved) setAgency(saved);
+  }, [company]);
 
   function commit(value: string) {
     const v = value.trim() || DEFAULT_AGENCY;
