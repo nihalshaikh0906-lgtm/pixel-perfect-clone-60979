@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, CarFront, FileText, Loader2, MessageCircle, Star } from "lucide-react";
+import { BookOpen, CarFront, FileText, Receipt, Loader2, MessageCircle, Star } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+
+import { PaymentPlanModal } from "@/components/PaymentPlanModal";
+import { PhotoLightbox } from "@/components/PhotoLightbox";
 
 import { PackOverview } from "@/components/PackOverview";
 import type { MatchRow } from "@/components/UnitCard";
@@ -33,6 +37,8 @@ export function PropertyPackDrawer({
   clientPhone: string | null;
   onClose: () => void;
 }) {
+  const [photoIndex, setPhotoIndex] = useState<number | null>(null);
+  const [planOpen, setPlanOpen] = useState(false);
   const { data, isLoading, error } = useQuery({
     queryKey: ["pack", unit?.project_id, unit?.unit_id],
     enabled: !!unit,
@@ -130,6 +136,14 @@ export function PropertyPackDrawer({
             >
               <FileText className="size-4" /> View Floorplan
             </Button>
+            <Button
+              variant="outline"
+              className="col-span-2 border-primary/50"
+              onClick={() => setPlanOpen(true)}
+              disabled={!Array.isArray(data?.payment_plans) || !data.payment_plans.length}
+            >
+              <Receipt className="size-4" /> View Payment Plan
+            </Button>
             <Button variant="outline" onClick={copyPitch}>
               <MessageCircle className="size-4" /> Copy Pitch & WhatsApp
             </Button>
@@ -141,14 +155,21 @@ export function PropertyPackDrawer({
           {photos.length ? (
             <Section title="Photos">
               <div className="grid grid-cols-3 gap-2">
-                {photos.slice(0, 9).map((url) => (
-                  <img
+                {photos.slice(0, 9).map((url, i) => (
+                  <button
                     key={url}
-                    src={url}
-                    alt=""
-                    loading="lazy"
-                    className="h-24 w-full rounded-lg object-cover"
-                  />
+                    type="button"
+                    onClick={() => setPhotoIndex(i)}
+                    className="overflow-hidden rounded-lg"
+                    aria-label={`Open photo ${i + 1}`}
+                  >
+                    <img
+                      src={url}
+                      alt=""
+                      loading="lazy"
+                      className="h-24 w-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                  </button>
                 ))}
               </div>
             </Section>
@@ -251,6 +272,21 @@ export function PropertyPackDrawer({
             </Section>
           ) : null}
         </div>
+        <PhotoLightbox
+          photos={photos}
+          index={photoIndex}
+          title={unit?.project_name ?? "Property"}
+          onIndex={setPhotoIndex}
+          onClose={() => setPhotoIndex(null)}
+        />
+        <PaymentPlanModal
+          open={planOpen}
+          onOpenChange={setPlanOpen}
+          plans={Array.isArray(data?.payment_plans) ? data.payment_plans : []}
+          price={unit?.price_aed ?? null}
+          handover={unit?.handover_date ?? null}
+          projectName={unit?.project_name ?? "Property"}
+        />
       </SheetContent>
     </Sheet>
   );
