@@ -290,7 +290,7 @@ function CommandHub() {
                     </span>
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate font-semibold">{client.full_name}</p>
+                        <p className="truncate font-display text-xl font-semibold">{client.full_name}</p>
                         <span className="rounded-full border border-primary/40 px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-primary">
                           {LANE_LABEL[laneOf(client)]}
                         </span>
@@ -307,11 +307,11 @@ function CommandHub() {
                           <span className="text-xs capitalize text-muted-foreground">{message.channel}</span>
                         ) : null}
                       </div>
-                      <p className="text-sm font-medium">
+                      <p className="text-[15px] font-medium">
                         {aed(client.budget_min_aed)} – {aed(client.budget_max_aed)}
                       </p>
                       {client.notes || message?.body ? (
-                        <p className="line-clamp-1 text-sm text-muted-foreground">
+                        <p className="line-clamp-1 text-[15px] text-muted-foreground">
                           {client.notes ?? message?.body}
                         </p>
                       ) : null}
@@ -326,7 +326,7 @@ function CommandHub() {
                         <p className="truncate text-sm text-destructive">{(mq.error as Error).message}</p>
                       ) : m ? (
                         <>
-                          <p className="truncate text-sm font-semibold">
+                          <p className="truncate font-display text-lg font-semibold">
                             {m.project_name ?? "Project"}
                             {m.unit_number ? ` • ${m.unit_number}` : ""}
                           </p>

@@ -401,7 +401,7 @@ function Dossier() {
                   {m.role === "user" ? <User className="size-4" /> : <Bot className="size-4" />}
                 </span>
                 <div
-                  className={`max-w-[78%] rounded-2xl border px-4 py-3 text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl border px-4 py-3 text-[16px] leading-[1.65] ${
                     m.role === "user"
                       ? "border-primary/40 bg-primary/15"
                       : "border-border bg-secondary/45"
@@ -411,17 +411,8 @@ function Dossier() {
                     {m.role === "user" ? "You" : "Investment Engineer"} ·{" "}
                     {new Date(m.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
-                  <p className="whitespace-pre-line">
-                    {m.content.split(/(\*\*[^*]+\*\*)/g).map((part, k) =>
-                      part.startsWith("**") && part.endsWith("**") ? (
-                        <strong key={k} className="font-semibold text-foreground">
-                          {part.slice(2, -2)}
-                        </strong>
-                      ) : (
-                        <span key={k}>{part}</span>
-                      ),
-                    )}
-                  </p>
+                  <ChatText text={m.content} />
+                </div>
                 </div>
               </div>
             ))}
