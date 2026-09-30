@@ -70,38 +70,38 @@ function AccountForm({ onClose }: { onClose: () => void }) {
     });
   }, []);
 
-  async function uploadLogo(file: File): Promise<unknown> {
-    if (!file.type.startsWith("image/")) return toast.error("Please choose an image file.");
-    if (file.size > 2 * 1024 * 1024) return toast.error("Logo must be under 2 MB.");
+  async function uploadLogo(file: File): Promise<void> {
+    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2 MB."); return; }
     setBusy("logo");
     const path = `${userId}/logo-${Date.now()}.${file.name.split(".").pop() || "png"}`;
     const { error } = await supabase.storage.from("broker-logos").upload(path, file, { upsert: true, contentType: file.type });
-    if (error) { setBusy(null); return toast.error(`Upload failed: ${error.message}`); }
+    if (error) { setBusy(null); { toast.error(`Upload failed: ${error.message}`); return; } }
     const { error: e2 } = await supabase.auth.updateUser({ data: { company_logo_path: path } });
     setBusy(null);
-    if (e2) return toast.error(e2.message);
+    if (e2) { toast.error(e2.message); return; }
     if (logoPath) void supabase.storage.from("broker-logos").remove([logoPath]);
     setLogoPath(path);
     setLogoPreview(URL.createObjectURL(file));
     toast.success("Logo saved");
   }
 
-  async function uploadTemplate(file: File): Promise<unknown> {
-    if (file.size > 10 * 1024 * 1024) return toast.error("Template must be under 10 MB.");
+  async function uploadTemplate(file: File): Promise<void> {
+    if (file.size > 10 * 1024 * 1024) { toast.error("Template must be under 10 MB."); return; }
     setBusy("tpl");
     const safe = file.name.replace(/[^\w.\-]+/g, "_");
     const path = `${userId}/templates/${Date.now()}-${safe}`;
     const { error } = await supabase.storage.from("broker-logos").upload(path, file, { contentType: file.type || "application/octet-stream" });
-    if (error) { setBusy(null); return toast.error(`Upload failed: ${error.message}`); }
+    if (error) { setBusy(null); { toast.error(`Upload failed: ${error.message}`); return; } }
     const next = [...templates, path];
     const { error: e2 } = await supabase.auth.updateUser({ data: { pdf_template_paths: next } });
     setBusy(null);
-    if (e2) return toast.error(e2.message);
+    if (e2) { toast.error(e2.message); return; }
     setTemplates(next);
     toast.success("Template uploaded");
   }
 
-  async function save(): Promise<unknown> {
+  async function save(): Promise<void> {
     setSaving(true);
     const email = form.email.trim();
     const emailChanged = email && email !== origEmail;
@@ -115,7 +115,7 @@ function AccountForm({ onClose }: { onClose: () => void }) {
       },
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(emailChanged ? "Saved. Check your new inbox to confirm the email change." : "Profile saved");
     router.invalidate();
     onClose();
