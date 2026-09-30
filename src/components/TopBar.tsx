@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, LogOut } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,5 +59,22 @@ export function TopBar({
         </Button>
       </div>
     </header>
+  );
+}
+
+function GstClock() {
+  const [now, setNow] = useState<string | null>(null);
+  useEffect(() => {
+    const fmt = () =>
+      new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Dubai", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    setNow(fmt());
+    const t = setInterval(() => setNow(fmt()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span className="tabular-nums">
+      <span className="eyebrow mr-1.5">GST UTC+4</span>
+      {now ?? "--:--:--"}
+    </span>
   );
 }

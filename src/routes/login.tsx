@@ -11,9 +11,9 @@ export const Route = createFileRoute("/login")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Sign in · Deal OS" },
+      { title: "Sign in · PropFlow" },
       { name: "description", content: "Broker sign-in for the Real Estate AI Deal OS command hub." },
-      { property: "og:title", content: "Sign in · Deal OS" },
+      { property: "og:title", content: "Sign in · PropFlow" },
       {
         property: "og:description",
         content: "Broker sign-in for the Real Estate AI Deal OS command hub.",
@@ -53,7 +53,7 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="panel w-full max-w-md p-8">
-        <p className="eyebrow">Deal OS · Secure Access</p>
+        <p className="eyebrow">PropFlow · Private Access</p>
         <h1 className="mt-3 text-3xl font-semibold">Broker sign-in</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Use the credentials for your inventory workspace.
