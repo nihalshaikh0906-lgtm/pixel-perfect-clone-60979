@@ -37,6 +37,10 @@ export function useBrokerProfile() {
   const [profile, setProfile] = useState<BrokerProfile | null>(null);
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setProfile(brokerProfile(data.user)));
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "USER_UPDATED" && session?.user) setProfile(brokerProfile(session.user));
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
   return profile;
 }
