@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, LogOut } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,19 +29,25 @@ export function TopBar({
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1500px] items-center gap-4 px-6 py-4">
+      <div className="mx-auto flex max-w-[1720px] items-center gap-5 px-6 py-4">
+        <Link to="/" className="flex items-baseline gap-1 font-display text-2xl tracking-[0.25em]">
+          PROPFLOW<span className="size-1.5 rounded-full bg-primary" />
+        </Link>
         {back ? (
-          <Button asChild variant="outline" size="sm" className="rounded-full">
+          <Button asChild variant="outline" size="sm" className="rounded-full border-primary/40">
             <Link to="/">
               <ArrowLeft className="size-4" />
-              Command Hub
+              Cockpit
             </Link>
           </Button>
-        ) : (
-          <span className="eyebrow rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-primary">
-            Deal OS · Command Hub
+        ) : null}
+        <div className="hidden items-center gap-4 border-l border-border pl-5 text-xs text-muted-foreground md:flex">
+          <GstClock />
+          <span className="flex items-center gap-2">
+            <span className="gold-pulse size-2 rounded-full bg-primary" />
+            AI Market Scanner Active
           </span>
-        )}
+        </div>
         <div className="min-w-0 flex-1">
           {title ? <div className="truncate text-lg font-semibold">{title}</div> : null}
           {subtitle ? <div className="eyebrow truncate">{subtitle}</div> : null}
@@ -53,5 +59,22 @@ export function TopBar({
         </Button>
       </div>
     </header>
+  );
+}
+
+function GstClock() {
+  const [now, setNow] = useState<string | null>(null);
+  useEffect(() => {
+    const fmt = () =>
+      new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Dubai", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    setNow(fmt());
+    const t = setInterval(() => setNow(fmt()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span className="tabular-nums">
+      <span className="eyebrow mr-1.5">GST UTC+4</span>
+      {now ?? "--:--:--"}
+    </span>
   );
 }

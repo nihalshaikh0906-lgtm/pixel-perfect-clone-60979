@@ -9,12 +9,12 @@ import { aed, initials, timeAgo } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "Command Hub · Deal OS" },
+      { title: "Cockpit · PropFlow" },
       {
         name: "description",
         content: "Live Dubai inventory, hot leads and AI-qualified pipeline in one command hub.",
       },
-      { property: "og:title", content: "Command Hub · Deal OS" },
+      { property: "og:title", content: "Cockpit · PropFlow" },
       {
         property: "og:description",
         content: "Live Dubai inventory, hot leads and AI-qualified pipeline in one command hub.",
