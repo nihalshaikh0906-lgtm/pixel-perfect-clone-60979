@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
+import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
 
@@ -29,6 +31,16 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
+  id: '/market',
+  path: '/market',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -43,11 +55,15 @@ const AuthenticatedClientIdRoute = AuthenticatedClientIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
+  '/market': typeof AuthenticatedMarketRoute
   '/api/chat': typeof ApiChatRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
+  '/market': typeof AuthenticatedMarketRoute
   '/api/chat': typeof ApiChatRoute
   '/': typeof AuthenticatedIndexRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
@@ -56,19 +72,24 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
+  '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/api/chat' | '/client/$id'
+  fullPaths:
+    '/' | '/login' | '/inventory' | '/market' | '/api/chat' | '/client/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/api/chat' | '/' | '/client/$id'
+  to: '/login' | '/inventory' | '/market' | '/api/chat' | '/' | '/client/$id'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/inventory'
+    | '/_authenticated/market'
     | '/api/chat'
     | '/_authenticated/'
     | '/_authenticated/client/$id'
@@ -103,6 +124,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/inventory': {
+      id: '/_authenticated/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/market': {
+      id: '/_authenticated/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof AuthenticatedMarketRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -121,11 +156,15 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
+  AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedClientIdRoute: typeof AuthenticatedClientIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
+  AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedClientIdRoute: AuthenticatedClientIdRoute,
 }
