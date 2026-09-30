@@ -17,7 +17,7 @@ export function TopBar({
   subtitle?: ReactNode;
   right?: ReactNode;
 }) {
-
+  const profile = useBrokerProfile();
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1720px] flex-wrap items-center gap-4 px-6 py-3">
