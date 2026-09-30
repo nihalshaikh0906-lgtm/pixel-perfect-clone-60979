@@ -413,7 +413,6 @@ function Dossier() {
                   </p>
                   <ChatText text={m.content} />
                 </div>
-                </div>
               </div>
             ))}
             {askMutation.isPending ? (
