@@ -7,9 +7,9 @@ export const Route = createFileRoute("/_authenticated/news")({
   head: () => ({
     meta: [
       { title: "Morning Briefing · PropFlow" },
-      { name: "description", content: "AI-curated daily Dubai real estate updates for brokers, refreshed every morning at 8:00 AM." },
+      { name: "description", content: "Daily real estate news for brokers, refreshed every morning at 8:00 AM Dubai time." },
       { property: "og:title", content: "Morning Briefing · PropFlow" },
-      { property: "og:description", content: "AI-curated daily Dubai real estate updates for brokers." },
+      { property: "og:description", content: "Daily real estate news for brokers." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -27,7 +27,7 @@ function NewsPage() {
       <TopBar />
       <main className="mx-auto max-w-[1400px] px-6 py-10">
         <h1 className="text-3xl uppercase text-foreground">Morning Briefing</h1>
-        <p className="mt-1 text-sm uppercase tracking-wider text-muted-foreground">AI-Curated Dubai Real Estate Updates</p>
+        <p className="mt-1 text-sm uppercase tracking-wider text-muted-foreground">Daily Real Estate News</p>
 
         {items.length === 0 ? (
           <div className="mt-8 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card px-6 py-16 text-center">
