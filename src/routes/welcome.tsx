@@ -32,7 +32,7 @@ function Landing() {
             <p className="mt-3 rounded-lg bg-[var(--silk)] p-3 text-[13px] text-[#5c554e]">Key catalyst: Blue Metro Line progress lifts interest in connected communities.</p>
             <p className="mt-4 text-[11px] text-[#5c554e]">Source: Dubai Land Department</p>
           </div>} />
-        <Step flip n="02" t="Comprehensive Inventory & Hybrid Satellite Verification" body="Toggle between 40,000+ developer units and your private secondary and rental stock. Open satellite maps live during client calls to inspect surroundings and road connectivity." preview={
+        <Step flip n="02" sub="Inventory & Maps" t="Comprehensive Inventory & Hybrid Satellite Verification" body="Toggle between 40,000+ developer units and your private secondary and rental stock. Open satellite maps live during client calls to inspect surroundings and road connectivity." preview={
           <div className={`${card} grid gap-4 sm:grid-cols-2`} style={shadow}>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--bronze)]">Sample unit</p>
@@ -46,7 +46,7 @@ function Landing() {
               <span className="absolute bottom-2 right-2 rounded bg-[var(--obsidian)]/60 px-1.5 text-[10px] text-[var(--silk)]">10 km</span>
             </div>
           </div>} />
-        <Step n="03" t="Rapid Lead Matching & 5-Point Tailored Pitch" body="Eliminate manual spreadsheets. Match budgets and criteria instantly, then generate tailored investor pitches in seconds." preview={
+        <Step n="03" sub="Matching & Pitch" t="Rapid Lead Matching & 5-Point Tailored Pitch" body="Eliminate manual spreadsheets. Match budgets and criteria instantly, then generate tailored investor pitches in seconds." preview={
           <div className={card} style={shadow}>
             <div className="flex items-center justify-between border-b border-[var(--obsidian)]/10 pb-3">
               <span className="font-medium">Sample client · 2BR, AED 2.5M</span>
@@ -58,7 +58,7 @@ function Landing() {
               ))}
             </ol>
           </div>} />
-        <Step flip n="04" t="White-Label Client Dossier Generation" body="Export presentation-grade PDFs with your own agency logo, contact details and payment milestone schedules — without mentioning PropFlow." preview={
+        <Step flip n="04" sub="Client Dossier" t="White-Label Client Dossier Generation" body="Export presentation-grade PDFs with your own agency logo, contact details and payment milestone schedules — without mentioning PropFlow." preview={
           <div className="mx-auto aspect-[1/1.414] w-full max-w-xs rounded-md border border-[var(--obsidian)]/10 bg-[var(--silk)] p-6" style={shadow}>
             <div className="flex items-center justify-between border-b border-[var(--obsidian)]/15 pb-3">
               <span className="text-[11px] font-semibold tracking-[0.2em]">YOUR AGENCY</span>
