@@ -54,7 +54,7 @@ function ListingsPage() {
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) return toast.error("Add a title");
+    if (!form.title.trim()) { toast.error("Add a title"); return; }
     setSaving(true);
     try {
       const id = await uid();
@@ -80,7 +80,7 @@ function ListingsPage() {
   const remove = async (l: Listing) => {
     const id = await uid();
     const { error: e2 } = await supabase.storage.from(BUCKET).remove([`${id}/listings/${l.id}.json`]);
-    if (e2) return toast.error(e2.message);
+    if (e2) { toast.error(e2.message); return; }
     qc.invalidateQueries({ queryKey: ["private-listings"] });
   };
 
