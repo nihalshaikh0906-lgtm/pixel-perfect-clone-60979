@@ -70,7 +70,7 @@ function AccountForm({ onClose }: { onClose: () => void }) {
     });
   }, []);
 
-  async function uploadLogo(file: File) {
+  async function uploadLogo(file: File): Promise<unknown> {
     if (!file.type.startsWith("image/")) return toast.error("Please choose an image file.");
     if (file.size > 2 * 1024 * 1024) return toast.error("Logo must be under 2 MB.");
     setBusy("logo");
@@ -86,12 +86,12 @@ function AccountForm({ onClose }: { onClose: () => void }) {
     toast.success("Logo saved");
   }
 
-  async function uploadTemplate(file: File) {
+  async function uploadTemplate(file: File): Promise<unknown> {
     if (file.size > 10 * 1024 * 1024) return toast.error("Template must be under 10 MB.");
     setBusy("tpl");
     const safe = file.name.replace(/[^\w.\-]+/g, "_");
     const path = `${userId}/templates/${Date.now()}-${safe}`;
-    const { error } = await supabase.storage.from("broker-logos").upload(path, file, { contentType: file.type || undefined });
+    const { error } = await supabase.storage.from("broker-logos").upload(path, file, { contentType: file.type || "application/octet-stream" });
     if (error) { setBusy(null); return toast.error(`Upload failed: ${error.message}`); }
     const next = [...templates, path];
     const { error: e2 } = await supabase.auth.updateUser({ data: { pdf_template_paths: next } });
@@ -101,7 +101,7 @@ function AccountForm({ onClose }: { onClose: () => void }) {
     toast.success("Template uploaded");
   }
 
-  async function save() {
+  async function save(): Promise<unknown> {
     setSaving(true);
     const email = form.email.trim();
     const emailChanged = email && email !== origEmail;
