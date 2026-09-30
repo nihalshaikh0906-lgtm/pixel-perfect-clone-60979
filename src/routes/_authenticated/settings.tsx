@@ -93,7 +93,7 @@ function SettingsPage() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    router.navigate({ to: "/login", replace: true });
+    router.navigate({ to: "/welcome", replace: true });
   }
 
   return (
