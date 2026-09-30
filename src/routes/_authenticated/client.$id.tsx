@@ -493,8 +493,8 @@ function ChatText({ text }: { text: string }) {
     const m = line.match(/^(\d+)[.)]\s+(.*)$/);
     const last = blocks[blocks.length - 1];
     if (m) {
-      if (last?.kind === "ol") last.items.push({ n: m[1], text: m[2] });
-      else blocks.push({ kind: "ol", items: [{ n: m[1], text: m[2] }] });
+      if (last?.kind === "ol") last.items.push({ n: m[1] ?? "", text: m[2] ?? "" });
+      else blocks.push({ kind: "ol", items: [{ n: m[1] ?? "", text: m[2] ?? "" }] });
     } else blocks.push({ kind: "p", text: line });
   }
   return (
