@@ -177,6 +177,17 @@
   animation: shimmer-sweep 1.8s linear infinite;
 }
 
+/* Line-by-line reveal for AI replies: each line drifts up and into focus */
+@utility chat-reveal {
+  opacity: 0;
+  animation: chat-reveal-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-reveal { animation: none; opacity: 1; }
+}
+
+
 :root {
   --silk: #faf8f5;
   --obsidian: #17140f;
