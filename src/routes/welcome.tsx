@@ -83,7 +83,7 @@ function Landing() {
               ))}
             </ul>
             <ul className="space-y-6">
-              {["Keep all your leads, properties, and daily news organized in one single dashboard.", "Let the AI instantly calculate payment milestones and generate your brochures.", "Read a quick summary of the market's most important updates each day."].map((x) => (
+              {["Keep all your leads, private properties, and daily news in one platform.", "Let the AI instantly calculate milestones and generate branded brochures.", "Read a quick summary of the market's most important updates each day."].map((x) => (
                 <li key={x} className="flex gap-3 text-[16px]"><Check className="mt-1 size-4 shrink-0 text-[var(--champagne)]" />{x}</li>
               ))}
             </ul>
@@ -113,12 +113,12 @@ function Landing() {
       {/* 5. Why PropFlow */}
       <section className="bg-[var(--burgundy)] px-6 py-24 text-[var(--silk)]">
         <div className="mx-auto max-w-6xl">
-          <h2 className="mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl">Why Dubai brokers choose PropFlow over generic software.</h2>
+          <h2 className="mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl">Why real estate professionals choose PropFlow over generic tools.</h2>
           <div className="mt-14 grid gap-10 md:grid-cols-3">
             {[
               ["Built just for Dubai.", "It comes pre-loaded with 40,000+ local off-plan units and local news."],
               ["Replaces your other tools.", "You can cancel your PDF builders, news subscriptions, and messy spreadsheets."],
-              ["Extremely easy to use.", "You don't need an IT department. If you can use a smartphone, you can use PropFlow."],
+              ["Extremely easy to use.", "No IT department needed. Ready to launch today."],
             ].map(([t, d]) => (
               <div key={t}>
                 <div className="mb-4 h-px w-10 bg-[var(--gold)]" />
