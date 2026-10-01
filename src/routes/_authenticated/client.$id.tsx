@@ -170,6 +170,7 @@ function Dossier() {
 
   const [pending, setPending] = useState(false);
   const [streaming, setStreaming] = useState(false);
+  const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
   async function ask(question: string) {
@@ -208,6 +209,7 @@ function Dossier() {
           if (!line.trim()) continue;
           const ev = JSON.parse(line);
           if (ev.type === "text") {
+            setResearching(false);
             if (!started) {
               started = true;
               setStreaming(true);
