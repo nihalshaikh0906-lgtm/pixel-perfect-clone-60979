@@ -158,6 +158,11 @@
 @keyframes orb-drift-a { 0%,100% { transform: translate(0,0); } 50% { transform: translate(18vw, 12vh); } }
 @keyframes orb-drift-b { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-16vw, -10vh); } }
 @keyframes gold-pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 oklch(0.74 0.06 75 / 0.5); } 50% { opacity: .7; box-shadow: 0 0 0 6px oklch(0.74 0.06 75 / 0); } }
+@keyframes chat-reveal-in {
+  0% { opacity: 0; transform: translateY(8px); filter: blur(3px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
 
 @utility gold-pulse { animation: gold-pulse 2.4s ease-in-out infinite; }
 
