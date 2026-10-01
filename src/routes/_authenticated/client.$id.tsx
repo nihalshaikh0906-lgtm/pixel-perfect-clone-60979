@@ -185,13 +185,13 @@ function Dossier() {
     setPending(true);
     setAskError(null);
     try {
-      const { data: sess } = await supabase.auth.getSession();
-      if (!sess.session?.access_token) throw new Error("Please sign in again to use the assistant.");
+      const sessionPromise = supabase.auth.getSession();
       const current = selectedUnit ?? units[0] ?? null;
       const context = buildContext();
-      // n8n reads `message`: keep the numbered on-screen options there, once.
+      const { data: sess } = await sessionPromise;
+      if (!sess.session?.access_token) throw new Error("Please sign in again to use the assistant.");
+      // n8n reads `message`: keep the numbered on-screen options there once, with no duplicate property list.
       const res = await fetch(CHAT_ENDPOINT, {
-        signal: AbortSignal.timeout(60000),
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -202,20 +202,6 @@ function Dossier() {
           message: context
             ? `${question}\n\n[On-screen options; option N = line N. Use these facts first. For a document or floor plan, answer with available details; offer a PDF rather than claiming one is attached.]\n${context}`
             : question,
-          question,
-          recommendedProperties: units.map((u, i) => ({
-            option: i + 1,
-            project: u.project_name,
-            developer: u.developer ?? null,
-            district: u.district ?? null,
-            bedrooms: u.bedrooms ?? null,
-            sizeSqft: u.size_sqft ?? null,
-            priceAed: u.price_aed ?? null,
-            handover: quarterOf(u.handover_date),
-            matchPercent: Math.round(u.score ?? 0),
-            projectId: u.project_id,
-            unitId: u.unit_id,
-          })),
           leadId: id,
           leadName: client?.full_name ?? null,
           currentProperty: current?.project_name ?? null,
