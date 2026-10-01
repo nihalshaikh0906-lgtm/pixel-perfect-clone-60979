@@ -206,7 +206,24 @@ function Dossier() {
         },
         body: JSON.stringify({
           channel: "dossier_copilot",
-          message: question,
+          // n8n agents usually only read `message`, so the on-screen units ride along in it.
+          message: sessionUnits.length
+            ? `${question}\n\n[Properties shown on screen — "option N" means line N. Answer from these details first; only look things up if something is missing.]\n${buildContext()}`
+            : question,
+          question,
+          recommendedProperties: sessionUnits.map((u, i) => ({
+            option: i + 1,
+            project: u.project_name,
+            developer: u.developer ?? null,
+            district: u.district ?? null,
+            bedrooms: u.bedrooms ?? null,
+            sizeSqft: u.size_sqft ?? null,
+            priceAed: u.price_aed ?? null,
+            handover: quarterOf(u.handover_date),
+            matchPercent: Math.round(u.score ?? 0),
+            projectId: u.project_id,
+            unitId: u.unit_id,
+          })),
           leadId: id,
           leadName: client?.full_name ?? null,
           currentProperty: current?.project_name ?? null,
