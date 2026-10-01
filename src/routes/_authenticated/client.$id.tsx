@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { endMeeting } from "@/lib/assistant.functions";
 import { logoDataUrl, useBrokerProfile, type BrokerProfile } from "@/lib/broker";
 import { aed, quarterOf, timeAgo } from "@/lib/format";
+import { n8nConfigured } from "@/lib/copilot-target";
 
 function mergeUnits(prev: MatchRow[], add: MatchRow[]) {
   const seen = new Set(prev.map((u) => u.unit_id));
@@ -174,12 +175,12 @@ function Dossier() {
   const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
-  // Paste your n8n webhook URL between the quotes. Until then the chat falls back
-  // to VITE_PROPFLOW_BACKEND_URL (app settings), then to the built-in assistant.
-  const N8N_WEBHOOK_URL = "PASTE_YOUR_N8N_WEBHOOK_URL_HERE";
-  const CHAT_ENDPOINT = !N8N_WEBHOOK_URL.includes("PASTE_YOUR")
-    ? N8N_WEBHOOK_URL
-    : (import.meta.env["VITE_PROPFLOW_BACKEND_URL"] as string | undefined) || "/api/chat";
+  // Messages go to the n8n workflow (src/lib/copilot-target.ts) unless
+  // VITE_PROPFLOW_BACKEND_URL is set in app settings; with neither, the built-in
+  // assistant answers.
+  const CHAT_ENDPOINT =
+    (import.meta.env["VITE_PROPFLOW_BACKEND_URL"] as string | undefined) ||
+    (n8nConfigured() ? "/api/dossier-copilot" : "/api/chat");
   const [selectedUnit, setSelectedUnit] = useState<MatchRow | null>(null);
 
   async function ask(question: string) {
