@@ -173,7 +173,7 @@ function Dossier() {
   const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
-  const CHAT_ENDPOINT = (import.meta.env.VITE_AI_CHAT_ENDPOINT as string | undefined) || "/api/chat";
+  const CHAT_ENDPOINT = (import.meta.env["VITE_AI_CHAT_ENDPOINT"] as string | undefined) || "/api/chat";
   const [selectedUnit, setSelectedUnit] = useState<MatchRow | null>(null);
 
   async function ask(question: string) {
