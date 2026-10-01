@@ -131,9 +131,35 @@ function Landing() {
         </div>
       </section>
 
-      {/* 6. Pricing + FAQ */}
+      {/* 6. Testimonials (demo) */}
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <p className={`text-center text-xs font-bold uppercase tracking-[0.15em] ${gold}`}>What brokers say · Demo examples</p>
+        <h2 className={`mt-3 text-center text-3xl font-medium md:text-4xl ${ink}`}>Loved by brokers across Dubai.</h2>
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {[
+            ["The AI matching alone saves me two hours a day. My clients get a branded dossier before we've even hung up the phone.", "Sarah K.", "Senior Broker · Dubai Marina"],
+            ["I cancelled my PDF tools and my news subscriptions. PropFlow is the only tab open on my screen during client calls now.", "Omar A.", "Off-Plan Specialist · Downtown"],
+            ["The payment plan modeler closes the deal in the room. Buyers see every milestone in AED and sign on the spot.", "Priya R.", "Private Client Advisor · Palm Jumeirah"],
+          ].map(([quote, name, role]) => (
+            <figure key={name} className={`${card} flex flex-col`}>
+              <div className={`flex gap-1 ${gold}`} aria-label="5 out of 5 stars">
+                {Array.from({ length: 5 }).map((_, i) => <span key={i}>★</span>)}
+              </div>
+              <blockquote className={`mt-4 flex-1 text-[15px] leading-[1.7] ${ink}`}>"{quote}"</blockquote>
+              <figcaption className="mt-6 border-t border-[var(--sand)] pt-4">
+                <p className={`text-[14px] font-semibold ${ink}`}>{name}</p>
+                <p className={`text-[12px] ${muted}`}>{role}</p>
+                <p className={`mt-1 text-[10px] font-semibold uppercase tracking-[0.15em] ${gold}`}>Demo testimonial</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* 7. Pricing + FAQ */}
       <section id="pricing" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-24">
         <h2 className={`text-center text-3xl font-medium md:text-4xl ${ink}`}>Simple pricing. 50% Launch Discount Applied.</h2>
+        <p className={`mt-3 text-center text-[15px] ${muted}`}>Every plan starts with a 14-day free trial — no card required.</p>
         <div className="mt-14 grid items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             ["1-Month", "100", "200"],
