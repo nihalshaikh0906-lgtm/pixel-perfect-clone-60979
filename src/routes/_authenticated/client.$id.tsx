@@ -210,7 +210,15 @@ function Dossier() {
           leadId: id,
           leadName: client?.full_name ?? null,
           currentProperty: current?.project_name ?? null,
-          budget: { min: client?.budget_min_aed ?? null, max: client?.budget_max_aed ?? null },
+          // Plain readable string — n8n nodes turn objects into "[object Object]".
+          budget: (() => {
+            const min = aed(client?.budget_min_aed);
+            const max = aed(client?.budget_max_aed);
+            if (min === "—" && max === "—") return null;
+            if (min === "—") return max;
+            if (max === "—") return min;
+            return `${min} – ${max}`;
+          })(),
           intent: client?.purpose ?? null,
           client_id: id,
           messages: history,

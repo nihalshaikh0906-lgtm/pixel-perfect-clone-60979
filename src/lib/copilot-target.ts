@@ -5,7 +5,7 @@
 // answer back — see src/routes/api/dossier-copilot.ts.
 //
 // Set this to an empty string to go back to the built-in assistant.
-export const N8N_WEBHOOK_URL = "https://dealosai.app.n8n.cloud/webhook-test/dossier-copilot";
+export const N8N_WEBHOOK_URL = "https://dealosai.app.n8n.cloud/webhook/dossier-copilot";
 
 export function n8nConfigured(): boolean {
   return N8N_WEBHOOK_URL.startsWith("http");
