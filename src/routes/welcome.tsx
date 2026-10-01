@@ -33,7 +33,7 @@ function Landing() {
   return (
     <PublicLayout>
       {/* 1. Hero */}
-      <section className={`${WINE} px-6 pb-24 pt-20 text-[var(--silk)]`}>
+      <section className={`${DARK} px-6 pb-24 pt-20 text-[var(--silk)]`}>
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
           <div>
             <p className={`text-xs font-bold uppercase tracking-[0.18em] ${gold}`}>Your Real Estate AI Co-Pilot</p>
@@ -74,7 +74,7 @@ function Landing() {
       </section>
 
       {/* 3. Problems vs solutions */}
-      <section className={`${WINE} px-6 py-24 text-[var(--silk)]`}>
+      <section className={`${DARK} px-6 py-24 text-[var(--silk)]`}>
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center text-3xl font-medium md:text-4xl">Stop working the hard way.</h2>
           <div className="grid gap-6 md:grid-cols-2">
@@ -120,7 +120,7 @@ function Landing() {
       </section>
 
       {/* 5. Why PropFlow */}
-      <section className={`${WINE} px-6 py-24 text-[var(--silk)]`}>
+      <section className={`${DARK} px-6 py-24 text-[var(--silk)]`}>
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center text-3xl font-medium md:text-4xl">Why Dubai brokers love PropFlow.</h2>
           <div className="mt-14 grid gap-10 md:grid-cols-3">
