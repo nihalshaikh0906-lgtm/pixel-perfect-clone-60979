@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { endMeeting } from "@/lib/assistant.functions";
-import { logoDataUrl, useBrokerProfile, type BrokerProfile } from "@/lib/broker";
+import { useBrokerProfile } from "@/lib/broker";
 import { aed, quarterOf, timeAgo } from "@/lib/format";
 
 function mergeUnits(prev: MatchRow[], add: MatchRow[]) {
@@ -200,7 +200,7 @@ function Dossier() {
         body: JSON.stringify({
           channel: "dossier_copilot",
           message: context
-            ? `${question}\n\n[On-screen options; option N = line N. Use these facts first.]\n${context}`
+            ? `${question}\n\n[On-screen options; option N = line N. Use these facts first. For a document or floor plan, answer with available details; offer a PDF rather than claiming one is attached.]\n${context}`
             : question,
           question,
           recommendedProperties: units.map((u, i) => ({
