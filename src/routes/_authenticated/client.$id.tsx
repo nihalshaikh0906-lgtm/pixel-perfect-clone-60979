@@ -210,7 +210,10 @@ function Dossier() {
           leadId: id,
           leadName: client?.full_name ?? null,
           currentProperty: current?.project_name ?? null,
-          budget: { min: client?.budget_min_aed ?? null, max: client?.budget_max_aed ?? null },
+          // Plain readable string — n8n nodes turn objects into "[object Object]".
+          budget: (client?.budget_min_aed ?? client?.budget_max_aed) != null
+            ? `${aed(client?.budget_min_aed)} – ${aed(client?.budget_max_aed)}`.replaceAll("—", "").trim() || null
+            : null,
           intent: client?.purpose ?? null,
           client_id: id,
           messages: history,
