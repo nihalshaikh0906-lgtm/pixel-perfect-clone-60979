@@ -10,7 +10,7 @@ export const Route = createFileRoute("/welcome")({
 });
 
 const muted = "text-[#5c554e]";
-const ink = "text-[var(--burgundy)]";
+const ink = "text-[var(--obsidian)]";
 const gold = "text-[var(--gold)]";
 const card = "rounded-xl border border-[var(--sand)] bg-white p-6";
 
@@ -22,7 +22,7 @@ function Landing() {
   return (
     <PublicLayout>
       {/* 1. Hero */}
-      <section className="bg-[var(--burgundy)] px-6 pb-24 pt-20 text-[var(--silk)]">
+      <section className="bg-[var(--obsidian)] px-6 pb-24 pt-20 text-[var(--silk)]">
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
           <div>
             <p className={`text-xs font-bold uppercase tracking-[0.15em] text-[var(--champagne)]`}>All-in-one real estate AI</p>
@@ -73,7 +73,7 @@ function Landing() {
       </section>
 
       {/* 3. Problems vs solutions */}
-      <section className="bg-[var(--burgundy)] px-6 py-24 text-[var(--silk)]">
+      <section className="bg-[var(--obsidian)] px-6 py-24 text-[var(--silk)]">
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center text-3xl font-medium md:text-4xl">Stop losing opportunities every day.</h2>
           <div className="grid gap-10 md:grid-cols-2">
@@ -111,7 +111,7 @@ function Landing() {
       </section>
 
       {/* 5. Why PropFlow */}
-      <section className="bg-[var(--burgundy)] px-6 py-24 text-[var(--silk)]">
+      <section className="bg-[#211d1a] px-6 py-24 text-[var(--silk)]">
         <div className="mx-auto max-w-6xl">
           <h2 className="mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl">Why real estate professionals choose PropFlow over generic tools.</h2>
           <div className="mt-14 grid gap-10 md:grid-cols-3">
@@ -175,7 +175,7 @@ function Step({ icon, t, body, children }: { icon: ReactNode; t: string; body: s
 
 function PipelineMockup() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-[var(--sand)] bg-[var(--silk)] shadow-[0_40px_100px_-20px_rgba(42,16,21,0.25)]">
+    <div className="relative overflow-hidden rounded-2xl border border-[var(--sand)] bg-[var(--silk)] shadow-[0_40px_100px_-20px_rgba(28,25,23,0.28)]">
       <div className="flex items-center gap-3 border-b border-[var(--sand)] bg-white px-4 py-3">
         <span className={`text-[11px] font-semibold tracking-[0.25em] ${ink}`}>PROPFLOW</span>
         <div className="flex flex-wrap gap-1">
