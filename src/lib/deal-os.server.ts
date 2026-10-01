@@ -386,6 +386,11 @@ export async function streamChat(
           console.log(`[deal-os] tool get_property_pack ${JSON.stringify(args)}: ${res.error ? "ERROR " + res.error.message : res.data ? "1 rows" : "0 rows"}`);
           if (!res.error && args.unit_id != null)
             newUnits.push({ project_id: Number(args.project_id), unit_id: Number(args.unit_id), score: 0 });
+        } else if (call.name === "web_search") {
+          const query = String(args.query ?? "").slice(0, 200) || "Dubai real estate";
+          emit({ type: "search", label: query });
+          result = await firecrawlSearch(query);
+          console.log(`[deal-os] tool web_search ${JSON.stringify(query)}: ${Array.isArray(result) ? result.length + " results" : "error"}`);
         } else {
           result = { error: `Unknown tool ${call.name}` };
         }
