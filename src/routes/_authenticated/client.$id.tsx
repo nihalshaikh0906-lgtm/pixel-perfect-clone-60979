@@ -174,12 +174,12 @@ function Dossier() {
   const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
-  // Paste your n8n webhook URL between the quotes. Until then the chat falls back
-  // to VITE_PROPFLOW_BACKEND_URL (app settings), then to the built-in assistant.
-  const N8N_WEBHOOK_URL = "PASTE_YOUR_N8N_WEBHOOK_URL_HERE";
-  const CHAT_ENDPOINT = !N8N_WEBHOOK_URL.includes("PASTE_YOUR")
-    ? N8N_WEBHOOK_URL
-    : (import.meta.env["VITE_PROPFLOW_BACKEND_URL"] as string | undefined) || "/api/chat";
+  // Dossier chat posts here first. Set VITE_PROPFLOW_BACKEND_URL (app settings) to
+  // override it; with neither in place the chat uses the built-in assistant.
+  const N8N_WEBHOOK_URL = "https://dealosai.app.n8n.cloud/webhook-test/dossier-copilot";
+  const CHAT_ENDPOINT =
+    (import.meta.env["VITE_PROPFLOW_BACKEND_URL"] as string | undefined) ||
+    (N8N_WEBHOOK_URL.startsWith("http") ? N8N_WEBHOOK_URL : "/api/chat");
   const [selectedUnit, setSelectedUnit] = useState<MatchRow | null>(null);
 
   async function ask(question: string) {
