@@ -30,9 +30,6 @@ export function TopBar({
         </div>
 
         <nav className="order-last flex w-full flex-wrap items-center justify-center gap-1 xl:order-none xl:w-auto xl:flex-1">
-          <Link to="/" className={NAV_PILL} activeOptions={{ exact: true, includeHash: false }} activeProps={{ className: NAV_ACTIVE }}>
-            Dashboard
-          </Link>
           <Link to="/" hash="pipeline" className={NAV_PILL}>
             Leads
           </Link>
@@ -107,9 +104,6 @@ function AgencyBadge({ company }: { company: string | null }) {
           </button>
         )}
       </div>
-      <span className="rounded-full border border-primary/40 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-        ORN 12489 • DLD Verified
-      </span>
     </div>
   );
 }

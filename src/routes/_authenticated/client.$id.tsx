@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { endMeeting } from "@/lib/assistant.functions";
-import { logoDataUrl, useBrokerProfile, type BrokerProfile } from "@/lib/broker";
+import { useBrokerProfile } from "@/lib/broker";
 import { aed, quarterOf, timeAgo } from "@/lib/format";
 
 function mergeUnits(prev: MatchRow[], add: MatchRow[]) {
@@ -42,7 +42,11 @@ export const Route = createFileRoute("/_authenticated/client/$id")({
   component: Dossier,
 });
 
-type ChatMessage = { role: "user" | "assistant"; content: string; at: string };
+type ChatMessage = { role: "user" | "assistant"; content: string; at: string; pdfContent?: string; offerPdf?: boolean };
+
+const wantsPdf = (text: string) => /\bpdf\b|download (?:this|that|it|the answer)/i.test(text);
+const wantsPreviousAsPdf = (text: string) => /(?:download|send|give|provide|turn|convert)\s+(?:(?:me|this|that|it|the|your|last|previous|answer|summary)\s+){0,5}(?:as\s+)?(?:a\s+)?pdf\b|\byes\b.*\bpdf\b/i.test(text);
+const documentTopic = (text: string) => /floor\s*plan|payment\s*(?:plan|schedule)|reservation|booking\s*form|brochure|document/i.test(text);
 
 function Dossier() {
   const { id } = Route.useParams();
@@ -50,6 +54,7 @@ function Dossier() {
   const wrapUp = useServerFn(endMeeting);
 
   const [chat, setChat] = useState<ChatMessage[]>([]);
+  const broker = useBrokerProfile();
   const [input, setInput] = useState("");
   const [aiUnits, setAiUnits] = useState<MatchRow[] | null>(null);
   const [openUnit, setOpenUnit] = useState<MatchRow | null>(null);
@@ -115,10 +120,10 @@ function Dossier() {
   });
 
   function buildContext() {
-    return sessionUnits
+    return units
       .map((u, i) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const pack = packQueries[i]?.data as any;
+        const pack = packQueries[sessionUnits.findIndex((cached) => cached.unit_id === u.unit_id)]?.data as any;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const plan = Array.isArray(pack?.payment_plans) ? pack.payment_plans[0] : null;
         const steps = Array.isArray(plan?.steps)
@@ -170,48 +175,35 @@ function Dossier() {
   }
 
   const [pending, setPending] = useState(false);
-  const [streaming, setStreaming] = useState(false);
-  const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
-  // Hardcoded, no environment variables: every message goes to the n8n workflow at
-  // https://dealosai.app.n8n.cloud/webhook-test/dossier-copilot.
-  // The browser cannot post there itself (it is another website, so the browser blocks
-  // the call), so the app's own server at /api/dossier-copilot makes that exact call
-  // and hands the reply back.
+  // Browser requests use the authenticated same-origin relay to reach the production n8n webhook.
   const CHAT_ENDPOINT = "/api/dossier-copilot";
   const [selectedUnit, setSelectedUnit] = useState<MatchRow | null>(null);
 
   async function ask(question: string) {
     setPending(true);
-    setStreaming(false);
     setAskError(null);
-    const history = [...chat, { role: "user" as const, content: question }]
-      .slice(-8)
-      .map((m) => ({ role: m.role, content: m.content }));
     try {
       const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session?.access_token) throw new Error("Please sign in again to use the assistant.");
       const current = selectedUnit ?? units[0] ?? null;
-      let res: Response;
-      // If the service sends nothing at all for 60 s, stop waiting and say so.
-      const ctrl = new AbortController();
-      const firstByte = setTimeout(() => ctrl.abort(), 60000);
-      try {
-        res = await fetch(CHAT_ENDPOINT, {
-          signal: ctrl.signal,
+      const context = buildContext();
+      // n8n reads `message`: keep the numbered on-screen options there, once.
+      const res = await fetch(CHAT_ENDPOINT, {
+        signal: AbortSignal.timeout(60000),
         method: "POST",
         headers: {
           "content-type": "application/json",
-          authorization: `Bearer ${sess.session?.access_token ?? ""}`,
+          authorization: `Bearer ${sess.session.access_token}`,
         },
         body: JSON.stringify({
           channel: "dossier_copilot",
-          // n8n agents usually only read `message`, so the on-screen units ride along in it.
-          message: sessionUnits.length
-            ? `${question}\n\n[Properties shown on screen — "option N" means line N. Answer from these details first; only look things up if something is missing.]\n${buildContext()}`
+          message: context
+            ? `${question}\n\n[On-screen options; option N = line N. Use these facts first. For a document or floor plan, answer with available details; offer a PDF rather than claiming one is attached.]\n${context}`
             : question,
           question,
-          recommendedProperties: sessionUnits.map((u, i) => ({
+          recommendedProperties: units.map((u, i) => ({
             option: i + 1,
             project: u.project_name,
             developer: u.developer ?? null,
@@ -238,86 +230,36 @@ function Dossier() {
           })(),
           intent: client?.purpose ?? null,
           client_id: id,
-          messages: history,
-          context: buildContext(),
         }),
-        });
-      } catch {
-        throw new Error("Unable to reach assistant service. Please check connection.");
-      } finally {
-        clearTimeout(firstByte);
-      }
-      const ctype = res.headers.get("content-type") ?? "";
-      if (res.ok && ctype.includes("application/json")) {
-        // External services may answer with a single JSON reply instead of a stream.
-        const j = await res.json().catch(() => null);
-        const reply = typeof j === "string" ? j : (j?.reply ?? j?.message ?? j?.text ?? j?.output ?? "");
-        if (!reply) throw new Error("Unable to reach assistant service. Please check connection.");
-        setChat((prev) => [...prev, { role: "assistant", content: String(reply), at: new Date().toISOString() }]);
-        return;
-      }
-      if (ctype.startsWith("text/plain") && res.ok) {
-        const reply = await res.text();
-        setChat((prev) => [...prev, { role: "assistant", content: reply, at: new Date().toISOString() }]);
-        return;
-      }
-      if (!res.ok || !res.body) {
-        const j = await res.json().catch(() => null);
-        throw new Error(`Error ${res.status}: ${j?.error ?? res.statusText}`);
-      }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
-      let started = false;
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        let nl;
-        while ((nl = buf.indexOf("\n")) >= 0) {
-          const line = buf.slice(0, nl);
-          buf = buf.slice(nl + 1);
-          if (!line.trim()) continue;
-          const ev = JSON.parse(line);
-          if (ev.type === "text") {
-            setResearching(false);
-            if (!started) {
-              started = true;
-              setStreaming(true);
-              setChat((prev) => [...prev, { role: "assistant", content: "", at: new Date().toISOString() }]);
-            }
-            setChat((prev) => {
-              const next = [...prev];
-              const last = next[next.length - 1];
-              if (last) next[next.length - 1] = { ...last, content: last.content + ev.delta };
-              return next;
-            });
-          } else if (ev.type === "units") {
-            setResearching(false);
-            const rows = await fetchRows(ev.units);
-            if (rows.length) {
-              setAiUnits(rows);
-              setSessionUnits((prev) => mergeUnits(prev, rows));
-            }
-          } else if (ev.type === "search") {
-            setResearching(true);
-          } else if (ev.type === "error") {
-            throw new Error(ev.message);
-          }
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(`Error ${res.status}: ${data?.error ?? res.statusText}`);
+      const reply = typeof data?.reply === "string" ? data.reply.trim() : "";
+      if (!reply) throw new Error("Unable to reach assistant service. Please check connection.");
+      if (Array.isArray(data?.units) && data.units.length) {
+        const rows = await fetchRows(data.units);
+        if (rows.length) {
+          setAiUnits(rows);
+          setSessionUnits((prev) => mergeUnits(prev, rows));
         }
       }
+      const pdfRequested = wantsPdf(question);
+      setChat((prev) => [...prev, {
+        role: "assistant", content: reply, at: new Date().toISOString(),
+        pdfContent: pdfRequested ? reply : undefined,
+        offerPdf: !pdfRequested && documentTopic(question),
+      }]);
+      if (pdfRequested) void downloadPdf(reply, broker);
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
       setAskError(err);
       toast.error(err.message);
     } finally {
       setPending(false);
-      setStreaming(false);
-      setResearching(false);
     }
   }
 
-  const askMutation = { isPending: pending && !streaming, error: askError };
+  const askMutation = { isPending: pending, error: askError };
 
   const endMeetingMutation = useMutation({
     mutationFn: async () =>
@@ -344,6 +286,15 @@ function Dossier() {
     if (!question || pending) return;
     setChat((prev) => [...prev, { role: "user", content: question, at: new Date().toISOString() }]);
     setInput("");
+    const last = chat[chat.length - 1];
+    const isAcceptance = /^(?:yes|yes please|sure|please|okay|ok|go ahead|send it)(?:[.! ]*)$/i.test(question);
+    if ((isAcceptance && last?.role === "assistant" && last.offerPdf) ||
+        (wantsPreviousAsPdf(question) && last?.role === "assistant" && last.content.trim())) {
+      const content = last.content;
+      setChat((prev) => [...prev, { role: "assistant", content: "Here is the PDF summary.", pdfContent: content, at: new Date().toISOString() }]);
+      void downloadPdf(content, broker);
+      return;
+    }
     void ask(question);
   }
 
@@ -497,11 +448,21 @@ function Dossier() {
                     {m.role === "user" ? "You" : "Investment Engineer"} ·{" "}
                     {new Date(m.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
-                  {m.role === "assistant" ? <AssistantBody text={m.content} /> : <ChatText text={m.content} />}
+                  {m.role === "assistant" ? (
+                    <>
+                      <ChatText text={m.content} />
+                      {m.offerPdf ? <p className="mt-3 text-sm text-muted-foreground">I can provide a PDF summary. Would you like one?</p> : null}
+                      {m.pdfContent ? (
+                        <Button variant="outline" size="sm" className="mt-3" onClick={() => void downloadPdf(m.pdfContent ?? "", broker)}>
+                          <FileDown className="size-3.5" /> Download PDF
+                        </Button>
+                      ) : null}
+                    </>
+                  ) : <ChatText text={m.content} />}
                 </div>
               </div>
             ))}
-            {askMutation.isPending || researching ? (
+            {askMutation.isPending ? (
               <p className="flex items-center gap-2 text-sm text-primary">
                 <span className="shimmer-text rounded-full border border-gold/40 px-3 py-1 text-xs font-medium">PropFlow is analyzing project details…</span>
               </p>
@@ -556,28 +517,5 @@ function Field({ label, value }: { label: string; value: string }) {
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="metric text-right">{value}</dd>
     </div>
-  );
-}
-
-
-
-function AssistantBody({ text }: { text: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const broker = useBrokerProfile();
-  return (
-    <>
-      <div ref={ref}>
-        <ChatText text={text} />
-      </div>
-      {text.trim() ? (
-        <button
-          type="button"
-          onClick={() => downloadPdf(text, broker)}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-[#F4EFEA] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground hover:border-primary/60"
-        >
-          <FileDown className="size-3.5" /> Download as PDF
-        </button>
-      ) : null}
-    </>
   );
 }
