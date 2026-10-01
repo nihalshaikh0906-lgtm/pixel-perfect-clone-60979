@@ -22,6 +22,7 @@ import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedNewsRouteImport } from './routes/_authenticated/news'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiDossierCopilotRouteImport } from './routes/api/dossier-copilot'
 import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copilot'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
 
@@ -89,6 +90,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDossierCopilotRoute = ApiDossierCopilotRouteImport.update({
+  id: '/api/dossier-copilot',
+  path: '/api/dossier-copilot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiGeneralCopilotRoute = ApiGeneralCopilotRouteImport.update({
   id: '/api/general-copilot',
   path: '/api/general-copilot',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/news': typeof AuthenticatedNewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
 }
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/news': typeof AuthenticatedNewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/': typeof AuthenticatedIndexRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/_authenticated/news': typeof AuthenticatedNewsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/settings'
     | '/api/chat'
+    | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/client/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/settings'
     | '/api/chat'
+    | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/'
     | '/client/$id'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/_authenticated/news'
     | '/_authenticated/settings'
     | '/api/chat'
+    | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/_authenticated/'
     | '/_authenticated/client/$id'
@@ -210,6 +222,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   WelcomeRoute: typeof WelcomeRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiDossierCopilotRoute: typeof ApiDossierCopilotRoute
   ApiGeneralCopilotRoute: typeof ApiGeneralCopilotRoute
 }
 
@@ -306,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/dossier-copilot': {
+      id: '/api/dossier-copilot'
+      path: '/api/dossier-copilot'
+      fullPath: '/api/dossier-copilot'
+      preLoaderRoute: typeof ApiDossierCopilotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/general-copilot': {
       id: '/api/general-copilot'
       path: '/api/general-copilot'
@@ -354,6 +374,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   WelcomeRoute: WelcomeRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiDossierCopilotRoute: ApiDossierCopilotRoute,
   ApiGeneralCopilotRoute: ApiGeneralCopilotRoute,
 }
 export const routeTree = rootRouteImport
