@@ -120,10 +120,10 @@ function Dossier() {
   });
 
   function buildContext() {
-    return sessionUnits
+    return units
       .map((u, i) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const pack = packQueries[i]?.data as any;
+        const pack = packQueries[sessionUnits.findIndex((cached) => cached.unit_id === u.unit_id)]?.data as any;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const plan = Array.isArray(pack?.payment_plans) ? pack.payment_plans[0] : null;
         const steps = Array.isArray(plan?.steps)
@@ -236,6 +236,13 @@ function Dossier() {
       if (!res.ok) throw new Error(`Error ${res.status}: ${data?.error ?? res.statusText}`);
       const reply = typeof data?.reply === "string" ? data.reply.trim() : "";
       if (!reply) throw new Error("Unable to reach assistant service. Please check connection.");
+      if (Array.isArray(data?.units) && data.units.length) {
+        const rows = await fetchRows(data.units);
+        if (rows.length) {
+          setAiUnits(rows);
+          setSessionUnits((prev) => mergeUnits(prev, rows));
+        }
+      }
       const pdfRequested = wantsPdf(question);
       setChat((prev) => [...prev, {
         role: "assistant", content: reply, at: new Date().toISOString(),
