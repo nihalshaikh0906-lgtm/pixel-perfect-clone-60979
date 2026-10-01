@@ -135,7 +135,45 @@ const toolDefs = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "web_search",
+      description: "Live web search for developer history, project news, market trends or any fact not in the context.",
+      parameters: {
+        type: "object",
+        properties: { query: { type: "string", description: "Search query" } },
+        required: ["query"],
+      },
+    },
+  },
 ];
+
+/** Live web search via the Firecrawl connector. Returns compact results for the model. */
+async function firecrawlSearch(query: string): Promise<Json> {
+  const lovable = readEnv("LOVABLE_API_KEY");
+  const fc = readEnv("FIRECRAWL_API_KEY");
+  if (!lovable || !fc) return { error: "Web search is not configured." };
+  const res = await fetch("https://connector-gateway.lovable.dev/firecrawl/v2/search", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${lovable}`, "X-Connection-Api-Key": fc },
+    body: JSON.stringify({ query, limit: 6, sources: ["web", "news"] }),
+  });
+  const body = await res.text();
+  if (!res.ok) return { error: `Search failed [${res.status}]: ${body.slice(0, 200)}` };
+  const j = JSON.parse(body);
+  const raw: { title?: string; url?: string; snippet?: string; description?: string; date?: string }[] = [
+    ...(j?.data?.news ?? []),
+    ...(j?.data?.web ?? []),
+    ...(Array.isArray(j?.data) ? j.data : []),
+  ];
+  const clean = (t = "") =>
+    t.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[#*_>`]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 500);
+  return raw
+    .filter((r) => r.url && r.title)
+    .slice(0, 6)
+    .map((r) => ({ title: r.title, source: new URL(r.url!).hostname.replace(/^www\./, ""), url: r.url, date: r.date ?? null, snippet: clean(r.snippet ?? r.description) }));
+}
 
 function clampLimit(v: unknown) {
   const n = Number(v);
@@ -144,7 +182,8 @@ function clampLimit(v: unknown) {
 
 // Fixed text so the provider's prefix cache applies. Changing context goes after it.
 const CHAT_SYSTEM = [
-  "You are PropFlow's Senior Dubai Real Estate Advisory Partner. You speak with brokers with white-glove courtesy, razor-sharp precision, and complete resourcefulness.",
+  "You are the 'Investment Engineer', an elite AI assistant for Dubai real estate brokers. You speak with white-glove courtesy, razor-sharp precision, and complete resourcefulness.",
+  "You have been equipped with a web_search tool. When a user asks about a specific project, developer history, news, or market trends that are not in your immediate context, you MUST trigger the web_search tool to fetch live data. Never tell the user you do not have internet access. Synthesize the live external research seamlessly with internal database context to provide a confident, highly accurate answer.",
   "CRITICAL RULES ON DOCUMENTS & FORMS:",
   "- NEVER refuse to generate forms, agreements, payment schedules, or documents. NEVER say you cannot generate reservation forms, that you have no PDF capability, or that you can't fabricate one. The dashboard exports any of your replies to PDF.",
   "- When the broker asks for a booking form, reservation sheet, payment plan document, or client agreement, immediately generate a complete, structured, professional draft in Markdown containing:",
@@ -255,6 +294,7 @@ async function readStream(res: Response, onDelta: (t: string) => void): Promise<
 export type ChatEvent =
   | { type: "text"; delta: string }
   | { type: "units"; units: UnitRef[] }
+  | { type: "search"; label: string }
   | { type: "error"; message: string }
   | { type: "done" };
 
@@ -346,6 +386,11 @@ export async function streamChat(
           console.log(`[deal-os] tool get_property_pack ${JSON.stringify(args)}: ${res.error ? "ERROR " + res.error.message : res.data ? "1 rows" : "0 rows"}`);
           if (!res.error && args.unit_id != null)
             newUnits.push({ project_id: Number(args.project_id), unit_id: Number(args.unit_id), score: 0 });
+        } else if (call.name === "web_search") {
+          const query = String(args.query ?? "").slice(0, 200) || "Dubai real estate";
+          emit({ type: "search", label: query });
+          result = await firecrawlSearch(query);
+          console.log(`[deal-os] tool web_search ${JSON.stringify(query)}: ${Array.isArray(result) ? result.length + " results" : "error"}`);
         } else {
           result = { error: `Unknown tool ${call.name}` };
         }
