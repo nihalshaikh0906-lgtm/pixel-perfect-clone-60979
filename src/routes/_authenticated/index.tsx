@@ -74,7 +74,7 @@ function useHubData() {
 
       return {
         email: user.data.user?.email ?? "",
-        trialEndsAt: (user.data.user?.user_metadata?.trial_ends_at as string | undefined) ?? null,
+        trialEndsAt: (user.data.user?.user_metadata?.["trial_ends_at"] as string | undefined) ?? null,
         units: unitsCount.count ?? 0,
         inventoryUpdatedAt: latestProject.data?.[0]?.updated_at ?? null,
         clients: (clients.data ?? []) as ClientRow[],
