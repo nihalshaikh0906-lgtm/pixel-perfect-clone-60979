@@ -14,3 +14,4 @@
 - Private listings are JSON files at broker-logos/{userId}/listings/{id}.json — external DB tables must not be added.
 - All AI writing (chat, news summaries, market reports) goes through DeepSeek via deal-os.server (aiWrite/streamChat) — user asked for DeepSeek everywhere.
 - News = Firecrawl search (gateway) + DeepSeek summary, cached per Dubai day in memory — no news table exists.
+- Property tour links are resolved only in src/lib/youtube.ts (findTourUrl/youtubeEmbed) and rendered by ProjectTourModal — packs expose `videos`/`tours` arrays, so never assume a dedicated youtube_url column exists.
