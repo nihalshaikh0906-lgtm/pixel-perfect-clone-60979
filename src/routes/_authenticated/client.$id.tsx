@@ -436,8 +436,8 @@ function Dossier() {
                   </p>
                   {m.role === "assistant" ? (
                     <>
-                      <ChatText text={m.content} />
-                      {m.offerPdf ? <p className="mt-3 text-sm text-muted-foreground">I can provide a PDF summary. Would you like one?</p> : null}
+                      <ChatText text={m.content} reveal={i === chat.length - 1} />
+                      {m.offerPdf ? <p className={`mt-3 text-sm text-muted-foreground ${i === chat.length - 1 ? "chat-reveal" : ""}`} style={i === chat.length - 1 ? { animationDelay: "600ms" } : undefined}>I can provide a PDF summary. Would you like one?</p> : null}
                       {m.pdfContent ? (
                         <Button variant="outline" size="sm" className="mt-3" onClick={() => void downloadPdf(m.pdfContent ?? "", broker)}>
                           <FileDown className="size-3.5" /> Download PDF
