@@ -175,12 +175,12 @@ function Dossier() {
   const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
-  // Messages go to the n8n workflow (src/lib/copilot-target.ts) unless
-  // VITE_PROPFLOW_BACKEND_URL is set in app settings; with neither, the built-in
-  // assistant answers.
-  const CHAT_ENDPOINT =
-    (import.meta.env["VITE_PROPFLOW_BACKEND_URL"] as string | undefined) ||
-    (n8nConfigured() ? "/api/dossier-copilot" : "/api/chat");
+  // Hardcoded, no environment variables: every message goes to the n8n workflow at
+  // https://dealosai.app.n8n.cloud/webhook-test/dossier-copilot.
+  // The browser cannot post there itself (it is another website, so the browser blocks
+  // the call), so the app's own server at /api/dossier-copilot makes that exact call
+  // and hands the reply back.
+  const CHAT_ENDPOINT = "/api/dossier-copilot";
   const [selectedUnit, setSelectedUnit] = useState<MatchRow | null>(null);
 
   async function ask(question: string) {
