@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, MapPin, CarFront, FileText, Receipt, Loader2, MessageCircle, Star } from "lucide-react";
+import { BookOpen, MapPin, CarFront, FileText, Receipt, Loader2, MessageCircle, Play, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { PaymentPlanModal } from "@/components/PaymentPlanModal";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
+import { ProjectTourModal } from "@/components/ProjectTourModal";
 
 import { ProjectMap } from "@/components/ProjectMap";
 import { PackOverview } from "@/components/PackOverview";
@@ -13,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { aed, beds, quarterOf, sqft } from "@/lib/format";
+import { findTourUrl } from "@/lib/youtube";
+
 
 type PackDoc = { type: string; name: string | null; url: string | null };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,6 +44,7 @@ export function PropertyPackDrawer({
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const [planOpen, setPlanOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
   const { data, isLoading, error } = useQuery({
     queryKey: ["pack", unit?.project_id, unit?.unit_id],
     enabled: !!unit,
@@ -146,6 +150,15 @@ export function PropertyPackDrawer({
             >
               <Receipt className="size-4" /> View Payment Plan
             </Button>
+            {tourUrl ? (
+              <Button
+                variant="outline"
+                className="border-[var(--gold)]/50 text-[var(--gold)] hover:bg-[var(--gold)]/10"
+                onClick={() => setTourOpen(true)}
+              >
+                <Play className="size-4 fill-current" /> Watch Project Tour
+              </Button>
+            ) : null}
             <Button variant="outline" className="border-primary/50" onClick={() => setMapOpen(true)} disabled={!unit}>
               <MapPin className="size-4" /> View Location
             </Button>
@@ -301,6 +314,13 @@ export function PropertyPackDrawer({
           district={unit?.district ?? data?.project?.district}
           latitude={data?.project?.latitude ?? null}
           longitude={data?.project?.longitude ?? null}
+        />
+        <ProjectTourModal
+          open={tourOpen}
+          onOpenChange={setTourOpen}
+          url={tourUrl}
+          title={unit?.project_name ?? "Project tour"}
+          subtitle={[unit?.developer, unit?.district].filter(Boolean).join(" · ") || null}
         />
         <PaymentPlanModal
           open={planOpen}
