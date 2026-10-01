@@ -444,3 +444,22 @@ export async function aiWrite(system: string, user: string, maxTokens = 1200): P
   });
   return String(completion?.choices?.[0]?.message?.content ?? "").trim();
 }
+
+const GENERAL_SYSTEM = [
+  "You are PropFlow Copilot, a courteous, sharp general assistant for Dubai real estate brokers.",
+  "Answer open-ended questions on anything: market trends, general knowledge, business writing, strategy, emails and scripts.",
+  "Use Markdown: short paragraphs, **bold** key figures, dash or numbered lists, tables when they help.",
+  "Never invent specific prices, transaction figures or project facts; say when something should be verified. Reply in the user's language.",
+].join("\n");
+
+/** General-purpose copilot answer (not tied to a client). */
+export async function generalChat(history: ChatMsg[]): Promise<string> {
+  loadAiConfig();
+  const completion = await chatCompletion({
+    temperature: 0.5,
+    max_tokens: 1200,
+    thinking: { type: "disabled" },
+    messages: [{ role: "system", content: GENERAL_SYSTEM }, ...history.slice(-10)],
+  });
+  return String(completion?.choices?.[0]?.message?.content ?? "").trim();
+}

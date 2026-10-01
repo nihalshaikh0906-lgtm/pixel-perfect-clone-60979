@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
+import { GeneralCopilot } from "@/components/GeneralCopilot";
 import { ProfileWidget } from "@/components/ProfileWidget";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/_authenticated")({
     <>
       <Outlet />
       <ProfileWidget />
+      <GeneralCopilot />
     </>
   ),
 });
