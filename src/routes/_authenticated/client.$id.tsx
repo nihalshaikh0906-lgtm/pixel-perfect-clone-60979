@@ -120,7 +120,9 @@ function Dossier() {
   });
 
   function buildContext() {
+    // Keep it short: fewer tokens for the AI to read = faster replies.
     return units
+      .slice(0, 4)
       .map((u, i) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const pack = packQueries[sessionUnits.findIndex((cached) => cached.unit_id === u.unit_id)]?.data as any;
@@ -130,11 +132,7 @@ function Dossier() {
           ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
             plan.steps.map((s: any) => `${s.step} ${s.percent}%`).join(", ")
           : "unknown";
-        const docs = Array.isArray(pack?.documents)
-          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            [...new Set(pack.documents.map((d: any) => d.type))].join(", ") || "none"
-          : "unknown";
-        return `${i + 1}. ${u.project_name} (${u.developer ?? "?"}) project_id=${u.project_id} unit_id=${u.unit_id} | ${u.district ?? "?"} | ${u.bedrooms ?? "?"}BR | ${u.size_sqft ?? "?"} sqft | AED ${u.price_aed ?? "?"} | handover ${quarterOf(u.handover_date)} | match ${Math.round(u.score ?? 0)}% | plan: ${plan?.name ?? "?"}: ${steps} | docs: ${docs}`;
+        return `${i + 1}. ${u.project_name} (${u.developer ?? "?"}) | ${u.district ?? "?"} | ${u.bedrooms ?? "?"}BR | ${u.size_sqft ?? "?"} sqft | AED ${u.price_aed ?? "?"} | handover ${quarterOf(u.handover_date)} | plan: ${plan?.name ?? "?"}: ${steps}`;
       })
       .join("\n");
   }
