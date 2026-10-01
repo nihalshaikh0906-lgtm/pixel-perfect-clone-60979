@@ -156,6 +156,17 @@
 
 @utility gold-pulse { animation: gold-pulse 2.4s ease-in-out infinite; }
 
+@keyframes shimmer-sweep { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+@utility shimmer-text {
+  background: linear-gradient(90deg, var(--color-muted-foreground) 25%, var(--color-primary) 50%, var(--color-muted-foreground) 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer-sweep 1.8s linear infinite;
+}
+
 :root {
   --silk: #faf8f5;
   --obsidian: #1c1917;
