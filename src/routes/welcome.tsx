@@ -64,7 +64,7 @@ function Landing() {
               [payment.url, "3. 1-Click Brochures & Pitches", "Click one button to create a stunning PDF brochure with your own company logo. Or, click \"Copy Pitch\" to send a perfect, AI-written sales message straight to their WhatsApp."],
             ].map(([src, t, d]) => (
               <div key={t} className="rounded-xl border border-[var(--sand)] bg-white p-6 pt-0">
-                <div className="-mt-12 mb-6"><Shot src={src} alt={t} className="h-48" /></div>
+                <div className="-mt-12 mb-6"><Shot src={src ?? ""} alt={t ?? ""} className="h-48" /></div>
                 <h3 className={`text-[18px] font-semibold ${ink}`}>{t}</h3>
                 <p className={`mt-2 text-[15px] ${muted}`}>{d}</p>
               </div>
