@@ -1,91 +1,93 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, FileText, Building2, Settings, X, Zap } from "lucide-react";
-import type { ReactNode } from "react";
+import { Check, X } from "lucide-react";
 
 import { Accordion, meta, PublicLayout } from "@/components/public/PublicLayout";
+import pipeline from "@/assets/landing/pipeline.jpg.asset.json";
+import leads from "@/assets/landing/leads.jpg.asset.json";
+import dossier from "@/assets/landing/dossier.jpg.asset.json";
+import mapShot from "@/assets/landing/map.jpg.asset.json";
+import payment from "@/assets/landing/payment.jpg.asset.json";
+import overview from "@/assets/landing/overview.jpg.asset.json";
+import news from "@/assets/landing/news.jpg.asset.json";
+import inventory from "@/assets/landing/inventory.jpg.asset.json";
 
 export const Route = createFileRoute("/welcome")({
-  head: () => meta("PropFlow · The Only AI Software Dubai Brokers Need", "Organize leads, match properties from 40,000+ Dubai units, and close deals with branded dossiers — all in one place."),
+  head: () => meta("PropFlow · The Only AI Software Dubai Brokers Need", "PropFlow talks to your leads, finds the perfect properties from 40,000+ Dubai units, and helps you sell them — all in one place."),
   component: Landing,
 });
 
+const WINE = "bg-[#2A1015]";
 const muted = "text-[#5c554e]";
 const ink = "text-[var(--obsidian)]";
-const gold = "text-[var(--gold)]";
-const card = "rounded-xl border border-[var(--sand)] bg-white p-6";
+const gold = "text-[#9E845A]";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
+
+function Shot({ src, alt, className = "" }: { src: string; alt: string; className?: string }) {
+  return <img src={src} alt={alt} loading="lazy" className={`w-full rounded-lg border border-[var(--sand)] object-cover object-top shadow-md ${className}`} />;
 }
 
 function Landing() {
   return (
     <PublicLayout>
       {/* 1. Hero */}
-      <section className="bg-[var(--obsidian)] px-6 pb-24 pt-20 text-[var(--silk)]">
+      <section className={`${WINE} px-6 pb-24 pt-20 text-[var(--silk)]`}>
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
           <div>
-            <p className={`text-xs font-bold uppercase tracking-[0.15em] text-[var(--champagne)]`}>All-in-one real estate AI</p>
-            <h1 className="mb-6 mt-5 text-5xl font-semibold leading-tight md:text-7xl">The only AI software Dubai real estate brokers need.</h1>
-            <p className="max-w-xl text-[17px] leading-[1.7] text-[var(--silk)]/75">Stop losing deals to slow follow-ups. PropFlow organizes your leads, finds the perfect properties, and helps you close the deal — all in one place.</p>
+            <p className={`text-xs font-bold uppercase tracking-[0.18em] ${gold}`}>Your Real Estate AI Co-Pilot</p>
+            <h1 className="mb-6 mt-5 text-5xl font-semibold leading-tight md:text-6xl">The only AI software Dubai brokers need to close more deals.</h1>
+            <p className="max-w-xl text-[17px] leading-[1.7] text-[var(--silk)]/75">Stop losing clients because you are too busy doing paperwork. PropFlow talks to your leads, finds the perfect properties, and helps you sell them—all in one place.</p>
             <div className="mt-10 flex flex-wrap gap-4">
-              <a href="/login?mode=signup" className="rounded-md bg-[var(--gold)] px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--obsidian)] hover:opacity-90">Start your free trial</a>
+              <a href="/login?mode=signup" className="rounded-md bg-[#9E845A] px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--silk)] hover:opacity-90">Start your free trial</a>
               <button onClick={() => scrollTo("pricing")} className="rounded-md border border-[var(--silk)]/30 px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-[var(--silk)]/10">View pricing</button>
             </div>
-            <p className="mt-4 text-[13px] text-[var(--silk)]/55">14-day free trial · No card required · Full access from day one</p>
+            <p className="mt-4 text-[13px] text-[var(--silk)]/55">14-day free trial · No card required</p>
           </div>
           <div className="relative">
-            <PipelineMockup />
-            <span className="metric absolute -top-4 right-6 rounded-full bg-[var(--gold)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--obsidian)] shadow-lg">✨ AI Matched • 99%</span>
-            <span className="absolute -bottom-4 right-10 rounded-full bg-[var(--success)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg">✓ Deal Closed</span>
+            <img src={pipeline.url} alt="PropFlow client pipeline dashboard" className="w-full rounded-2xl border border-[var(--silk)]/15 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)]" />
+            <span className="absolute -top-4 right-6 rounded-full bg-[#9E845A] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg">✨ 99% Match</span>
+            <span className="absolute -bottom-4 left-8 rounded-full bg-[#9E845A] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg">✨ Top 4 Units Found</span>
           </div>
         </div>
       </section>
 
-      {/* 2. Growth engine */}
-      <section className="bg-[var(--silk)]">
-      <div className="mx-auto max-w-7xl px-6 py-24">
-        <h2 className={`mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl ${ink}`}>From your first lead to closing day, PropFlow makes it simple.</h2>
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          <Step icon={<Zap />} t="1. Organize Every Lead" body="Add each new lead with their exact budget and goal — Off-Plan, Ready or Rental — and see your whole pipeline, hot leads first, in one list.">
-            <p className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${gold}`}>Client wants</p>
-            <p className="mt-1 text-[13px] font-medium">2–3BR · Dubai Marina · <span className="metric">AED 2.5M</span></p>
-            <div className="mt-3 flex items-center justify-between rounded-lg border border-[var(--sand)] bg-white px-3 py-2 text-[13px]">
-              <span className="font-medium">Off-Plan · Hot lead</span>
-              <span className="metric rounded-full bg-[var(--gold)]/15 px-2 py-0.5 text-[11px] text-[var(--gold)]">New</span>
-            </div>
-          </Step>
-          <Step icon={<Building2 />} t="2. Instant Dual-Matching" body="The AI scans 40,000+ developer units and shows you the top 4 properties for your buyer in seconds. Your own private listings sit alongside in My Listings.">
-            <div className="grid grid-cols-2 gap-1.5">
-              {[["Marina Star", "90%"], ["Oasis Res.", "88%"], ["Creek Vista", "84%"], ["Palm View", "81%"]].map(([p, s]) => (
-                <div key={p} className="flex items-center justify-between rounded-md border border-[var(--sand)] bg-white px-2 py-1.5 text-[11px]"><span className="font-medium">{p}</span><span className="metric text-[var(--gold)]">{s}</span></div>
-              ))}
-            </div>
-          </Step>
-          <Step icon={<FileText />} t="3. White-Label PDFs & Pitches" body="With one click, download a PDF featuring your own company logo, or copy an AI-written pitch straight to WhatsApp to close the deal.">
-            <div className="grid grid-cols-2 gap-2">
-              {["View Floorplan", "View Payment Plan", "Download PDF", "Copy Pitch & WhatsApp"].map((a, i) => (
-                <div key={a} className={`rounded-md border px-2 py-2 text-center text-[10px] font-semibold uppercase tracking-wider ${i === 3 ? "border-[var(--gold)] bg-[var(--gold)] text-white" : "border-[var(--sand)] bg-white"}`}>{a}</div>
-              ))}
-            </div>
-          </Step>
+      {/* 2. How it works */}
+      <section className="bg-[var(--silk)] px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <h2 className={`mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl ${ink}`}>From a new lead to a closed deal in 3 simple steps.</h2>
+          <div className="mt-20 grid gap-8 md:grid-cols-3">
+            {[
+              [leads.url, "1. The AI Talks to Your Leads", "We put our smart AI on your WhatsApp, Telegram, Instagram, and website. When a client messages you, the AI replies, finds out their exact budget (Off-Plan, Ready, or Rental), and instantly schedules a call for you."],
+              [dossier.url, "2. Instant Dual-Inventory Matching", "No more manual searching. The AI instantly scans over 40,000 live developer units AND your own private property listings to find the 4 absolute best homes for your client in one second."],
+              [payment.url, "3. 1-Click Brochures & Pitches", "Click one button to create a stunning PDF brochure with your own company logo. Or, click \"Copy Pitch\" to send a perfect, AI-written sales message straight to their WhatsApp."],
+            ].map(([src, t, d]) => (
+              <div key={t} className="rounded-xl border border-[var(--sand)] bg-white p-6 pt-0">
+                <div className="-mt-12 mb-6"><Shot src={src} alt={t} className="h-48" /></div>
+                <h3 className={`text-[18px] font-semibold ${ink}`}>{t}</h3>
+                <p className={`mt-2 text-[15px] ${muted}`}>{d}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
       </section>
 
       {/* 3. Problems vs solutions */}
-      <section className="bg-[var(--obsidian)] px-6 py-24 text-[var(--silk)]">
+      <section className={`${WINE} px-6 py-24 text-[var(--silk)]`}>
         <div className="mx-auto max-w-6xl">
-          <h2 className="mb-12 text-center text-3xl font-medium md:text-4xl">Stop losing opportunities every day.</h2>
-          <div className="grid gap-10 md:grid-cols-2">
-            <ul className="space-y-6">
-              {["You are wasting hours jumping between WhatsApp, Excel, and developer websites.", "It takes too long to calculate payment plans and make PDFs for clients.", "You miss out on selling new launches because you didn't see the news in time."].map((x) => (
+          <h2 className="mb-12 text-center text-3xl font-medium md:text-4xl">Stop working the hard way.</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            <ul className="space-y-6 rounded-xl border border-[var(--silk)]/10 p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--silk)]/50">The old way</p>
+              {["Wasting hours switching between WhatsApp, Excel, and developer websites.", "Taking too long to calculate payment plans and make PDFs yourself.", "Missing out on new property launches because you didn't check the news."].map((x) => (
                 <li key={x} className="flex gap-3 text-[16px] text-[var(--silk)]/55"><X className="mt-1 size-4 shrink-0" />{x}</li>
               ))}
             </ul>
-            <ul className="space-y-6">
-              {["Keep all your leads, private properties, and daily news in one platform.", "Let the AI instantly calculate milestones and generate branded brochures.", "Read a quick summary of the market's most important updates each day."].map((x) => (
-                <li key={x} className="flex gap-3 text-[16px]"><Check className="mt-1 size-4 shrink-0 text-[var(--champagne)]" />{x}</li>
+            <ul className="space-y-6 rounded-xl border border-[#9E845A]/40 bg-[var(--silk)]/5 p-8">
+              <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${gold}`}>The PropFlow way</p>
+              {["Keep all your clients, private properties, and conversations in one clean screen.", "Let the AI instantly calculate payments and make your branded brochures.", "Get live market news the second you open your dashboard."].map((x) => (
+                <li key={x} className="flex gap-3 text-[16px]"><Check className={`mt-1 size-4 shrink-0 ${gold}`} />{x}</li>
               ))}
             </ul>
           </div>
@@ -93,36 +95,42 @@ function Landing() {
       </section>
 
       {/* 4. Feature grid */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            ["Private Listings & Brand Logo", "Save your own rental and secondary listings and upload your company logo to brand every document."],
-            ["The AI Sales Co-Pilot", "During a client call, ask the AI for prices, payment plans and area highlights — answered from real listing data."],
-            ["Interactive Dossiers & Maps", "Open a property to see photos, floor plans and live Google satellite maps in one click."],
-            ["Daily Market News", "A short daily summary of the latest Dubai real estate news and project launches."],
-            ["Payment Plan Modeler", "Show buyers every milestone in AED and adjust the down payment live."],
-            ["Instant WhatsApp Pitches", "Generate and copy property pitches straight to WhatsApp."],
-          ].map(([t, d]) => (
-            <div key={t} className="border border-[var(--sand)] bg-[var(--silk)] p-8">
-              <h3 className={`text-[17px] font-semibold ${ink}`}>{t}</h3>
-              <p className={`mt-2 text-[15px] ${muted}`}>{d}</p>
-            </div>
-          ))}
+      <section className="bg-[var(--silk)] px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <h2 className={`text-center text-3xl font-medium md:text-4xl ${ink}`}>The complete AI toolkit.</h2>
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              [inventory.url, "Upload Your Own Properties & Logo", "Upload your own ready-to-move and rental properties so the AI can use them. Add your company logo so every PDF document looks like it came directly from your brand."],
+              [overview.url, "Your AI Co-Pilot on Sales Calls", "While you are on the phone with a client, type a question to your AI assistant. It will instantly calculate ROI or suggest alternative locations so you always have the right answer."],
+              [mapShot.url, "Interactive Maps & Dossiers", "Open a property to see a beautiful 3x3 photo gallery. Click \"View Location\" to open live Google Maps, or check floor plans and payment schedules instantly."],
+              [news.url, "Live Market Intelligence", "Every time you open PropFlow, it fetches live updates, DLD data, and new property launches directly from the web, ensuring you are always the smartest broker in the room."],
+              [leads.url, "Automated Lead Categorization", "Never lose track of a prospect. The AI automatically sorts every incoming lead into clean categories so you know exactly who is buying, renting, or looking for a Golden Visa."],
+              [dossier.url, "Instant Multilingual Support", "Dubai is a global market. Your AI assistant can converse with leads in multiple languages, capturing their exact requirements before seamlessly translating the brief for your dashboard."],
+            ].map(([src, t, d]) => (
+              <div key={t} className="overflow-hidden rounded-xl border border-[var(--sand)] bg-white">
+                <img src={src} alt={t} loading="lazy" className="h-44 w-full border-b border-[var(--sand)] object-cover object-top" />
+                <div className="p-6">
+                  <h3 className={`text-[17px] font-semibold ${ink}`}>{t}</h3>
+                  <p className={`mt-2 text-[15px] ${muted}`}>{d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* 5. Why PropFlow */}
-      <section className="bg-[#211d1a] px-6 py-24 text-[var(--silk)]">
+      <section className={`${WINE} px-6 py-24 text-[var(--silk)]`}>
         <div className="mx-auto max-w-6xl">
-          <h2 className="mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl">Why real estate professionals choose PropFlow over generic tools.</h2>
+          <h2 className="text-center text-3xl font-medium md:text-4xl">Why Dubai brokers love PropFlow.</h2>
           <div className="mt-14 grid gap-10 md:grid-cols-3">
             {[
-              ["Built just for Dubai.", "It comes pre-loaded with 40,000+ local off-plan units and local news."],
-              ["Replaces your other tools.", "You can cancel your PDF builders, news subscriptions, and messy spreadsheets."],
-              ["Extremely easy to use.", "No IT department needed. Ready to launch today."],
+              ["Built for Dubai", "Already loaded with local off-plan data and DLD structures."],
+              ["Replaces everything else", "Cancel your other expensive PDF tools, news subscriptions, and messy spreadsheets."],
+              ["Super easy to use", "If you can use a smartphone, you can use PropFlow. No tech skills needed."],
             ].map(([t, d]) => (
               <div key={t}>
-                <div className="mb-4 h-px w-10 bg-[var(--gold)]" />
+                <div className="mb-4 h-px w-10 bg-[#9E845A]" />
                 <h3 className="text-[18px] font-semibold">{t}</h3>
                 <p className="mt-3 text-[15px] text-[var(--silk)]/70">{d}</p>
               </div>
@@ -131,115 +139,56 @@ function Landing() {
         </div>
       </section>
 
-      {/* 6. Testimonials (demo) */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <p className={`text-center text-xs font-bold uppercase tracking-[0.15em] ${gold}`}>What brokers say · Demo examples</p>
-        <h2 className={`mt-3 text-center text-3xl font-medium md:text-4xl ${ink}`}>Loved by brokers across Dubai.</h2>
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+      {/* 6. Testimonials */}
+      <section className="bg-[var(--silk)] py-24">
+        <h2 className={`px-6 text-center text-3xl font-medium md:text-4xl ${ink}`}>Loved by brokers across Dubai.</h2>
+        <div className="mx-auto mt-14 flex max-w-7xl snap-x gap-6 overflow-x-auto px-6 pb-4">
           {[
-            ["The AI matching alone saves me two hours a day. My clients get a branded dossier before we've even hung up the phone.", "Sarah K.", "Senior Broker · Dubai Marina"],
-            ["I cancelled my PDF tools and my news subscriptions. PropFlow is the only tab open on my screen during client calls now.", "Omar A.", "Off-Plan Specialist · Downtown"],
-            ["The payment plan modeler closes the deal in the room. Buyers see every milestone in AED and sign on the spot.", "Priya R.", "Private Client Advisor · Palm Jumeirah"],
-          ].map(([quote, name, role]) => (
-            <figure key={name} className={`${card} flex flex-col`}>
-              <div className={`flex gap-1 ${gold}`} aria-label="5 out of 5 stars">
-                {Array.from({ length: 5 }).map((_, i) => <span key={i}>★</span>)}
-              </div>
-              <blockquote className={`mt-4 flex-1 text-[15px] leading-[1.7] ${ink}`}>"{quote}"</blockquote>
+            ["The dual-inventory matching is unreal. It pulls my own listings and developer units together and gives me the top 4 in a second.", "Sarah K.", "Senior Broker · Dubai Marina"],
+            ["I used to spend an hour on every PDF. Now my branded brochure is ready before I hang up the phone.", "Omar A.", "Off-Plan Specialist · Downtown"],
+            ["Matching plus 1-click PDFs saves me hours every week. PropFlow is the only tab open during my client calls.", "Priya R.", "Private Client Advisor · Palm Jumeirah"],
+            ["My clients get payment schedules and floor plans instantly. It makes me look like a much bigger agency.", "Daniel M.", "Broker · Business Bay"],
+          ].map(([q, n, r]) => (
+            <figure key={n} className="flex w-[340px] shrink-0 snap-start flex-col rounded-xl border border-[var(--sand)] bg-white p-7">
+              <div className={gold}>★★★★★</div>
+              <blockquote className={`mt-4 flex-1 text-[15px] leading-[1.7] ${ink}`}>"{q}"</blockquote>
               <figcaption className="mt-6 border-t border-[var(--sand)] pt-4">
-                <p className={`text-[14px] font-semibold ${ink}`}>{name}</p>
-                <p className={`text-[12px] ${muted}`}>{role}</p>
-                <p className={`mt-1 text-[10px] font-semibold uppercase tracking-[0.15em] ${gold}`}>Demo testimonial</p>
+                <p className={`text-[14px] font-semibold ${ink}`}>{n}</p>
+                <p className={`text-[12px] ${muted}`}>{r}</p>
               </figcaption>
             </figure>
           ))}
         </div>
       </section>
 
-      {/* 7. Pricing + FAQ */}
+      {/* Pricing + FAQ */}
       <section id="pricing" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-24">
-        <h2 className={`text-center text-3xl font-medium md:text-4xl ${ink}`}>Simple pricing. 50% Launch Discount Applied.</h2>
+        <h2 className={`text-center text-3xl font-medium md:text-4xl ${ink}`}>Simple pricing. 50% Launch Discount.</h2>
         <p className={`mt-3 text-center text-[15px] ${muted}`}>Every plan starts with a 14-day free trial — no card required.</p>
         <div className="mt-14 grid items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ["1-Month", "100", "200"],
-            ["3-Month", "250", "500"],
+          {([
+            ["1-Month", "100", "200", false],
+            ["3-Month", "250", "500", false],
             ["6-Month", "500", "1,000", true],
-            ["1-Year", "900", "1,800"],
-          ].map(([name, now, was, hot]) => (
-            <div key={name as string} className={`relative rounded-xl bg-white p-7 text-center ${hot ? "border-2 border-[var(--gold)] shadow-xl lg:scale-105 lg:py-10" : "border border-[var(--sand)]"}`}>
-              {hot ? <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[var(--gold)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white">Most popular</span> : null}
+            ["1-Year", "900", "1,800", false],
+          ] as const).map(([name, now, was, hot]) => (
+            <div key={name} className={`relative rounded-xl bg-white p-7 text-center ${hot ? "border-2 border-[#9E845A] shadow-xl lg:scale-110 lg:py-12" : "border border-[var(--sand)]"}`}>
+              {hot ? <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#9E845A] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-white">Most popular</span> : null}
               <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${gold}`}>{name}</p>
               <p className={`metric mt-4 text-4xl font-medium ${ink}`}>AED {now}</p>
               <p className={`metric mt-1 text-sm line-through ${muted}`}>Was AED {was}</p>
-              <a href="/login?mode=signup" className={`mt-6 block rounded-md px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] ${hot ? "bg-[var(--gold)] text-white" : "border border-[var(--sand)]"}`}>Choose plan</a>
+              <a href="/login?mode=signup" className={`mt-6 block rounded-md px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] ${hot ? "bg-[#9E845A] text-white" : "border border-[var(--sand)]"}`}>Choose plan</a>
             </div>
           ))}
         </div>
-        <div className="mx-auto mt-20 max-w-3xl">
+        <div className="mx-auto mt-24 max-w-3xl">
           <Accordion items={[
-            { q: "Is my data safe?", a: "Yes. Your leads, private listings and uploaded logos are stored privately in your own account — no other broker can see them." },
-            { q: "Can I use my own logo?", a: "Yes. Upload your logo in your profile and every PDF dossier carries your branding and contact details." },
+            { q: "Is my private inventory data safe?", a: "Yes. Your leads, private listings and uploaded logos are stored privately in your own account — no other broker can see them." },
+            { q: "Can I use my own logo on the PDFs?", a: "Yes. Upload your logo in your profile and every PDF carries your branding and contact details." },
             { q: "Can I cancel anytime?", a: "Yes. Plans are prepaid for their period and you can choose not to renew at any time." },
           ]} />
         </div>
       </section>
     </PublicLayout>
-  );
-}
-
-function Step({ icon, t, body, children }: { icon: ReactNode; t: string; body: string; children: ReactNode }) {
-  return (
-    <div className={`${card} flex flex-col gap-5`}>
-      <div className="rounded-lg bg-[var(--silk)] p-4">{children}</div>
-      <div>
-        <div className={`flex items-center gap-2 ${gold} [&_svg]:size-4`}>{icon}<h3 className={`text-[17px] font-semibold ${ink}`}>{t}</h3></div>
-        <p className={`mt-2 text-[15px] ${muted}`}>{body}</p>
-      </div>
-    </div>
-  );
-}
-
-function PipelineMockup() {
-  return (
-    <div className="relative overflow-hidden rounded-2xl border border-[var(--sand)] bg-[var(--silk)] shadow-[0_40px_100px_-20px_rgba(28,25,23,0.28)]">
-      <div className="flex items-center gap-3 border-b border-[var(--sand)] bg-white px-4 py-3">
-        <span className={`text-[11px] font-semibold tracking-[0.25em] ${ink}`}>PROPFLOW</span>
-        <div className="flex flex-wrap gap-1">
-          {["Dashboard", "Leads", "Inventory", "My Listings", "Market Intel", "News"].map((n, i) => (
-            <span key={n} className={`rounded-full px-2 py-1 text-[8px] font-semibold uppercase tracking-[0.12em] ${i === 1 ? "bg-[var(--sand)]" : ""}`}>{n}</span>
-          ))}
-        </div>
-      </div>
-      <div className="p-5 pb-20">
-        <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${ink}`}>Client pipeline</p>
-        <div className="mt-3 flex gap-1.5">
-          {["All Leads", "Off-Plan", "Ready", "Rental"].map((f, i) => (
-            <span key={f} className={`rounded-full border px-2.5 py-1 text-[10px] ${i === 0 ? "border-[var(--gold)] bg-[var(--gold)] text-white" : "border-[var(--sand)] bg-white"}`}>{f}</span>
-          ))}
-        </div>
-        {[["Emin Yilmaz", "AED 3.00M", "Oasis Residences • 406", "99%"], ["Sample lead", "AED 1.80M", "Marina Star • 1204", "90%"]].map(([n, b, u, m], i) => (
-          <div key={n} className={`mt-3 flex items-center justify-between gap-3 rounded-xl border border-[var(--sand)] bg-white p-3 ${i ? "opacity-60" : ""}`}>
-            <div>
-              <p className={`text-[13px] font-semibold ${ink}`}>{n}</p>
-              <p className={`metric text-[11px] ${muted}`}>{b}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-[11px] font-medium">{u}</p>
-              <div className="mt-1 flex items-center justify-end gap-2">
-                <span className="metric rounded-full bg-[var(--gold)]/15 px-2 py-0.5 text-[10px] text-[var(--gold)]">{m} Match</span>
-                <span className={`text-[10px] font-semibold ${gold}`}>View Dossier ➔</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full border border-[var(--sand)] bg-white py-1.5 pl-1.5 pr-3 shadow-md">
-        <span className="grid size-6 place-items-center rounded-full bg-[var(--gold)] text-[9px] font-bold text-white">NS</span>
-        <span className="text-[10px] font-semibold tracking-wider">NIHAL</span>
-        <Settings className={`size-3 ${gold}`} />
-        <span className={`ml-1 text-[9px] font-semibold ${muted}`}>LOG OUT</span>
-      </div>
-    </div>
   );
 }
