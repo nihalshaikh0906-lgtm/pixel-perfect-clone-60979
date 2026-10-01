@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, X } from "lucide-react";
+import { Check, Sparkles, X } from "lucide-react";
 
 import { Accordion, meta, PublicLayout } from "@/components/public/PublicLayout";
 import pipeline from "@/assets/landing/pipeline.jpg.asset.json";
@@ -47,8 +47,8 @@ function Landing() {
           </div>
           <div className="relative">
             <img src={pipeline.url} alt="PropFlow client pipeline dashboard" className="w-full rounded-2xl border border-[var(--silk)]/15 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)]" />
-            <span className="absolute -top-4 right-6 rounded-full bg-[#9E845A] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg">✨ 99% Match</span>
-            <span className="absolute -bottom-4 left-8 rounded-full bg-[#9E845A] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg">✨ Top 4 Units Found</span>
+            <span className="absolute -top-4 right-6 rounded-full bg-[#9E845A] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg inline-flex items-center gap-1.5"><Sparkles className="size-3" />99% Match</span>
+            <span className="absolute -bottom-4 left-8 rounded-full bg-[#9E845A] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg inline-flex items-center gap-1.5"><Sparkles className="size-3" />Top 4 Units Found</span>
           </div>
         </div>
       </section>
