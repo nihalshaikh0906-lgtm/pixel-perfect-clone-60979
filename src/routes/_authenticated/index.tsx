@@ -137,6 +137,10 @@ function CommandHub() {
     .reduce((sum, c) => sum + (Number(c.budget_max_aed) || 0), 0);
   const hot = clients.filter((c) => c.temperature === "hot").length;
 
+  const trialDays = data?.trialEndsAt
+    ? Math.ceil((new Date(data.trialEndsAt).getTime() - Date.now()) / 86_400_000)
+    : null;
+
   const matches = useQueries({
     queries: clients.map((c) => ({
       queryKey: ["top-match", c.id],
@@ -186,6 +190,17 @@ function CommandHub() {
         {error ? (
           <p className="mb-6 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {(error as Error).message}
+          </p>
+        ) : null}
+
+        {trialDays !== null && trialDays > 0 ? (
+          <p className="mb-6 rounded-md border border-primary/40 bg-secondary px-4 py-3 text-sm">
+            <span className="font-semibold">Free trial</span> · {trialDays} day{trialDays === 1 ? "" : "s"} left of full access.
+          </p>
+        ) : null}
+        {trialDays !== null && trialDays <= 0 ? (
+          <p className="mb-6 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            Your free trial has ended. Contact us to choose a plan and keep full access.
           </p>
         ) : null}
 
