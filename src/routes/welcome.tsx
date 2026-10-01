@@ -32,6 +32,7 @@ function Landing() {
               <a href="/login?mode=signup" className="rounded-md bg-[var(--gold)] px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--obsidian)] hover:opacity-90">Start your free trial</a>
               <button onClick={() => scrollTo("pricing")} className="rounded-md border border-[var(--silk)]/30 px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-[var(--silk)]/10">View pricing</button>
             </div>
+            <p className="mt-4 text-[13px] text-[var(--silk)]/55">14-day free trial · No card required · Full access from day one</p>
           </div>
           <div className="relative">
             <PipelineMockup />
