@@ -174,12 +174,12 @@ function Dossier() {
   const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
-  // Dossier chat posts here first. Set VITE_PROPFLOW_BACKEND_URL (app settings) to
-  // override it; with neither in place the chat uses the built-in assistant.
-  const N8N_WEBHOOK_URL = "https://dealosai.app.n8n.cloud/webhook-test/dossier-copilot";
+  // Messages go to the n8n workflow (src/lib/copilot-target.ts) unless
+  // VITE_PROPFLOW_BACKEND_URL is set in app settings; with neither, the built-in
+  // assistant answers.
   const CHAT_ENDPOINT =
     (import.meta.env["VITE_PROPFLOW_BACKEND_URL"] as string | undefined) ||
-    (N8N_WEBHOOK_URL.startsWith("http") ? N8N_WEBHOOK_URL : "/api/chat");
+    (n8nConfigured() ? "/api/dossier-copilot" : "/api/chat");
   const [selectedUnit, setSelectedUnit] = useState<MatchRow | null>(null);
 
   async function ask(question: string) {
