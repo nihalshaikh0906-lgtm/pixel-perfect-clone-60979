@@ -198,7 +198,7 @@ function Dossier() {
         body: JSON.stringify({
           channel: "dossier_copilot",
           message: context
-            ? `${question}\n\n[On-screen options; option N = line N. Use these facts first. For a document or floor plan, answer with available details; offer a PDF rather than claiming one is attached.]\n${context}`
+            ? `${question}\n\n[Option N = line N below. Use these facts first. For a document or floor plan, answer with available details; offer a PDF rather than claiming one is attached.]\n${context}`
             : question,
           leadId: id,
           leadName: client?.full_name ?? null,
