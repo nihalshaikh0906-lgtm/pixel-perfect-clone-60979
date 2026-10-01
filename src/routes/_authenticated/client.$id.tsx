@@ -187,8 +187,12 @@ function Dossier() {
       const { data: sess } = await supabase.auth.getSession();
       const current = selectedUnit ?? units[0] ?? null;
       let res: Response;
+      // If the service sends nothing at all for 60 s, stop waiting and say so.
+      const ctrl = new AbortController();
+      const firstByte = setTimeout(() => ctrl.abort(), 60000);
       try {
         res = await fetch(CHAT_ENDPOINT, {
+          signal: ctrl.signal,
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -207,6 +211,8 @@ function Dossier() {
         });
       } catch {
         throw new Error("Unable to reach assistant service. Please check connection.");
+      } finally {
+        clearTimeout(firstByte);
       }
       const ctype = res.headers.get("content-type") ?? "";
       if (res.ok && ctype.includes("application/json")) {
