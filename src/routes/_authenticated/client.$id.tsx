@@ -16,7 +16,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { endMeeting } from "@/lib/assistant.functions";
 import { logoDataUrl, useBrokerProfile, type BrokerProfile } from "@/lib/broker";
 import { aed, quarterOf, timeAgo } from "@/lib/format";
-import { n8nConfigured } from "@/lib/copilot-target";
 
 function mergeUnits(prev: MatchRow[], add: MatchRow[]) {
   const seen = new Set(prev.map((u) => u.unit_id));
