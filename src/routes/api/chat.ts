@@ -22,13 +22,17 @@ export const Route = createFileRoute("/api/chat")({
           global: { headers: { Authorization: `Bearer ${token}`, apikey: key } },
           auth: { persistSession: false, autoRefreshToken: false },
         });
+        console.log("[chat] auth start");
         const { data: userData, error: userError } = await supabase.auth.getUser(token);
+        console.log("[chat] auth done", !!userData?.user);
         if (userError || !userData?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
         const parsed = bodySchema.safeParse(await request.json().catch(() => null));
         if (!parsed.success) return Response.json({ error: "Invalid request" }, { status: 400 });
 
+        console.log("[chat] importing");
         const { streamChat, loadAiConfig } = await import("@/lib/deal-os.server");
+        console.log("[chat] imported");
         try {
           loadAiConfig();
         } catch (err) {
