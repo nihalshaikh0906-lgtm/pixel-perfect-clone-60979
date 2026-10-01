@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Speed up dossier replies by trimming repeated inventory details and overlapping safe request setup
+- [ ] Remove artificial 60-second chat deadlines so slower real replies are not discarded
 - [x] Remove the invented verification badge and Dashboard nav label
 - [x] Reduce dossier chat overhead without losing numbered property context
 - [x] Only provide dossier PDF after an explicit request or acceptance of an offer
