@@ -16,7 +16,7 @@ export const Route = createFileRoute("/welcome")({
   component: Landing,
 });
 
-const WINE = "bg-[#2A1015]";
+const DARK = "bg-[var(--obsidian)]";
 const muted = "text-[#5c554e]";
 const ink = "text-[var(--obsidian)]";
 const gold = "text-[#9E845A]";
