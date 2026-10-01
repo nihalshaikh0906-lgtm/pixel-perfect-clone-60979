@@ -154,7 +154,7 @@ export function PropertyPackDrawer({
             {tourUrl ? (
               <Button
                 variant="outline"
-                className="border-[var(--gold)]/50 text-[var(--gold)] hover:bg-[var(--gold)]/10"
+                className="border-gold/50 text-gold hover:bg-gold/10 hover:text-gold"
                 onClick={() => setTourOpen(true)}
               >
                 <Play className="size-4 fill-current" /> Watch Project Tour
