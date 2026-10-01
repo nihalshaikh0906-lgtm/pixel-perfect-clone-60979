@@ -222,11 +222,14 @@ function Dossier() {
               return next;
             });
           } else if (ev.type === "units") {
+            setResearching(false);
             const rows = await fetchRows(ev.units);
             if (rows.length) {
               setAiUnits(rows);
               setSessionUnits((prev) => mergeUnits(prev, rows));
             }
+          } else if (ev.type === "search") {
+            setResearching(true);
           } else if (ev.type === "error") {
             throw new Error(ev.message);
           }
@@ -239,6 +242,7 @@ function Dossier() {
     } finally {
       setPending(false);
       setStreaming(false);
+      setResearching(false);
     }
   }
 
@@ -419,9 +423,9 @@ function Dossier() {
                 </div>
               </div>
             ))}
-            {askMutation.isPending ? (
+            {askMutation.isPending || researching ? (
               <p className="flex items-center gap-2 text-sm text-primary">
-                <Loader2 className="size-4 animate-spin" /> Scanning inventory…
+                <span className="shimmer-text font-medium">🌐 PropFlow is researching live market data…</span>
               </p>
             ) : null}
             {askMutation.error ? (
