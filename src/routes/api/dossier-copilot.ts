@@ -57,11 +57,9 @@ export const Route = createFileRoute("/api/dossier-copilot")({
             method: "POST",
             headers: { "content-type": "application/json", accept: "application/json" },
             body: JSON.stringify(body),
-            signal: AbortSignal.timeout(60000),
           });
         } catch (err) {
-          const reason = err instanceof Error && err.name === "TimeoutError" ? "took too long" : "no answer";
-          return Response.json({ error: `n8n ${reason} — is the workflow listening?` }, { status: 502 });
+          return Response.json({ error: "n8n did not answer — is the workflow listening?" }, { status: 502 });
         }
 
         const raw = await upstream.text();
