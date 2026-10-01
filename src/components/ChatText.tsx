@@ -1,4 +1,6 @@
 // Lightweight Markdown renderer for AI replies: headings, lists, tables, **bold**.
+// When `reveal` is true, blocks (and list items) fade in line by line with a
+// staggered delay for a smooth, readable entrance.
 function inlineBold(s: string) {
   return s.split(/(\*\*[^*]+\*\*)/g).map((part, k) =>
     part.startsWith("**") && part.endsWith("**") ? (
@@ -22,7 +24,10 @@ function cleanInline(s: string) {
   return s.replace(/^#+\s*/, "").replace(/__/g, "");
 }
 
-export function ChatText({ text }: { text: string }) {
+const STEP_MS = 220; // delay between successive lines
+const HOLD_MS = 3200; // cap on total stagger so long replies still feel snappy
+
+export function ChatText({ text, reveal = false }: { text: string; reveal?: boolean }) {
   const blocks: Block[] = [];
   for (const raw of text.split("\n")) {
     const line = raw.trim();
@@ -54,17 +59,37 @@ export function ChatText({ text }: { text: string }) {
     }
     blocks.push({ kind: "p", text: cleanInline(line) });
   }
+
+  // Stagger plan: each visual line (block or list item) gets its own delay.
+  const delays: number[] = [];
+  let step = 0;
+  for (const b of blocks) {
+    const count = b.kind === "ol" || b.kind === "ul" ? Math.max(1, b.items.length) : 1;
+    delays.push(step * STEP_MS);
+    step += count;
+  }
+  const maxDelay = Math.min(step * STEP_MS, HOLD_MS);
+
+  const lineStyle = (blockIdx: number, itemIdx = -1): React.CSSProperties => {
+    if (!reveal) return {};
+    const extra = itemIdx >= 0 ? Math.min((itemIdx + 1) * STEP_MS, maxDelay) : 0;
+    return {
+      animationDelay: `${Math.min(delays[blockIdx]! + extra, maxDelay + 400)}ms`,
+    };
+  };
+  const rc = reveal ? "chat-reveal" : undefined;
+
   return (
     <div className="space-y-2">
       {blocks.map((b, i) => {
-        if (b.kind === "p") return <p key={i}>{inlineBold(b.text)}</p>;
+        if (b.kind === "p") return <p key={i} className={rc} style={lineStyle(i)}>{inlineBold(b.text)}</p>;
         if (b.kind === "h")
           return b.level === 1 ? (
-            <h3 key={i} className="pt-1 text-[15px] font-semibold uppercase tracking-[0.08em]">
+            <h3 key={i} className={`pt-1 text-[15px] font-semibold uppercase tracking-[0.08em] ${rc ?? ""}`} style={lineStyle(i)}>
               {inlineBold(b.text)}
             </h3>
           ) : (
-            <h4 key={i} className="pt-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary">
+            <h4 key={i} className={`pt-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary ${rc ?? ""}`} style={lineStyle(i)}>
               {inlineBold(b.text)}
             </h4>
           );
@@ -72,13 +97,13 @@ export function ChatText({ text }: { text: string }) {
           return (
             <ul key={i} className="list-disc space-y-1 pl-5">
               {b.items.map((it, j) => (
-                <li key={j}>{inlineBold(it)}</li>
+                <li key={j} className={rc} style={lineStyle(i, j)}>{inlineBold(it)}</li>
               ))}
             </ul>
           );
         if (b.kind === "table")
           return (
-            <div key={i} className="overflow-x-auto">
+            <div key={i} className={`overflow-x-auto ${rc ?? ""}`} style={lineStyle(i)}>
               <table className="w-full border-collapse text-[14px]">
                 <tbody>
                   {b.rows.map((r, j) => (
@@ -97,7 +122,7 @@ export function ChatText({ text }: { text: string }) {
         return (
           <ol key={i} className="my-3 space-y-3">
             {b.items.map((it, j) => (
-              <li key={j} className="flex gap-2.5">
+              <li key={j} className={`flex gap-2.5 ${rc ?? ""}`} style={lineStyle(i, j)}>
                 <span className="metric w-5 shrink-0 text-right font-semibold text-primary">{it.n}.</span>
                 <span className="min-w-0">{inlineBold(it.text)}</span>
               </li>
