@@ -71,6 +71,7 @@ function LoginPage() {
             full_name: (username.trim() || firstName.trim()).toUpperCase(),
             phone: `${code} ${digits}`,
             instagram_handle: instagram.trim().replace(/^@/, "") || null,
+            trial_ends_at: new Date(Date.now() + 14 * 86_400_000).toISOString(),
           },
         },
       });
