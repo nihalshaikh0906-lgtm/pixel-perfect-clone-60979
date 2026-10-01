@@ -75,7 +75,9 @@ export const Route = createFileRoute("/api/dossier-copilot")({
         const reply = pickReply(raw);
         if (!reply) {
           return Response.json(
-            { error: `n8n replied with no text to show (${raw.slice(0, 160) || "empty body"})` },
+            {
+              error: `n8n sent back nothing to show (${raw.slice(0, 160) || "empty body"}). In n8n, your "Respond to Webhook" node must return the text, e.g. { "reply": "your answer" }`,
+            },
             { status: 502 },
           );
         }
