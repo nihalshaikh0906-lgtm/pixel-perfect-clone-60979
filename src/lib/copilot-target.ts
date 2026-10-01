@@ -1,4 +1,4 @@
-// Where the dossier chat sends each message.
+// Where the dossier chat sends each message — hardcoded, no environment variables.
 //
 // The browser cannot post to this address itself (it lives on another website, so the
 // browser blocks the call). The app's own server makes the call instead and hands the
