@@ -2,14 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Check, Sparkles, X } from "lucide-react";
 
 import { Accordion, meta, PublicLayout } from "@/components/public/PublicLayout";
-import pipeline from "@/assets/landing/pipeline.jpg.asset.json";
-import leads from "@/assets/landing/leads.jpg.asset.json";
-import dossier from "@/assets/landing/dossier.jpg.asset.json";
-import mapShot from "@/assets/landing/map.jpg.asset.json";
-import payment from "@/assets/landing/payment.jpg.asset.json";
-import overview from "@/assets/landing/overview.jpg.asset.json";
-import news from "@/assets/landing/news.jpg.asset.json";
-import inventory from "@/assets/landing/inventory.jpg.asset.json";
+import pipelineSrc from "@/assets/landing/pipeline.jpg";
+const pipeline = { url: pipelineSrc };
+import leadsSrc from "@/assets/landing/leads.jpg";
+const leads = { url: leadsSrc };
+import dossierSrc from "@/assets/landing/dossier.jpg";
+const dossier = { url: dossierSrc };
+import mapShotSrc from "@/assets/landing/map.jpg";
+const mapShot = { url: mapShotSrc };
+import paymentSrc from "@/assets/landing/payment.jpg";
+const payment = { url: paymentSrc };
+import overviewSrc from "@/assets/landing/overview.jpg";
+const overview = { url: overviewSrc };
+import newsSrc from "@/assets/landing/news.jpg";
+const news = { url: newsSrc };
+import inventorySrc from "@/assets/landing/inventory.jpg";
+const inventory = { url: inventorySrc };
 
 export const Route = createFileRoute("/welcome")({
   head: () => meta("PropFlow · The Only AI Software Dubai Brokers Need", "PropFlow talks to your leads, finds the perfect properties from 40,000+ Dubai units, and helps you sell them — all in one place."),
