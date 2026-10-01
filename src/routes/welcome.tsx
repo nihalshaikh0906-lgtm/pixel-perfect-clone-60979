@@ -22,46 +22,54 @@ function Landing() {
   return (
     <PublicLayout>
       {/* 1. Hero */}
-      <section className="bg-[var(--silk)] px-6 pb-24 pt-20">
+      <section className="bg-[var(--burgundy)] px-6 pb-24 pt-20 text-[var(--silk)]">
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
           <div>
-            <p className={`text-xs font-bold uppercase tracking-[0.15em] ${gold}`}>All-in-one real estate AI</p>
-            <h1 className={`mb-6 mt-5 text-5xl font-semibold leading-tight md:text-7xl ${ink}`}>The only AI software Dubai real estate brokers need.</h1>
-            <p className={`max-w-xl text-[17px] leading-[1.7] ${muted}`}>Stop losing deals because you are too busy doing paperwork. PropFlow gives you everything you need to organize your leads, find the perfect property, and close the deal — all in one place.</p>
-            <button onClick={() => scrollTo("pricing")} className="mt-10 rounded-md bg-[var(--gold)] px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white hover:opacity-90">View pricing plans</button>
+            <p className={`text-xs font-bold uppercase tracking-[0.15em] text-[var(--champagne)]`}>All-in-one real estate AI</p>
+            <h1 className="mb-6 mt-5 text-5xl font-semibold leading-tight md:text-7xl">The only AI software Dubai real estate brokers need.</h1>
+            <p className="max-w-xl text-[17px] leading-[1.7] text-[var(--silk)]/75">Stop losing deals to slow follow-ups. PropFlow organizes your leads, finds the perfect properties, and helps you close the deal — all in one place.</p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <a href="/login?mode=signup" className="rounded-md bg-[var(--gold)] px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--obsidian)] hover:opacity-90">Start your free trial</a>
+              <button onClick={() => scrollTo("pricing")} className="rounded-md border border-[var(--silk)]/30 px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-[var(--silk)]/10">View pricing</button>
+            </div>
           </div>
-          <PipelineMockup />
+          <div className="relative">
+            <PipelineMockup />
+            <span className="metric absolute -top-4 right-6 rounded-full bg-[var(--gold)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--obsidian)] shadow-lg">✨ AI Matched • 99%</span>
+            <span className="absolute -bottom-4 right-10 rounded-full bg-[var(--success)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--silk)] shadow-lg">✓ Deal Closed</span>
+          </div>
         </div>
       </section>
 
       {/* 2. Growth engine */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <h2 className={`mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl ${ink}`}>From your first lead to closing day, PropFlow makes your job simple.</h2>
+      <section className="bg-[var(--silk)]">
+      <div className="mx-auto max-w-7xl px-6 py-24">
+        <h2 className={`mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl ${ink}`}>From your first lead to closing day, PropFlow makes it simple.</h2>
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          <Step icon={<Zap />} t="1. Organize & Match Instantly" body="Stop searching through spreadsheets. Just type in what your buyer wants, and our AI instantly finds the perfect match from over 40,000 off-plan and private listings.">
+          <Step icon={<Zap />} t="1. Organize Every Lead" body="Add each new lead with their exact budget and goal — Off-Plan, Ready or Rental — and see your whole pipeline, hot leads first, in one list.">
             <p className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${gold}`}>Client wants</p>
             <p className="mt-1 text-[13px] font-medium">2–3BR · Dubai Marina · <span className="metric">AED 2.5M</span></p>
             <div className="mt-3 flex items-center justify-between rounded-lg border border-[var(--sand)] bg-white px-3 py-2 text-[13px]">
-              <span className="font-medium">Marina Star</span>
-              <span className="metric rounded-full bg-[var(--gold)]/15 px-2 py-0.5 text-[11px] text-[var(--gold)]">90% match</span>
+              <span className="font-medium">Off-Plan · Hot lead</span>
+              <span className="metric rounded-full bg-[var(--gold)]/15 px-2 py-0.5 text-[11px] text-[var(--gold)]">New</span>
             </div>
           </Step>
-          <Step icon={<Building2 />} t="2. View Complete Dossiers" body="Access everything you need in one click. Instantly view high-resolution photos, unit sizes, and handover dates without opening multiple developer websites.">
-            <div className="grid grid-cols-3 gap-1.5">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="aspect-square rounded-md" style={{ background: `linear-gradient(${40 * i}deg, #eae4dc, #c5a880)`, opacity: 0.55 + (i % 3) * 0.15 }} />
+          <Step icon={<Building2 />} t="2. Instant Dual-Matching" body="The AI scans 40,000+ developer units and shows you the top 4 properties for your buyer in seconds. Your own private listings sit alongside in My Listings.">
+            <div className="grid grid-cols-2 gap-1.5">
+              {[["Marina Star", "90%"], ["Oasis Res.", "88%"], ["Creek Vista", "84%"], ["Palm View", "81%"]].map(([p, s]) => (
+                <div key={p} className="flex items-center justify-between rounded-md border border-[var(--sand)] bg-white px-2 py-1.5 text-[11px]"><span className="font-medium">{p}</span><span className="metric text-[var(--gold)]">{s}</span></div>
               ))}
             </div>
-            <p className="mt-2 flex justify-between text-[11px]"><span>1,120 sqft</span><span className="metric">Handover Q2 2027</span></p>
           </Step>
-          <Step icon={<FileText />} t="3. Pitch & Present" body="Look like a top-tier professional. Generate beautiful PDF brochures, calculate payment plans, or send an AI-crafted pitch directly to WhatsApp with your own contact details.">
+          <Step icon={<FileText />} t="3. White-Label PDFs & Pitches" body="With one click, download a PDF featuring your own company logo, or copy an AI-written pitch straight to WhatsApp to close the deal.">
             <div className="grid grid-cols-2 gap-2">
-              {["View Floorplan", "View Payment Plan", "View Location", "Copy Pitch & WhatsApp"].map((a, i) => (
+              {["View Floorplan", "View Payment Plan", "Download PDF", "Copy Pitch & WhatsApp"].map((a, i) => (
                 <div key={a} className={`rounded-md border px-2 py-2 text-center text-[10px] font-semibold uppercase tracking-wider ${i === 3 ? "border-[var(--gold)] bg-[var(--gold)] text-white" : "border-[var(--sand)] bg-white"}`}>{a}</div>
               ))}
             </div>
           </Step>
         </div>
+      </div>
       </section>
 
       {/* 3. Problems vs solutions */}
@@ -75,7 +83,7 @@ function Landing() {
               ))}
             </ul>
             <ul className="space-y-6">
-              {["Keep all your leads, properties, and daily news organized in one single dashboard.", "Let the AI instantly calculate payment milestones and generate your brochures.", "Read a quick summary of the market's most important updates each day."].map((x) => (
+              {["Keep all your leads, private properties, and daily news in one platform.", "Let the AI instantly calculate milestones and generate branded brochures.", "Read a quick summary of the market's most important updates each day."].map((x) => (
                 <li key={x} className="flex gap-3 text-[16px]"><Check className="mt-1 size-4 shrink-0 text-[var(--champagne)]" />{x}</li>
               ))}
             </ul>
@@ -87,12 +95,12 @@ function Landing() {
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            ["AI Property Matching", "Type in a budget, and the AI finds the property for you."],
-            ["Daily Market News", "A simple, automated daily summary of Dubai real estate news."],
-            ["1-Click Branded PDFs", "Create beautiful client presentations with your own logo."],
-            ["Private Inventory", "Upload your own rental and secondary market listings safely under \"My Listings\"."],
-            ["Interactive Satellite Maps", "Click \"View Location\" to show clients exactly where the property is with live maps."],
-            ["Instant WhatsApp Pitches", "Generate and copy high-converting property pitches straight to WhatsApp."],
+            ["Private Listings & Brand Logo", "Save your own rental and secondary listings and upload your company logo to brand every document."],
+            ["The AI Sales Co-Pilot", "During a client call, ask the AI for prices, payment plans and area highlights — answered from real listing data."],
+            ["Interactive Dossiers & Maps", "Open a property to see photos, floor plans and live Google satellite maps in one click."],
+            ["Daily Market News", "A short daily summary of the latest Dubai real estate news and project launches."],
+            ["Payment Plan Modeler", "Show buyers every milestone in AED and adjust the down payment live."],
+            ["Instant WhatsApp Pitches", "Generate and copy property pitches straight to WhatsApp."],
           ].map(([t, d]) => (
             <div key={t} className="border border-[var(--sand)] bg-[var(--silk)] p-8">
               <h3 className={`text-[17px] font-semibold ${ink}`}>{t}</h3>
@@ -105,12 +113,12 @@ function Landing() {
       {/* 5. Why PropFlow */}
       <section className="bg-[var(--burgundy)] px-6 py-24 text-[var(--silk)]">
         <div className="mx-auto max-w-6xl">
-          <h2 className="mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl">Why Dubai brokers choose PropFlow over generic software.</h2>
+          <h2 className="mx-auto max-w-3xl text-center text-3xl font-medium leading-snug md:text-4xl">Why real estate professionals choose PropFlow over generic tools.</h2>
           <div className="mt-14 grid gap-10 md:grid-cols-3">
             {[
               ["Built just for Dubai.", "It comes pre-loaded with 40,000+ local off-plan units and local news."],
               ["Replaces your other tools.", "You can cancel your PDF builders, news subscriptions, and messy spreadsheets."],
-              ["Extremely easy to use.", "You don't need an IT department. If you can use a smartphone, you can use PropFlow."],
+              ["Extremely easy to use.", "No IT department needed. Ready to launch today."],
             ].map(([t, d]) => (
               <div key={t}>
                 <div className="mb-4 h-px w-10 bg-[var(--gold)]" />
