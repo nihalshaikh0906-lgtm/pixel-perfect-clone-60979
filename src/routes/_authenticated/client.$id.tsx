@@ -173,6 +173,9 @@ function Dossier() {
   const [researching, setResearching] = useState(false);
   const [askError, setAskError] = useState<Error | null>(null);
 
+  const CHAT_ENDPOINT = (import.meta.env["VITE_AI_CHAT_ENDPOINT"] as string | undefined) || "/api/chat";
+  const [selectedUnit, setSelectedUnit] = useState<MatchRow | null>(null);
+
   async function ask(question: string) {
     setPending(true);
     setStreaming(false);
@@ -182,14 +185,49 @@ function Dossier() {
       .map((m) => ({ role: m.role, content: m.content }));
     try {
       const { data: sess } = await supabase.auth.getSession();
-      const res = await fetch("/api/chat", {
+      const current = selectedUnit ?? units[0] ?? null;
+      let res: Response;
+      // If the service sends nothing at all for 60 s, stop waiting and say so.
+      const ctrl = new AbortController();
+      const firstByte = setTimeout(() => ctrl.abort(), 60000);
+      try {
+        res = await fetch(CHAT_ENDPOINT, {
+          signal: ctrl.signal,
         method: "POST",
         headers: {
           "content-type": "application/json",
           authorization: `Bearer ${sess.session?.access_token ?? ""}`,
         },
-        body: JSON.stringify({ client_id: id, messages: history, context: buildContext() }),
-      });
+        body: JSON.stringify({
+          message: question,
+          leadId: id,
+          currentProperty: current?.project_name ?? null,
+          budget: { min: client?.budget_min_aed ?? null, max: client?.budget_max_aed ?? null },
+          intent: client?.purpose ?? null,
+          client_id: id,
+          messages: history,
+          context: buildContext(),
+        }),
+        });
+      } catch {
+        throw new Error("Unable to reach assistant service. Please check connection.");
+      } finally {
+        clearTimeout(firstByte);
+      }
+      const ctype = res.headers.get("content-type") ?? "";
+      if (res.ok && ctype.includes("application/json")) {
+        // External services may answer with a single JSON reply instead of a stream.
+        const j = await res.json().catch(() => null);
+        const reply = typeof j === "string" ? j : (j?.reply ?? j?.message ?? j?.text ?? j?.output ?? "");
+        if (!reply) throw new Error("Unable to reach assistant service. Please check connection.");
+        setChat((prev) => [...prev, { role: "assistant", content: String(reply), at: new Date().toISOString() }]);
+        return;
+      }
+      if (ctype.startsWith("text/plain") && res.ok) {
+        const reply = await res.text();
+        setChat((prev) => [...prev, { role: "assistant", content: reply, at: new Date().toISOString() }]);
+        return;
+      }
       if (!res.ok || !res.body) {
         const j = await res.json().catch(() => null);
         throw new Error(`Error ${res.status}: ${j?.error ?? res.statusText}`);
@@ -343,7 +381,14 @@ function Dossier() {
             ) : null}
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {units.map((row) => (
-                <UnitCard key={row.unit_id} row={row} onOpen={setOpenUnit} />
+                <UnitCard
+                  key={row.unit_id}
+                  row={row}
+                  onOpen={(r) => {
+                    setSelectedUnit(r);
+                    setOpenUnit(r);
+                  }}
+                />
               ))}
             </div>
           </section>
@@ -425,7 +470,7 @@ function Dossier() {
             ))}
             {askMutation.isPending || researching ? (
               <p className="flex items-center gap-2 text-sm text-primary">
-                <span className="shimmer-text font-medium">🌐 PropFlow is researching live market data…</span>
+                <span className="shimmer-text rounded-full border border-gold/40 px-3 py-1 text-xs font-medium">PropFlow is analyzing project details…</span>
               </p>
             ) : null}
             {askMutation.error ? (
