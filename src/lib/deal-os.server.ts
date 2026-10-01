@@ -294,6 +294,7 @@ async function readStream(res: Response, onDelta: (t: string) => void): Promise<
 export type ChatEvent =
   | { type: "text"; delta: string }
   | { type: "units"; units: UnitRef[] }
+  | { type: "search"; label: string }
   | { type: "error"; message: string }
   | { type: "done" };
 
