@@ -135,7 +135,45 @@ const toolDefs = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "web_search",
+      description: "Live web search for developer history, project news, market trends or any fact not in the context.",
+      parameters: {
+        type: "object",
+        properties: { query: { type: "string", description: "Search query" } },
+        required: ["query"],
+      },
+    },
+  },
 ];
+
+/** Live web search via the Firecrawl connector. Returns compact results for the model. */
+async function firecrawlSearch(query: string): Promise<Json> {
+  const lovable = readEnv("LOVABLE_API_KEY");
+  const fc = readEnv("FIRECRAWL_API_KEY");
+  if (!lovable || !fc) return { error: "Web search is not configured." };
+  const res = await fetch("https://connector-gateway.lovable.dev/firecrawl/v2/search", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${lovable}`, "X-Connection-Api-Key": fc },
+    body: JSON.stringify({ query, limit: 6, sources: ["web", "news"] }),
+  });
+  const body = await res.text();
+  if (!res.ok) return { error: `Search failed [${res.status}]: ${body.slice(0, 200)}` };
+  const j = JSON.parse(body);
+  const raw: { title?: string; url?: string; snippet?: string; description?: string; date?: string }[] = [
+    ...(j?.data?.news ?? []),
+    ...(j?.data?.web ?? []),
+    ...(Array.isArray(j?.data) ? j.data : []),
+  ];
+  const clean = (t = "") =>
+    t.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[#*_>`]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 500);
+  return raw
+    .filter((r) => r.url && r.title)
+    .slice(0, 6)
+    .map((r) => ({ title: r.title, source: new URL(r.url!).hostname.replace(/^www\./, ""), url: r.url, date: r.date ?? null, snippet: clean(r.snippet ?? r.description) }));
+}
 
 function clampLimit(v: unknown) {
   const n = Number(v);
