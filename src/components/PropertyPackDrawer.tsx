@@ -64,6 +64,7 @@ export function PropertyPackDrawer({
   const brochure = documents.find((d) => d.type === "brochure");
   const floorPlan =
     data?.selected_unit?.floor_plan_urls?.[0] ?? documents.find((d) => d.type === "floor_plan")?.url;
+  const tourUrl = findTourUrl(data);
 
   async function copyPitch() {
     const plan = data?.payment_plans?.[0];
