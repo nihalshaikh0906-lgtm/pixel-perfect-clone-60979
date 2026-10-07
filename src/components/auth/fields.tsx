@@ -6,7 +6,7 @@ export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 type FieldProps = {
   id: string; label: string; value: string; onChange: (v: string) => void;
   type?: string; placeholder?: string; autoComplete?: string; disabled?: boolean;
-  error?: string | null | undefined; ok?: boolean | undefined; onBlur?: (() => void) | undefined; right?: ReactNode; hint?: ReactNode; placeholderX?: never;
+  error?: string | null | undefined; ok?: boolean | undefined; onBlur?: (() => void) | undefined; right?: ReactNode; hint?: ReactNode;
 };
 
 export function Field({ id, label, value, onChange, type = "text", placeholder, autoComplete, disabled, error, ok, onBlur, right, hint }: FieldProps) {
