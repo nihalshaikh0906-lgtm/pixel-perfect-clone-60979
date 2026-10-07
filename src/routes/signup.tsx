@@ -91,12 +91,12 @@ function SignupPage() {
       <p className="au-sub">Set up your broker account in under a minute.</p>
       <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
         <Field id="name" label="Full name" autoComplete="name" placeholder="Nihal Shaikh" value={f.name} onChange={set("name")} onBlur={blur("name")} disabled={busy}
-          ok={touched["name"] && ok.name} error={touched["name"] && !ok.name ? "Please enter your name." : null} />
+          ok={!!touched["name"] && ok.name} error={touched["name"] && !ok.name ? "Please enter your name." : null} />
         <Field id="agency" label="Agency (optional)" autoComplete="organization" placeholder="Your brokerage" value={f.agency} onChange={set("agency")} disabled={busy} />
         <Field id="phone" label="Phone" type="tel" autoComplete="tel" placeholder="+971 50 123 4567" value={f.phone} onChange={set("phone")} onBlur={blur("phone")} disabled={busy}
-          ok={touched["phone"] && ok.phone} error={touched["phone"] && f.phone && !ok.phone ? "Please enter a valid phone number." : null} />
+          ok={!!touched["phone"] && ok.phone} error={touched["phone"] && f.phone && !ok.phone ? "Please enter a valid phone number." : null} />
         <Field id="email" label="Email" type="email" autoComplete="email" placeholder="you@agency.ae" value={f.email} onChange={set("email")} onBlur={blur("email")} disabled={busy}
-          ok={touched["email"] && ok.email} error={touched["email"] && f.email && !ok.email ? "That doesn’t look like an email address." : null} />
+          ok={!!touched["email"] && ok.email} error={touched["email"] && f.email && !ok.email ? "That doesn’t look like an email address." : null} />
         <PasswordField id="password" label="Password" autoComplete="new-password" placeholder="At least 8 characters" value={f.password} onChange={set("password")} onBlur={blur("password")} disabled={busy}
           error={touched["password"] && f.password && !ok.password ? "Password must be at least 8 characters." : null} />
         <CheckBox id="terms" checked={terms} onChange={setTerms}>
