@@ -19,6 +19,8 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
 import { Route as AuthenticatedListingsRouteImport } from './routes/_authenticated/listings'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
@@ -80,6 +82,16 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
@@ -159,6 +171,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
@@ -181,6 +195,8 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
@@ -207,6 +223,8 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/listings': typeof AuthenticatedListingsRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
@@ -234,6 +252,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/app'
+    | '/dashboard'
+    | '/home'
     | '/inventory'
     | '/listings'
     | '/market'
@@ -256,6 +276,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/welcome'
+    | '/dashboard'
+    | '/home'
     | '/inventory'
     | '/listings'
     | '/market'
@@ -281,6 +303,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/_authenticated/app'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/home'
     | '/_authenticated/inventory'
     | '/_authenticated/listings'
     | '/_authenticated/market'
@@ -381,6 +405,20 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/inventory': {
@@ -496,6 +534,8 @@ const AuthenticatedAppRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedListingsRoute: typeof AuthenticatedListingsRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
@@ -507,6 +547,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedListingsRoute: AuthenticatedListingsRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
