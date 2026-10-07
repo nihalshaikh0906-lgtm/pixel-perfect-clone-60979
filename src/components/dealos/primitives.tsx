@@ -6,11 +6,11 @@ export const ease = [0.22, 1, 0.36, 1] as const;
 export const spring = { stiffness: 120, damping: 24, mass: 0.6 };
 export function RevealText({ children, className = '' }: { children: string; className?: string }) {
   const reduce = useReducedMotion();
-  return <motion.h2 className={className} aria-label={children.replaceAll('/', ' ')} initial="hidden" whileInView="shown" viewport={{ once: true, amount: .3 }}>{children.split('/').map((line, i) => <span className="d-line-mask" key={i}><motion.span aria-hidden variants={{ hidden: { y: reduce ? 0 : '110%', opacity: 0 }, shown: { y: 0, opacity: 1, transition: { duration: reduce ? .15 : .55, delay: reduce ? 0 : i * .05, ease } } }}>{line.trim()}</motion.span></span>)}</motion.h2>;
+  return <motion.h2 className={className} aria-label={children.replaceAll('/', ' ')} initial="hidden" whileInView="shown" viewport={{ once: true, amount: .15 }}>{children.split('/').map((line, i) => <span className="d-line-mask" key={i}><motion.span aria-hidden variants={{ hidden: { y: reduce ? 0 : '60%', opacity: 0 }, shown: { y: 0, opacity: 1, transition: { duration: reduce ? .15 : .3, delay: reduce ? 0 : i * .035, ease } } }}>{line.trim()}</motion.span></span>)}</motion.h2>;
 }
 export function Rise({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   const reduce = useReducedMotion();
-  return <motion.div className={className} initial={{ opacity: 0, y: reduce ? 0 : 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: reduce ? .15 : .4, delay: reduce ? 0 : delay, ease }}>{children}</motion.div>;
+  return <motion.div className={className} initial={{ opacity: 0, y: reduce ? 0 : 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .1 }} transition={{ duration: reduce ? .15 : .25, delay: reduce ? 0 : Math.min(delay, .12), ease }}>{children}</motion.div>;
 }
 export function Scene({ id, children, transition = 'stack', pinned = false, height = '180vh', dark = false, className = '' }: { id: string; children: ReactNode; transition?: 'stack' | 'circle' | 'fade'; pinned?: boolean; height?: string; dark?: boolean; className?: string }) {
   const ref = useRef<HTMLElement>(null);

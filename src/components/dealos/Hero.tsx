@@ -1,5 +1,5 @@
 import { Building2, ChartNoAxesCombined, ChevronRight, KeyRound, MapPin, MessageCircle, Percent, Play, Sparkles, Users, X } from 'lucide-react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import skyline from '@/assets/dealos-dubai.jpg';
 import { Dashboard } from './Dashboard';
 import { ease, Magnetic } from './primitives';
 export const tileIcons = [Users, Building2, MapPin, Sparkles, Percent, KeyRound, ChartNoAxesCombined, MessageCircle];
-export function GlassTiles({ compact = false }: { compact?: boolean }) { const reduce = useReducedMotion(); return <div className={`d-tiles ${compact?'compact':''}`} aria-hidden>{tileIcons.map((Icon,i)=><motion.div key={i} className={`d-glass-tile tile-${i}`} initial={{opacity:0,scale:.6}} animate={reduce ? {opacity:1,scale:1} : {opacity:1,scale:1,y:[0,-10,0],rotate:[-3,3,-3]}} transition={{opacity:{delay:.5+i*.07},scale:{delay:.5+i*.07},y:{duration:5+i*.4,repeat:Infinity,ease:'easeInOut'},rotate:{duration:8+i*.2,repeat:Infinity,ease:'easeInOut'}}}><Icon/></motion.div>)}</div>; }
+export function GlassTiles({ compact = false }: { compact?: boolean }) { const ref = useRef<HTMLDivElement>(null); const visible = useInView(ref); return <div ref={ref} data-in-view={visible} className={`d-tiles ${compact?'compact':''}`} aria-hidden>{tileIcons.map((Icon,i)=><div key={i} className={`d-glass-tile tile-${i}`}><Icon/></div>)}</div>; }
 export function Hero() {
  const ref=useRef<HTMLElement>(null); const reduce=useReducedMotion(); const [tour,setTour]=useState(false);
  const {scrollYProgress}=useScroll({target:ref,offset:['start start','end end']});

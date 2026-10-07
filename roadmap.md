@@ -17,3 +17,4 @@
 - [ ] Connect demo requests — awaiting a real destination; keep preview submission clearly labelled
 
 - [x] Restore charcoal/silk/gold on the public page and verify lighter, faster transitions
+- [x] Remove scroll interpolation, isolate page scenes from navigation updates, and shorten text reveals
