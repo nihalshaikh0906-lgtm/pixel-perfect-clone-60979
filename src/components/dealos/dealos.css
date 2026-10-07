@@ -193,3 +193,8 @@
 
 .dealos{--d-indigo:var(--d-gold-text)}
 .dealos .d-positive{color:#1F6B4A!important}.dealos .d-negative{color:#A3302A!important}
+.dealos{--primary:var(--d-gold-text);--ring:var(--d-gold-text)}
+.dealos .d-tabs>button,.dealos .d-mini-chat>p,.dealos .d-browser-bar>span,.dealos .d-chip,.dealos .d-avatar,.dealos .d-quote-avatar,.dealos .d-flow-node,.dealos .d-calendar span.selected,.dealos [role=tab]{color:var(--d-text)}
+.dealos .d-tabs>button.active,.dealos .d-mini-chat>div{color:var(--d-gold-text)}
+.dealos .d-kpi-label>span.d-positive{color:#1F6B4A!important}.dealos .d-kpi-label>span.d-negative{color:#A3302A!important}
+.dealos .d-dashboard-heading h3 span{color:var(--d-gold-text)}
