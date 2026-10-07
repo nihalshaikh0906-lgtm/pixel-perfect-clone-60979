@@ -1,11 +1,13 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Bell, Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, KeyRound, LineChart, MapPinned,
-  Menu, Newspaper, Settings, Sparkles, Workflow, Wrench, Zap, Search, ListChecks,
+  Menu, Newspaper, Settings, Sparkles, Workflow, Wrench, Zap, Search, ListChecks, LogOut, User,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { AiChat } from "./AiChat";
+import { supabase } from "@/integrations/supabase/client";
 import { queueCount } from "@/lib/demo-leads";
 
 type ShellCtx = { clientMode: boolean; openAi: () => void };
@@ -22,7 +24,15 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   const [clientMode, setClientMode] = useState(false);
   const [ai, setAi] = useState(false);
   const [q, setQ] = useState("");
+  const [userMenu, setUserMenu] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    void navigate({ to: "/login", search: { mode: undefined }, replace: true });
+  };
 
   const groups: { title: string; items: Item[] }[] = [
     { title: "Work", items: [
@@ -84,7 +94,18 @@ export function AppShell({ children, userName, initials, agency }: { children: R
           <button type="button" className="a-collapse" onClick={() => setCollapsed((v) => !v)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
             {collapsed ? <ChevronsRight size={16} /> : <><ChevronsLeft size={16} /> Collapse</>}
           </button>
-          <div className="a-user"><span className="a-avatar">{initials}</span><span className="a-user-text"><b>{userName}</b><small>Broker · {agency}</small></span></div>
+          <div className="a-user-wrap">
+            {userMenu ? (
+              <div className="a-user-menu" role="menu">
+                <Link to="/settings" role="menuitem"><User size={16} /> Profile</Link>
+                <Link to="/app/$section" params={{ section: "settings" }} role="menuitem"><Settings size={16} /> Settings</Link>
+                <button type="button" role="menuitem" onClick={() => void signOut()}><LogOut size={16} /> Log out</button>
+              </div>
+            ) : null}
+            <button type="button" className="a-user" aria-haspopup="menu" aria-expanded={userMenu} aria-label="Account menu" onClick={() => setUserMenu((v) => !v)}>
+              <span className="a-avatar">{initials}</span><span className="a-user-text"><b>{userName}</b><small>Broker · {agency}</small></span>
+            </button>
+          </div>
         </aside>
 
         <div className="a-main">
