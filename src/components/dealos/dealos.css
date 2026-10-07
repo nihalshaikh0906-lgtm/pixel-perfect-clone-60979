@@ -151,3 +151,4 @@
 }
 @media (max-width:767px){.dealos .d-hero{height:auto}.dealos .d-hero-sticky{position:relative;height:auto;overflow:visible;padding-bottom:64px}.dealos .d-hero-dashboard{transform:none!important}}
 @media (max-width:767px){.dealos .d-hero-dashboard{height:auto;overflow:visible}}
+.dealos .d-insight small{font-size:13px}.dealos .d-insight p{font-size:14px}.dealos .d-mini-lead small,.dealos .d-dashboard-bottom h4,.dealos .d-filter{font-size:13px}
