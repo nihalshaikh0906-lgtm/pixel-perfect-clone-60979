@@ -17,8 +17,7 @@ export function Scene({ id, children, transition = 'stack', pinned = false, heig
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 25%'] });
   const y = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 24, 0]);
-  const opacity = useTransform(scrollYProgress, [0, .5], [reduce ? 1 : .85, 1]);
-  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><motion.div className="d-scene-inner d-scene-live" style={{ y, opacity }}>{children}</motion.div></section>;
+  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><motion.div className="d-scene-inner d-scene-live" style={{ y }}>{children}</motion.div></section>;
 }
 export function CountUp({ value, prefix = '', suffix = '', decimals = 0 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null); const inView = useInView(ref, { once: true }); const reduce = useReducedMotion(); const [n, setN] = useState(0);
