@@ -23,3 +23,6 @@
 - Keep landing scenes in normal document flow and use tab-selected workflow stages instead of a drag builder; this preserves uninterrupted scrolling and keyboard/touch interaction.
 - Animate individual landing reveals rather than scroll-transforming entire sections; autoplay illustrative portal and workspace previews only in view with pause controls and reduced-motion support to keep the restored live landing inexpensive.
 - Keep public demo booking explicitly non-transmitting until a real destination is configured; this prevents false delivery confirmations.
+
+- The /app broker workspace lives under src/routes/_authenticated/app*, styled by src/components/app/app.css scoped to .dapp; demo leads come only from src/lib/demo-leads.ts so they can later be swapped for real tables, and every count is derived from that data.
+- Matched units on lead pages come from the real search_units RPC, never from demo data, so prices and projects are never invented.
