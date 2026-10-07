@@ -15,3 +15,7 @@
 - All AI writing (chat, news summaries, market reports) goes through DeepSeek via deal-os.server (aiWrite/streamChat) — user asked for DeepSeek everywhere.
 - News = Firecrawl search (gateway) + DeepSeek summary, cached per Dubai day in memory — no news table exists.
 - Property tour links are resolved only in src/lib/youtube.ts (findTourUrl/youtubeEmbed) and rendered by ProjectTourModal — packs expose `videos`/`tours` arrays, so never assume a dedicated youtube_url column exists.
+
+- Keep DealOS public landing components and semantic token overrides scoped under `.dealos`; this preserves the authenticated PropFlow visual system.
+- Use scroll-linked Motion values for scene transitions and lazy visibility gates for heavy previews; this keeps reverse scrolling predictable and avoids upfront rendering costs.
+- Keep public demo booking explicitly non-transmitting until a real destination is configured; this prevents false delivery confirmations.
