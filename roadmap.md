@@ -16,4 +16,4 @@
 - [x] Validate reversible scroll, mobile interactions, reduced motion and page rendering
 - [ ] Connect demo requests — awaiting a real destination; keep preview submission clearly labelled
 
-- [ ] Restore charcoal/silk/gold on the public page and verify lighter, faster transitions
+- [x] Restore charcoal/silk/gold on the public page and verify lighter, faster transitions
