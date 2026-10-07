@@ -6,11 +6,11 @@ export const ease = [0.22, 1, 0.36, 1] as const;
 export const spring = { stiffness: 120, damping: 24, mass: 0.6 };
 export function RevealText({ children, className = '' }: { children: string; className?: string }) {
   const reduce = useReducedMotion();
-  return <motion.h2 className={className} aria-label={children.replaceAll('/', ' ')} initial="hidden" whileInView="shown" viewport={{ once: true, amount: .3 }}>{children.split('/').map((line, i) => <span className="d-line-mask" key={i}><motion.span aria-hidden variants={{ hidden: { y: reduce ? 0 : '110%', opacity: 0 }, shown: { y: 0, opacity: 1, transition: { duration: reduce ? .3 : .9, delay: reduce ? 0 : i * .08, ease } } }}>{line.trim()}</motion.span></span>)}</motion.h2>;
+  return <motion.h2 className={className} aria-label={children.replaceAll('/', ' ')} initial="hidden" whileInView="shown" viewport={{ once: true, amount: .3 }}>{children.split('/').map((line, i) => <span className="d-line-mask" key={i}><motion.span aria-hidden variants={{ hidden: { y: reduce ? 0 : '110%', opacity: 0 }, shown: { y: 0, opacity: 1, transition: { duration: reduce ? .15 : .55, delay: reduce ? 0 : i * .05, ease } } }}>{line.trim()}</motion.span></span>)}</motion.h2>;
 }
 export function Rise({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   const reduce = useReducedMotion();
-  return <motion.div className={className} initial={{ opacity: 0, y: reduce ? 0 : 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: reduce ? .3 : .6, delay: reduce ? 0 : delay, ease }}>{children}</motion.div>;
+  return <motion.div className={className} initial={{ opacity: 0, y: reduce ? 0 : 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: reduce ? .15 : .4, delay: reduce ? 0 : delay, ease }}>{children}</motion.div>;
 }
 export function Scene({ id, children, transition = 'stack', pinned = false, height = '180vh', dark = false, className = '' }: { id: string; children: ReactNode; transition?: 'stack' | 'circle' | 'fade'; pinned?: boolean; height?: string; dark?: boolean; className?: string }) {
   const ref = useRef<HTMLElement>(null);
@@ -18,13 +18,11 @@ export function Scene({ id, children, transition = 'stack', pinned = false, heig
   const mobile = useIsMobile();
   const { scrollYProgress: entry } = useScroll({ target: ref, offset: ['start end', 'start start'] });
   const { scrollYProgress: exit } = useScroll({ target: ref, offset: ['end end', 'end start'] });
-  const y = useTransform(entry, [0, 1], ['12vh', '0vh']);
-  const radius = useTransform(entry, [0, 1], ['40px', '0px']);
-  const clipPath = useTransform(entry, [0, .85], ['circle(15% at 50% 50%)', 'circle(150% at 50% 50%)']);
-  const opacity = useTransform(entry, [0, .75], [.35, 1]);
-  const scale = useTransform(exit, [0, 1], [1, .94]);
-  const filter = useTransform(exit, [0, 1], ['brightness(1) blur(0px)', 'brightness(.82) blur(3px)']);
-  return <section ref={ref} id={id} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${pinned ? 'd-pinned' : ''} ${dark ? 'd-dark' : ''} ${className}`} style={pinned && !reduce ? { minHeight: height } : undefined}><motion.div className="d-scene-inner" style={reduce || mobile ? {} : { y: transition === 'stack' ? y : 0, borderRadius: transition === 'stack' ? radius : 0, ...(transition === 'circle' ? {clipPath} : {}), opacity: transition === 'fade' ? opacity : 1, scale: pinned ? scale : 1, filter: pinned ? filter : 'none' }}>{children}</motion.div></section>;
+  const visible = useInView(ref, { margin: '200px' });
+  const y = useTransform(entry, [0, .8], [32, 0]);
+  const opacity = useTransform(entry, [0, .7], [.6, 1]);
+  const scale = useTransform(exit, [0, 1], [1, .98]);
+  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${pinned ? 'd-pinned' : ''} ${dark ? 'd-dark' : ''} ${className}`} style={pinned && !reduce ? { minHeight: height } : undefined}><motion.div className="d-scene-inner" style={reduce || mobile ? {} : { y, opacity: transition === 'fade' || transition === 'circle' ? opacity : 1, scale: pinned ? scale : 1 }}>{children}</motion.div></section>;
 }
 export function CountUp({ value, prefix = '', suffix = '', decimals = 0 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null); const inView = useInView(ref, { once: true }); const reduce = useReducedMotion(); const [n, setN] = useState(0);
