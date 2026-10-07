@@ -4,7 +4,7 @@
   --au-bad:var(--destructive);--au-ok:var(--au-gold-d);
   --au-night-0:#0B0B0F;--au-night:linear-gradient(160deg,var(--au-night-0) 0%,#1A1712 55%,#2A2217 100%);
   --au-ease:cubic-bezier(.22,1,.36,1);
-  background:var(--au-bg);color:var(--au-ink);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:24px;font-variant-numeric:lining-nums tabular-nums
+  background:var(--au-bg);color:var(--au-ink);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:24px;overflow-x:clip;font-variant-numeric:lining-nums tabular-nums
 }
 .dauth *{box-sizing:border-box}
 .dauth :focus-visible{outline:2px solid var(--au-gold);outline-offset:2px;border-radius:10px}
