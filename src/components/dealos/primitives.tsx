@@ -1,7 +1,6 @@
-import { animate, motion, useInView, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { animate, motion, useInView, useReducedMotion, useSpring } from 'framer-motion';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
 export const ease = [0.22, 1, 0.36, 1] as const;
 export const spring = { stiffness: 120, damping: 24, mass: 0.6 };
 export function RevealText({ children, className = '' }: { children: string; className?: string }) {
@@ -14,13 +13,8 @@ export function Rise({ children, className = '', delay = 0 }: { children: ReactN
 }
 export function Scene({ id, children, transition = 'stack', pinned = false, height = '180vh', dark = false, className = '' }: { id: string; children: ReactNode; transition?: 'stack' | 'circle' | 'fade'; pinned?: boolean; height?: string; dark?: boolean; className?: string }) {
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
-  const mobile = useIsMobile();
-  const { scrollYProgress: entry } = useScroll({ target: ref, offset: ['start end', 'start start'] });
   const visible = useInView(ref, { margin: '200px' });
-  const y = useTransform(entry, [0, .8], [16, 0]);
-  const opacity = useTransform(entry, [0, .7], [.8, 1]);
-  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><motion.div className="d-scene-inner" style={reduce || mobile ? {} : { y, opacity: transition === 'fade' || transition === 'circle' ? opacity : 1 }}>{children}</motion.div></section>;
+  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><div className="d-scene-inner">{children}</div></section>;
 }
 export function CountUp({ value, prefix = '', suffix = '', decimals = 0 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null); const inView = useInView(ref, { once: true }); const reduce = useReducedMotion(); const [n, setN] = useState(0);
