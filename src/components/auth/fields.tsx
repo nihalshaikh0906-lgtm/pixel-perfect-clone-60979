@@ -60,8 +60,8 @@ export function CheckBox({ checked, onChange, children, id }: { checked: boolean
 /** Reads whether Google sign-in is switched on for this project. */
 export async function googleEnabled(): Promise<boolean> {
   try {
-    const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-    const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+    const url = import.meta.env['VITE_SUPABASE_URL'] as string | undefined;
+    const key = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] as string | undefined;
     if (!url || !key) return false;
     const r = await fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } });
     if (!r.ok) return false;
