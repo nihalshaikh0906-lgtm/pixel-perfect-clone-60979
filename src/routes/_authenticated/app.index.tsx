@@ -153,7 +153,7 @@ function HomePage() {
       </section>
 
       <section className="a-row2 a-home2">
-        <div className="a-card a-fade" style={{ animationDelay: "360ms" }}>
+        <div className="a-card a-fade a-mkt" style={{ animationDelay: "360ms" }}>
           <div className="a-card-head"><h2>Dubai market · September 2026</h2><span className="a-note">Illustrative · DLD format</span></div>
           <div className="a-market">
             <div><p className="eyebrow-a">Sales</p><strong className="num">10,537</strong><p>−13.2% vs prev.</p></div>
