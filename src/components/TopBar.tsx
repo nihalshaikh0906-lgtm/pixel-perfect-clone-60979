@@ -30,7 +30,7 @@ export function TopBar({
         </div>
 
         <nav className="order-last flex w-full flex-wrap items-center justify-center gap-1 xl:order-none xl:w-auto xl:flex-1">
-          <Link to="/app/leads" className={NAV_PILL}>
+          <Link to="/app/leads" search={{ queue: "all" }} className={NAV_PILL}>
             Leads
           </Link>
           <Link to="/inventory" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
