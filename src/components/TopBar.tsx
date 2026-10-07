@@ -22,7 +22,7 @@ export function TopBar({
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1720px] flex-wrap items-center gap-4 px-6 py-3">
         <div className="flex items-center">
-          <Link to="/" className="flex items-baseline gap-1 font-display text-2xl tracking-[0.25em]">
+          <Link to="/app" className="flex items-baseline gap-1 font-display text-2xl tracking-[0.25em]">
             PROPFLOW<span className="size-1.5 rounded-full bg-primary" />
           </Link>
           <span className="mx-3 hidden h-5 border-r border-border lg:block" />
@@ -30,7 +30,7 @@ export function TopBar({
         </div>
 
         <nav className="order-last flex w-full flex-wrap items-center justify-center gap-1 xl:order-none xl:w-auto xl:flex-1">
-          <Link to="/" hash="pipeline" className={NAV_PILL}>
+          <Link to="/app/leads" search={{ queue: "all" }} className={NAV_PILL}>
             Leads
           </Link>
           <Link to="/inventory" className={NAV_PILL} activeProps={{ className: NAV_ACTIVE }}>
