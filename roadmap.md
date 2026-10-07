@@ -13,5 +13,5 @@
 ## DealOS public experience
 - [x] Build foundation, hero, product, insights, integrations, tools, workflow and modes from uploaded briefs
 - [x] Build proof, pricing, CTA and footer scenes
-- [ ] Validate reversible scroll, mobile interactions, reduced motion and performance
+- [x] Validate reversible scroll, mobile interactions, reduced motion and page rendering
 - [ ] Connect demo requests — awaiting a real destination; keep preview submission clearly labelled
