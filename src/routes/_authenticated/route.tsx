@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, useRouterState } from "@tanstack/react-router";
 
 import { GeneralCopilot } from "@/components/GeneralCopilot";
 import { ProfileWidget } from "@/components/ProfileWidget";
@@ -14,11 +14,16 @@ export const Route = createFileRoute("/_authenticated")({
     if (error || !data.user) throw redirect({ to: "/welcome" });
     return { user: data.user };
   },
-  component: () => (
+  component: AuthedLayout,
+});
+
+function AuthedLayout() {
+  const inApp = useRouterState({ select: (s) => s.location.pathname.startsWith("/app") });
+  return (
     <>
       <Outlet />
-      <ProfileWidget />
-      <GeneralCopilot />
+      {inApp ? null : <ProfileWidget />}
+      {inApp ? null : <GeneralCopilot />}
     </>
-  ),
-});
+  );
+}

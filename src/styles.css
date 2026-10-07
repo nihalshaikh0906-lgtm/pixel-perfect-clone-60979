@@ -2,6 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 @import "./components/dealos/dealos.css";
+@import "./components/app/app.css";
 
 @custom-variant dark (&:is(.dark *));
 
