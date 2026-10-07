@@ -26,7 +26,7 @@ export const Route = createFileRoute("/login")({
   }),
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/" });
+    if (data.session) throw redirect({ to: "/app" });
   },
   component: LoginPage,
 });
@@ -89,7 +89,7 @@ function LoginPage() {
     }
     setRemember(remember);
     await router.invalidate();
-    router.navigate({ to: "/", replace: true });
+    router.navigate({ to: "/app", replace: true });
   }
 
   const signup = mode === "signup";
