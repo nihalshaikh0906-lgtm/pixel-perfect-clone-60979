@@ -17,5 +17,5 @@
 - Property tour links are resolved only in src/lib/youtube.ts (findTourUrl/youtubeEmbed) and rendered by ProjectTourModal — packs expose `videos`/`tours` arrays, so never assume a dedicated youtube_url column exists.
 
 - Keep DealOS public landing components and semantic token overrides scoped under `.dealos`; this preserves the authenticated PropFlow visual system.
-- Use scroll-linked Motion values for scene transitions and lazy visibility gates for heavy previews; this keeps reverse scrolling predictable and avoids upfront rendering costs.
+- Use lightweight scroll-linked opacity and transforms, pause offscreen ambient animation, and avoid artificial loading delays; this preserves reversible transitions without expensive blur or clipping.
 - Keep public demo booking explicitly non-transmitting until a real destination is configured; this prevents false delivery confirmations.
