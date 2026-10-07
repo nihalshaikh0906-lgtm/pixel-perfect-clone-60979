@@ -18,4 +18,4 @@
 
 - [x] Restore charcoal/silk/gold on the public page and verify lighter, faster transitions
 - [x] Remove scroll interpolation, isolate page scenes from navigation updates, and shorten text reveals
-- [ ] Make every landing section scroll normally and replace drag-and-drop with click/tap workflow stages
+- [x] Make every landing section scroll normally and replace drag-and-drop with click/tap workflow stages
