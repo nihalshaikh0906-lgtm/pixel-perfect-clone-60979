@@ -16,12 +16,9 @@ export function Scene({ id, children, transition = 'stack', pinned = false, heig
   const visible = useInView(ref, { margin: '200px' });
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 25%'] });
-  const p = useSpring(scrollYProgress, spring);
-  const y = useTransform(p, [0, 1], [reduce ? 0 : 90, 0]);
-  const scale = useTransform(p, [0, 1], [reduce ? 1 : .94, 1]);
-  const radius = useTransform(p, [0, 1], [reduce ? 0 : 40, 0]);
-  const opacity = useTransform(p, [0, .5], [reduce ? 1 : .35, 1]);
-  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><motion.div className="d-scene-inner d-scene-live" style={{ y, scale, borderRadius: radius, opacity }}>{children}</motion.div></section>;
+  const y = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 24, 0]);
+  const opacity = useTransform(scrollYProgress, [0, .5], [reduce ? 1 : .85, 1]);
+  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><motion.div className="d-scene-inner d-scene-live" style={{ y, opacity }}>{children}</motion.div></section>;
 }
 export function CountUp({ value, prefix = '', suffix = '', decimals = 0 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null); const inView = useInView(ref, { once: true }); const reduce = useReducedMotion(); const [n, setN] = useState(0);

@@ -11,6 +11,7 @@
 - [x] n8n production workflow returns replies
 
 ## DealOS public experience
+- [x] Remove the custom cursor and reduce scroll/mouse animation overhead while retaining live controls
 - [x] Build foundation, hero, product, insights, integrations, tools, workflow and modes from uploaded briefs
 - [x] Build proof, pricing, CTA and footer scenes
 - [x] Validate reversible scroll, mobile interactions, reduced motion and page rendering
