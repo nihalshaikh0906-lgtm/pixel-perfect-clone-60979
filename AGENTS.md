@@ -20,5 +20,5 @@
 - Use lightweight scroll-linked opacity and transforms, pause offscreen ambient animation, and avoid artificial loading delays; this preserves reversible transitions without expensive blur or clipping.
 - Use native page scrolling, memoized landing scenes, and visibility-gated CSS tile motion; this keeps input immediate and prevents navigation updates from rerendering the whole page.
 - Keep landing scenes in normal document flow and use tab-selected workflow stages instead of a drag builder; this preserves uninterrupted scrolling and keyboard/touch interaction.
-- Animate individual landing reveals rather than scroll-transforming entire sections, and keep portal previews user-triggered; this avoids continuous full-section compositing and background rerenders.
+- Animate individual landing reveals rather than scroll-transforming entire sections; autoplay illustrative portal and workspace previews only in view with pause controls and reduced-motion support to keep the restored live landing inexpensive.
 - Keep public demo booking explicitly non-transmitting until a real destination is configured; this prevents false delivery confirmations.
