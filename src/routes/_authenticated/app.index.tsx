@@ -152,7 +152,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="a-row2">
+      <section className="a-row2 a-home2">
         <div className="a-card a-fade" style={{ animationDelay: "360ms" }}>
           <div className="a-card-head"><h2>Dubai market · September 2026</h2><span className="a-note">Illustrative · DLD format</span></div>
           <div className="a-market">
@@ -162,7 +162,7 @@ function HomePage() {
             <div><p className="eyebrow-a">New leases</p><strong className="num">82,691</strong><p>Ejari</p></div>
           </div>
         </div>
-        <div className="a-card a-fade" style={{ animationDelay: "400ms" }}>
+        <div className="a-card a-fade a-flow" style={{ animationDelay: "400ms" }}>
           <div className="a-card-head"><h2>How to work {n(LEADS.length)} leads</h2><span className="a-note">daily flow</span></div>
           <ol className="a-stepper">
             {[["Respond now", "Auto-reply sent; you call within 5 min"], ["Hot", "Qualify and send a shortlist"], ["Follow-ups", "Due calls and viewings"], ["Pipeline", "Move deals one stage forward"], ["Nurture", "Automations keep cold leads warm"]].map(([t, d], k) => (

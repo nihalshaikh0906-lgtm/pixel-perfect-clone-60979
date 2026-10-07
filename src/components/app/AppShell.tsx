@@ -100,7 +100,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 Client mode: {clientMode ? "on" : "off"}
               </button>
               <button type="button" className="a-btn a-btn-line a-hide-sm" style={{ width: 42, padding: 0 }} aria-label="Notifications"><Bell size={17} /></button>
-              <button type="button" className="a-btn a-btn-gold" onClick={() => setAi(true)}><Sparkles size={16} /> Ask AI</button>
+              <button type="button" className="a-btn a-btn-gold" onClick={() => setAi(true)}><Sparkles size={16} /><span className="a-ask-label">Ask AI</span></button>
             </div>
           </header>
           <main className="a-content">{children}</main>
