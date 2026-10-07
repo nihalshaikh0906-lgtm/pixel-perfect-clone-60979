@@ -154,7 +154,6 @@
 .dealos .d-insight small{font-size:13px}.dealos .d-insight p{font-size:14px}.dealos .d-mini-lead small,.dealos .d-dashboard-bottom h4,.dealos .d-filter{font-size:13px}
 /* === Readability hard rules === */
 .dealos{--d-text:#111111;--d-text-2:#3F3F46;--d-line:#E4E1DA;--d-gold-text:#8A6A35;--d-on-dark:#FFFFFF;--d-on-dark-2:rgba(255,255,255,.85);--d-soft:var(--d-text-2);--d-border:var(--d-line);color:var(--d-text);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-size:17px;line-height:1.5}
-.dealos *{font-weight:max(400,inherit)}
 .dealos p{color:var(--d-text-2);font-size:17px;line-height:1.5}
 .dealos h2{font-size:clamp(40px,4.4vw,72px);line-height:1.05;color:var(--d-text)}
 .dealos h3{color:var(--d-text)}
