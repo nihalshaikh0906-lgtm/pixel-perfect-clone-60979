@@ -96,7 +96,7 @@ function HomePage() {
       <section className="a-kpis">
         <Kpi delay={80} label="Respond now" value={s.respond} format={n} note="target: reply within 5 min" tone="t-hot" />
         <Kpi delay={120} label="New leads today" value={s.newToday} format={n} note={`${n(s.total)} leads in total`} />
-        <Kpi delay={160} label="Sales pipeline" value={s.pipeline} format={(x) => `AED ${n(x / 1e6)}M`} note={clientMode ? "qualified buyers' budgets" : `qualified buyers' budgets · ≈${formatAed(s.commission)} commission at 2%`} />
+        <Kpi delay={160} label="Sales pipeline" value={s.pipeline} format={(x) => formatAed(x)} note={clientMode ? "qualified buyers' budgets" : `qualified buyers' budgets · ≈${formatAed(s.commission)} commission at 2%`} />
         <Kpi delay={200} label="Deals won" value={s.won} format={n} note="across off-plan, ready and rent" tone="t-ok" />
       </section>
 
