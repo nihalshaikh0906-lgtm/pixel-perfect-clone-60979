@@ -18,6 +18,7 @@
 
 - Keep DealOS public landing components and semantic token overrides scoped under `.dealos`; this preserves the authenticated PropFlow visual system.
 - Use lightweight scroll-linked opacity and transforms, pause offscreen ambient animation, and avoid artificial loading delays; this preserves reversible transitions without expensive blur or clipping.
+- Drive landing scroll effects directly from scroll progress without spring interpolation or animated section scaling/radii, and avoid global pointer tracking; this reduces per-frame work and settling lag.
 - Use native page scrolling, memoized landing scenes, and visibility-gated CSS tile motion; this keeps input immediate and prevents navigation updates from rerendering the whole page.
 - Keep landing scenes in normal document flow and use tab-selected workflow stages instead of a drag builder; this preserves uninterrupted scrolling and keyboard/touch interaction.
 - Animate individual landing reveals rather than scroll-transforming entire sections; autoplay illustrative portal and workspace previews only in view with pause controls and reduced-motion support to keep the restored live landing inexpensive.
