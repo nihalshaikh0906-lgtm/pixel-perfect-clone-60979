@@ -1,4 +1,4 @@
-import { animate, motion, useInView, useReducedMotion, useSpring } from 'framer-motion';
+import { animate, motion, useInView, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 export const ease = [0.22, 1, 0.36, 1] as const;
@@ -14,7 +14,14 @@ export function Rise({ children, className = '', delay = 0 }: { children: ReactN
 export function Scene({ id, children, transition = 'stack', pinned = false, height = '180vh', dark = false, className = '' }: { id: string; children: ReactNode; transition?: 'stack' | 'circle' | 'fade'; pinned?: boolean; height?: string; dark?: boolean; className?: string }) {
   const ref = useRef<HTMLElement>(null);
   const visible = useInView(ref, { margin: '200px' });
-  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><div className="d-scene-inner">{children}</div></section>;
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 25%'] });
+  const p = useSpring(scrollYProgress, spring);
+  const y = useTransform(p, [0, 1], [reduce ? 0 : 90, 0]);
+  const scale = useTransform(p, [0, 1], [reduce ? 1 : .94, 1]);
+  const radius = useTransform(p, [0, 1], [reduce ? 0 : 40, 0]);
+  const opacity = useTransform(p, [0, .5], [reduce ? 1 : .35, 1]);
+  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><motion.div className="d-scene-inner d-scene-live" style={{ y, scale, borderRadius: radius, opacity }}>{children}</motion.div></section>;
 }
 export function CountUp({ value, prefix = '', suffix = '', decimals = 0 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null); const inView = useInView(ref, { once: true }); const reduce = useReducedMotion(); const [n, setN] = useState(0);
