@@ -20,3 +20,5 @@
 - [x] Remove scroll interpolation, isolate page scenes from navigation updates, and shorten text reveals
 - [x] Make every landing section scroll normally and replace drag-and-drop with click/tap workflow stages
 - [x] Remove full-section scroll animation overhead and automatic portal updates; add keyboard stage navigation
+- [ ] Restore lively landing previews and richer click-to-run workflow without drag-and-drop
+- [ ] Verify scrolling, preview interactions and reduced-motion rendering
