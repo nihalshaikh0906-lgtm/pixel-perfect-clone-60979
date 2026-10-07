@@ -18,6 +18,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
 import { Route as AuthenticatedListingsRouteImport } from './routes/_authenticated/listings'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
@@ -26,7 +27,11 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDossierCopilotRouteImport } from './routes/api/dossier-copilot'
 import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copilot'
+import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
+import { Route as AuthenticatedAppLeadsIndexRouteImport } from './routes/_authenticated/app.leads.index'
+import { Route as AuthenticatedAppLeadsIdRouteImport } from './routes/_authenticated/app.leads.$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -72,6 +77,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -112,10 +122,31 @@ const ApiGeneralCopilotRoute = ApiGeneralCopilotRouteImport.update({
   path: '/api/general-copilot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppSectionRoute = AuthenticatedAppSectionRouteImport.update({
+  id: '/$section',
+  path: '/$section',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedClientIdRoute = AuthenticatedClientIdRouteImport.update({
   id: '/client/$id',
   path: '/client/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppLeadsIndexRoute =
+  AuthenticatedAppLeadsIndexRouteImport.update({
+    id: '/leads/',
+    path: '/leads/',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppLeadsIdRoute = AuthenticatedAppLeadsIdRouteImport.update({
+  id: '/leads/$id',
+  path: '/leads/$id',
+  getParentRoute: () => AuthenticatedAppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -127,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
+  '/app': typeof AuthenticatedAppRouteWithChildren
   '/inventory': typeof AuthenticatedInventoryRoute
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
@@ -135,7 +167,11 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
+  '/app/$section': typeof AuthenticatedAppSectionRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
+  '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
+  '/app/leads/': typeof AuthenticatedAppLeadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
@@ -154,7 +190,11 @@ export interface FileRoutesByTo {
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/': typeof AuthenticatedIndexRoute
+  '/app/$section': typeof AuthenticatedAppSectionRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
+  '/app': typeof AuthenticatedAppIndexRoute
+  '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
+  '/app/leads': typeof AuthenticatedAppLeadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -166,6 +206,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
+  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/listings': typeof AuthenticatedListingsRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
@@ -175,7 +216,11 @@ export interface FileRoutesById {
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
+  '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
+  '/_authenticated/app/leads/': typeof AuthenticatedAppLeadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -188,6 +233,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/welcome'
+    | '/app'
     | '/inventory'
     | '/listings'
     | '/market'
@@ -196,7 +242,11 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/dossier-copilot'
     | '/api/general-copilot'
+    | '/app/$section'
     | '/client/$id'
+    | '/app/'
+    | '/app/leads/$id'
+    | '/app/leads/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
@@ -215,7 +265,11 @@ export interface FileRouteTypes {
     | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/'
+    | '/app/$section'
     | '/client/$id'
+    | '/app'
+    | '/app/leads/$id'
+    | '/app/leads'
   id:
     | '__root__'
     | '/_authenticated'
@@ -226,6 +280,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/welcome'
+    | '/_authenticated/app'
     | '/_authenticated/inventory'
     | '/_authenticated/listings'
     | '/_authenticated/market'
@@ -235,7 +290,11 @@ export interface FileRouteTypes {
     | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/_authenticated/'
+    | '/_authenticated/app/$section'
     | '/_authenticated/client/$id'
+    | '/_authenticated/app/'
+    | '/_authenticated/app/leads/$id'
+    | '/_authenticated/app/leads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -317,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/inventory': {
       id: '/_authenticated/inventory'
       path: '/inventory'
@@ -373,6 +439,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGeneralCopilotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/app/': {
+      id: '/_authenticated/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/$section': {
+      id: '/_authenticated/app/$section'
+      path: '/$section'
+      fullPath: '/app/$section'
+      preLoaderRoute: typeof AuthenticatedAppSectionRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/client/$id': {
       id: '/_authenticated/client/$id'
       path: '/client/$id'
@@ -380,10 +460,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/leads/': {
+      id: '/_authenticated/app/leads/'
+      path: '/leads'
+      fullPath: '/app/leads/'
+      preLoaderRoute: typeof AuthenticatedAppLeadsIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/leads/$id': {
+      id: '/_authenticated/app/leads/$id'
+      path: '/leads/$id'
+      fullPath: '/app/leads/$id'
+      preLoaderRoute: typeof AuthenticatedAppLeadsIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
+interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppSectionRoute: typeof AuthenticatedAppSectionRoute
+  AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppLeadsIdRoute: typeof AuthenticatedAppLeadsIdRoute
+  AuthenticatedAppLeadsIndexRoute: typeof AuthenticatedAppLeadsIndexRoute
+}
+
+const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppSectionRoute: AuthenticatedAppSectionRoute,
+  AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppLeadsIdRoute: AuthenticatedAppLeadsIdRoute,
+  AuthenticatedAppLeadsIndexRoute: AuthenticatedAppLeadsIndexRoute,
+}
+
+const AuthenticatedAppRouteWithChildren =
+  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedListingsRoute: typeof AuthenticatedListingsRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
@@ -394,6 +506,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedListingsRoute: AuthenticatedListingsRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
