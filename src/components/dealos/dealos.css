@@ -94,3 +94,58 @@
 @media (max-width:767px),(prefers-reduced-motion:reduce){.dealos .d-hero{height:auto!important}.dealos .d-hero-sticky{position:relative;height:auto;min-height:0;perspective:none;padding-bottom:56px}.dealos .d-hero-dashboard{transform:none!important}.dealos .d-hero-copy{opacity:1!important;transform:none!important}}
 
 .d-dash-search-wrap{position:relative;padding:0!important;border:0!important;background:none!important}.d-dash-search-btn{display:inline-flex;align-items:center;gap:8px;font:inherit;color:inherit;background:inherit;border:1px solid var(--d-border);border-radius:999px;padding:6px 12px;cursor:pointer}.d-dash-suggest{position:absolute;top:calc(100% + 6px);left:0;z-index:20;min-width:260px;display:flex;flex-direction:column;gap:2px;padding:6px;border-radius:12px;background:var(--d-white);border:1px solid var(--d-border);box-shadow:var(--d-shadow)}.d-dash-suggest button{text-align:left;font:inherit;font-size:11px;padding:8px 10px;border-radius:8px;background:none;border:0;color:var(--d-ink);cursor:pointer}.d-dash-suggest button:hover{background:var(--accent)}.d-dash-answer{font-size:11px;padding:8px 10px;color:var(--d-soft)}
+/* === Visibility & spacing fixes (no content/branding changes) === */
+.dealos .d-navbar.on-dark{background:color-mix(in srgb,var(--d-ink) 85%,transparent);backdrop-filter:blur(16px)}
+.dealos .d-navbar{backdrop-filter:blur(16px)}
+.dealos .d-scene{scroll-margin-top:112px}
+.dealos .d-pinned>.d-scene-inner{padding-top:112px}
+.dealos .d-scene-inner{padding:120px 0}
+.dealos .d-hero-copy{padding-top:132px}
+.dealos .d-hero-sticky{min-height:0}
+.dealos .d-hero-tint{background:linear-gradient(180deg,color-mix(in srgb,var(--d-ink) 0%,transparent),color-mix(in srgb,var(--d-ink) 60%,transparent)),linear-gradient(110deg,color-mix(in srgb,var(--d-dark-indigo) 83%,transparent),color-mix(in srgb,var(--d-indigo) 67%,transparent) 57%,color-mix(in srgb,var(--d-mint) 46%,transparent))}
+.dealos .d-hero{height:180svh}
+.dealos h2{font-size:clamp(34px,5.2vw,64px);line-height:1.05;max-width:92vw;margin-inline:auto;overflow-wrap:anywhere}
+.dealos .d-hero h1{font-size:clamp(38px,6vw,76px);line-height:1.05;max-width:min(980px,92vw)}
+.dealos .d-section-heading{position:relative;z-index:6;margin-bottom:40px}
+.dealos .d-section-heading>p{margin-top:24px}
+/* min readable sizes & contrast */
+.dealos .d-eyebrow,.dealos .d-demo-tag,.dealos .d-demo-note,.dealos .d-trust,.dealos .d-pill,.dealos .d-glass-pill{font-size:13px!important}
+.dealos .d-trust{color:color-mix(in srgb,var(--d-white) 80%,transparent)}
+.dealos{--d-soft:color-mix(in srgb,var(--obsidian) 78%,var(--silk))}
+/* Dashboard */
+.dealos .d-hero-dashboard{width:min(1060px,calc(100% - 64px))}
+.dealos .d-hero-dashboard .d-dashboard{transform:none;width:100%;min-width:0;max-height:none;overflow:visible}
+.dealos .d-dashboard{overflow:visible}
+.dealos .d-dashboard-main{overflow:visible}
+.dealos .d-dashboard-sidebar{gap:12px;overflow:hidden;border-radius:20px 0 0 20px}
+.dealos .d-dashboard-bar{font-size:13px}
+.dealos .d-kpis{gap:16px}
+.dealos .d-kpi,.dealos .d-hero-dashboard .d-kpi{padding:20px;display:flex;flex-direction:column;overflow:visible;min-width:0}
+.dealos .d-kpi-label{font-size:13px;flex-wrap:wrap;row-gap:6px;align-items:flex-start}
+.dealos .d-kpi-label>span{font-size:12px;font-weight:700;padding:4px 8px;white-space:nowrap;margin-left:auto}
+.dealos .d-kpi strong,.dealos .d-hero-dashboard .d-kpi strong{font-size:clamp(24px,2.4vw,36px);font-variant-numeric:tabular-nums lining-nums;white-space:nowrap;margin-top:10px;line-height:1.1}
+.dealos .d-spark{position:static;width:100%;height:36px;margin-top:10px}
+.dealos .d-kpi small{font-size:13px;margin-top:10px}
+.dealos .d-dashboard-heading h3{font-size:clamp(17px,1.8vw,21px)}
+/* Scroll hint & dot nav */
+.dealos .d-hero .d-scroll-hint{display:flex;left:50%;right:auto;bottom:24px;transform:translateX(-50%);font-size:13px;color:color-mix(in srgb,var(--d-white) 80%,transparent);transition:opacity .3s}
+.dealos.is-scrolled .d-hero .d-scroll-hint{opacity:0;pointer-events:none}
+.dealos .d-dot-nav{right:32px;gap:14px}
+.dealos .d-dot-nav small{right:calc(100% + 12px);top:50%;transform:translateY(-50%);font-size:13px;white-space:nowrap}
+@media (max-width:1023px){.dealos .d-dot-nav{display:none!important}.dealos .d-scene-inner{padding:80px 0}}
+@media (max-width:767px){
+ .dealos .d-scene-inner{padding:64px 0}
+ .dealos .d-pinned>.d-scene-inner{padding-top:88px}
+ .dealos .d-scene{scroll-margin-top:88px}
+ .dealos .d-hero-copy{padding-top:110px}
+ .dealos .d-hero-dashboard{width:calc(100% - 24px);margin-top:24px}
+ .dealos .d-dashboard-sidebar{display:none}
+ .dealos .d-dashboard-main{padding:0 12px 14px}
+ .dealos .d-dashboard-bar{gap:10px;flex-wrap:wrap;height:auto;padding:10px 0}
+ .dealos .d-dashboard-search{width:auto;flex:1;min-width:0}
+ .dealos .d-dashboard-heading{flex-wrap:wrap;gap:8px}
+ .dealos .d-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .dealos .d-kpi,.dealos .d-kpi:nth-child(-n+3){grid-column:span 1;padding:14px}
+ .dealos .d-kpi strong,.dealos .d-hero-dashboard .d-kpi strong{font-size:22px}
+ .dealos .d-kpi-label>span{margin-left:0}
+}
