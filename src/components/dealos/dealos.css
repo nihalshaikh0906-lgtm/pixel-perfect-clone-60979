@@ -39,3 +39,22 @@
 .d-tiles .d-glass-tile:nth-child(2n){animation-delay:-3s}
 @keyframes d-tile-float{50%{transform:translateY(-8px)}}
 @media(prefers-reduced-motion:reduce),(pointer:coarse){.d-tiles .d-glass-tile{animation:none}}
+
+/* All public scenes stay in the document flow. */
+.dealos .d-hero{height:auto!important}
+.dealos .d-hero-sticky{position:relative;height:auto;min-height:0;perspective:none;padding-bottom:56px}
+.dealos .d-hero-dashboard{height:auto;margin-top:32px;margin-bottom:0;transform:none!important}
+.dealos .d-hero-copy{opacity:1!important;transform:none!important}
+.dealos .d-pinned{min-height:0!important}
+.dealos .d-pinned>.d-scene-inner{position:relative;min-height:0}
+.d-workflow-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--d-border);gap:12px}
+.d-workflow-stages>button{height:64px;border-radius:0;font-size:14px;color:var(--d-soft);gap:12px;border-bottom:2px solid transparent}
+.d-workflow-stages>button.active{color:var(--d-indigo);border-bottom-color:var(--d-indigo);background:var(--accent)}
+.d-workflow-stages>button>svg:last-child{margin-left:auto}
+.d-workflow-stage-panel{padding:36px 0;min-height:200px}
+.d-workflow-stage-panel>div{display:grid;grid-template-columns:40px minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.d-workflow-stage-panel svg{color:var(--d-indigo);flex-shrink:0}
+.d-workflow-stage-panel h3{max-width:340px}
+.d-workflow-stage-panel ul{display:flex;flex-direction:column;gap:16px;font-size:14px}
+.d-workflow-stage-panel li{display:flex;gap:12px;align-items:center}
+@media(max-width:767px){.dealos .d-hero-dashboard{height:260px;overflow:hidden}.dealos .d-hero-sticky{padding-bottom:24px}.d-workflow-stages{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.d-workflow-stages>button{height:52px;font-size:12px;gap:8px}.d-workflow-stage-panel>div{grid-template-columns:28px minmax(0,1fr);gap:16px}.d-workflow-stage-panel ul{grid-column:2}.d-workflow-stage-panel{min-height:250px}}

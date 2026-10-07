@@ -17,12 +17,10 @@ export function Scene({ id, children, transition = 'stack', pinned = false, heig
   const reduce = useReducedMotion();
   const mobile = useIsMobile();
   const { scrollYProgress: entry } = useScroll({ target: ref, offset: ['start end', 'start start'] });
-  const { scrollYProgress: exit } = useScroll({ target: ref, offset: ['end end', 'end start'] });
   const visible = useInView(ref, { margin: '200px' });
-  const y = useTransform(entry, [0, .8], [32, 0]);
-  const opacity = useTransform(entry, [0, .7], [.6, 1]);
-  const scale = useTransform(exit, [0, 1], [1, .98]);
-  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${pinned ? 'd-pinned' : ''} ${dark ? 'd-dark' : ''} ${className}`} style={pinned && !reduce ? { minHeight: height } : undefined}><motion.div className="d-scene-inner" style={reduce || mobile ? {} : { y, opacity: transition === 'fade' || transition === 'circle' ? opacity : 1, scale: pinned ? scale : 1 }}>{children}</motion.div></section>;
+  const y = useTransform(entry, [0, .8], [16, 0]);
+  const opacity = useTransform(entry, [0, .7], [.8, 1]);
+  return <section ref={ref} id={id} data-in-view={visible} data-theme={dark ? 'dark' : 'light'} className={`d-scene ${dark ? 'd-dark' : ''} ${className}`}><motion.div className="d-scene-inner" style={reduce || mobile ? {} : { y, opacity: transition === 'fade' || transition === 'circle' ? opacity : 1 }}>{children}</motion.div></section>;
 }
 export function CountUp({ value, prefix = '', suffix = '', decimals = 0 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null); const inView = useInView(ref, { once: true }); const reduce = useReducedMotion(); const [n, setN] = useState(0);
