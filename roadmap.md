@@ -15,6 +15,8 @@
 - [x] Build foundation, hero, product, insights, integrations, tools, workflow and modes from uploaded briefs
 - [x] Build proof, pricing, CTA and footer scenes
 - [x] Validate reversible scroll, mobile interactions, reduced motion and page rendering
+- [x] New login, signup and reset-password pages
+- [x] Welcome hero intro animation
 - [ ] Connect demo requests — awaiting a real destination; keep preview submission clearly labelled
 
 - [x] Restore charcoal/silk/gold on the public page and verify lighter, faster transitions

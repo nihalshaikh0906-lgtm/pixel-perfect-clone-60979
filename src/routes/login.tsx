@@ -1,10 +1,9 @@
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { Loader2, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
+import { Check, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { AuthShell, Logo } from "@/components/auth/AuthShell";
+import { CheckBox, EMAIL_RE, Field, GoogleIcon, PasswordField, googleEnabled } from "@/components/auth/fields";
 import { supabase } from "@/integrations/supabase/client";
 import { setRemember } from "@/lib/remember";
 
@@ -13,177 +12,153 @@ export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>) => ({ mode: s["mode"] === "signup" ? ("signup" as const) : undefined }),
   head: () => ({
     meta: [
-      { title: "Sign in · PropFlow" },
-      { name: "description", content: "Broker sign-in for the Real Estate AI Deal OS command hub." },
-      { property: "og:title", content: "Sign in · PropFlow" },
-      {
-        property: "og:description",
-        content: "Broker sign-in for the Real Estate AI Deal OS command hub.",
-      },
+      { title: "Log in · DealOS" },
+      { name: "description", content: "Log in to your DealOS broker workspace: leads, units and Dubai market data." },
+      { property: "og:title", content: "Log in · DealOS" },
+      { property: "og:description", content: "Access your DealOS leads inbox, unit data and market intelligence." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  beforeLoad: async () => {
+  beforeLoad: async ({ search }) => {
+    if (search.mode === "signup") throw redirect({ to: "/signup", replace: true });
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/app" });
+    if (data.session) throw redirect({ to: "/app", replace: true });
   },
   component: LoginPage,
 });
 
-const COUNTRY_CODES = ["+971", "+966", "+974", "+965", "+968", "+973", "+91", "+44", "+1", "+7", "+86"];
+function friendly(msg: string) {
+  return /invalid login credentials/i.test(msg) ? "Email or password is incorrect" : msg;
+}
 
 function LoginPage() {
   const router = useRouter();
-  const search = Route.useSearch();
-  const [mode, setMode] = useState<"signin" | "signup">(search.mode ?? "signin");
-  const [remember, setRem] = useState(true);
-  const [firstName, setFirstName] = useState("");
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("+971");
-  const [phone, setPhone] = useState("");
-  const [instagram, setInstagram] = useState("");
   const [password, setPassword] = useState("");
+  const [touched, setTouched] = useState({ email: false, password: false });
+  const [remember, setRem] = useState(true);
+  const [state, setState] = useState<"idle" | "loading" | "success">("idle");
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [shake, setShake] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  const [google, setGoogle] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetState, setResetState] = useState<"idle" | "loading" | "sent">("idle");
+  const [resetErr, setResetErr] = useState<string | null>(null);
+  const [magic, setMagic] = useState<"idle" | "loading" | "sent">("idle");
 
-  async function onSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-    setInfo(null);
-    if (mode === "signup") {
-      const digits = phone.replace(/[^\d]/g, "");
-      if (digits.length < 6) {
-        setLoading(false);
-        setError("Please enter a valid phone number.");
-        return;
-      }
-      const { data, error: e } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: {
-            first_name: firstName.trim().toUpperCase(),
-            full_name: (username.trim() || firstName.trim()).toUpperCase(),
-            phone: `${code} ${digits}`,
-            instagram_handle: instagram.trim().replace(/^@/, "") || null,
-            trial_ends_at: new Date(Date.now() + 14 * 86_400_000).toISOString(),
-          },
-        },
-      });
-      setLoading(false);
-      if (e) return setError(e.message);
-      if (!data.session) {
-        setInfo("Account created. Check your email to confirm, then sign in.");
-        setMode("signin");
-        return;
-      }
-    } else {
-      const { error: e } = await supabase.auth.signInWithPassword({ email, password });
-      setLoading(false);
-      if (e) return setError(e.message);
+  useEffect(() => { void googleEnabled().then(setGoogle); }, []);
+
+  const emailOk = EMAIL_RE.test(email.trim());
+  const pwOk = password.length >= 8;
+  const busy = state !== "idle";
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setTouched({ email: true, password: true });
+    if (!emailOk || !pwOk || busy) return;
+    setState("loading"); setError(null);
+    const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    if (err) {
+      setState("idle"); setError(friendly(err.message)); setShake((v) => v + 1);
+      return;
     }
     setRemember(remember);
+    setState("success");
+    await new Promise((r) => setTimeout(r, 450));
+    setLeaving(true);
+    await new Promise((r) => setTimeout(r, 400));
     await router.invalidate();
-    router.navigate({ to: "/app", replace: true });
+    void router.navigate({ to: "/app", replace: true });
   }
 
-  const signup = mode === "signup";
+  async function sendReset() {
+    if (!EMAIL_RE.test(resetEmail.trim())) { setResetErr("Enter a valid email address."); return; }
+    setResetState("loading"); setResetErr(null);
+    const { error: err } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), { redirectTo: `${window.location.origin}/reset-password` });
+    if (err) { setResetState("idle"); setResetErr(err.message); return; }
+    setResetState("sent");
+  }
+
+  async function sendMagic() {
+    setTouched((t) => ({ ...t, email: true }));
+    if (!emailOk) { setError("Enter your email above to get a magic link."); return; }
+    setMagic("loading"); setError(null);
+    const { error: err } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: `${window.location.origin}/login`, shouldCreateUser: false } });
+    if (err) { setMagic("idle"); setError(err.message); return; }
+    setMagic("sent");
+  }
+
+  async function withGoogle() {
+    const { error: err } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/login` } });
+    if (err) setError(err.message);
+  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="panel w-full max-w-md p-8">
-        <p className="eyebrow">PropFlow · Private Access</p>
-        <h1 className="mt-3 text-2xl font-semibold uppercase tracking-wider">
-          {signup ? "Broker registration" : "Broker sign-in"}
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {signup ? "Create your broker profile." : "Use the credentials for your inventory workspace."}
-        </p>
+    <AuthShell leaving={leaving}>
+      <Logo size={40} />
+      <h1>Login to your workspace</h1>
+      <p className="au-sub">Enter your details to access your leads, units and market data.</p>
 
-        <form onSubmit={onSubmit} className="mt-8 space-y-4">
-          {signup ? (
-            <div className="space-y-2">
-              <Label htmlFor="first" className="eyebrow">First name</Label>
-              <Input id="first" required maxLength={60} value={firstName} onChange={(e) => setFirstName(e.target.value.toUpperCase())} className="uppercase" placeholder="NIHAL" />
+      {google ? (
+        <>
+          <button type="button" className="au-btn au-btn-line" onClick={() => void withGoogle()} disabled={busy}><GoogleIcon /> Continue with Google</button>
+          <div className="au-or">or</div>
+        </>
+      ) : null}
+
+      <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
+        <Field
+          id="email" label="Email" type="email" autoComplete="email" placeholder="you@agency.ae"
+          value={email} onChange={(v) => { setEmail(v); setError(null); }} disabled={busy}
+          onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+          ok={touched.email && emailOk}
+          error={touched.email && email && !emailOk ? "That doesn’t look like an email address." : null}
+        />
+        <PasswordField
+          id="password" label="Password" autoComplete="current-password" placeholder="••••••••"
+          value={password} onChange={(v) => { setPassword(v); setError(null); }} disabled={busy}
+          onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+          error={touched.password && password && !pwOk ? "Password must be at least 8 characters." : null}
+        />
+        <div className="au-row">
+          <CheckBox id="remember" checked={remember} onChange={setRem}>Remember me</CheckBox>
+          <button type="button" className="au-link" aria-expanded={forgot} onClick={() => { setForgot((v) => !v); setResetEmail((r) => r || email); }}>Forgot password?</button>
+        </div>
+
+        <div className={`au-slide ${forgot ? "open" : ""}`} aria-hidden={!forgot}>
+          <div>
+            <div className="au-slide-inner">
+              {resetState === "sent" ? (
+                <p className="au-msg good" style={{ margin: 0 }}>Reset link sent. Check your inbox for an email from DealOS.</p>
+              ) : (
+                <>
+                  <b>Reset your password</b>
+                  <Field id="reset-email" label="Email" type="email" autoComplete="email" placeholder="you@agency.ae" value={resetEmail} onChange={setResetEmail} error={resetErr} disabled={!forgot} />
+                  <button type="button" className="au-btn au-btn-line" onClick={() => void sendReset()} disabled={!forgot || resetState === "loading"}>
+                    {resetState === "loading" ? <Loader2 size={18} className="au-spin" /> : null} Send reset link
+                  </button>
+                </>
+              )}
             </div>
-          ) : null}
-          {signup ? (
-            <div className="space-y-2">
-              <Label htmlFor="username" className="eyebrow">Username (what we should call you - optional)</Label>
-              <Input
-                id="username"
-                maxLength={60}
-                value={username}
-                onChange={(e) => setUsername(e.target.value.toUpperCase())}
-                className="uppercase"
-                placeholder="NIHAL SHAIKH"
-              />
-            </div>
-          ) : null}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="eyebrow">Email ID</Label>
-            <Input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="broker@agency.ae" />
           </div>
-          {signup ? (
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="eyebrow">Phone number</Label>
-              <div className="flex gap-2">
-                <select
-                  aria-label="Country code"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  className="h-9 rounded-md border border-input bg-transparent px-2 text-sm"
-                >
-                  {COUNTRY_CODES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-                <Input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="50 123 4567" />
-              </div>
-            </div>
-          ) : null}
-          <div className="space-y-2">
-            <Label htmlFor="password" className="eyebrow">Password</Label>
-            <Input id="password" type="password" autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 8 : undefined} value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          {signup ? (
-            <div className="space-y-2">
-              <Label htmlFor="ig" className="eyebrow">Instagram (optional)</Label>
-              <div className="flex items-center rounded-md border border-input pl-3">
-                <span className="text-sm text-muted-foreground">@</span>
-                <Input id="ig" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" placeholder="nihal.realty" />
-              </div>
-            </div>
-          ) : null}
+        </div>
 
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
-            <input type="checkbox" checked={remember} onChange={(e) => setRem(e.target.checked)} className="size-4 accent-primary" />
-            Remember my session (stay logged in automatically)
-          </label>
+        <button type="submit" className={`au-btn au-btn-ink ${state === "success" ? "success" : ""}`} disabled={!emailOk || !pwOk || busy}>
+          {state === "loading" ? <><Loader2 size={18} className="au-spin" /> Logging in…</> : state === "success" ? <><Check size={18} /> Welcome back</> : "Log in"}
+        </button>
+        {error ? <p className="au-msg bad" role="alert" style={{ margin: 0 }}>{error}</p> : null}
+        {magic === "sent" ? <p className="au-msg good" role="status" style={{ margin: 0 }}>Check your inbox — we sent a login link to {email.trim()}.</p> : null}
+      </form>
 
-          {error ? (
-            <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
-          ) : null}
-          {info ? <p className="rounded-md border border-primary/40 bg-secondary px-3 py-2 text-sm">{info}</p> : null}
-
-          <Button type="submit" className="w-full uppercase tracking-wider" disabled={loading}>
-            {loading ? <Loader2 className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
-            {signup ? "Create account" : "Enter Command Hub"}
-          </Button>
-        </form>
-        <button
-          type="button"
-          onClick={() => { setMode(signup ? "signin" : "signup"); setError(null); }}
-          className="mt-5 w-full text-center text-sm text-muted-foreground hover:text-foreground"
-        >
-          {signup ? "Already registered? Sign in" : "New broker? Create an account"}
+      <div className="au-alt">
+        <span>New to DealOS? <Link to="/signup" className="au-link">Create an account</Link></span>
+        <button type="button" className="au-link" onClick={() => void sendMagic()} disabled={magic === "loading"}>
+          {magic === "loading" ? "Sending…" : "Send me a magic link instead"}
         </button>
       </div>
-    </div>
+    </AuthShell>
   );
 }
