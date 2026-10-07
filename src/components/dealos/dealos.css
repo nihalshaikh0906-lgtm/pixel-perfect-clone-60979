@@ -58,3 +58,35 @@
 .d-workflow-stage-panel ul{display:flex;flex-direction:column;gap:16px;font-size:14px}
 .d-workflow-stage-panel li{display:flex;gap:12px;align-items:center}
 @media(max-width:767px){.dealos .d-hero-dashboard{height:260px;overflow:hidden}.dealos .d-hero-sticky{padding-bottom:24px}.d-workflow-stages{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.d-workflow-stages>button{height:52px;font-size:12px;gap:8px}.d-workflow-stage-panel>div{grid-template-columns:28px minmax(0,1fr);gap:16px}.d-workflow-stage-panel ul{grid-column:2}.d-workflow-stage-panel{min-height:250px}}
+
+/* Lively previews, without scroll locks or drag-and-drop. */
+.dealos .d-workflow-showcase{padding:48px 0 0;border-block:1px solid var(--d-border);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 7%,var(--silk)),var(--silk))}
+.dealos .d-workflow-stage-panel{padding:36px 24px 16px;min-height:370px}
+.dealos .d-workflow-stage-panel>.d-workflow-story{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center}
+.dealos .d-workflow-emblem{display:grid;place-items:center;width:64px;height:64px;border:1px solid var(--d-border);background:var(--accent);border-radius:8px;margin-bottom:18px}
+.dealos .d-workflow-play{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:24px}
+.dealos .d-workflow-timeline{display:flex;flex-direction:column;gap:12px}
+.dealos .d-workflow-timeline li{position:relative;list-style:none}
+.dealos .d-workflow-timeline li:not(:last-child)::after{content:'';position:absolute;left:30px;top:62px;height:14px;width:1px;background:var(--d-border)}
+.dealos .d-workflow-timeline button{height:66px;white-space:normal;width:100%;justify-content:flex-start;text-align:left;padding:10px 12px;border:1px solid var(--d-border);border-radius:8px;gap:14px;color:var(--d-soft);transition:background .2s,border-color .2s}
+.dealos .d-workflow-timeline .selected button{background:var(--accent);border-color:var(--gold);color:var(--d-ink)}
+.dealos .d-workflow-timeline .complete button{color:var(--d-positive)}
+.dealos .d-step-number{width:36px;height:36px;flex-shrink:0;display:grid;place-items:center;background:var(--d-white);border:1px solid var(--d-border);border-radius:50%;font-size:12px}
+.dealos .d-workflow-timeline button>span:nth-child(2){flex:1;font-size:13px}
+.dealos .d-workflow-timeline small{display:block;font-size:10px;font-weight:400;color:var(--d-soft);margin-top:3px}
+.dealos .d-workflow-progress{height:3px;margin-top:28px;background:var(--d-border);overflow:hidden}
+.dealos .d-workflow-progress>span{display:block;height:100%;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.dealos .d-workflow-progress>span[data-progress="1"]{transform:scaleX(.3333)}
+.dealos .d-workflow-progress>span[data-progress="2"]{transform:scaleX(.6666)}
+.dealos .d-workflow-progress>span[data-progress="3"]{transform:scaleX(1)}
+.dealos .d-workflow-result{min-height:24px;font-size:11px;margin-top:10px;text-align:right}
+.dealos .d-portal-status b{min-width:60px;font-size:10px}
+.dealos .d-flow-line::after{animation-play-state:paused}
+.dealos .d-scene[data-in-view=true] .d-flow-line::after{animation-play-state:running}
+.dealos .d-orbits:has(.d-app-logo:hover) .d-orbit,.dealos .d-orbits:has(.d-app-logo:hover) .d-app-logo,.dealos .d-orbits:has(.d-app-logo:focus) .d-orbit,.dealos .d-orbits:has(.d-app-logo:focus) .d-app-logo{animation-play-state:paused}
+.dealos .d-app-logo:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.dealos .d-plan.popular::before{background:linear-gradient(120deg,var(--gold),var(--champagne),var(--gold));background-size:200% 100%;animation:d-gold-sheen 6s ease-in-out infinite;animation-play-state:paused}
+.dealos .d-scene[data-in-view=true] .d-plan.popular::before{animation-play-state:running}
+@keyframes d-gold-sheen{50%{background-position:100% 0}}
+@media(max-width:767px){.dealos .d-workflow-showcase{padding-top:28px}.dealos .d-workflow-stage-panel{padding:24px 0 12px;min-height:530px}.dealos .d-workflow-stage-panel>.d-workflow-story{grid-template-columns:minmax(0,1fr);gap:26px}.dealos .d-workflow-intro{display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;align-items:center}.dealos .d-workflow-emblem{width:48px;height:48px;margin:0}.dealos .d-workflow-intro h3{font-size:22px}.dealos .d-workflow-play{grid-column:1/-1;margin-top:4px}.dealos .d-workflow-result{text-align:left}.dealos .d-hero .d-scroll-hint{display:none}}
+@media(prefers-reduced-motion:reduce){.dealos .d-workflow-progress>span{transition:none}.dealos .d-workflow-timeline button{transition:none}}
