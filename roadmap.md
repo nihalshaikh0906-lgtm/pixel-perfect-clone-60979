@@ -23,3 +23,5 @@
 - [x] Remove full-section scroll animation overhead and automatic portal updates; add keyboard stage navigation
 - [x] Restore lively landing previews and richer click-to-run workflow without drag-and-drop
 - [x] Verify scrolling, preview interactions and reduced-motion rendering
+
+- [x] Readability pass on /welcome (contrast, min 13px text, no stuck fades, dashboard at real size)
