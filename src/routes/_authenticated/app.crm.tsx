@@ -55,14 +55,14 @@ function CrmPage() {
   const refresh = () => qc.invalidateQueries({ queryKey: ["crm-leads"] });
   const update = async (id: string, patch: Partial<Lead>, msg: string) => {
     const { error } = await db.from("leads").update(patch).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(msg); refresh();
   };
   const purge = async (id: string) => {
     if (!confirm("Delete this lead permanently?")) return;
     await db.from("lead_messages").delete().eq("lead_id", id);
     const { error } = await db.from("leads").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Deleted permanently"); refresh();
   };
 
@@ -75,7 +75,7 @@ function CrmPage() {
         <input className="a-input" placeholder="Agency name" value={agency} onChange={(e) => setAgency(e.target.value)} />
         <button className="a-btn a-btn-gold" style={{ marginTop: 12 }} onClick={async () => {
           const { error } = await db.rpc("create_my_organization", { p_name: agency });
-          if (error) return toast.error(error.message);
+          if (error) { toast.error(error.message); return; }
           qc.invalidateQueries();
         }}>Create company</button>
       </div>
