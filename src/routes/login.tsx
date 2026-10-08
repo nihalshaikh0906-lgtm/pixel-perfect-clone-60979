@@ -23,7 +23,7 @@ export const Route = createFileRoute("/login")({
   beforeLoad: async ({ search }) => {
     if (search.mode === "signup") throw redirect({ to: "/signup", replace: true });
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/app", replace: true });
+    if (data.session) throw redirect({ to: "/app/crm", replace: true });
   },
   component: LoginPage,
 });

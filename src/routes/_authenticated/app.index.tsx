@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ArrowRight, MessageCircle, Phone, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -7,6 +7,9 @@ import { PriorityChip, TypeChip } from "@/components/app/chips";
 import { formatAed, LEADS, nextBestActions, QUEUES, queueLeads, stats, ago, type Lead } from "@/lib/demo-leads";
 
 export const Route = createFileRoute("/_authenticated/app/")({
+  beforeLoad: () => {
+    throw redirect({ to: "/app/crm", replace: true });
+  },
   head: () => ({
     meta: [
       { title: "Home — DealOS Workspace" },
