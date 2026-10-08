@@ -386,6 +386,65 @@ export type Database = {
           },
         ]
       }
+      org_listings: {
+        Row: {
+          agent_id: string | null
+          bedrooms: string | null
+          community: string | null
+          created_at: string
+          deleted_at: string | null
+          description: string | null
+          id: string
+          org_id: string
+          permit_no: string | null
+          price: number | null
+          size_sqft: number | null
+          status: string
+          title: string
+          type: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          bedrooms?: string | null
+          community?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          org_id: string
+          permit_no?: string | null
+          price?: number | null
+          size_sqft?: number | null
+          status?: string
+          title: string
+          type?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          bedrooms?: string | null
+          community?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          org_id?: string
+          permit_no?: string | null
+          price?: number | null
+          size_sqft?: number | null
+          status?: string
+          title?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_listings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       org_members: {
         Row: {
           created_at: string
