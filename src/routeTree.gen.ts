@@ -31,6 +31,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDossierCopilotRouteImport } from './routes/api/dossier-copilot'
 import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copilot'
+import { Route as MediaSplatRouteImport } from './routes/media.$'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
 import { Route as AuthenticatedAppCrmRouteImport } from './routes/_authenticated/app.crm'
@@ -148,6 +149,11 @@ const ApiGeneralCopilotRoute = ApiGeneralCopilotRouteImport.update({
   path: '/api/general-copilot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MediaSplatRoute = MediaSplatRouteImport.update({
+  id: '/media/$',
+  path: '/media/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
+  '/media/$': typeof MediaSplatRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
   '/app/listings': typeof AuthenticatedAppListingsRoute
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
+  '/media/$': typeof MediaSplatRoute
   '/': typeof AuthenticatedIndexRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
@@ -268,6 +276,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
+  '/media/$': typeof MediaSplatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
   '/_authenticated/app/crm': typeof AuthenticatedAppCrmRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/dossier-copilot'
     | '/api/general-copilot'
+    | '/media/$'
     | '/app/$section'
     | '/app/crm'
     | '/app/listings'
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/dossier-copilot'
     | '/api/general-copilot'
+    | '/media/$'
     | '/'
     | '/app/$section'
     | '/app/crm'
@@ -360,6 +371,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/dossier-copilot'
     | '/api/general-copilot'
+    | '/media/$'
     | '/_authenticated/'
     | '/_authenticated/app/$section'
     | '/_authenticated/app/crm'
@@ -384,6 +396,7 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   ApiDossierCopilotRoute: typeof ApiDossierCopilotRoute
   ApiGeneralCopilotRoute: typeof ApiGeneralCopilotRoute
+  MediaSplatRoute: typeof MediaSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -542,6 +555,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGeneralCopilotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/media/$': {
+      id: '/media/$'
+      path: '/media/$'
+      fullPath: '/media/$'
+      preLoaderRoute: typeof MediaSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/app/': {
       id: '/_authenticated/app/'
       path: '/'
@@ -658,6 +678,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   ApiDossierCopilotRoute: ApiDossierCopilotRoute,
   ApiGeneralCopilotRoute: ApiGeneralCopilotRoute,
+  MediaSplatRoute: MediaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
