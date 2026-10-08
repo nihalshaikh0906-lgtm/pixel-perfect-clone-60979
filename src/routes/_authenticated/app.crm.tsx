@@ -93,7 +93,7 @@ function CrmPage() {
     <div style={{ display: "grid", gap: 20 }}>
       <div>
         <p className="eyebrow-a">{isAdmin ? "Company view" : "Agent view"}</p>
-        <h1 style={{ margin: 0 }}>{isAdmin ? "All team leads" : "My leads"}</h1>
+        <h1 style={{ margin: 0, fontSize: 32 }}>{isAdmin ? "All team leads" : "My leads"}</h1>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 12 }}>
         {[["Active leads", active.length], ["Hot", active.filter((l) => l.priority === "hot").length], ["Follow-ups due", due], [isAdmin ? "Unassigned" : "Won", isAdmin ? active.filter((l) => !l.assigned_to).length : active.filter((l) => l.stage === "won").length]].map(([k, v]) => (
