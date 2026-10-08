@@ -59,7 +59,7 @@ function LiveMap({ props, hybrid, zoom, className }: { props: Props; hybrid: boo
           icon: { url: GOLD_PIN, scaledSize: new maps.Size(36, 48), anchor: new maps.Point(18, 47) },
         });
         const box = document.createElement("div");
-        box.style.cssText = "font-family:'Plus Jakarta Sans',sans-serif;padding:2px 4px;color:#1A1816";
+        box.style.cssText = "font-family:'Manrope',sans-serif;padding:2px 4px;color:#1A1816";
         const t = document.createElement("div");
         t.style.cssText = "font-weight:700;letter-spacing:.08em;font-size:12px";
         t.textContent = `${props.name}${props.district ? ` • ${props.district}` : ""}`.toUpperCase();
