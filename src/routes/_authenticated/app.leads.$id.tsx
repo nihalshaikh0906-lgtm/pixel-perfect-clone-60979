@@ -1,3 +1,4 @@
+import { mediaUrl } from "@/lib/media";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Mail, MessageCircle, Phone, Send } from "lucide-react";
@@ -105,7 +106,7 @@ function LeadDetail({ lead }: { lead: Lead }) {
             : <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {units.data.map((u) => (
                   <div key={u.unit_id} className="a-unit">
-                    {u.cover_image_url ? <img src={u.cover_image_url} alt="" loading="lazy" /> : <span className="ph" />}
+                    {u.cover_image_url ? <img src={mediaUrl(u.cover_image_url)} alt="" loading="lazy" /> : <span className="ph" />}
                     <span style={{ minWidth: 0 }}><b>{u.project_name}</b><small>{u.district || u.location} · {u.bedrooms ? `${u.bedrooms}BR` : "Studio"} · <span className="num">{u.size_sqft ? `${Math.round(u.size_sqft).toLocaleString("en-US")} sqft` : "size n/a"}</span></small><small>Handover {u.handover_date || "n/a"}</small></span>
                     <b className="num">{u.price_aed ? formatAed(u.price_aed) : "Price n/a"}</b>
                   </div>

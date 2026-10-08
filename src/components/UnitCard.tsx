@@ -1,3 +1,4 @@
+import { mediaUrl } from "@/lib/media";
 import { Building2 } from "lucide-react";
 
 import { aed, beds, quarterOf, sqft } from "@/lib/format";
@@ -26,7 +27,7 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
       <div className="relative h-36 w-full overflow-hidden bg-secondary">
         {row.cover_image_url ? (
           <img
-            src={row.cover_image_url}
+            src={mediaUrl(row.cover_image_url)}
             alt={row.project_name ?? "Project"}
             loading="lazy"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-105"

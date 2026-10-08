@@ -1,3 +1,4 @@
+import { deepMedia } from "@/lib/media";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, MapPin, CarFront, FileText, Receipt, Loader2, MessageCircle, Play, Star } from "lucide-react";
 import { useState } from "react";
@@ -55,7 +56,7 @@ export function PropertyPackDrawer({
         p_unit_id: unit!.unit_id,
       });
       if (rpcError) throw new Error(rpcError.message);
-      return pack as Pack;
+      return deepMedia(pack) as Pack;
     },
   });
 
