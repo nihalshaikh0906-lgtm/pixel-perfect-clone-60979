@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Logo } from "@/components/Logo";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { useBrokerProfile } from "@/lib/broker";
@@ -23,7 +24,7 @@ export function TopBar({
       <div className="mx-auto flex max-w-[1720px] flex-wrap items-center gap-4 px-6 py-3">
         <div className="flex items-center">
           <Link to="/app" className="flex items-baseline gap-1 font-display text-2xl tracking-[0.25em]">
-            PROPFLOW<span className="size-1.5 rounded-full bg-primary" />
+            <Logo size={30} />
           </Link>
           <span className="mx-3 hidden h-5 border-r border-border lg:block" />
           <AgencyBadge company={profile?.company ?? null} />

@@ -1,10 +1,10 @@
 /* DealOS sign-in pages — scoped to .dauth so the rest of the app is untouched */
 .dauth{
-  --au-bg:#F7F5F0;--au-ink:#111111;--au-ink-2:#4A4A52;--au-gold:#B8955A;--au-gold-d:#8A6A35;--au-line:#E2DDD2;--au-card:var(--silk);
+  --au-bg:#F7F8FC;--au-ink:#141A33;--au-ink-2:#4B5272;--au-gold:#2F6BFF;--au-gold-d:#2A45C8;--au-line:#E6E9F5;--au-card:var(--silk);
   --au-bad:var(--destructive);--au-ok:var(--au-gold-d);
-  --au-night-0:#0B0B0F;--au-night:linear-gradient(160deg,var(--au-night-0) 0%,#1A1712 55%,#2A2217 100%);
+  --au-night-0:#0B0E1A;--au-night:linear-gradient(160deg,var(--au-night-0) 0%,#121629 55%,#1B1F45 100%);
   --au-ease:cubic-bezier(.22,1,.36,1);
-  background:var(--au-bg);color:var(--au-ink);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:24px;overflow-x:clip;font-variant-numeric:lining-nums tabular-nums
+  background:var(--au-bg);color:var(--au-ink);font-family:'Manrope',sans-serif;min-height:100vh;padding:24px;overflow-x:clip;font-variant-numeric:lining-nums tabular-nums
 }
 .dauth *{box-sizing:border-box}
 .dauth :focus-visible{outline:2px solid var(--au-gold);outline-offset:2px;border-radius:10px}

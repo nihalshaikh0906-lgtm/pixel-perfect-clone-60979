@@ -23,7 +23,7 @@ function PricingPage() {
       <section className="mx-auto max-w-7xl px-6 py-20 text-center">
         <Eyebrow>Transparent value. No hidden fees.</Eyebrow>
         <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-medium md:text-6xl">Select Your Advisory License</h1>
-        <p className="mx-auto mt-5 max-w-2xl text-[16px] text-[#5c554e]">All plans include 50% introductory savings for the first 3 months. Close one additional transaction and your subscription pays for itself many times over.</p>
+        <p className="mx-auto mt-5 max-w-2xl text-[16px] text-[#4B5272]">All plans include 50% introductory savings for the first 3 months. Close one additional transaction and your subscription pays for itself many times over.</p>
         <p className="mt-6 inline-block rounded-full border border-[var(--bronze)]/50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bronze)]">✨ 50% launch discount applied to all plans</p>
 
         <div className="mt-14 grid gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
@@ -31,10 +31,10 @@ function PricingPage() {
             <div key={p.name} className={`relative flex flex-col rounded-2xl border bg-white/70 p-6 backdrop-blur-md ${p.popular ? "border-[var(--bronze)]" : "border-[var(--obsidian)]/10"}`} style={{ boxShadow: "0 30px 80px -30px rgba(158,123,79,0.25)" }}>
               {p.popular ? <span className="absolute -top-3 left-6 rounded-full bg-[var(--bronze)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--silk)]">Most popular</span> : null}
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bronze)]">{p.name}</p>
-              <p className="metric mt-5 text-sm text-[#5c554e] line-through">{aed(p.was)}</p>
-              <p className="mt-1"><span className="metric text-4xl font-medium tracking-tight">{aed(p.now)}</span> <span className="text-sm text-[#5c554e]">{p.per}</span></p>
-              <p className="metric mt-1 text-xs text-[#5c554e]">{p.note}</p>
-              <p className="mt-5 text-[14px] italic text-[#5c554e]">{p.v}</p>
+              <p className="metric mt-5 text-sm text-[#4B5272] line-through">{aed(p.was)}</p>
+              <p className="mt-1"><span className="metric text-4xl font-medium tracking-tight">{aed(p.now)}</span> <span className="text-sm text-[#4B5272]">{p.per}</span></p>
+              <p className="metric mt-1 text-xs text-[#4B5272]">{p.note}</p>
+              <p className="mt-5 text-[14px] italic text-[#4B5272]">{p.v}</p>
               <ul className="mt-5 flex-1 space-y-2 text-[14px]">
                 {p.inc.map((x) => <li key={x} className="flex gap-2"><Check className="mt-1 size-3.5 shrink-0 text-[var(--bronze)]" />{x}</li>)}
               </ul>
@@ -43,7 +43,7 @@ function PricingPage() {
           ))}
         </div>
 
-        <div className="mx-auto mt-14 max-w-3xl rounded-2xl border border-[var(--obsidian)]/10 bg-white/60 p-8 text-[15px] text-[#5c554e]">
+        <div className="mx-auto mt-14 max-w-3xl rounded-2xl border border-[var(--obsidian)]/10 bg-white/60 p-8 text-[15px] text-[#4B5272]">
           Managing a team of 5+ consultants? Contact our concierge desk for centralized brokerage seats and custom CRM integrations.
         </div>
       </section>

@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { LogoMark } from "@/components/Logo";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Bell, Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, KeyRound, LineChart, MapPinned,
@@ -77,7 +78,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       <div className="dapp">
         {drawer ? <div className="a-scrim" onClick={() => setDrawer(false)} aria-hidden /> : null}
         <aside className={`a-side ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`} aria-label="Workspace navigation">
-          <div className="a-brand"><span className="a-logo">D</span><span className="a-brand-text">DealOS</span><span className="a-demo a-brand-text">DEMO</span></div>
+          <div className="a-brand"><LogoMark size={32} /><span className="a-brand-text logo-word">Deal<span className="text-gradient">OS</span></span><span className="a-demo a-brand-text">DEMO</span></div>
           <nav className="a-nav">
             {groups.map((g) => (
               <div className="a-group" key={g.title}>

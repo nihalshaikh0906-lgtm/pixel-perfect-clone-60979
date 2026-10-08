@@ -13,7 +13,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
           <Link to="/welcome" className="flex items-center gap-1.5 text-lg font-semibold tracking-[0.3em]">
             PROPFLOW<span className="size-1.5 rounded-full bg-[var(--bronze)]" />
           </Link>
-          <nav className="hidden gap-8 text-[#5c554e] md:flex">
+          <nav className="hidden gap-8 text-[#4B5272] md:flex">
             <Link to="/about" className={navCls} activeProps={active}>About Us</Link>
             <Link to="/faq" className={navCls} activeProps={active}>FAQ</Link>
             <Link to="/pricing" className={navCls} activeProps={active}>Pricing</Link>
@@ -23,14 +23,14 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             <Link to="/pricing" className="rounded-full bg-[var(--bronze)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--silk)] hover:opacity-90">View Plans</Link>
           </div>
         </div>
-        <nav className="flex justify-center gap-6 pb-3 text-[#5c554e] md:hidden">
+        <nav className="flex justify-center gap-6 pb-3 text-[#4B5272] md:hidden">
           <Link to="/about" className={navCls} activeProps={active}>About Us</Link>
           <Link to="/faq" className={navCls} activeProps={active}>FAQ</Link>
           <Link to="/pricing" className={navCls} activeProps={active}>Pricing</Link>
         </nav>
       </header>
       <main>{children}</main>
-      <footer className="border-t border-[var(--obsidian)]/10 px-6 py-8 text-center text-xs text-[#5c554e]">
+      <footer className="border-t border-[var(--obsidian)]/10 px-6 py-8 text-center text-xs text-[#4B5272]">
         © {new Date().getFullYear()} PropFlow · Intelligence for Dubai real estate consultants
       </footer>
     </div>
@@ -51,7 +51,7 @@ export function Accordion({ items }: { items: { q: string; a: string }[] }) {
             {f.q}
             <ChevronDown className={`size-4 shrink-0 transition-transform ${open === n ? "rotate-180" : ""}`} />
           </button>
-          {open === n ? <p className="max-w-2xl pb-5 text-[15px] text-[#5c554e]">{f.a}</p> : null}
+          {open === n ? <p className="max-w-2xl pb-5 text-[15px] text-[#4B5272]">{f.a}</p> : null}
         </div>
       ))}
     </div>

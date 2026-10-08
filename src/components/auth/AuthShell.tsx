@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Logo as DealLogo, LogoMark } from "@/components/Logo";
 import { ChevronDown, KeyRound, Lock, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -22,7 +23,7 @@ const TICKER = [
 export function Logo({ size = 40 }: { size?: number }) {
   return (
     <span className="au-logo d-brand" style={{ fontSize: size * 0.6 }}>
-      <span className="d-logo-mark">D<span /></span>DealOS<span className="d-brand-dot">.</span>
+      <DealLogo size={size} />
     </span>
   );
 }
@@ -78,7 +79,7 @@ export function AuthShell({ children, leaving = false, sections = true }: { chil
         <aside className="au-panel" aria-label="DealOS">
           <DotSkyline boost={boost} />
           <div className="au-glow" aria-hidden />
-          <Link to="/welcome" className="au-panel-logo" aria-label="DealOS home"><span className="d-logo-mark">D<span /></span></Link>
+          <Link to="/welcome" className="au-panel-logo" aria-label="DealOS home"><LogoMark size={88} variant="dark" /></Link>
           <div className="au-float au-f1" aria-hidden><small>Pipeline</small><b className="num">AED 48.2M</b></div>
           <div className="au-float au-f2" aria-hidden><span className="au-dot" />Hot · 87</div>
           <div className="au-float au-f3" aria-hidden>3BR · DIP · AED 1.33M</div>
