@@ -93,3 +93,17 @@
 .dauth .au-headline em,.dauth .au-eyebrow{background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
 .dauth .au-eyebrow{font-weight:800;letter-spacing:.2em}
 .dauth .au-glow{background:radial-gradient(circle,rgba(58,100,255,.4),rgba(123,77,255,.2) 45%,transparent 70%)}
+
+/* Polish */
+.d-hero h1>span:nth-child(2)>span:nth-child(n+3) .d-word>span{background:linear-gradient(90deg,#5B82FF 0%,#9A6BFF 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.d-hero h1{text-shadow:none}
+.dealos .d-dashboard{box-shadow:0 40px 120px -30px rgba(58,100,255,.45),0 0 0 1px rgba(255,255,255,.08)!important}
+.dealos .d-pr-card,.dealos .d-plan{border-radius:24px}
+.dealos a:not([class]){color:#2A45C8}
+.dapp .a-card,.dapp .a-panel{border-radius:24px}
+.dapp .a-top{background:rgba(255,255,255,.82)}
+.dapp .a-link.active{background:linear-gradient(90deg,rgba(58,100,255,.12),rgba(138,77,255,.10));color:#141A33}
+.dapp .a-side{background:#fff}
+::selection{background:rgba(47,107,255,.2)}
+.dealos .d-insight p,.dealos .d-dashboard p{color:#141A33!important}
+.dealos .d-avatar-stack span{font-size:11px;letter-spacing:0;min-width:34px;overflow:visible}
