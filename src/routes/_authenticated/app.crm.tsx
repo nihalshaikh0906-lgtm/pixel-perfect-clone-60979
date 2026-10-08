@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/app/crm")({
       { property: "og:description", content: "Role-based lead management for Dubai brokerages." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({ action: typeof s.action === "string" ? s.action : undefined }),
+  validateSearch: (s: Record<string, unknown>): { action?: string } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined }),
   component: CrmPage,
 });
 
