@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Building2, RotateCcw, Trash2, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/app/crm")({
   head: () => ({
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/_authenticated/app/crm")({
       { name: "description", content: "Company and agent lead management: assign leads, follow conversations and restore from the bin." },
       { property: "og:title", content: "Team leads — DealOS" },
       { property: "og:description", content: "Role-based lead management for Dubai brokerages." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   validateSearch: (s: Record<string, unknown>): { action?: string | undefined } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined }),
@@ -191,7 +194,7 @@ function AddLeadModal({ orgId, members, isAdmin, onClose, onDone }: { orgId: str
       <label>Priority<select value={f.priority} onChange={set("priority")}>{["hot", "warm", "cold"].map((x) => <option key={x}>{x}</option>)}</select></label>
       <label>Max budget (AED)<input inputMode="numeric" value={f.budget_max} onChange={set("budget_max")} /></label>
       {isAdmin ? <label>Assign to<select value={f.assigned_to} onChange={set("assigned_to")}><option value="">Unassigned</option>{members.map((m) => <option key={m.user_id} value={m.user_id}>{m.full_name}</option>)}</select></label> : null}
-      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}><button className="a-btn a-btn-line" onClick={onClose}>Cancel</button><button className="a-btn a-btn-gold" disabled={busy} onClick={() => void save()}>{busy ? "Saving…" : "Save lead"}</button></div>
+       <div className="a-modal-actions"><Button className="a-btn a-btn-line" onClick={onClose}>Cancel</Button><Button className="a-btn a-btn-gold" disabled={busy} onClick={() => void save()}>{busy ? "Saving…" : "Save lead"}</Button></div>
     </div></div>
   );
 }

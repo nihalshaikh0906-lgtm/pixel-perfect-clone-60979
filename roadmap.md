@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Connect New lead to the existing saved-lead form
+- [ ] Fit matched-property cards, property photos and map controls to the available screen
+- [ ] Verify lead creation and property layout; Google Maps rendering requires an authorized origin
+
 - [x] Speed up dossier replies by trimming repeated inventory details and overlapping safe request setup
 - [x] Remove artificial 60-second chat deadlines so slower real replies are not discarded
 - [x] Remove the invented verification badge and Dashboard nav label

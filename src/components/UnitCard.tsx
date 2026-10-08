@@ -2,6 +2,7 @@ import { mediaUrl } from "@/lib/media";
 import { Building2 } from "lucide-react";
 
 import { aed, beds, quarterOf, sqft } from "@/lib/format";
+import { Button } from "@/components/ui/button";
 
 export type MatchRow = {
   unit_id: number;
@@ -19,12 +20,13 @@ export type MatchRow = {
 
 export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRow) => void }) {
   return (
-    <button
+    <Button
+      variant="ghost"
       type="button"
       onClick={() => onOpen(row)}
-      className="panel group overflow-hidden text-left transition-all hover:-translate-y-0.5 hover:glow-ring"
+      className="panel group block h-auto w-full min-w-0 overflow-hidden p-0 text-left whitespace-normal transition-all hover:-translate-y-0.5 hover:glow-ring"
     >
-      <div className="relative h-36 w-full overflow-hidden bg-secondary">
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
         {row.cover_image_url ? (
           <img
             src={mediaUrl(row.cover_image_url)}
@@ -45,8 +47,8 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
       </div>
       <div className="space-y-2 p-4">
         <div>
-          <h3 className="truncate font-display text-xl font-semibold">{row.project_name ?? "Project"}</h3>
-          <p className="truncate text-[15px] text-muted-foreground">
+          <h3 className="break-words font-display text-lg font-semibold">{row.project_name ?? "Project"}</h3>
+          <p className="break-words text-sm text-muted-foreground">
             {row.developer ?? row.district ?? "—"}
           </p>
         </div>
@@ -62,6 +64,6 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
           ))}
         </div>
       </div>
-    </button>
+    </Button>
   );
 }

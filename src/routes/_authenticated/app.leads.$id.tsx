@@ -10,6 +10,8 @@ import { useShell } from "@/components/app/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { ago, formatAed, LEAD_BY_ID, OPEN_STAGES, priorityOf, wants, type Lead, type Stage } from "@/lib/demo-leads";
 import { PriorityChip, TypeChip } from "@/components/app/chips";
+import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
+import { UnitCard, type MatchRow } from "@/components/UnitCard";
 
 export const Route = createFileRoute("/_authenticated/app/leads/$id")({
   head: () => ({
@@ -18,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/app/leads/$id")({
       { name: "description", content: "Lead profile, matched units from your inventory and an AI assistant for this client." },
       { property: "og:title", content: "Lead — DealOS Workspace" },
       { property: "og:description", content: "Everything about one lead in one place." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LeadPage,
@@ -35,6 +39,7 @@ function LeadPage() {
 function LeadDetail({ lead }: { lead: Lead }) {
   const { clientMode } = useShell();
   const [stage, setStage] = useState<Stage>(lead.stage);
+  const [openUnit, setOpenUnit] = useState<MatchRow | null>(null);
   const [notes, setNotes] = useState<{ at: string; text: string }[]>([]);
   useEffect(() => { try { setNotes(JSON.parse(localStorage.getItem(NOTES_KEY(lead.id)) ?? "[]")); } catch { setNotes([]); } }, [lead.id]);
   const saveNote = (text: string) => {
@@ -103,13 +108,9 @@ function LeadDetail({ lead }: { lead: Lead }) {
             : units.isLoading ? <p className="muted">Searching your inventory…</p>
             : units.error ? <p className="a-err" role="alert">{(units.error as Error).message}</p>
             : !units.data?.length ? <p className="muted">No units in your inventory match this budget and size.</p>
-            : <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            : <div className="a-property-grid">
                 {units.data.map((u) => (
-                  <div key={u.unit_id} className="a-unit">
-                    {u.cover_image_url ? <img src={mediaUrl(u.cover_image_url)} alt="" loading="lazy" /> : <span className="ph" />}
-                    <span style={{ minWidth: 0 }}><b>{u.project_name}</b><small>{u.district || u.location} · {u.bedrooms ? `${u.bedrooms}BR` : "Studio"} · <span className="num">{u.size_sqft ? `${Math.round(u.size_sqft).toLocaleString("en-US")} sqft` : "size n/a"}</span></small><small>Handover {u.handover_date || "n/a"}</small></span>
-                    <b className="num">{u.price_aed ? formatAed(u.price_aed) : "Price n/a"}</b>
-                  </div>
+                  <UnitCard key={u.unit_id} row={u} onOpen={setOpenUnit} />
                 ))}
               </div>}
         </section>
@@ -118,6 +119,7 @@ function LeadDetail({ lead }: { lead: Lead }) {
           <AiChat title={`AI · ${lead.name}`} context={context} onSaveSummary={saveNote} suggestions={["What should I say on the first call?", "Draft a WhatsApp follow-up", "Which matched unit fits best and why?"]} />
         </section>
       </div>
+      <PropertyPackDrawer unit={openUnit} clientId={null} clientPhone={lead.phone} onClose={() => setOpenUnit(null)} />
     </>
   );
 }
