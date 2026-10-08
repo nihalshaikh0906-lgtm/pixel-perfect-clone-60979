@@ -6,11 +6,11 @@ import { AuthShell, Logo } from "@/components/auth/AuthShell";
 import { CheckBox, EMAIL_RE, Field, PasswordField } from "@/components/auth/fields";
 import { supabase } from "@/integrations/supabase/client";
 import { setRemember } from "@/lib/remember";
-import { isPlanId } from "@/lib/pricing";
+import { isPlanId, type PlanId } from "@/lib/pricing";
 
 export const Route = createFileRoute("/signup")({
   ssr: false,
-  validateSearch: (s: Record<string, unknown>) => ({ plan: isPlanId(s["plan"]) ? s["plan"] : undefined }),
+  validateSearch: (s: Record<string, unknown>): { plan?: PlanId } => (isPlanId(s["plan"]) ? { plan: s["plan"] } : {}),
   head: () => ({
     meta: [
       { title: "Create your account · DealOS" },
