@@ -6,9 +6,11 @@ import { AuthShell, Logo } from "@/components/auth/AuthShell";
 import { CheckBox, EMAIL_RE, Field, PasswordField } from "@/components/auth/fields";
 import { supabase } from "@/integrations/supabase/client";
 import { setRemember } from "@/lib/remember";
+import { isPlanId } from "@/lib/pricing";
 
 export const Route = createFileRoute("/signup")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => ({ plan: isPlanId(s["plan"]) ? s["plan"] : undefined }),
   head: () => ({
     meta: [
       { title: "Create your account · DealOS" },
@@ -28,6 +30,7 @@ export const Route = createFileRoute("/signup")({
 
 function SignupPage() {
   const router = useRouter();
+  const { plan } = Route.useSearch();
   const [f, setF] = useState({ name: "", agency: "", phone: "", email: "", password: "" });
   const [terms, setTerms] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -65,6 +68,7 @@ function SignupPage() {
           first_name: name.split(/\s+/)[0],
           company: f.agency.trim() || null,
           phone: f.phone.trim(),
+          selected_plan: plan ?? null,
           trial_ends_at: new Date(Date.now() + 14 * 86_400_000).toISOString(),
         },
       },
