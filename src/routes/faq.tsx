@@ -28,7 +28,7 @@ function FaqPage() {
     <PublicLayout>
       <section className="mx-auto max-w-3xl px-6 py-20">
         <h1 className="text-4xl font-medium md:text-5xl">Frequently Asked Questions</h1>
-        <p className="mt-4 text-[16px] text-[#5c554e]">Everything you need to know about the platform, intelligence sources, data confidentiality, and onboarding.</p>
+        <p className="mt-4 text-[16px] text-[#4B5272]">Everything you need to know about the platform, intelligence sources, data confidentiality, and onboarding.</p>
         {CATS.map((c) => (
           <div key={c.t} className="mt-14">
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bronze)]">{c.t}</p>

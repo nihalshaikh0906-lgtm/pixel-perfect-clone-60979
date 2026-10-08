@@ -20,7 +20,7 @@ type Props = {
 const GOLD_PIN =
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48"><path d="M18 1C8.6 1 1 8.6 1 18c0 12.4 17 29 17 29s17-16.6 17-29C35 8.6 27.4 1 18 1z" fill="#B08D57" stroke="#6E5530" stroke-width="2"/><circle cx="18" cy="18" r="6.5" fill="#FBF7F0"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48"><path d="M18 1C8.6 1 1 8.6 1 18c0 12.4 17 29 17 29s17-16.6 17-29C35 8.6 27.4 1 18 1z" fill="#2F6BFF" stroke="#2A45C8" stroke-width="2"/><circle cx="18" cy="18" r="6.5" fill="#FFFFFF"/></svg>`,
   );
 
 function fallbackEmbed({ name, district }: Props, hybrid: boolean, zoom: number) {
@@ -59,14 +59,14 @@ function LiveMap({ props, hybrid, zoom, className }: { props: Props; hybrid: boo
           icon: { url: GOLD_PIN, scaledSize: new maps.Size(36, 48), anchor: new maps.Point(18, 47) },
         });
         const box = document.createElement("div");
-        box.style.cssText = "font-family:'Manrope',sans-serif;padding:2px 4px;color:#1A1816";
+        box.style.cssText = "font-family:'Manrope',sans-serif;padding:2px 4px;color:#141A33";
         const t = document.createElement("div");
         t.style.cssText = "font-weight:700;letter-spacing:.08em;font-size:12px";
         t.textContent = `${props.name}${props.district ? ` • ${props.district}` : ""}`.toUpperCase();
         box.appendChild(t);
         if (props.developer) {
           const d = document.createElement("div");
-          d.style.cssText = "font-size:11px;color:#5C554E;margin-top:2px";
+          d.style.cssText = "font-size:11px;color:#4B5272;margin-top:2px";
           d.textContent = props.developer;
           box.appendChild(d);
         }
