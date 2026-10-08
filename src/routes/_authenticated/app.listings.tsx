@@ -36,7 +36,7 @@ function ListingsPage() {
   } });
   const q = useQuery({ queryKey: ["listings"], enabled: !!org.data, queryFn: async () => ((await db.from("org_listings").select("*").order("created_at", { ascending: false })).data ?? []) as L[] });
   const refresh = () => qc.invalidateQueries({ queryKey: ["listings"] });
-  const close = () => void navigate({ search: { action: undefined } });
+  const close = () => void navigate({ search: {} });
   const upd = async (id: string, patch: Partial<L>, msg: string) => { const { error } = await db.from("org_listings").update(patch).eq("id", id); if (error) { toast.error(error.message); return; } toast.success(msg); refresh(); };
   const add = async () => {
     if (!f.title.trim() || !org.data) { toast.error("Title is required"); return; }

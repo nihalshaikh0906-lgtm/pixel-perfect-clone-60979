@@ -32,7 +32,7 @@ function CrmPage() {
   const [agency, setAgency] = useState("");
   const { action } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const closeModal = () => void navigate({ search: { action: undefined } });
+  const closeModal = () => void navigate({ search: {} });
 
   const me = useQuery({
     queryKey: ["crm-me"],
