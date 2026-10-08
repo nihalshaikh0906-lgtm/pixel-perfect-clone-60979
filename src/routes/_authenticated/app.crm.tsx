@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { Building2, RotateCcw, Trash2, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -109,7 +109,7 @@ function CrmPage() {
           <thead><tr style={{ textAlign: "left" }}>{["Lead", "Source", "Stage", "Priority", "Agent", ""].map((h) => <th key={h} style={{ padding: 12 }}>{h}</th>)}</tr></thead>
           <tbody>
             {rows.map((l) => (
-              <>
+              <Fragment key={l.id}>
                 <tr key={l.id} style={{ borderTop: "1px solid var(--border)" }}>
                   <td style={{ padding: 12 }}><button className="a-link-btn" style={{ fontWeight: 700, background: "none", border: 0, cursor: "pointer", color: "inherit" }} onClick={() => setOpen(open === l.id ? null : l.id)}>{l.name}</button><div style={{ fontSize: 13, opacity: .7 }}>{l.phone}</div></td>
                   <td style={{ padding: 12 }}>{l.source}</td>
@@ -147,7 +147,7 @@ function CrmPage() {
                     {(msgs.data ?? []).map((m) => <p key={m.id} style={{ fontSize: 14, margin: "4px 0" }}><strong style={{ textTransform: "capitalize" }}>{m.sender}:</strong> {m.body}</p>)}
                   </td></tr>
                 )}
-              </>
+              </Fragment>
             ))}
             {!rows.length && <tr><td colSpan={6} style={{ padding: 24, textAlign: "center" }}>{tab === "bin" ? "Bin is empty." : <>No leads yet. <Link to="/app">Back home</Link></>}</td></tr>}
           </tbody>
