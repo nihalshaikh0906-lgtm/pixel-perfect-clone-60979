@@ -38,7 +38,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
 
   const groups: { title: string; items: Item[] }[] = [
     { title: "Work", items: [
-      { label: "Home", to: "/app", icon: Home, exact: true },
+      { label: "Home", to: "/app/crm", icon: Home, exact: true },
       { label: "Leads inbox", to: "/app/leads", icon: Inbox, badge: queueCount("respond") },
       { label: "Team leads", to: "/app/crm", icon: Building2 },
       { label: "Listings", to: "/app/listings", icon: ListChecks },
