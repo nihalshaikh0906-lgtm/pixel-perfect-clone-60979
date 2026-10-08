@@ -39,6 +39,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     { title: "Work", items: [
       { label: "Home", to: "/app", icon: Home, exact: true },
       { label: "Leads inbox", to: "/app/leads", icon: Inbox, badge: queueCount("respond") },
+      { label: "Team leads", to: "/app/crm", icon: Building2 },
       { label: "Pipelines", to: "/app/pipelines", icon: Workflow },
       { label: "Today", to: "/app/today", icon: CalendarClock, badge: queueCount("followup") },
     ] },
