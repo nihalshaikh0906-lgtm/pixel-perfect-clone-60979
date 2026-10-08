@@ -1,4 +1,3 @@
-import { mediaUrl } from "@/lib/media";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Mail, MessageCircle, Phone, Send } from "lucide-react";

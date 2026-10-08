@@ -1,5 +1,5 @@
 import { deepMedia } from "@/lib/media";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, MapPin, CarFront, FileText, Receipt, Loader2, MessageCircle, Play, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -42,6 +42,7 @@ export function PropertyPackDrawer({
   clientPhone: string | null;
   onClose: () => void;
 }) {
+  const queryClient = useQueryClient();
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const [planOpen, setPlanOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
@@ -107,7 +108,10 @@ export function PropertyPackDrawer({
       status: "saved",
     });
     if (insertError) toast.error(insertError.message);
-    else toast.success("Saved to shortlist");
+    else {
+      toast.success("Saved to shortlist");
+      void queryClient.invalidateQueries({ queryKey: ["shortlists", clientId] });
+    }
   }
 
   return (

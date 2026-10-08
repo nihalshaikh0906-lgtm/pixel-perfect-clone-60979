@@ -29,5 +29,6 @@
 
 - Reuse UnitCard and PropertyPackDrawer for matched-property inspection; demo lead IDs must never be written to the clients-backed shortlists table.
 - New lead actions open the existing CRM creation form so saved leads have one persistence path.
+- Client dossier shortlists read the existing shortlists table through RLS and refresh after saving; property cards share the recommendation inspection flow.
 
 - Company/agent roles live in org_members (separate from profiles) and are checked via my_org()/is_org_admin() security-definer functions; avoids RLS recursion and role spoofing. New tables are now allowed by the user.
