@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { PriorityChip, TypeChip } from "@/components/app/chips";
+import { Button } from "@/components/ui/button";
 import { ago, formatAed, QUEUES, queueCount, queueLeads, SOURCES, wants, type Lead, type LeadType, type Queue } from "@/lib/demo-leads";
 
 const QIDS: Queue[] = ["respond", "hot", "followup", "nurture", "all"];
@@ -20,6 +21,8 @@ export const Route = createFileRoute("/_authenticated/app/leads/")({
       { name: "description", content: "Every lead sorted by what needs you first: respond now, hot, follow-up due and nurture queues." },
       { property: "og:title", content: "Leads inbox — DealOS Workspace" },
       { property: "og:description", content: "Work your leads queue by queue." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Inbox,
@@ -64,7 +67,7 @@ function Inbox() {
         </div>
         <div className="a-band-actions">
           <button type="button" className="a-btn a-btn-line" onClick={() => toast("Import is not connected in the demo yet.")}><Upload size={16} /> Import leads</button>
-          <button type="button" className="a-btn a-btn-ink" onClick={() => toast("New lead form is not connected in the demo yet.")}><Plus size={16} /> New lead</button>
+          <Button asChild className="a-btn a-btn-ink"><Link to="/app/crm" search={{ action: "add" }}><Plus size={16} /> New lead</Link></Button>
         </div>
       </section>
 

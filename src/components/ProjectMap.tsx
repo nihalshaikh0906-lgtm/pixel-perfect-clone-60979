@@ -113,26 +113,26 @@ export function ProjectMap(props: Props) {
     `flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider ${active ? "bg-secondary text-foreground" : "text-muted-foreground"}`;
   const toggle = (
     <div className="flex gap-1 rounded-full border border-border bg-background/90 p-1">
-      <button type="button" onClick={() => setHybrid(false)} className={pill(!hybrid)}>
+      <Button variant="ghost" size="sm" aria-pressed={!hybrid} onClick={() => setHybrid(false)} className={pill(!hybrid)}>
         <MapIcon className="size-3.5" /> Map
-      </button>
-      <button type="button" onClick={() => setHybrid(true)} className={pill(hybrid)}>
+      </Button>
+      <Button variant="ghost" size="sm" aria-pressed={hybrid} onClick={() => setHybrid(true)} className={pill(hybrid)}>
         <Satellite className="size-3.5" /> Satellite
-      </button>
+      </Button>
     </div>
   );
 
   const modal = (
     <Dialog open={full} onOpenChange={setFull}>
-      <DialogContent className="flex h-[92vh] max-w-[96vw] flex-col gap-3 p-4 sm:max-w-[96vw]">
+      <DialogContent className="flex h-[92dvh] max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-[96vw] flex-col gap-3 overflow-hidden p-3 sm:max-w-[96vw] sm:p-4">
         <div className="flex flex-wrap items-center justify-between gap-3 pr-8">
-          <div>
-            <DialogTitle className="text-sm font-semibold uppercase tracking-wider">{label}</DialogTitle>
+           <div className="min-w-0">
+            <DialogTitle className="break-words text-sm font-semibold uppercase tracking-wider">{label}</DialogTitle>
             {props.developer ? <p className="eyebrow mt-1">{props.developer}</p> : null}
           </div>
           {toggle}
         </div>
-        {full ? <LiveMap props={props} hybrid={hybrid} zoom={13} className="w-full flex-1 rounded-lg border border-border" /> : null}
+        {full ? <LiveMap props={props} hybrid={hybrid} zoom={13} className="min-h-0 w-full flex-1 rounded-lg border border-border" /> : null}
       </DialogContent>
     </Dialog>
   );
@@ -141,14 +141,14 @@ export function ProjectMap(props: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         {toggle}
         <Button size="sm" variant="outline" onClick={() => setFull(true)} className="text-[11px] uppercase tracking-wider">
           <Expand className="size-3.5" /> Fullscreen map
         </Button>
       </div>
-      <LiveMap props={props} hybrid={hybrid} zoom={15} className="h-64 w-full overflow-hidden rounded-lg border border-border" />
-      <p className="eyebrow">{label}</p>
+      <LiveMap props={props} hybrid={hybrid} zoom={15} className="h-64 max-h-[45dvh] w-full overflow-hidden rounded-lg border border-border" />
+      <p className="eyebrow break-words">{label}</p>
       {modal}
     </div>
   );

@@ -1,5 +1,5 @@
 import { deepMedia } from "@/lib/media";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, MapPin, CarFront, FileText, Receipt, Loader2, MessageCircle, Play, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -38,10 +38,11 @@ export function PropertyPackDrawer({
   onClose,
 }: {
   unit: MatchRow | null;
-  clientId: string;
+  clientId: string | null;
   clientPhone: string | null;
   onClose: () => void;
 }) {
+  const queryClient = useQueryClient();
   const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const [planOpen, setPlanOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
@@ -51,17 +52,18 @@ export function PropertyPackDrawer({
     enabled: !!unit,
     staleTime: Infinity,
     queryFn: async () => {
+      if (!unit) return null;
       const { data: pack, error: rpcError } = await supabase.rpc("get_property_pack", {
-        p_project_id: unit!.project_id,
-        p_unit_id: unit!.unit_id,
+        p_project_id: unit.project_id,
+        p_unit_id: unit.unit_id,
       });
       if (rpcError) throw new Error(rpcError.message);
       return deepMedia(pack) as Pack;
     },
   });
 
-  const documents: PackDoc[] = Array.isArray(data?.documents) ? data!.documents : [];
-  const photos: string[] = Array.isArray(data?.photos) ? data!.photos.filter(Boolean) : [];
+  const documents: PackDoc[] = Array.isArray(data?.documents) ? data.documents : [];
+  const photos: string[] = Array.isArray(data?.photos) ? data.photos.filter(Boolean) : [];
   const brochure = documents.find((d) => d.type === "brochure");
   const floorPlan =
     data?.selected_unit?.floor_plan_urls?.[0] ?? documents.find((d) => d.type === "floor_plan")?.url;
@@ -96,7 +98,7 @@ export function PropertyPackDrawer({
   }
 
   async function saveToShortlist() {
-    if (!unit) return;
+    if (!unit || !clientId) return;
     const { error: insertError } = await supabase.from("shortlists").insert({
       client_id: clientId,
       project_id: unit.project_id,
@@ -106,13 +108,16 @@ export function PropertyPackDrawer({
       status: "saved",
     });
     if (insertError) toast.error(insertError.message);
-    else toast.success("Saved to shortlist");
+    else {
+      toast.success("Saved to shortlist");
+      void queryClient.invalidateQueries({ queryKey: ["shortlists", clientId] });
+    }
   }
 
   return (
     <Sheet open={!!unit} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
-        <SheetHeader>
+      <SheetContent className="property-pack flex w-full max-w-full flex-col overflow-hidden p-0 sm:max-w-3xl">
+        <SheetHeader className="shrink-0 border-b border-border px-5 py-5 pr-12 text-left">
           <SheetTitle className="font-display text-xl">
             {unit?.project_name ?? "Property pack"}
           </SheetTitle>
@@ -121,7 +126,7 @@ export function PropertyPackDrawer({
           </p>
         </SheetHeader>
 
-        <div className="space-y-7 px-4 pb-10">
+        <div className="min-h-0 flex-1 space-y-7 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6">
           {isLoading ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" /> Loading pack…
@@ -133,7 +138,7 @@ export function PropertyPackDrawer({
             </p>
           ) : null}
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 min-[440px]:grid-cols-2 [&_button]:h-auto [&_button]:min-h-10 [&_button]:whitespace-normal [&_button]:py-2 [&_button]:text-left">
             <Button onClick={() => brochure?.url && window.open(brochure.url, "_blank", "noopener")} disabled={!brochure?.url}>
               <BookOpen className="size-4" /> Open Brochure
             </Button>
@@ -167,27 +172,27 @@ export function PropertyPackDrawer({
             <Button variant="outline" onClick={copyPitch}>
               <MessageCircle className="size-4" /> Copy Pitch & WhatsApp
             </Button>
-            <Button variant="outline" onClick={saveToShortlist}>
+            <Button variant="outline" onClick={saveToShortlist} disabled={!clientId} title={!clientId ? "Open a saved client dossier to save a shortlist" : undefined}>
               <Star className="size-4" /> Save to shortlist
             </Button>
           </div>
 
           {photos.length ? (
             <Section title="Photos">
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {photos.slice(0, 9).map((url, i) => (
                   <button
                     key={url}
                     type="button"
                     onClick={() => setPhotoIndex(i)}
-                    className="overflow-hidden rounded-lg"
+                    className="aspect-[4/3] min-w-0 overflow-hidden rounded-lg bg-secondary"
                     aria-label={`Open photo ${i + 1}`}
                   >
                     <img
                       src={url}
                       alt=""
                       loading="lazy"
-                      className="h-24 w-full object-cover transition-transform duration-300 hover:scale-105"
+                      className="size-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </button>
                 ))}
@@ -265,7 +270,7 @@ export function PropertyPackDrawer({
                 {data!.available_units.map((u: Pack, i: number) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm"
+                     className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm"
                   >
                     <span>
                       {beds(u.bedrooms)} · {String(u.unit_type ?? "")} ({String(u.units ?? "")})

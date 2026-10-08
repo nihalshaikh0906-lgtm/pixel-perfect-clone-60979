@@ -2,6 +2,10 @@ import { mediaUrl } from "@/lib/media";
 import { Building2 } from "lucide-react";
 
 import { aed, beds, quarterOf, sqft } from "@/lib/format";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type MatchRow = {
   unit_id: number;
@@ -18,16 +22,31 @@ export type MatchRow = {
 };
 
 export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRow) => void }) {
+  const [coverFailed, setCoverFailed] = useState(false);
+  const photo = useQuery({
+    queryKey: ["unit-cover", row.project_id, row.unit_id],
+    enabled: coverFailed || !row.cover_image_url,
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_property_pack", { p_project_id: row.project_id, p_unit_id: row.unit_id });
+      if (error) throw new Error(error.message);
+      const pack = data as { photos?: unknown[] } | null;
+      return pack?.photos?.find((url): url is string => typeof url === "string" && url.length > 0) ?? null;
+    },
+  });
+  const image = coverFailed || !row.cover_image_url ? photo.data : row.cover_image_url;
   return (
-    <button
+    <Button
+      variant="ghost"
       type="button"
       onClick={() => onOpen(row)}
-      className="panel group overflow-hidden text-left transition-all hover:-translate-y-0.5 hover:glow-ring"
+      className="panel group block h-auto w-full min-w-0 overflow-hidden p-0 text-left whitespace-normal transition-all hover:-translate-y-0.5 hover:glow-ring"
     >
-      <div className="relative h-36 w-full overflow-hidden bg-secondary">
-        {row.cover_image_url ? (
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
+        {image ? (
           <img
-            src={mediaUrl(row.cover_image_url)}
+            src={mediaUrl(image)}
+            onError={() => setCoverFailed(true)}
             alt={row.project_name ?? "Project"}
             loading="lazy"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -45,8 +64,8 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
       </div>
       <div className="space-y-2 p-4">
         <div>
-          <h3 className="truncate font-display text-xl font-semibold">{row.project_name ?? "Project"}</h3>
-          <p className="truncate text-[15px] text-muted-foreground">
+          <h3 className="break-words font-display text-lg font-semibold">{row.project_name ?? "Project"}</h3>
+          <p className="break-words text-sm text-muted-foreground">
             {row.developer ?? row.district ?? "—"}
           </p>
         </div>
@@ -62,6 +81,6 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
           ))}
         </div>
       </div>
-    </button>
+    </Button>
   );
 }

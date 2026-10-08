@@ -1,5 +1,10 @@
 # Roadmap
 
+- [x] Connect New lead to the existing saved-lead form; saved and read back through CRM
+- [x] Fit matched-property cards, property photos and map controls to the available screen
+- [x] Verify lead creation and property layout with real inventory photos on wide/narrow screens
+- [ ] Validate Google Maps rendering on an authorized deployed origin — sandbox Maps checks are unsupported
+
 - [x] Speed up dossier replies by trimming repeated inventory details and overlapping safe request setup
 - [x] Remove artificial 60-second chat deadlines so slower real replies are not discarded
 - [x] Remove the invented verification badge and Dashboard nav label

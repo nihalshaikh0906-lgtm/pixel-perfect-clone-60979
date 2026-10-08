@@ -27,4 +27,8 @@
 - The /app broker workspace lives under src/routes/_authenticated/app*, styled by src/components/app/app.css scoped to .dapp; demo leads come only from src/lib/demo-leads.ts so they can later be swapped for real tables, and every count is derived from that data.
 - Matched units on lead pages come from the real search_units RPC, never from demo data, so prices and projects are never invented.
 
+- Reuse UnitCard and PropertyPackDrawer for matched-property inspection; demo lead IDs must never be written to the clients-backed shortlists table.
+- New lead actions open the existing CRM creation form so saved leads have one persistence path.
+- Client dossier shortlists read the existing shortlists table through RLS and refresh after saving; property cards share the recommendation inspection flow.
+
 - Company/agent roles live in org_members (separate from profiles) and are checked via my_org()/is_org_admin() security-definer functions; avoids RLS recursion and role spoofing. New tables are now allowed by the user.

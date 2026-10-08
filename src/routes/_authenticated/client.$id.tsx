@@ -58,6 +58,7 @@ function Dossier() {
   const [input, setInput] = useState("");
   const [aiUnits, setAiUnits] = useState<MatchRow[] | null>(null);
   const [openUnit, setOpenUnit] = useState<MatchRow | null>(null);
+  const [propertyTab, setPropertyTab] = useState<"recommended" | "shortlisted">("recommended");
   const messagesRef = useRef<HTMLDivElement | null>(null);
 
   const clientQuery = useQuery({
@@ -94,6 +95,25 @@ function Dossier() {
       const { data, error } = await supabase.rpc("match_client", { p_client_id: id, p_limit: 4 });
       if (error) throw new Error(error.message);
       return (data ?? []) as unknown as MatchRow[];
+    },
+  });
+
+  const shortlistQuery = useQuery({
+    queryKey: ["shortlists", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("shortlists")
+        .select("id, score, units(id, project_id, bedrooms, size_sqft, price_aed), projects(name, developer_name, district, handover_date, cover_image_url)")
+        .eq("client_id", id).order("created_at", { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data ?? []).flatMap((saved) => {
+        const u = saved.units;
+        const p = saved.projects;
+        if (!u || !p || u.project_id == null) return [];
+        return [{ unit_id: u.id, project_id: u.project_id, project_name: p.name,
+          developer: p.developer_name, district: p.district, handover_date: p.handover_date,
+          cover_image_url: p.cover_image_url, bedrooms: u.bedrooms, size_sqft: u.size_sqft,
+          price_aed: u.price_aed, score: saved.score } satisfies MatchRow];
+      });
     },
   });
 
@@ -308,7 +328,7 @@ function Dossier() {
         </p>
       ) : null}
 
-      <div className="grid flex-1 gap-6 px-6 py-6 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
+      <div className="grid min-w-0 flex-1 gap-6 px-4 py-6 sm:px-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         {/* Left: profile + recommendations */}
         <div className="space-y-6">
           <section className="panel p-5">
@@ -336,9 +356,16 @@ function Dossier() {
 
           <section>
             <div className="flex items-baseline justify-between">
-              <h2 className="text-lg font-semibold">AI Recommendations</h2>
+              <h2 className="text-lg font-semibold">{propertyTab === "shortlisted" ? "Shortlisted properties" : "AI Recommendations"}</h2>
               <span className="eyebrow">{aiUnits ? "From AI answer" : "Top 4 matches"}</span>
             </div>
+            <div className="mt-3 flex flex-wrap gap-2" role="tablist" aria-label="Client properties">
+              <Button role="tab" aria-selected={propertyTab === "recommended"} variant={propertyTab === "recommended" ? "default" : "outline"} size="sm" onClick={() => setPropertyTab("recommended")}>Recommended</Button>
+              <Button role="tab" aria-selected={propertyTab === "shortlisted"} variant={propertyTab === "shortlisted" ? "default" : "outline"} size="sm" onClick={() => setPropertyTab("shortlisted")}>Shortlisted ({shortlistQuery.data?.length ?? 0})</Button>
+            </div>
+            {propertyTab === "shortlisted" && shortlistQuery.isLoading ? <p className="mt-4 text-sm text-muted-foreground">Loading shortlist…</p> : null}
+            {propertyTab === "shortlisted" && shortlistQuery.error ? <p role="alert" className="mt-4 text-sm text-destructive">{shortlistQuery.error.message}</p> : null}
+            {propertyTab === "shortlisted" && shortlistQuery.data?.length === 0 ? <p className="mt-4 text-sm text-muted-foreground">No saved properties for this client yet.</p> : null}
             {matchQuery.isLoading ? (
               <p className="mt-4 text-sm text-muted-foreground">Scoring inventory…</p>
             ) : null}
@@ -347,8 +374,8 @@ function Dossier() {
                 {(matchQuery.error as Error).message}
               </p>
             ) : null}
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {units.map((row) => (
+            <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-4">
+              {(propertyTab === "shortlisted" ? shortlistQuery.data ?? [] : units).map((row) => (
                 <UnitCard
                   key={row.unit_id}
                   row={row}
@@ -405,7 +432,7 @@ function Dossier() {
         </div>
 
         {/* Right: AI chat */}
-        <div className="panel flex h-[calc(100dvh-9rem)] min-h-[420px] flex-col self-start lg:sticky lg:top-24">
+        <div className="panel flex h-[calc(100dvh-9rem)] min-h-[420px] min-w-0 flex-col self-start xl:sticky xl:top-24">
           <div ref={messagesRef} className="flex-1 space-y-5 overflow-y-auto p-6">
             {chat.length === 0 ? (
               <p className="text-sm text-muted-foreground">
