@@ -3,6 +3,9 @@ import { Building2 } from "lucide-react";
 
 import { aed, beds, quarterOf, sqft } from "@/lib/format";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type MatchRow = {
   unit_id: number;
@@ -19,6 +22,19 @@ export type MatchRow = {
 };
 
 export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRow) => void }) {
+  const [coverFailed, setCoverFailed] = useState(false);
+  const photo = useQuery({
+    queryKey: ["unit-cover", row.project_id, row.unit_id],
+    enabled: coverFailed || !row.cover_image_url,
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_property_pack", { p_project_id: row.project_id, p_unit_id: row.unit_id });
+      if (error) throw new Error(error.message);
+      const pack = data as { photos?: unknown[] } | null;
+      return pack?.photos?.find((url): url is string => typeof url === "string" && url.length > 0) ?? null;
+    },
+  });
+  const image = coverFailed || !row.cover_image_url ? photo.data : row.cover_image_url;
   return (
     <Button
       variant="ghost"
@@ -27,9 +43,10 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
       className="panel group block h-auto w-full min-w-0 overflow-hidden p-0 text-left whitespace-normal transition-all hover:-translate-y-0.5 hover:glow-ring"
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
-        {row.cover_image_url ? (
+        {image ? (
           <img
-            src={mediaUrl(row.cover_image_url)}
+            src={mediaUrl(image)}
+            onError={() => setCoverFailed(true)}
             alt={row.project_name ?? "Project"}
             loading="lazy"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-105"

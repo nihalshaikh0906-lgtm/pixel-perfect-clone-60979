@@ -263,6 +263,6 @@
 .dapp .a-modal input,.dapp .a-modal select{width:100%;min-width:0}
 .dapp .a-modal-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 .dapp .a-table-wrap{overflow-x:auto}
-@media(min-width:861px) and (max-width:1350px){.dapp .a-detail{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}.dapp .a-detail>:last-child{grid-column:1/-1}}
+@media(min-width:861px) and (max-width:1350px){.dapp .a-detail{grid-template-columns:minmax(0,1fr) minmax(0,1.8fr)}.dapp .a-detail>:last-child{grid-column:1/-1}}
 @media(max-width:860px){.dapp .a-detail{grid-template-columns:minmax(0,1fr)}.dapp .a-detail>:last-child{grid-column:auto}}
 @media(max-width:480px){.dapp .a-top{gap:6px;padding:10px 8px}.dapp .a-top-actions{gap:4px}.dapp .a-top-actions .a-btn{padding:0 10px}.dapp .a-content{padding-left:12px;padding-right:12px}.dapp .a-card{padding:16px}.dapp .a-property-grid{grid-template-columns:minmax(0,1fr)}}
