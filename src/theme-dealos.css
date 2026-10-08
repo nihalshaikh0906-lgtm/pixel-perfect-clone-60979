@@ -105,3 +105,5 @@
 .dapp .a-link.active{background:linear-gradient(90deg,rgba(58,100,255,.12),rgba(138,77,255,.10));color:#141A33}
 .dapp .a-side{background:#fff}
 ::selection{background:rgba(47,107,255,.2)}
+.dealos .d-insight p,.dealos .d-dashboard p{color:#141A33!important}
+.dealos .d-avatar-stack span{font-size:11px;letter-spacing:0;min-width:34px;overflow:visible}
