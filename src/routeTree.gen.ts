@@ -33,6 +33,7 @@ import { Route as ApiDossierCopilotRouteImport } from './routes/api/dossier-copi
 import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copilot'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
+import { Route as AuthenticatedAppCrmRouteImport } from './routes/_authenticated/app.crm'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
 import { Route as AuthenticatedAppLeadsIndexRouteImport } from './routes/_authenticated/app.leads.index'
 import { Route as AuthenticatedAppLeadsIdRouteImport } from './routes/_authenticated/app.leads.$id'
@@ -156,6 +157,11 @@ const AuthenticatedAppSectionRoute = AuthenticatedAppSectionRouteImport.update({
   path: '/$section',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppCrmRoute = AuthenticatedAppCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedClientIdRoute = AuthenticatedClientIdRouteImport.update({
   id: '/client/$id',
   path: '/client/$id',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
+  '/app/crm': typeof AuthenticatedAppCrmRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/': typeof AuthenticatedIndexRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
+  '/app/crm': typeof AuthenticatedAppCrmRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
+  '/_authenticated/app/crm': typeof AuthenticatedAppCrmRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/app/$section'
+    | '/app/crm'
     | '/client/$id'
     | '/app/'
     | '/app/leads/$id'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/api/general-copilot'
     | '/'
     | '/app/$section'
+    | '/app/crm'
     | '/client/$id'
     | '/app'
     | '/app/leads/$id'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/api/general-copilot'
     | '/_authenticated/'
     | '/_authenticated/app/$section'
+    | '/_authenticated/app/crm'
     | '/_authenticated/client/$id'
     | '/_authenticated/app/'
     | '/_authenticated/app/leads/$id'
@@ -531,6 +543,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppSectionRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/crm': {
+      id: '/_authenticated/app/crm'
+      path: '/crm'
+      fullPath: '/app/crm'
+      preLoaderRoute: typeof AuthenticatedAppCrmRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/client/$id': {
       id: '/_authenticated/client/$id'
       path: '/client/$id'
@@ -557,6 +576,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSectionRoute: typeof AuthenticatedAppSectionRoute
+  AuthenticatedAppCrmRoute: typeof AuthenticatedAppCrmRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppLeadsIdRoute: typeof AuthenticatedAppLeadsIdRoute
   AuthenticatedAppLeadsIndexRoute: typeof AuthenticatedAppLeadsIndexRoute
@@ -564,6 +584,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSectionRoute: AuthenticatedAppSectionRoute,
+  AuthenticatedAppCrmRoute: AuthenticatedAppCrmRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppLeadsIdRoute: AuthenticatedAppLeadsIdRoute,
   AuthenticatedAppLeadsIndexRoute: AuthenticatedAppLeadsIndexRoute,
