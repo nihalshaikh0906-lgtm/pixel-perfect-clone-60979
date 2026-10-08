@@ -4,6 +4,7 @@ import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { Building2, RotateCcw, Trash2, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ImportModal } from "@/components/app/ImportModal";
 
 export const Route = createFileRoute("/_authenticated/app/crm")({
   head: () => ({
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/app/crm")({
       { property: "og:description", content: "Role-based lead management for Dubai brokerages." },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({ action: typeof s.action === "string" ? s.action : undefined }),
   component: CrmPage,
 });
 
@@ -28,6 +30,9 @@ function CrmPage() {
   const [tab, setTab] = useState<"active" | "bin">("active");
   const [open, setOpen] = useState<string | null>(null);
   const [agency, setAgency] = useState("");
+  const { action } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const closeModal = () => void navigate({ search: { action: undefined } });
 
   const me = useQuery({
     queryKey: ["crm-me"],
@@ -100,7 +105,11 @@ function CrmPage() {
           <div key={k} className="a-card a-kpi"><p className="eyebrow-a" style={{ marginTop: 0 }}>{k}</p><strong className="num">{v}</strong></div>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 8 }}>
+      {action === "add" ? <AddLeadModal orgId={me.data.org_id} members={members.data ?? []} isAdmin={isAdmin} onClose={closeModal} onDone={refresh} /> : null}
+      {action === "import" ? <ImportModal kind="leads" orgId={me.data.org_id} onClose={closeModal} onDone={refresh} /> : null}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button className="a-btn a-btn-line" style={{ marginLeft: "auto", order: 3 }} onClick={() => void navigate({ search: { action: "import" } })}>Import CSV</button>
+        <button className="a-btn a-btn-gold" style={{ order: 4 }} onClick={() => void navigate({ search: { action: "add" } })}>+ Add lead</button>
         <button className={`a-btn ${tab === "active" ? "a-btn-gold" : ""}`} onClick={() => setTab("active")}>Leads ({active.length})</button>
         <button className={`a-btn ${tab === "bin" ? "a-btn-gold" : ""}`} onClick={() => setTab("bin")}><Trash2 size={14} /> Bin ({bin.length})</button>
       </div>
@@ -156,3 +165,34 @@ function CrmPage() {
     </div>
   );
 }
+
+function AddLeadModal({ orgId, members, isAdmin, onClose, onDone }: { orgId: string; members: Member[]; isAdmin: boolean; onClose: () => void; onDone: () => void }) {
+  const [f, setF] = useState({ name: "", phone: "+971", email: "", source: "WhatsApp", type: "off-plan", priority: "warm", budget_max: "", assigned_to: "" });
+  const [busy, setBusy] = useState(false);
+  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
+  const save = async () => {
+    if (!f.name.trim()) { toast.error("Name is required"); return; }
+    setBusy(true);
+    const { data: u } = await supabase.auth.getUser();
+    const { error } = await db.from("leads").insert({ org_id: orgId, name: f.name.trim(), phone: f.phone, email: f.email || null, source: f.source, type: f.type, priority: f.priority,
+      budget_max: f.budget_max ? Number(f.budget_max) : null, assigned_to: isAdmin ? f.assigned_to || null : u.user?.id, next_follow_up_at: new Date(Date.now() + 3600e3).toISOString() });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Lead added"); onDone(); onClose();
+  };
+  return (
+    <div className="a-modal" role="dialog" aria-label="Add lead" onClick={(e) => e.target === e.currentTarget && onClose()}><div>
+      <h2 style={{ margin: 0 }}>Add lead</h2>
+      <label>Name<input value={f.name} onChange={set("name")} autoFocus /></label>
+      <label>Phone<input value={f.phone} onChange={set("phone")} /></label>
+      <label>Email<input value={f.email} onChange={set("email")} /></label>
+      <label>Source<select value={f.source} onChange={set("source")}>{["Bayut", "Property Finder", "Dubizzle", "WhatsApp", "Meta Ads", "Website", "Referral", "Walk-in"].map((x) => <option key={x}>{x}</option>)}</select></label>
+      <label>Type<select value={f.type} onChange={set("type")}>{["off-plan", "ready", "rent"].map((x) => <option key={x}>{x}</option>)}</select></label>
+      <label>Priority<select value={f.priority} onChange={set("priority")}>{["hot", "warm", "cold"].map((x) => <option key={x}>{x}</option>)}</select></label>
+      <label>Max budget (AED)<input inputMode="numeric" value={f.budget_max} onChange={set("budget_max")} /></label>
+      {isAdmin ? <label>Assign to<select value={f.assigned_to} onChange={set("assigned_to")}><option value="">Unassigned</option>{members.map((m) => <option key={m.user_id} value={m.user_id}>{m.full_name}</option>)}</select></label> : null}
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}><button className="a-btn a-btn-line" onClick={onClose}>Cancel</button><button className="a-btn a-btn-gold" disabled={busy} onClick={() => void save()}>{busy ? "Saving…" : "Save lead"}</button></div>
+    </div></div>
+  );
+}
+

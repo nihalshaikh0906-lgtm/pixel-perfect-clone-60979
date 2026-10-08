@@ -2,12 +2,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogoMark } from "@/components/Logo";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Bell, Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, KeyRound, LineChart, MapPinned,
+  Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, KeyRound, LineChart, MapPinned,
   Menu, Newspaper, Settings, Sparkles, Workflow, Wrench, Zap, Search, ListChecks, LogOut, User,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { AiChat } from "./AiChat";
+import { AddMenu, Notifications, ThemeToggle, useTheme } from "./ShellExtras";
 import { supabase } from "@/integrations/supabase/client";
 import { queueCount } from "@/lib/demo-leads";
 
@@ -40,6 +41,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "Home", to: "/app", icon: Home, exact: true },
       { label: "Leads inbox", to: "/app/leads", icon: Inbox, badge: queueCount("respond") },
       { label: "Team leads", to: "/app/crm", icon: Building2 },
+      { label: "Listings", to: "/app/listings", icon: ListChecks },
       { label: "Pipelines", to: "/app/pipelines", icon: Workflow },
       { label: "Today", to: "/app/today", icon: CalendarClock, badge: queueCount("followup") },
     ] },
@@ -48,7 +50,6 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "Ready to buy", to: "/app/ready", icon: KeyRound },
       { label: "Rentals", to: "/app/rentals", icon: Home },
       { label: "Areas", to: "/app/areas", icon: MapPinned },
-      { label: "My listings", to: "/app/listings", icon: ListChecks },
     ] },
     { title: "Insight", items: [
       { label: "Market", to: "/app/market", icon: LineChart },
@@ -72,11 +73,14 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const theme = useTheme();
+  const [role, setRole] = useState<string | null>(null);
+  useEffect(() => { void supabase.auth.getUser().then(({ data }) => (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", data.user?.id ?? "").maybeSingle().then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))); }, []);
   const active = (it: Item) => (it.exact ? pathname === it.to || pathname === `${it.to}/` : pathname.startsWith(it.to));
 
   return (
     <Ctx.Provider value={{ clientMode, openAi: () => setAi(true) }}>
-      <div className="dapp">
+      <div className={`dapp ${theme.dark ? "a-dark" : ""}`}>
         {drawer ? <div className="a-scrim" onClick={() => setDrawer(false)} aria-hidden /> : null}
         <aside className={`a-side ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`} aria-label="Workspace navigation">
           <div className="a-brand"><LogoMark size={32} /><span className="a-brand-text logo-word">Deal<span className="text-gradient">OS</span></span><span className="a-demo a-brand-text">DEMO</span></div>
@@ -105,7 +109,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               </div>
             ) : null}
             <button type="button" className="a-user" aria-haspopup="menu" aria-expanded={userMenu} aria-label="Account menu" onClick={() => setUserMenu((v) => !v)}>
-              <span className="a-avatar">{initials}</span><span className="a-user-text"><b>{userName}</b><small>Broker · {agency}</small></span>
+              <span className="a-avatar">{initials}</span><span className="a-user-text"><b>{userName}</b><small>{role === "company_admin" ? "Company" : role === "agent" ? "Agent" : "Broker"} · {agency}</small></span>
             </button>
           </div>
         </aside>
@@ -122,7 +126,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               <button type="button" className="a-btn a-btn-line a-hide-sm" aria-pressed={clientMode} onClick={() => setClientMode((v) => !v)} title="Hides commission and internal notes">
                 Client mode: {clientMode ? "on" : "off"}
               </button>
-              <button type="button" className="a-btn a-btn-line a-hide-sm" style={{ width: 42, padding: 0 }} aria-label="Notifications"><Bell size={17} /></button>
+              <AddMenu />
+              <Notifications />
+              <ThemeToggle {...theme} />
               <button type="button" className="a-btn a-btn-gold" onClick={() => setAi(true)}><Sparkles size={16} /><span className="a-ask-label">Ask AI</span></button>
             </div>
           </header>

@@ -107,3 +107,30 @@
 ::selection{background:rgba(47,107,255,.2)}
 .dealos .d-insight p,.dealos .d-dashboard p{color:#141A33!important}
 .dealos .d-avatar-stack span{font-size:11px;letter-spacing:0;min-width:34px;overflow:visible}
+/* Workspace popovers, notification drawer, dark mode */
+.dapp .a-pop-wrap{position:relative}
+.dapp .a-pop{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:var(--a-card);border:1px solid var(--a-line);border-radius:14px;box-shadow:var(--a-shadow);padding:6px;z-index:60;animation:aPop .18s ease-out}
+.dapp .a-pop button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:10px;font-size:14px;color:var(--a-ink);text-align:left}
+.dapp .a-pop button:hover{background:var(--a-cream)}
+@keyframes aPop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.dapp .a-bell{position:relative}
+.dapp .a-bell-n{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#E5484D;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.dapp .a-ndrawer{position:fixed;top:0;right:0;height:100vh;width:min(400px,100vw);background:var(--a-card);border-left:1px solid var(--a-line);z-index:80;display:flex;flex-direction:column;animation:aSlide .25s ease-out}
+.dapp .a-ndrawer header{display:flex;align-items:center;gap:8px;padding:18px;border-bottom:1px solid var(--a-line)}
+.dapp .a-ndrawer h2{margin:0 auto 0 0;font-size:20px}
+.dapp .a-nlist{overflow:auto;flex:1}
+.dapp .a-nitem{display:grid;gap:2px;padding:14px 18px;border-bottom:1px solid var(--a-line);color:var(--a-ink)}
+.dapp .a-nitem.unread{background:var(--a-gold-tint)}
+.dapp .a-nitem span{font-size:14px;color:var(--a-ink-2)}.dapp .a-nitem small{font-size:12px;color:var(--a-eyebrow)}
+@keyframes aSlide{from{transform:translateX(100%)}to{transform:none}}
+.dapp,.dapp .a-side,.dapp .a-top,.dapp .a-card{transition:background-color .3s,color .3s,border-color .3s}
+.dapp.a-dark{--a-bg:#0B0E1A;--a-card:#121629;--a-line:rgba(255,255,255,.08);--a-ink:#FFFFFF;--a-ink-2:#B4B9D0;--a-eyebrow:#8A90A8;--a-gold-tint:rgba(58,100,255,.16);--a-cream:rgba(255,255,255,.05);--a-gold-text:#8FA8FF;--a-hot-bg:rgba(229,72,77,.18);--a-warm-bg:rgba(194,98,10,.2);--a-cold-bg:rgba(255,255,255,.06);--a-ok-bg:rgba(22,163,74,.18);--a-ready-bg:rgba(123,77,255,.2);color-scheme:dark}
+.dapp.a-dark .a-top{background:rgba(11,14,26,.85)}
+.dapp.a-dark select,.dapp.a-dark input,.dapp.a-dark textarea{background:#0B0E1A;color:#fff;border-color:rgba(255,255,255,.12)}
+.dapp.a-dark .a-btn-line{color:#fff;border-color:rgba(255,255,255,.14)}
+.dapp .a-modal{position:fixed;inset:0;display:grid;place-items:center;z-index:90;background:rgba(11,14,26,.5);padding:16px}
+.dapp .a-modal>div{background:var(--a-card);border-radius:20px;padding:24px;width:min(560px,100%);max-height:90vh;overflow:auto;display:grid;gap:12px;animation:aPop .2s ease-out}
+.dapp .a-modal label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--a-ink-2)}
+.dapp .a-modal input,.dapp .a-modal select,.dapp .a-in{height:42px;border:1px solid var(--a-line);border-radius:12px;padding:0 12px;font:inherit;background:var(--a-card);color:var(--a-ink)}
+.dapp .a-drop{border:2px dashed var(--a-line);border-radius:16px;padding:28px;text-align:center;cursor:pointer}
+.dapp .a-drop.on{border-color:#3A64FF;background:var(--a-gold-tint)}
