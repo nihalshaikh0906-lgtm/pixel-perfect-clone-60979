@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/app/crm")({
       { property: "og:description", content: "Role-based lead management for Dubai brokerages." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({ action: typeof s.action === "string" ? s.action : undefined }),
+  validateSearch: (s: Record<string, unknown>): { action?: string | undefined } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined }),
   component: CrmPage,
 });
 
@@ -32,7 +32,7 @@ function CrmPage() {
   const [agency, setAgency] = useState("");
   const { action } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const closeModal = () => void navigate({ search: { action: undefined } });
+  const closeModal = () => void navigate({ search: {} });
 
   const me = useQuery({
     queryKey: ["crm-me"],

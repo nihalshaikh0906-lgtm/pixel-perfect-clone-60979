@@ -31,7 +31,7 @@ export function ImportModal({ kind, orgId, onClose, onDone }: { kind: "leads" | 
     const r = parseCsv(await file.text());
     if (r.length < 2) { toast.error("The file needs a header row and at least one row"); return; }
     setRows(r);
-    const head = r[0].map((h) => h.toLowerCase().replace(/[^a-z]/g, ""));
+    const head = (r[0] ?? []).map((h) => h.toLowerCase().replace(/[^a-z]/g, ""));
     const m: Record<string, number> = {};
     fields.forEach((f) => { const i = head.findIndex((h) => h.includes(f.replace(/_/g, "").replace("max", "")) || (f === "name" && h.includes("client")) || (f === "title" && h.includes("name"))); if (i >= 0) m[f] = i; });
     setMap(m);
@@ -61,7 +61,7 @@ export function ImportModal({ kind, orgId, onClose, onDone }: { kind: "leads" | 
           <p className="muted" style={{ margin: 0 }}>{rows.length - 1} rows found. Match your columns:</p>
           {fields.map((f) => (
             <label key={f}>{f.replace(/_/g, " ")}<select value={map[f] ?? ""} onChange={(e) => setMap({ ...map, [f]: e.target.value === "" ? (undefined as unknown as number) : Number(e.target.value) })}>
-              <option value="">— skip —</option>{rows[0].map((h, i) => <option key={i} value={i}>{h}</option>)}
+              <option value="">— skip —</option>{(rows[0] ?? []).map((h, i) => <option key={i} value={i}>{h}</option>)}
             </select></label>
           ))}
         </>

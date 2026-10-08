@@ -1,3 +1,4 @@
+import { mediaUrl } from "@/lib/media";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -52,7 +53,7 @@ export function PhotoLightbox({
       </button>
       <img
         key={photos[index!]}
-        src={photos[index!]}
+        src={mediaUrl(photos[index!])}
         alt={`${title} photo ${index! + 1}`}
         onClick={(e) => e.stopPropagation()}
         className="max-h-[80vh] max-w-full animate-in fade-in zoom-in-95 rounded-lg object-contain shadow-2xl duration-300"
