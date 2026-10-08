@@ -14,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/app/crm")({
       { property: "og:description", content: "Role-based lead management for Dubai brokerages." },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({ action: typeof s.action === "string" ? s.action : undefined }),
   component: CrmPage,
 });
 
@@ -28,6 +29,9 @@ function CrmPage() {
   const [tab, setTab] = useState<"active" | "bin">("active");
   const [open, setOpen] = useState<string | null>(null);
   const [agency, setAgency] = useState("");
+  const { action } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const closeModal = () => void navigate({ search: { action: undefined } });
 
   const me = useQuery({
     queryKey: ["crm-me"],
@@ -100,7 +104,11 @@ function CrmPage() {
           <div key={k} className="a-card a-kpi"><p className="eyebrow-a" style={{ marginTop: 0 }}>{k}</p><strong className="num">{v}</strong></div>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 8 }}>
+      {action === "add" ? <AddLeadModal orgId={me.data.org_id} members={members.data ?? []} isAdmin={isAdmin} onClose={closeModal} onDone={refresh} /> : null}
+      {action === "import" ? <ImportModal kind="leads" orgId={me.data.org_id} onClose={closeModal} onDone={refresh} /> : null}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button className="a-btn a-btn-line" style={{ marginLeft: "auto", order: 3 }} onClick={() => void navigate({ search: { action: "import" } })}>Import CSV</button>
+        <button className="a-btn a-btn-gold" style={{ order: 4 }} onClick={() => void navigate({ search: { action: "add" } })}>+ Add lead</button>
         <button className={`a-btn ${tab === "active" ? "a-btn-gold" : ""}`} onClick={() => setTab("active")}>Leads ({active.length})</button>
         <button className={`a-btn ${tab === "bin" ? "a-btn-gold" : ""}`} onClick={() => setTab("bin")}><Trash2 size={14} /> Bin ({bin.length})</button>
       </div>
@@ -154,5 +162,102 @@ function CrmPage() {
         </table>
       </div>
     </div>
+  );
+}
+
+function AddLeadModal({ orgId, members, isAdmin, onClose, onDone }: { orgId: string; members: Member[]; isAdmin: boolean; onClose: () => void; onDone: () => void }) {
+  const [f, setF] = useState({ name: "", phone: "+971", email: "", source: "WhatsApp", type: "off-plan", priority: "warm", budget_max: "", assigned_to: "" });
+  const [busy, setBusy] = useState(false);
+  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
+  const save = async () => {
+    if (!f.name.trim()) { toast.error("Name is required"); return; }
+    setBusy(true);
+    const { data: u } = await supabase.auth.getUser();
+    const { error } = await db.from("leads").insert({ org_id: orgId, name: f.name.trim(), phone: f.phone, email: f.email || null, source: f.source, type: f.type, priority: f.priority,
+      budget_max: f.budget_max ? Number(f.budget_max) : null, assigned_to: isAdmin ? f.assigned_to || null : u.user?.id, next_follow_up_at: new Date(Date.now() + 3600e3).toISOString() });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Lead added"); onDone(); onClose();
+  };
+  return (
+    <div className="a-modal" role="dialog" aria-label="Add lead" onClick={(e) => e.target === e.currentTarget && onClose()}><div>
+      <h2 style={{ margin: 0 }}>Add lead</h2>
+      <label>Name<input value={f.name} onChange={set("name")} autoFocus /></label>
+      <label>Phone<input value={f.phone} onChange={set("phone")} /></label>
+      <label>Email<input value={f.email} onChange={set("email")} /></label>
+      <label>Source<select value={f.source} onChange={set("source")}>{["Bayut", "Property Finder", "Dubizzle", "WhatsApp", "Meta Ads", "Website", "Referral", "Walk-in"].map((x) => <option key={x}>{x}</option>)}</select></label>
+      <label>Type<select value={f.type} onChange={set("type")}>{["off-plan", "ready", "rent"].map((x) => <option key={x}>{x}</option>)}</select></label>
+      <label>Priority<select value={f.priority} onChange={set("priority")}>{["hot", "warm", "cold"].map((x) => <option key={x}>{x}</option>)}</select></label>
+      <label>Max budget (AED)<input inputMode="numeric" value={f.budget_max} onChange={set("budget_max")} /></label>
+      {isAdmin ? <label>Assign to<select value={f.assigned_to} onChange={set("assigned_to")}><option value="">Unassigned</option>{members.map((m) => <option key={m.user_id} value={m.user_id}>{m.full_name}</option>)}</select></label> : null}
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}><button className="a-btn a-btn-line" onClick={onClose}>Cancel</button><button className="a-btn a-btn-gold" disabled={busy} onClick={() => void save()}>{busy ? "Saving…" : "Save lead"}</button></div>
+    </div></div>
+  );
+}
+
+export function parseCsv(text: string): string[][] {
+  const rows: string[][] = []; let row: string[] = []; let cur = ""; let q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"' && text[i + 1] === '"') { cur += '"'; i++; } else if (c === '"') q = false; else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cur); cur = ""; if (row.some((x) => x.trim())) rows.push(row); row = []; }
+    else cur += c;
+  }
+  row.push(cur); if (row.some((x) => x.trim())) rows.push(row);
+  return rows;
+}
+
+const FIELDS = { leads: ["name", "phone", "email", "source", "type", "priority", "budget_max"], listings: ["title", "community", "type", "bedrooms", "size_sqft", "price", "status"] } as const;
+
+export function ImportModal({ kind, orgId, onClose, onDone }: { kind: "leads" | "listings"; orgId: string; onClose: () => void; onDone: () => void }) {
+  const [rows, setRows] = useState<string[][]>([]);
+  const [map, setMap] = useState<Record<string, number>>({});
+  const [over, setOver] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const fields = FIELDS[kind];
+  const load = async (file?: File) => {
+    if (!file) return;
+    const r = parseCsv(await file.text());
+    if (r.length < 2) { toast.error("The file needs a header row and at least one row"); return; }
+    setRows(r);
+    const head = r[0].map((h) => h.toLowerCase().replace(/[^a-z]/g, ""));
+    const m: Record<string, number> = {};
+    fields.forEach((f) => { const i = head.findIndex((h) => h.includes(f.replace(/_/g, "").replace("max", "")) || (f === "name" && h.includes("client")) || (f === "title" && h.includes("name"))); if (i >= 0) m[f] = i; });
+    setMap(m);
+  };
+  const run = async () => {
+    const req = kind === "leads" ? "name" : "title";
+    if (map[req] === undefined) { toast.error(`Map a column to "${req}" first`); return; }
+    setBusy(true);
+    const num = new Set(["budget_max", "size_sqft", "price"]);
+    const items = rows.slice(1).map((r) => { const o: Record<string, unknown> = { org_id: orgId }; fields.forEach((f) => { const i = map[f]; if (i !== undefined && r[i]?.trim()) o[f] = num.has(f) ? Number(r[i].replace(/[^0-9.]/g, "")) || null : r[i].trim(); }); return o; }).filter((o) => o[req]);
+    let ok = 0;
+    for (let i = 0; i < items.length; i += 200) { const { error } = await db.from(kind === "leads" ? "leads" : "org_listings").insert(items.slice(i, i + 200)); if (!error) ok += Math.min(200, items.length - i); }
+    setBusy(false);
+    await db.from("notifications").insert({ org_id: orgId, type: "import_done", title: `Import finished: ${ok} ${kind}`, body: `${items.length - ok} failed`, link: kind === "leads" ? "/app/crm" : "/app/listings" });
+    toast.success(`Imported ${ok} of ${items.length} ${kind}`); onDone(); onClose();
+  };
+  return (
+    <div className="a-modal" role="dialog" aria-label={`Import ${kind}`} onClick={(e) => e.target === e.currentTarget && onClose()}><div>
+      <h2 style={{ margin: 0 }}>Import {kind} from CSV</h2>
+      {!rows.length ? (
+        <label className={`a-drop ${over ? "on" : ""}`} onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={(e) => { e.preventDefault(); setOver(false); void load(e.dataTransfer.files[0]); }}>
+          <b>Drop a CSV file here</b><span className="muted">or click to choose one</span>
+          <input type="file" accept=".csv,text/csv" hidden onChange={(e) => void load(e.target.files?.[0])} />
+        </label>
+      ) : (
+        <>
+          <p className="muted" style={{ margin: 0 }}>{rows.length - 1} rows found. Match your columns:</p>
+          {fields.map((f) => (
+            <label key={f}>{f.replace(/_/g, " ")}<select value={map[f] ?? ""} onChange={(e) => setMap({ ...map, [f]: e.target.value === "" ? (undefined as unknown as number) : Number(e.target.value) })}>
+              <option value="">— skip —</option>{rows[0].map((h, i) => <option key={i} value={i}>{h}</option>)}
+            </select></label>
+          ))}
+        </>
+      )}
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}><button className="a-btn a-btn-line" onClick={onClose}>Cancel</button>{rows.length ? <button className="a-btn a-btn-gold" disabled={busy} onClick={() => void run()}>{busy ? "Importing…" : `Import ${rows.length - 1} rows`}</button> : null}</div>
+    </div></div>
   );
 }

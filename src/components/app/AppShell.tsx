@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogoMark } from "@/components/Logo";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Bell, Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, KeyRound, LineChart, MapPinned,
+  Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, KeyRound, LineChart, MapPinned,
   Menu, Newspaper, Settings, Sparkles, Workflow, Wrench, Zap, Search, ListChecks, LogOut, User,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
