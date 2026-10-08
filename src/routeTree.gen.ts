@@ -34,6 +34,7 @@ import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copi
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
 import { Route as AuthenticatedAppCrmRouteImport } from './routes/_authenticated/app.crm'
+import { Route as AuthenticatedAppListingsRouteImport } from './routes/_authenticated/app.listings'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
 import { Route as AuthenticatedAppLeadsIndexRouteImport } from './routes/_authenticated/app.leads.index'
 import { Route as AuthenticatedAppLeadsIdRouteImport } from './routes/_authenticated/app.leads.$id'
@@ -162,6 +163,12 @@ const AuthenticatedAppCrmRoute = AuthenticatedAppCrmRouteImport.update({
   path: '/crm',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppListingsRoute =
+  AuthenticatedAppListingsRouteImport.update({
+    id: '/listings',
+    path: '/listings',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedClientIdRoute = AuthenticatedClientIdRouteImport.update({
   id: '/client/$id',
   path: '/client/$id',
@@ -203,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
+  '/app/listings': typeof AuthenticatedAppListingsRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -231,6 +239,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
+  '/app/listings': typeof AuthenticatedAppListingsRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -262,6 +271,7 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
   '/_authenticated/app/crm': typeof AuthenticatedAppCrmRoute
+  '/_authenticated/app/listings': typeof AuthenticatedAppListingsRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/api/general-copilot'
     | '/app/$section'
     | '/app/crm'
+    | '/app/listings'
     | '/client/$id'
     | '/app/'
     | '/app/leads/$id'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app/$section'
     | '/app/crm'
+    | '/app/listings'
     | '/client/$id'
     | '/app'
     | '/app/leads/$id'
@@ -351,6 +363,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/app/$section'
     | '/_authenticated/app/crm'
+    | '/_authenticated/app/listings'
     | '/_authenticated/client/$id'
     | '/_authenticated/app/'
     | '/_authenticated/app/leads/$id'
@@ -550,6 +563,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppCrmRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/listings': {
+      id: '/_authenticated/app/listings'
+      path: '/listings'
+      fullPath: '/app/listings'
+      preLoaderRoute: typeof AuthenticatedAppListingsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/client/$id': {
       id: '/_authenticated/client/$id'
       path: '/client/$id'
@@ -577,6 +597,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSectionRoute: typeof AuthenticatedAppSectionRoute
   AuthenticatedAppCrmRoute: typeof AuthenticatedAppCrmRoute
+  AuthenticatedAppListingsRoute: typeof AuthenticatedAppListingsRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppLeadsIdRoute: typeof AuthenticatedAppLeadsIdRoute
   AuthenticatedAppLeadsIndexRoute: typeof AuthenticatedAppLeadsIndexRoute
@@ -585,6 +606,7 @@ interface AuthenticatedAppRouteChildren {
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSectionRoute: AuthenticatedAppSectionRoute,
   AuthenticatedAppCrmRoute: AuthenticatedAppCrmRoute,
+  AuthenticatedAppListingsRoute: AuthenticatedAppListingsRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppLeadsIdRoute: AuthenticatedAppLeadsIdRoute,
   AuthenticatedAppLeadsIndexRoute: AuthenticatedAppLeadsIndexRoute,
