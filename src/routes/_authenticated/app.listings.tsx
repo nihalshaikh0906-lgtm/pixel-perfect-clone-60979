@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/app/listings")({
       { property: "og:description", content: "Manage your brokerage listings in one place." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { action?: string } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined }),
+  validateSearch: (s: Record<string, unknown>): { action?: string | undefined } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined }),
   component: ListingsPage,
 });
 
