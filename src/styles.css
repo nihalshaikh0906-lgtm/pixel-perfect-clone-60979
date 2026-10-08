@@ -3,6 +3,7 @@
 @import "tw-animate-css";
 @import "./components/dealos/dealos.css";
 @import "./components/app/app.css";
+@import "./theme-dealos.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -53,45 +54,45 @@
   --color-sand: var(--sand);
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --shadow-glow: 0 0 0 1px oklch(0.74 0.06 75 / 0.45), 0 18px 40px -22px oklch(0.6 0.06 70 / 0.45);
-  --shadow-panel: 0 1px 2px oklch(0.4 0.02 60 / 0.04), 0 20px 50px -34px oklch(0.4 0.03 60 / 0.25);
+  --shadow-glow: 0 0 0 1px rgba(47,107,255,.35), 0 18px 40px -22px rgba(123,77,255,.3);
+  --shadow-panel: 0 1px 2px rgba(20,26,51,.04), 0 20px 50px -34px rgba(20,26,51,.08);
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.982 0.005 75);
-  --foreground: #1a1816;
-  --card: oklch(1 0 0);
-  --card-foreground: #1a1816;
-  --popover: oklch(1 0 0);
-  --popover-foreground: #1a1816;
-  --primary: oklch(0.74 0.06 75);
-  --primary-foreground: oklch(0.99 0.004 75);
-  --secondary: oklch(0.955 0.01 75);
-  --secondary-foreground: #1a1816;
-  --muted: oklch(0.95 0.008 75);
+  --radius: 0.875rem;
+  --background: #F7F8FC;
+  --foreground: #141A33;
+  --card: #FFFFFF;
+  --card-foreground: #141A33;
+  --popover: #FFFFFF;
+  --popover-foreground: #141A33;
+  --primary: #2F6BFF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F4F6FF;
+  --secondary-foreground: #141A33;
+  --muted: #F4F6FF;
   --muted-foreground: #4B5272;
-  --accent: oklch(0.94 0.018 75);
-  --accent-foreground: #1a1816;
-  --destructive: oklch(0.55 0.19 27);
-  --destructive-foreground: oklch(0.99 0.005 75);
-  --hot: oklch(0.58 0.15 35);
-  --hot-foreground: oklch(0.99 0.01 40);
-  --success: oklch(0.6 0.1 160);
-  --border: oklch(0.92 0.014 75);
-  --input: oklch(0.9 0.018 75);
-  --ring: oklch(0.74 0.06 75);
-  --gold-hairline: oklch(0.74 0.06 75 / 0.25);
-  --orb-1: oklch(0.94 0.02 75);
-  --orb-2: oklch(0.9 0.025 75);
-  --sidebar: oklch(0.975 0.006 75);
-  --sidebar-foreground: #1a1816;
-  --sidebar-primary: oklch(0.74 0.06 75);
-  --sidebar-primary-foreground: oklch(0.99 0.004 75);
-  --sidebar-accent: oklch(0.955 0.01 75);
-  --sidebar-accent-foreground: #1a1816;
-  --sidebar-border: oklch(0.92 0.014 75);
-  --sidebar-ring: oklch(0.74 0.06 75);
+  --accent: #EEF1FF;
+  --accent-foreground: #2A45C8;
+  --destructive: #E5484D;
+  --destructive-foreground: #FFFFFF;
+  --hot: #E5484D;
+  --hot-foreground: #FFFFFF;
+  --success: #16A34A;
+  --border: #E6E9F5;
+  --input: #E6E9F5;
+  --ring: #2F6BFF;
+  --gold-hairline: rgba(47,107,255,.25);
+  --orb-1: #EEF1FF;
+  --orb-2: #F1EBFF;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #141A33;
+  --sidebar-primary: #2F6BFF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F4F6FF;
+  --sidebar-accent-foreground: #141A33;
+  --sidebar-border: #E6E9F5;
+  --sidebar-ring: #2F6BFF;
 }
 
 @layer base {
@@ -107,7 +108,7 @@
     font-family: var(--font-sans);
     font-size: 15px;
     line-height: 1.6;
-    font-weight: 400;
+    font-weight: 500;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -118,7 +119,8 @@
   .font-display {
     font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: -0.035em;
+    font-weight: 800;
   }
 
   button,
@@ -159,7 +161,7 @@
 
 @keyframes orb-drift-a { 0%,100% { transform: translate(0,0); } 50% { transform: translate(18vw, 12vh); } }
 @keyframes orb-drift-b { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-16vw, -10vh); } }
-@keyframes gold-pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 oklch(0.74 0.06 75 / 0.5); } 50% { opacity: .7; box-shadow: 0 0 0 6px oklch(0.74 0.06 75 / 0); } }
+@keyframes gold-pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(47,107,255,.5); } 50% { opacity: .7; box-shadow: 0 0 0 6px rgba(47,107,255,0); } }
 @keyframes chat-reveal-in {
   0% { opacity: 0; transform: translateY(8px); filter: blur(3px); }
   100% { opacity: 1; transform: translateY(0); filter: blur(0); }
@@ -191,12 +193,12 @@
 
 
 :root {
-  --silk: #faf8f5;
-  --obsidian: #17140f;
-  --champagne: #c5a880;
-  --sand: #eae4dc;
+  --silk: #FFFFFF;
+  --obsidian: #0B0E1A;
+  --champagne: #7B4DFF;
+  --sand: #E6E9F5;
 }
 
 html { scroll-behavior: smooth; }
-:root { --bronze: #9e7b4f; }
-:root { --gold: #9e845a; }
+:root { --bronze: #2A45C8; }
+:root { --gold: #2F6BFF; }
