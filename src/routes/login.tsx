@@ -47,6 +47,8 @@ function LoginPage() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetState, setResetState] = useState<"idle" | "loading" | "sent">("idle");
   const [resetErr, setResetErr] = useState<string | null>(null);
+  const [role, setRole] = useState<"company" | "agent">("company");
+  const [mismatch, setMismatch] = useState<"company" | "agent" | null>(null);
   const [magic, setMagic] = useState<"idle" | "loading" | "sent">("idle");
 
   useEffect(() => { void googleEnabled().then(setGoogle); }, []);
@@ -59,19 +61,30 @@ function LoginPage() {
     e.preventDefault();
     setTouched({ email: true, password: true });
     if (!emailOk || !pwOk || busy) return;
-    setState("loading"); setError(null);
-    const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    await doSignIn(email.trim(), password, role);
+  }
+
+  async function doSignIn(em: string, pw: string, want: "company" | "agent") {
+    setState("loading"); setError(null); setMismatch(null);
+    const { data: auth, error: err } = await supabase.auth.signInWithPassword({ email: em, password: pw });
     if (err) {
       setState("idle"); setError(friendly(err.message)); setShake((v) => v + 1);
       return;
     }
+    const { data: mem } = await (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", auth.user?.id ?? "").maybeSingle();
+    const actual = mem?.role === "company_admin" ? "company" : mem?.role === "agent" ? "agent" : null;
+    if (actual && actual !== want) { setState("idle"); setMismatch(actual); return; }
+    await finish();
+  }
+
+  async function finish() {
     setRemember(remember);
     setState("success");
     await new Promise((r) => setTimeout(r, 450));
     setLeaving(true);
     await new Promise((r) => setTimeout(r, 400));
     await router.invalidate();
-    void router.navigate({ to: "/app", replace: true });
+    void router.navigate({ to: "/app/crm", replace: true });
   }
 
   async function sendReset() {
@@ -100,7 +113,20 @@ function LoginPage() {
     <AuthShell leaving={leaving}>
       <Logo size={40} />
       <h1>Login to your workspace</h1>
-      <p className="au-sub">Enter your details to access your leads, units and market data.</p>
+      <p className="au-sub">{role === "company" ? "Manage your team, assign leads and see everything." : "Your leads, follow-ups and clients."}</p>
+      <div className="au-roles" role="radiogroup" aria-label="Login type">
+        {([["company", "🏢 Company login", "Manage your team, assign leads, see everything"], ["agent", "👤 Broker / Agent login", "Your leads, follow-ups and clients"]] as const).map(([k, t, d]) => (
+          <button key={k} type="button" role="radio" aria-checked={role === k} className={`au-role ${role === k ? "on" : ""}`} onClick={() => { setRole(k); setMismatch(null); }}>
+            <b>{t}</b><small>{d}</small>
+          </button>
+        ))}
+      </div>
+      {mismatch ? (
+        <div className="au-msg bad" role="alert">
+          This account is {mismatch === "agent" ? "an agent" : "a company"} account — switch to {mismatch === "agent" ? "Broker" : "Company"} login?{" "}
+          <button type="button" className="au-link" onClick={() => { setRole(mismatch); setMismatch(null); void finish(); }}>Switch &amp; continue</button>
+        </div>
+      ) : null}
 
       {google ? (
         <>
@@ -152,6 +178,12 @@ function LoginPage() {
         {error ? <p className="au-msg bad" role="alert" style={{ margin: 0 }}>{error}</p> : null}
         {magic === "sent" ? <p className="au-msg good" role="status" style={{ margin: 0 }}>Check your inbox — we sent a login link to {email.trim()}.</p> : null}
       </form>
+
+      <div className="au-demo">
+        <span>Try the demo</span>
+        <button type="button" className="au-btn au-btn-line" disabled={busy} onClick={() => { setRole("company"); void doSignIn("demo-company@dealos.ae", "Demo1234!", "company"); }}>Demo as Company</button>
+        <button type="button" className="au-btn au-btn-line" disabled={busy} onClick={() => { setRole("agent"); void doSignIn("demo-agent@dealos.ae", "Demo1234!", "agent"); }}>Demo as Agent</button>
+      </div>
 
       <div className="au-alt">
         <span>New to DealOS? <Link to="/signup" className="au-link">Create an account</Link></span>
