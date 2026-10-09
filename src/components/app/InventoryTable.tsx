@@ -41,6 +41,29 @@ export function InventoryTable({ category, rent = false }: { category: Inventory
   );
 }
 
+export function DemoPropertyCard({ p, rent = false }: { p: MockProperty; rent?: boolean }) {
+  return (
+    <div className="a-card a-lift a-lst-card" style={{ display: "grid", gap: 6 }}>
+      <p className="eyebrow-a" style={{ margin: 0 }}>{p.community} · demo</p>
+      <b style={{ fontSize: 17 }}>{p.title}</b>
+      <span className="muted">{p.bedrooms === "Studio" ? "Studio" : `${p.bedrooms} BR`} · {p.size_sqft.toLocaleString("en-US")} sqft</span>
+      <strong className="num" style={{ fontSize: 20 }}>{aed(p.price)}{rent ? " / yr" : ""}</strong>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <span className="a-chip c-stage">{p.status}</span>
+        <span className="a-chip c-stage" style={{ marginLeft: "auto" }}>Demo</span>
+      </div>
+    </div>
+  );
+}
+
+export function DemoPropertyCards({ category, rent = false }: { category: InventoryCategory; rent?: boolean }) {
+  return (
+    <>
+      {byCategory(category).map((p) => <DemoPropertyCard key={p.id} p={p} rent={rent} />)}
+    </>
+  );
+}
+
 export function InventoryPage({ title, blurb, category, rent = false }: { title: string; blurb: string; category: InventoryCategory; rent?: boolean }) {
   const count = byCategory(category).length;
   return (

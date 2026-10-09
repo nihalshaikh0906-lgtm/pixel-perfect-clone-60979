@@ -28,6 +28,10 @@ export const MOCK_PROPERTIES: MockProperty[] = [
   { id: "p10", title: "JLT Cluster D Studio", community: "Jumeirah Lake Towers", bedrooms: "Studio", size_sqft: 460, price: 52000, status: "live", agent: "Sara Khan", category: "rental" },
   { id: "p11", title: "Hills Estate 3 BR (rent)", community: "Dubai Hills Estate", bedrooms: "3", size_sqft: 1980, price: 210000, status: "reserved", agent: "Omar Farooq", category: "rental" },
   { id: "p12", title: "Business Bay 1 BR (rent)", community: "Business Bay", bedrooms: "1", size_sqft: 740, price: 85000, status: "live", agent: "Layla Haddad", category: "rental" },
+  { id: "p13", title: "Al Barsha 3 BR", community: "Al Barsha", bedrooms: "3", size_sqft: 2350, price: 3250000, status: "live", agent: "Sara Khan", category: "ready" },
+  { id: "p14", title: "Silicon Oasis Studio", community: "Dubai Silicon Oasis", bedrooms: "Studio", size_sqft: 450, price: 460000, status: "live", agent: "Omar Farooq", category: "ready" },
+  { id: "p15", title: "Al Barsha 2 BR (rent)", community: "Al Barsha", bedrooms: "2", size_sqft: 1250, price: 110000, status: "live", agent: "Omar Farooq", category: "rental" },
+  { id: "p16", title: "City Walk 1 BR (rent)", community: "City Walk", bedrooms: "1", size_sqft: 810, price: 130000, status: "reserved", agent: "Sara Khan", category: "rental" },
 ];
 
 export const byCategory = (c: InventoryCategory) => MOCK_PROPERTIES.filter((p) => p.category === c);
