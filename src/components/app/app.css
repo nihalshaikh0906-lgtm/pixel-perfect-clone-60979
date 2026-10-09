@@ -489,3 +489,15 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 
 
 
+
+/* Property 360 gallery placeholders + shared mock pages */
+.a-360-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.a-360-shot{aspect-ratio:4/3;border:1px dashed var(--a-line);border-radius:14px;background:var(--a-cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--a-ink-2)}
+@media (max-width:560px){.a-360-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.a-kpis.a-kpis-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:640px){.a-kpis.a-kpis-3{grid-template-columns:minmax(0,1fr)}}
+.a-rep-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.a-rep-bar label{display:grid;gap:4px;font-size:13px;color:var(--a-ink-2)}
+.a-rep-chart{height:300px;margin-top:8px}
+.a-dev{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.a-dev-mark{width:56px;height:56px;border-radius:50%;background:var(--a-cream);border:1px solid var(--a-line);display:grid;place-items:center;font-weight:750;color:var(--a-gold-text)}

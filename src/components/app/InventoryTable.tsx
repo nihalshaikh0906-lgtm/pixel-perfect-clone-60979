@@ -1,11 +1,15 @@
+import { useState } from "react";
+import { Property360Modal } from "@/components/app/Property360Modal";
 import { byCategory, type InventoryCategory, type MockProperty } from "@/lib/inventory-mock";
 
 const aed = (n: number) => `AED ${n.toLocaleString("en-US")}`;
 
 export function InventoryTable({ category, rent = false }: { category: InventoryCategory; rent?: boolean }) {
   const rows = byCategory(category);
+  const [selectedProperty, setSelectedProperty] = useState<MockProperty | null>(null);
   return (
     <div className="a-card" style={{ padding: 0, overflow: "hidden" }}>
+      {selectedProperty ? <Property360Modal property={{ ...selectedProperty, type: selectedProperty.category, rent }} onClose={() => setSelectedProperty(null)} /> : null}
       <div className="a-table-wrap">
         <table className="a-table">
           <thead>
@@ -21,7 +25,7 @@ export function InventoryTable({ category, rent = false }: { category: Inventory
           </thead>
           <tbody>
             {rows.map((p) => (
-              <tr key={p.id}>
+              <tr key={p.id} tabIndex={0} style={{ cursor: "pointer" }} aria-label={`Open Property 360 for ${p.title}`} onClick={() => setSelectedProperty(p)} onKeyDown={(e) => { if (e.key === "Enter") setSelectedProperty(p); }}>
                 <td><b>{p.title}</b></td>
                 <td>{p.community}</td>
                 <td>{p.bedrooms === "Studio" ? "Studio" : `${p.bedrooms} BR`}</td>
@@ -41,9 +45,9 @@ export function InventoryTable({ category, rent = false }: { category: Inventory
   );
 }
 
-export function DemoPropertyCard({ p, rent = false }: { p: MockProperty; rent?: boolean }) {
+export function DemoPropertyCard({ p, rent = false, onOpen }: { p: MockProperty; rent?: boolean; onOpen?: (p: MockProperty) => void }) {
   return (
-    <div className="a-card a-lift a-lst-card" style={{ display: "grid", gap: 6 }}>
+    <div className="a-card a-lift a-lst-card" style={{ display: "grid", gap: 6 }} role="button" tabIndex={0} aria-label={`Open Property 360 for ${p.title}`} onClick={() => onOpen?.(p)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen?.(p); } }}>
       <p className="eyebrow-a" style={{ margin: 0 }}>{p.community} · demo</p>
       <b style={{ fontSize: 17 }}>{p.title}</b>
       <span className="muted">{p.bedrooms === "Studio" ? "Studio" : `${p.bedrooms} BR`} · {p.size_sqft.toLocaleString("en-US")} sqft</span>
@@ -57,9 +61,11 @@ export function DemoPropertyCard({ p, rent = false }: { p: MockProperty; rent?: 
 }
 
 export function DemoPropertyCards({ category, rent = false }: { category: InventoryCategory; rent?: boolean }) {
+  const [selectedProperty, setSelectedProperty] = useState<MockProperty | null>(null);
   return (
     <>
-      {byCategory(category).map((p) => <DemoPropertyCard key={p.id} p={p} rent={rent} />)}
+      {byCategory(category).map((p) => <DemoPropertyCard key={p.id} p={p} rent={rent} onOpen={setSelectedProperty} />)}
+      {selectedProperty ? <Property360Modal property={{ ...selectedProperty, type: selectedProperty.category, rent }} onClose={() => setSelectedProperty(null)} /> : null}
     </>
   );
 }
