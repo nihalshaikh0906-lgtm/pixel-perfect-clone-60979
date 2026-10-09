@@ -308,3 +308,35 @@
 @media(min-width:861px) and (max-width:1350px){.dapp .a-detail{grid-template-columns:minmax(0,1fr) minmax(0,1.8fr)}.dapp .a-detail>:last-child{grid-column:1/-1}}
 @media(max-width:860px){.dapp .a-detail{grid-template-columns:minmax(0,1fr)}.dapp .a-detail>:last-child{grid-column:auto}}
 @media(max-width:480px){.dapp .a-top{gap:6px;padding:10px 8px}.dapp .a-top-actions{gap:4px}.dapp .a-top-actions .a-btn{padding:0 10px}.dapp .a-content{padding-left:12px;padding-right:12px}.dapp .a-card{padding:16px}.dapp .a-property-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Deals pipeline chevrons: arrow segments built from the existing workspace surfaces and tokens. */
+.dapp .a-pipe{display:flex;flex-wrap:wrap;gap:6px}
+.dapp .a-pipe-step{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px 0 26px;border:0;background:transparent;color:var(--a-ink-2);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:color .15s}
+.dapp .a-pipe-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--a-cream);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);transition:background .15s}
+.dapp .a-pipe-step:first-child{padding-left:20px}
+.dapp .a-pipe-step:first-child::before{clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%)}
+.dapp .a-pipe-step:hover{color:var(--a-ink)}
+.dapp .a-pipe-step:hover::before{background:var(--a-gold-tint)}
+.dapp .a-pipe-step:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
+.dapp .a-pipe-step[aria-selected=true]{color:#fff}
+.dapp .a-pipe-step[aria-selected=true]::before{background:var(--a-ink)}
+.dapp .a-pipe-step .num{font-size:13px;font-weight:700;color:var(--a-ink-2)}
+.dapp .a-pipe-step[aria-selected=true] .num{color:rgba(255,255,255,.85)}
+@media(max-width:640px){.dapp .a-pipe-step{height:40px;padding:0 14px 0 20px;font-size:13px}.dapp .a-pipe-step::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}.dapp .a-pipe-step:first-child::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%)}}
+
+/* Deals table: same table surface, with right-aligned money columns and an expandable detail row. */
+.dapp .a-deal-table{min-width:900px}
+.dapp .a-deal-table th{background:var(--a-cream)}
+.dapp .a-deal-table td small{white-space:normal}
+.dapp .a-table th.a-deal-num,.dapp .a-table td.a-deal-num{text-align:right}
+.dapp .a-deal-sort{display:inline-flex;align-items:center;gap:5px;background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+.dapp .a-deal-sort:focus-visible{outline:2px solid var(--a-gold);outline-offset:3px;border-radius:4px}
+.dapp .a-deal-agent{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.dapp .a-deal-initials{width:26px;height:26px;border-radius:50%;background:var(--a-gold-tint);color:var(--a-gold-text);display:grid;place-items:center;font-size:11.5px;font-weight:700;flex-shrink:0}
+.dapp .a-deal-acts{display:inline-flex;gap:6px}
+.dapp .a-deal-acts .a-btn{width:34px;padding:0}
+.dapp .a-deal-detail{height:auto;padding-top:6px;padding-bottom:18px}
+.dapp .a-deal-empty{height:auto;padding:24px 14px;text-align:center;color:var(--a-ink-2)}
+.dapp .a-deal-mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px}
+.dapp .a-deal-mdetail{display:block;font-size:13.5px;color:var(--a-ink-2);margin-top:2px}
+
