@@ -36,3 +36,6 @@
 - Company/agent roles live in org_members (separate from profiles) and are checked via my_org()/is_org_admin() security-definer functions; avoids RLS recursion and role spoofing. New tables are now allowed by the user.
 
 - Keep the Appointments calendar and diary in the canonical /app/appointments leaf; /appointments redirects there so both entry points share the same filters and layout.
+
+- Render /app as the five-section broker Home without redirecting to the CRM table; the owner dashboard remains a separate destination.
+- The full-page agency assistant reuses the existing AiChat and its established transport unchanged, rather than introducing duplicate chat primitives or a new provider integration.
