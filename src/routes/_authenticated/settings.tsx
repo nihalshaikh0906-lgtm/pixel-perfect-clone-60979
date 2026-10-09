@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ImagePlus, Loader2, LogOut } from "lucide-react";
+import { Check, ImagePlus, Loader2, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -14,6 +14,13 @@ import { logoDataUrl } from "@/lib/broker";
 
 // Model picker options for the AI section below.
 const MODELS = ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "o4-mini"];
+
+// Accent swatches for the Theme picker — fills and checkmark inks live in src/styles.css.
+const SWATCHES = [
+  "gold", "champagne", "bronze", "silk", "sand", "obsidian", "azure", "cobalt",
+  "navy", "teal", "emerald", "sage", "moss", "olive", "amber", "terracotta",
+  "rust", "clay", "blush", "plum", "violet", "graphite", "stone", "mist",
+];
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -42,6 +49,7 @@ function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [model, setModel] = useState("gpt-4o-mini");
+  const [theme, setTheme] = useState("gold");
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
@@ -209,6 +217,31 @@ function SettingsPage() {
           </div>
 
           <p className="mt-3 text-xs text-muted-foreground">Nothing here is saved — your AI replies still run on DeepSeek, so this key isn't connected yet.</p>
+        </section>
+
+        <section className="mt-8 rounded-2xl border border-border bg-card p-6">
+          <p className="eyebrow">Theme</p>
+          <p className="mt-2 text-sm text-muted-foreground">Pick the accent your workspace opens with.</p>
+
+          <div className="mt-5 grid grid-cols-8 gap-2 sm:grid-cols-12">
+            {SWATCHES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setTheme(s)}
+                aria-label={`Use the ${s} theme`}
+                aria-pressed={theme === s}
+                className="grid aspect-square place-items-center rounded-md border border-border transition-shadow hover:ring-2 hover:ring-ring hover:ring-offset-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                style={{ background: `var(--sw-${s})`, color: `var(--sw-${s}-ink)` }}
+              >
+                {theme === s ? <Check className="size-3.5" strokeWidth={3} /> : null}
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-3 text-xs text-muted-foreground">
+            Selected: <span className="font-semibold text-foreground">{theme}</span> — the choice stays on this page and doesn't restyle the app yet.
+          </p>
         </section>
 
         <div className="mt-8 border-t border-border pt-6">

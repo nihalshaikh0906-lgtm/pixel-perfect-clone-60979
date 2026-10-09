@@ -202,3 +202,32 @@
 html { scroll-behavior: smooth; }
 :root { --bronze: #2A45C8; }
 :root { --gold: #2F6BFF; }
+
+/* Theme picker swatches (Account Settings → Theme): each accent has a fill and a
+   matching checkmark ink so the tick stays readable on light and dark squares. */
+:root {
+  --sw-gold: #9E845A; --sw-gold-ink: #FFFFFF;
+  --sw-champagne: #C9A96A; --sw-champagne-ink: #141A33;
+  --sw-bronze: #8A6D3B; --sw-bronze-ink: #FFFFFF;
+  --sw-silk: #FFFFFF; --sw-silk-ink: #141A33;
+  --sw-sand: #E6E9F5; --sw-sand-ink: #141A33;
+  --sw-obsidian: #0B0E1A; --sw-obsidian-ink: #FFFFFF;
+  --sw-azure: #2F6BFF; --sw-azure-ink: #FFFFFF;
+  --sw-cobalt: #2A45C8; --sw-cobalt-ink: #FFFFFF;
+  --sw-navy: #16213E; --sw-navy-ink: #FFFFFF;
+  --sw-teal: #0F766E; --sw-teal-ink: #FFFFFF;
+  --sw-emerald: #10A37F; --sw-emerald-ink: #FFFFFF;
+  --sw-sage: #9DBFA6; --sw-sage-ink: #141A33;
+  --sw-moss: #4F7A52; --sw-moss-ink: #FFFFFF;
+  --sw-olive: #7A7A3A; --sw-olive-ink: #FFFFFF;
+  --sw-amber: #D9A441; --sw-amber-ink: #141A33;
+  --sw-terracotta: #C2683F; --sw-terracotta-ink: #FFFFFF;
+  --sw-rust: #9C4A2F; --sw-rust-ink: #FFFFFF;
+  --sw-clay: #B08968; --sw-clay-ink: #FFFFFF;
+  --sw-blush: #F2D7D5; --sw-blush-ink: #141A33;
+  --sw-plum: #6B2D5B; --sw-plum-ink: #FFFFFF;
+  --sw-violet: #7B4DFF; --sw-violet-ink: #FFFFFF;
+  --sw-graphite: #3A3F4B; --sw-graphite-ink: #FFFFFF;
+  --sw-stone: #8A8F9C; --sw-stone-ink: #FFFFFF;
+  --sw-mist: #DCE1EC; --sw-mist-ink: #141A33;
+}
