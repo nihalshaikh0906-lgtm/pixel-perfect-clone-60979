@@ -56,7 +56,7 @@ export function OwnerDashboard() {
         <div className="a-band-actions">
           <div className="a-pop-wrap">
             <button type="button" className="a-btn a-btn-line od-range" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-              <Calendar size={16} className="od-gold" />
+              <Calendar size={16} />
               <span className="num">{range}</span>
               <ChevronDown size={14} />
             </button>
