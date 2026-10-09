@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { ChevronDown, Copy, Download, Plus, X } from "lucide-react";
+import { Banknote, ChevronDown, Copy, Download, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { useShell } from "@/components/app/AppShell";
@@ -32,6 +32,15 @@ type Deal = {
   next: string;
   note: string;
   updated: string;
+};
+
+type PayLog = {
+  deal: string;
+  amount: number;
+  method: string;
+  reference: string;
+  note: string;
+  at: string;
 };
 
 const PIPE: Pipe[] = ["All", "Token", "Agreement", "Completed", "Cancelled"];
@@ -91,6 +100,9 @@ function Page() {
   const [open, setOpen] = useState<string | null>(null);
   const [extra, setExtra] = useState<Deal[]>([]);
   const [showNew, setShowNew] = useState(false);
+  const [payFor, setPayFor] = useState<string | null>(null);
+  const [paidAdj, setPaidAdj] = useState<Record<string, number>>({});
+  const [logs, setLogs] = useState<PayLog[]>([]);
 
   // The form adds a row to the on-screen pipeline only — it never touches the database.
   const addDeal = (d: Deal) => {
@@ -101,7 +113,35 @@ function Page() {
   };
 
 
-  const ALL = useMemo(() => [...extra, ...ROWS], [extra]);
+  // Recorded payments only move the on-screen totals — nothing is written to the database.
+  const ALL = useMemo(
+    () =>
+      [...extra, ...ROWS].map((d) => {
+        const add = paidAdj[d.id];
+        if (!add) return d;
+        return { ...d, paid: Math.min(d.amount, d.paid + add) };
+      }),
+    [extra, paidAdj],
+  );
+
+  const payDeal = payFor ? ALL.find((d) => d.id === payFor) ?? null : null;
+
+  const recordPayment = (
+    d: Deal,
+    p: { amount: number; method: string; reference: string; note: string },
+  ) => {
+    setPaidAdj((x) => ({ ...x, [d.id]: (x[d.id] ?? 0) + p.amount }));
+    setLogs((x) => [
+      {
+        deal: d.id,
+        ...p,
+        at: new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }),
+      },
+      ...x,
+    ]);
+    setOpen(d.id);
+    toast.success(`${formatAed(p.amount)} recorded against ${d.property} — demo only`);
+  };
 
   const rows = useMemo(() => {
     const filtered = pipe === "All" ? ALL : ALL.filter((d) => d.stage === pipe);
@@ -261,6 +301,15 @@ function Page() {
                           <button
                             type="button"
                             className="a-btn a-btn-line a-btn-sm"
+                            aria-label={`Record payment for ${d.property}`}
+                            title="Record payment"
+                            onClick={() => setPayFor(d.id)}
+                          >
+                            <Banknote size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            className="a-btn a-btn-line a-btn-sm"
                             aria-label={`Copy summary for ${d.property}`}
                             onClick={() => void copyDeal(d)}
                           >
@@ -278,6 +327,17 @@ function Page() {
                             <dt>Balance</dt><dd className="num">{formatAed(balance)}</dd>
                             {!clientMode && <><dt>Commission</dt><dd className="num">{formatAed(d.commission)}</dd></>}
                             <dt>Updated</dt><dd>{d.updated}</dd>
+                            {logs.some((l) => l.deal === d.id) && (
+                              <>
+                                <dt>Payments</dt>
+                                <dd>
+                                  {logs
+                                    .filter((l) => l.deal === d.id)
+                                    .map((l) => `${formatAed(l.amount)} · ${l.method}${l.reference ? ` · ref ${l.reference}` : ""}`)
+                                    .join(" · ")}
+                                </dd>
+                              </>
+                            )}
                           </dl>
                           <p className="a-mut">{d.note}</p>
                         </td>
@@ -300,7 +360,8 @@ function Page() {
             const balance = d.amount - d.paid;
             const isOpen = open === d.id;
             return (
-              <button type="button" key={d.id} className="a-lcard" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : d.id)}>
+              <Fragment key={d.id}>
+              <button type="button" className="a-lcard a-deal-lcard" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : d.id)}>
                 <b>{d.property}</b>
                 <small>{d.unit} · {d.area} · {d.buyer}</small>
                 <span className="a-deal-mrow">
@@ -316,6 +377,17 @@ function Page() {
                   </span>
                 )}
               </button>
+              {isOpen && (
+                <span className="a-deal-macts">
+                  <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => setPayFor(d.id)}>
+                    <Banknote size={14} /> Record payment
+                  </button>
+                  <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => void copyDeal(d)}>
+                    <Copy size={14} /> Copy summary
+                  </button>
+                </span>
+              )}
+              </Fragment>
             );
           })}
           {!rows.length && <p className="a-mut">No {pipe.toLowerCase()} deals right now.</p>}
@@ -328,6 +400,16 @@ function Page() {
       </div>
 
       {showNew && <NewDealModal onClose={() => setShowNew(false)} onCreate={addDeal} />}
+      {payDeal && (
+        <PaymentModal
+          deal={payDeal}
+          onClose={() => setPayFor(null)}
+          onRecord={(p) => {
+            recordPayment(payDeal, p);
+            setPayFor(null);
+          }}
+        />
+      )}
     </>
   );
 }
@@ -549,6 +631,174 @@ function NewDealModal({ onClose, onCreate }: { onClose: () => void; onCreate: (d
         </div>
         <p className="a-mut" style={{ margin: 0 }}>
           Demo only — this puts the deal in the on-screen pipeline. Nothing is written to your database.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const METHODS = [
+  "Bank transfer",
+  "Manager's cheque",
+  "Personal cheque",
+  "Cash",
+  "Card payment",
+  "Crypto transfer",
+] as const;
+
+function PaymentModal({
+  deal, onClose, onRecord,
+}: {
+  deal: Deal;
+  onClose: () => void;
+  onRecord: (p: { amount: number; method: string; reference: string; note: string }) => void;
+}) {
+  const balance = deal.amount - deal.paid;
+  const [amount, setAmount] = useState("");
+  const [method, setMethod] = useState<string>(METHODS[0]);
+  const [reference, setReference] = useState("");
+  const [note, setNote] = useState("");
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const amt = Math.max(0, Number(amount) || 0);
+  const paidAfter = Math.min(deal.amount, deal.paid + amt);
+  const balanceAfter = deal.amount - paidAfter;
+  const paidBeforePct = deal.amount > 0 ? Math.round((deal.paid / deal.amount) * 100) : 0;
+  const paidAfterPct = deal.amount > 0 ? Math.round((paidAfter / deal.amount) * 100) : 0;
+  const settled = balance <= 0;
+
+  const submit = () => {
+    if (settled) {
+      toast.error("This deal is already settled");
+      return;
+    }
+    if (amt <= 0) {
+      toast.error("Enter the payment amount first");
+      return;
+    }
+    if (amt > balance) {
+      toast.error(`That is more than the ${formatAed(balance)} still due`);
+      return;
+    }
+    onRecord({ amount: amt, method, reference: reference.trim(), note: note.trim() });
+    onClose();
+  };
+
+  return (
+    <div
+      className="a-modal a-deal-modal a-pay-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Record payment for ${deal.property}`}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div>
+        <div className="a-deal-head">
+          <div>
+            <h2 style={{ margin: 0 }}>Record payment</h2>
+            <p className="a-note" style={{ margin: 0 }}>
+              {deal.property} · {deal.unit} · {deal.buyer}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="a-btn a-btn-line a-btn-sm"
+            aria-label="Close payment form"
+            onClick={onClose}
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="a-deal-grid">
+          <div className="a-deal-fields">
+            <label>
+              Amount
+              <input
+                type="number"
+                min="0"
+                step="1000"
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0"
+                autoFocus
+              />
+            </label>
+            <label>
+              Method
+              <select value={method} onChange={(e) => setMethod(e.target.value)}>
+                {METHODS.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {!settled && (
+              <div className="a-deal-span a-deal-pay-quick">
+                <button type="button" className="a-link-gold" onClick={() => setAmount(String(balance))}>
+                  <Banknote size={13} /> Pay the full balance · {formatAed(balance)}
+                </button>
+              </div>
+            )}
+            <label className="a-deal-span">
+              Reference
+              <input
+                value={reference}
+                onChange={(e) => setReference(e.target.value)}
+                placeholder="Transaction, cheque or receipt number"
+              />
+            </label>
+            <label className="a-deal-span">
+              Notes
+              <textarea
+                rows={3}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Anything worth remembering about this payment"
+              />
+            </label>
+          </div>
+
+          <div className="a-deal-sum">
+            <h3>Impact</h3>
+            <div className="a-deal-srow">
+              <span>Deal Amount<em>{deal.type} · {deal.plan}</em></span>
+              <b className="num">{formatAed(deal.amount)}</b>
+            </div>
+            <div className="a-deal-srow">
+              <span>Paid so far<em>{paidBeforePct}% of the deal</em></span>
+              <b className="num">{formatAed(deal.paid)}</b>
+            </div>
+            <div className="a-deal-srow">
+              <span>This Payment<em>{method}{reference.trim() ? ` · ${reference.trim()}` : ""}</em></span>
+              <b className="num">{formatAed(amt)}</b>
+            </div>
+            <div className="a-deal-srow total">
+              <span>Balance After<em>{paidAfterPct}% paid once this is in</em></span>
+              <b className="num">{formatAed(balanceAfter)}</b>
+            </div>
+          </div>
+        </div>
+
+        <div className="a-modal-actions">
+          <button type="button" className="a-btn a-btn-line" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="button" className="a-btn a-btn-gold" onClick={submit}>
+            Record payment
+          </button>
+        </div>
+        <p className="a-mut" style={{ margin: 0 }}>
+          Demo only — this updates the on-screen totals. Nothing is written to your database.
         </p>
       </div>
     </div>
