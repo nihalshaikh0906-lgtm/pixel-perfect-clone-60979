@@ -72,6 +72,16 @@ const sortValue = (d: Deal, k: SortKey): string | number => {
 const initials = (n: string) =>
   n.split(/\s+/).map((p) => p[0]).join("").slice(0, 2).toUpperCase();
 
+// Compact money for the table cells; the card head states the currency once.
+const money = (n: number) =>
+  n >= 1e6
+    ? `${(n / 1e6).toFixed(2).replace(/\.?0+$/, "")}M`
+    : n >= 1e3
+      ? `${Math.round(n / 1e3)}K`
+      : String(n);
+
+const TYPE_LABEL: Record<Deal["type"], string> = { Sale: "Sale", Rent: "Rent", Assignment: "Assign." };
+
 const csvCell = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
 
 function Page() {
