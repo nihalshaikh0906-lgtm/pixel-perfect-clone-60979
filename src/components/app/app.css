@@ -280,6 +280,20 @@
 .dapp .a-role-cell{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .dapp .a-mut{font-size:13.5px;color:var(--a-ink-2);margin-top:14px}
 
+/* V/A/E/D permission toggles in the Roles & Permissions matrix */
+.dapp .a-role-keys{display:inline-flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.dapp .a-role-key{width:28px;height:28px;padding:0;border-radius:8px;border:1px solid var(--a-line);background:var(--a-card);color:var(--a-ink-2);font-family:inherit;font-size:13px;font-weight:700;line-height:1;display:grid;place-items:center;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.dapp .a-role-key:hover:not([disabled]){background:var(--a-cream);color:var(--a-ink)}
+.dapp .a-role-key:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
+.dapp .a-role-key[aria-pressed=true]{background:var(--a-ink);color:#fff;border-color:var(--a-ink)}
+.dapp .a-role-key[disabled]{cursor:not-allowed}
+.dapp .a-role-key[disabled][aria-pressed=true]{background:var(--a-ink);color:#fff;border-color:var(--a-ink);opacity:.5}
+.dapp .a-role-key[disabled]:not([aria-pressed=true]){background:var(--a-card);color:var(--a-eyebrow);opacity:.6}
+.dapp .a-role-th{display:inline-flex;align-items:center;gap:6px}
+.dapp .a-role-keylist{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;font-weight:600;color:var(--a-ink-2)}
+.dapp .a-role-keylist span{display:inline-flex;align-items:center;gap:6px}
+.dapp .a-role-keylist b{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--a-cream);border:1px solid var(--a-line);color:var(--a-ink);font-size:12px}
+
 /* Keep workspace content inside its available width, including narrow detail columns. */
 .dapp .a-content>*{min-width:0;max-width:100%}
 .dapp .a-top-actions{flex-shrink:0}

@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   Activity, Building2, CalendarClock, CalendarDays, FileSignature, Handshake, Home, Inbox,
-  KeyRound, LineChart, MapPinned, Settings, ShieldCheck, Trash2, Trees, Users,
+  KeyRound, LineChart, Lock, MapPinned, Settings, ShieldCheck, Trash2, Trees, Users,
 } from "lucide-react";
 
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
@@ -13,14 +14,18 @@ export const Route = createFileRoute("/_authenticated/app/roles-permissions")({
 
 type Level = "full" | "edit" | "view" | "none";
 
-const LEVEL: Record<Level, { label: string; cls: string }> = {
-  full: { label: "Full", cls: "c-ok" },
-  edit: { label: "Edit", cls: "c-offplan" },
-  view: { label: "View", cls: "c-stage" },
-  none: { label: "None", cls: "" },
+const KEYS = ["V", "A", "E", "D"] as const;
+const KEY_LABEL: Record<(typeof KEYS)[number], string> = { V: "View", A: "Add", E: "Edit", D: "Delete" };
+const ROLES = ["Admin", "Manager", "Agent"] as const;
+
+// Static starting point for each level — illustrative only, not enforced anywhere yet.
+const LEVEL_KEYS: Record<Level, boolean[]> = {
+  full: [true, true, true, true],
+  edit: [true, true, true, false],
+  view: [true, false, false, false],
+  none: [false, false, false, false],
 };
 
-// Static sample matrix — illustrative only, not enforced anywhere yet.
 const ROWS: { page: string; detail: string; icon: typeof Home; levels: [Level, Level, Level] }[] = [
   { page: "Dashboard", detail: "Company KPIs, pipeline and team view", icon: Home, levels: ["full", "edit", "view"] },
   { page: "Properties", detail: "Inventory, statuses, photos and floor plans", icon: Building2, levels: ["full", "edit", "view"] },
@@ -41,14 +46,49 @@ const ROWS: { page: string; detail: string; icon: typeof Home; levels: [Level, L
   { page: "Roles & Permissions", detail: "This matrix and future access rules", icon: ShieldCheck, levels: ["full", "none", "none"] },
 ];
 
-function Cell({ level }: { level: Level }) {
-  const l = LEVEL[level];
-  return level === "none"
-    ? <span className="a-role-none">{l.label}</span>
-    : <span className={`a-chip ${l.cls}`}>{l.label}</span>;
+function seedPerms(): Record<string, boolean[]> {
+  const seed: Record<string, boolean[]> = {};
+  for (const r of ROWS) {
+    seed[`${r.page}|Manager`] = [...LEVEL_KEYS[r.levels[1]]];
+    seed[`${r.page}|Agent`] = [...LEVEL_KEYS[r.levels[2]]];
+  }
+  return seed;
 }
 
 function Page() {
+  const [perms, setPerms] = useState<Record<string, boolean[]>>(seedPerms);
+
+  const toggle = (key: string, i: number) =>
+    setPerms((prev) => {
+      const cur = prev[key] ?? [false, false, false, false];
+      const next = [...cur];
+      next[i] = !next[i];
+      return { ...prev, [key]: next };
+    });
+
+  // Rendered as a plain function (not a component) so focus stays on the button while toggling.
+  const keys = (page: string, role: string, on: boolean[], locked = false) => (
+    <span className="a-role-keys" role="group" aria-label={`${role} access for ${page}`}>
+      {KEYS.map((k, i) => (
+        <button
+          key={k}
+          type="button"
+          className="a-role-key"
+          aria-pressed={on[i]}
+          disabled={locked}
+          aria-label={`${KEY_LABEL[k]} access for ${role} on ${page}`}
+          title={locked ? `${KEY_LABEL[k]} — Admin always has full access` : KEY_LABEL[k]}
+          onClick={() => { if (!locked) toggle(`${page}|${role}`, i); }}
+        >
+          {k}
+        </button>
+      ))}
+    </span>
+  );
+
+  const permFor = (page: string, role: string) =>
+    role === "Admin" ? LEVEL_KEYS.full : (perms[`${page}|${role}`] ?? LEVEL_KEYS.none);
+
   return (
     <>
       <section className="a-band a-fade">
@@ -65,11 +105,10 @@ function Page() {
       <div className="a-card" style={{ marginTop: 20 }}>
         <div className="a-card-head">
           <h2>Access matrix</h2>
-          <div className="a-chips" aria-label="Legend">
-            <span className="a-chip c-ok">Full</span>
-            <span className="a-chip c-offplan">Edit</span>
-            <span className="a-chip c-stage">View</span>
-            <span className="a-role-none">None</span>
+          <div className="a-role-keylist" aria-label="Permission key legend">
+            {KEYS.map((k) => (
+              <span key={k}><b>{k}</b>{KEY_LABEL[k]}</span>
+            ))}
           </div>
         </div>
 
@@ -78,7 +117,7 @@ function Page() {
             <thead>
               <tr>
                 <th scope="col">Page</th>
-                <th scope="col">Admin</th>
+                <th scope="col"><span className="a-role-th"><Lock size={12} /> Admin</span></th>
                 <th scope="col">Manager</th>
                 <th scope="col">Agent</th>
               </tr>
@@ -92,9 +131,9 @@ function Page() {
                       <span><b>{r.page}</b><small>{r.detail}</small></span>
                     </span>
                   </td>
-                  <td><Cell level={r.levels[0]} /></td>
-                  <td><Cell level={r.levels[1]} /></td>
-                  <td><Cell level={r.levels[2]} /></td>
+                  {ROLES.map((role) => (
+                    <td key={role}>{keys(r.page, role, permFor(r.page, role), role === "Admin")}</td>
+                  ))}
                 </tr>
               ))}
             </tbody>
@@ -109,10 +148,10 @@ function Page() {
                 <span><b>{r.page}</b><small>{r.detail}</small></span>
               </span>
               <div className="a-role-grid">
-                {([["Admin", r.levels[0]], ["Manager", r.levels[1]], ["Agent", r.levels[2]]] as const).map(([role, level]) => (
+                {ROLES.map((role) => (
                   <span className="a-role-cell" key={role}>
                     <span className="a-role-legend">{role}</span>
-                    <Cell level={level} />
+                    {keys(r.page, role, permFor(r.page, role), role === "Admin")}
                   </span>
                 ))}
               </div>
@@ -120,7 +159,7 @@ function Page() {
           ))}
         </div>
 
-        <p className="a-mut">Counts and levels shown here are static demo data. Nothing on this page writes to your database.</p>
+        <p className="a-mut">Tick or untick V/A/E/D to change Manager and Agent access. Admin is locked at full access. Counts and levels shown here are static demo data — nothing on this page writes to your database.</p>
       </div>
     </>
   );
