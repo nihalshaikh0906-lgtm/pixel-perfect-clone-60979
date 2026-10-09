@@ -109,10 +109,10 @@ function Page() {
                 <span><b>{r.page}</b><small>{r.detail}</small></span>
               </span>
               <div className="a-role-grid">
-                {(["Admin", "Manager", "Agent"] as const).map((role, i) => (
+                {([["Admin", r.levels[0]], ["Manager", r.levels[1]], ["Agent", r.levels[2]]] as const).map(([role, level]) => (
                   <span className="a-role-cell" key={role}>
                     <span className="a-role-legend">{role}</span>
-                    <Cell level={r.levels[i]} />
+                    <Cell level={level} />
                   </span>
                 ))}
               </div>
