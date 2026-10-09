@@ -1,7 +1,11 @@
 import { Calendar, ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useInView, useReducedMotion } from "framer-motion";
 
 import { useCountUp } from "@/components/app/AppShell";
+
+const LeadSourceDonut = lazy(() => import("@/components/app/LeadSourceDonut"));
+
 
 const RANGES = [
   "Jan 1 – Dec 31, 2026",
@@ -36,6 +40,20 @@ const AGENTS: Agent[] = [
 ];
 
 const TEAM_REVENUE = AGENTS.reduce((sum, a) => sum + a.revenue, 0);
+const TEAM_DEALS = AGENTS.reduce((sum, a) => sum + a.deals, 0);
+
+type Source = { name: string; value: number; token: string };
+
+// Illustrative demo split — sample leads by the channel they arrived through.
+const SOURCES: Source[] = [
+  { name: "Property Finder", value: 412, token: "--brand-blue" },
+  { name: "Bayut", value: 293, token: "--brand-violet" },
+  { name: "Referrals", value: 228, token: "--brand-deep" },
+  { name: "Website", value: 152, token: "--a-ink-2" },
+];
+
+const TOTAL_LEADS = SOURCES.reduce((sum, s) => sum + s.value, 0);
+
 
 function initialsOf(name: string) {
   return name
@@ -66,6 +84,12 @@ function KpiCard({ def, delay }: { def: KpiDef; delay: number }) {
 export function OwnerDashboard() {
   const [range, setRange] = useState(RANGES[0]);
   const [open, setOpen] = useState(false);
+  const chartsRef = useRef<HTMLDivElement>(null);
+  const chartsInView = useInView(chartsRef, { once: true, margin: "200px" });
+  const reduce = useReducedMotion();
+  const [charts, setCharts] = useState(false);
+  useEffect(() => { if (chartsInView) setCharts(true); }, [chartsInView]);
+
 
   return (
     <div className="owner-dash">
@@ -159,24 +183,58 @@ export function OwnerDashboard() {
               </div>
             ))}
           </div>
+          <div className="od-board-foot">
+            <span>Team total</span>
+            <b className="num">{TEAM_DEALS} deals · {money(TEAM_REVENUE)}</b>
+          </div>
         </div>
 
-        <div className="a-card a-fade od-share">
-          <div className="a-card-head">
-            <h2>Revenue Share</h2>
-            <span className="a-count num">{money(TEAM_REVENUE)}</span>
+
+        <div className="od-col" ref={chartsRef}>
+          <div className="a-card a-fade od-share">
+            <div className="a-card-head">
+              <h2>Revenue Share</h2>
+              <span className="a-count num">{money(TEAM_REVENUE)}</span>
+            </div>
+            <div className="a-list">
+              {AGENTS.map((a) => (
+                <div key={a.name}>
+                  <span className="od-share-name">{a.name}</span>
+                  <span className="a-chip c-offplan num">{((a.revenue / TEAM_REVENUE) * 100).toFixed(0)}%</span>
+                </div>
+              ))}
+            </div>
+            <p className="od-share-note">Top 5 agents of the roster shown above.</p>
           </div>
-          <div className="a-list">
-            {AGENTS.map((a) => (
-              <div key={a.name}>
-                <span className="od-share-name">{a.name}</span>
-                <span className="a-chip c-offplan num">{((a.revenue / TEAM_REVENUE) * 100).toFixed(0)}%</span>
-              </div>
-            ))}
+
+          <div className="a-card a-fade od-roi">
+            <div className="a-card-head">
+              <h2>Lead Source ROI</h2>
+              <span className="a-count num">{TOTAL_LEADS.toLocaleString("en-US")} leads</span>
+            </div>
+            <div className="od-donut-row">
+              {charts ? (
+                <Suspense fallback={<span className="od-donut-wrap od-donut-loading" aria-hidden />}>
+                  <LeadSourceDonut data={SOURCES} total={TOTAL_LEADS} animate={!reduce} />
+                </Suspense>
+              ) : (
+                <span className="od-donut-wrap od-donut-loading" aria-hidden />
+              )}
+              <ul className="a-legend od-legend">
+                {SOURCES.map((s) => (
+                  <li key={s.name}>
+                    <i style={{ background: `var(${s.token})` }} aria-hidden="true" />
+                    <span>{s.name}</span>
+                    <b className="num">{((s.value / TOTAL_LEADS) * 100).toFixed(0)}%</b>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p className="od-share-note">Illustrative demo split of sample leads by channel.</p>
           </div>
-          <p className="od-share-note">Top 5 agents of the roster shown above.</p>
         </div>
       </section>
+
     </div>
   );
 }
