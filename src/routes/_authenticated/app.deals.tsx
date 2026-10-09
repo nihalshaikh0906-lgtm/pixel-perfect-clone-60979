@@ -185,7 +185,7 @@ function Page() {
       <div className="a-card">
         <div className="a-card-head">
           <h2>{pipe === "All" ? "All deals" : `${pipe} deals`}</h2>
-          <span className="a-count num">{rows.length} deals</span>
+          <span className="a-count num">Amounts in AED · {rows.length} deals</span>
         </div>
 
         <div className="a-table-wrap">
@@ -219,11 +219,11 @@ function Page() {
                         <b>{d.buyer}</b>
                         <small>{d.source}</small>
                       </td>
-                      <td>{d.type}</td>
-                      <td className="a-deal-num num">{formatAed(d.amount)}</td>
-                      <td className="a-deal-num num">{formatAed(d.paid)}</td>
-                      <td className="a-deal-num num">{formatAed(balance)}</td>
-                      {!clientMode && <td className="a-deal-num num">{formatAed(d.commission)}</td>}
+                      <td>{TYPE_LABEL[d.type]}</td>
+                      <td className="a-deal-num num">{money(d.amount)}</td>
+                      <td className="a-deal-num num">{money(d.paid)}</td>
+                      <td className="a-deal-num num">{money(balance)}</td>
+                      {!clientMode && <td className="a-deal-num num">{money(d.commission)}</td>}
                       <td>
                         <span className="a-deal-agent">
                           <span className="a-deal-initials" aria-hidden>{initials(d.agent)}</span>
