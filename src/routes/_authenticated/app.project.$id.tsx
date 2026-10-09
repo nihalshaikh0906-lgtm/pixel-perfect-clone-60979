@@ -6,6 +6,8 @@ import galleryB from "@/assets/project-gallery-2.jpg";
 import { UnitCard, type MatchRow } from "@/components/UnitCard";
 import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Eye } from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
