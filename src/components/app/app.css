@@ -229,6 +229,7 @@
   .a-input{min-width:0;flex:1}
 }
 .a-lcard{display:flex;flex-direction:column;gap:8px;padding:16px 20px;border-bottom:1px solid var(--a-line);text-align:left}
+button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(--a-line);font:inherit;color:inherit;cursor:pointer}
 .a-lcard:hover{background:var(--a-cream)}
 @media (prefers-reduced-motion:reduce){.dapp *{animation:none!important;transition:none!important}}
 .a-search{min-width:0}
