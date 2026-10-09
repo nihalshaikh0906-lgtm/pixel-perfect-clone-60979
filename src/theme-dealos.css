@@ -144,3 +144,16 @@
 .owner-dash .od-trend.up{color:var(--a-ok);background:var(--a-ok-bg)}
 .owner-dash .od-trend.down{color:var(--a-hot);background:var(--a-hot-bg)}
 .owner-dash .a-pop button.od-on{background:var(--a-gold-tint);font-weight:700}
+.owner-dash .od-split{margin-top:24px}
+.owner-dash .od-span2{grid-column:span 2}
+.owner-dash .od-board tbody tr{cursor:default}
+.owner-dash .od-board tbody tr:hover td{background:transparent}
+.owner-dash .od-rank{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--a-cream);color:var(--a-ink-2);font-size:13px;font-weight:700}
+.owner-dash .od-rank.first{background:var(--a-gold-tint);color:var(--a-gold-text)}
+.owner-dash .od-avatar{width:30px;height:30px;font-size:11.5px}
+.owner-dash .od-share .a-list>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--a-line)}
+.owner-dash .od-share .a-list>div:last-child{border-bottom:0}
+.owner-dash .od-share-name{font-size:14px;font-weight:600;color:var(--a-ink);min-width:0}
+.owner-dash .od-share-note{margin-top:12px;font-size:13px;color:var(--a-ink-2)}
+@media (max-width:640px){.owner-dash .od-span2{grid-column:auto}}
+
