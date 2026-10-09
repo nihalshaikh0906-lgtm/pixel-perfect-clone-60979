@@ -114,7 +114,8 @@ function ListingsPage() {
 
   if (org.isLoading) return <div className="a-card">Loading…</div>;
   if (!org.data) return <div className="a-card">Set up your company on the Team leads page first.</div>;
-  const rows = (q.data ?? []).filter((l) => (bin ? l.deleted_at : !l.deleted_at));
+  // Ready Property shows ready stock only — rent/rental and off-plan rows stay out.
+  const rows = (q.data ?? []).filter((l) => (bin ? l.deleted_at : !l.deleted_at) && l.type === "ready");
   const active = (q.data ?? []).find((l) => l.id === listing) ?? null;
 
   return (
@@ -236,7 +237,7 @@ function ListingsPage() {
             </div>
           </div>
         ))}
-        {!rows.length ? <div className="a-card">{bin ? "Bin is empty." : "No listings yet — add your first one."}</div> : null}
+        {!rows.length ? <div className="a-card">{bin ? "Bin is empty." : "No ready properties yet — add your first one."}</div> : null}
       </div>
     </div>
   );
