@@ -25,6 +25,7 @@
 .a-group>p{padding:6px 12px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--a-eyebrow)}
 .a-link{display:flex;align-items:center;gap:12px;height:40px;padding:0 12px;border-radius:12px;color:var(--a-ink-2);font-size:14.5px;font-weight:500;white-space:nowrap}
 .a-link svg{flex-shrink:0;color:var(--a-ink-2)}
+.dapp .a-link>span:first-of-type{min-width:0;white-space:normal;line-height:1.2}
 .a-link:hover{background:var(--a-cream);color:var(--a-ink)}
 .a-link.active{background:var(--a-gold-tint);color:var(--a-ink);font-weight:700}
 .a-link.active svg{color:var(--a-gold-text)}
@@ -251,6 +252,16 @@
 .dapp .a-user-menu a,.dapp .a-user-menu button{display:flex;align-items:center;gap:10px;width:100%;height:40px;padding:0 12px;border-radius:10px;font-size:14px;color:var(--a-ink);background:transparent;text-align:left}
 .dapp .a-user-menu a:hover,.dapp .a-user-menu button:hover{background:var(--a-cream)}
 .dapp .a-side.collapsed .a-user-menu{left:8px;right:auto;width:180px}
+
+/* Attention popover uses the existing workspace surfaces and alert treatments. */
+.dapp .a-pop.a-attention{position:relative;top:auto;right:auto;width:min(360px,calc(100vw - 24px));min-width:0;padding:16px}
+.dapp .a-attention .a-card-head{align-items:center;margin-bottom:12px}
+.dapp .a-attention h2{font-size:18px}
+.dapp .a-attention-item{display:flex;align-items:center;gap:10px;width:100%;height:auto;min-height:68px;padding:12px 8px;border-radius:10px;color:var(--a-ink);text-align:left;white-space:normal}
+.dapp .a-attention-item:hover,.dapp .a-attention-item:focus-visible{background:var(--a-cream)}
+.dapp .a-attention-copy{min-width:0;flex:1}
+.dapp .a-attention-copy b{display:block;font-size:14px}
+.dapp .a-attention-copy small{display:block;font-size:13px;font-weight:400;color:var(--a-ink-2)}
 
 /* Keep workspace content inside its available width, including narrow detail columns. */
 .dapp .a-content>*{min-width:0;max-width:100%}
