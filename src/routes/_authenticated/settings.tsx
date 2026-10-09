@@ -7,8 +7,13 @@ import { toast } from "sonner";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { logoDataUrl } from "@/lib/broker";
+
+// Model picker options for the AI section below.
+const MODELS = ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "o4-mini"];
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -33,6 +38,10 @@ function SettingsPage() {
   const [userId, setUserId] = useState("");
   const [form, setForm] = useState({ company: "", name: "", email: "", phone: "" });
   const [origEmail, setOrigEmail] = useState("");
+  const [roundRobin, setRoundRobin] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [model, setModel] = useState("gpt-4o-mini");
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
@@ -148,6 +157,59 @@ function SettingsPage() {
             </Button>
           </form>
         )}
+
+        <section className="mt-8 rounded-2xl border border-border bg-card p-6">
+          <p className="eyebrow">Automation</p>
+
+          <div className="mt-5 flex items-center justify-between gap-4 border-b border-border pb-6">
+            <p className="text-sm">
+              <span className="font-semibold">Round-Robin Website Leads</span> <span className="text-muted-foreground">(auto-assign to active agents)</span>
+            </p>
+            <Switch checked={roundRobin} onCheckedChange={setRoundRobin} aria-label="Round-Robin Website Leads (auto-assign to active agents)" />
+          </div>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            <div className="sm:col-span-2">
+              <span className="flex items-center justify-between gap-2">
+                <span className="eyebrow">OpenAI API Key</span>
+                <button
+                  type="button"
+                  onClick={() => setShowKey((v) => !v)}
+                  className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                >
+                  {showKey ? "Hide" : "Show"}
+                </button>
+              </span>
+              <Input
+                className="mt-1.5"
+                type={showKey ? "text" : "password"}
+                autoComplete="off"
+                spellCheck={false}
+                maxLength={160}
+                placeholder="sk-…"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
+            </div>
+            <div>
+              <span className="eyebrow">Model</span>
+              <Select value={model} onValueChange={setModel}>
+                <SelectTrigger className="mt-1.5 w-full" aria-label="Model">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MODELS.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <p className="mt-3 text-xs text-muted-foreground">Nothing here is saved — your AI replies still run on DeepSeek, so this key isn't connected yet.</p>
+        </section>
 
         <div className="mt-8 border-t border-border pt-6">
           <Button variant="outline" onClick={signOut} className="w-full text-xs font-semibold uppercase tracking-wider">
