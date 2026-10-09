@@ -24,6 +24,28 @@ const KPIS: KpiDef[] = [
   { label: "Conversion Rate", value: 4.2, format: (n) => `${n.toFixed(1)}%`, trend: "−0.3%", up: false },
 ];
 
+type Agent = { name: string; role: string; deals: number; revenue: number };
+
+// Illustrative demo roster — sample agents, not real users or real sales.
+const AGENTS: Agent[] = [
+  { name: "Layla Haddad", role: "Senior Sales Agent", deals: 14, revenue: 4_120_000 },
+  { name: "Omar Farouk", role: "Sales Agent", deals: 11, revenue: 3_260_000 },
+  { name: "Sofia Reyes", role: "Sales Agent", deals: 9, revenue: 2_480_000 },
+  { name: "Daniel Kim", role: "Rentals Agent", deals: 7, revenue: 1_940_000 },
+  { name: "Aisha Khan", role: "Rentals Agent", deals: 5, revenue: 1_180_000 },
+];
+
+const TEAM_REVENUE = AGENTS.reduce((sum, a) => sum + a.revenue, 0);
+
+function initialsOf(name: string) {
+  return name
+    .split(/\s+/)
+    .map((p) => p[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 function KpiCard({ def, delay }: { def: KpiDef; delay: number }) {
   const v = useCountUp(def.value);
   return (
@@ -75,6 +97,85 @@ export function OwnerDashboard() {
         {KPIS.map((k, i) => (
           <KpiCard key={k.label} def={k} delay={80 + i * 40} />
         ))}
+      </section>
+
+      <section className="a-row3 od-split">
+        <div className="a-card a-fade od-span2 od-board">
+          <div className="a-card-head">
+            <h2>Team Leaderboard</h2>
+            <span className="a-count num">{AGENTS.length} agents</span>
+          </div>
+          <div className="a-table-wrap">
+            <table className="a-table">
+              <thead>
+                <tr>
+                  <th scope="col">Rank</th>
+                  <th scope="col">Agent Name</th>
+                  <th scope="col">Deals Closed</th>
+                  <th scope="col">Revenue Generated</th>
+                </tr>
+              </thead>
+              <tbody>
+                {AGENTS.map((a, i) => (
+                  <tr key={a.name}>
+                    <td>
+                      <span className={`od-rank num${i === 0 ? " first" : ""}`}>{i + 1}</span>
+                    </td>
+                    <td>
+                      <span className="a-usr-who">
+                        <span className="a-avatar od-avatar" aria-hidden="true">{initialsOf(a.name)}</span>
+                        <span>
+                          <b>{a.name}</b>
+                          <small>{a.role}</small>
+                        </span>
+                      </span>
+                    </td>
+                    <td>
+                      <span className="num">{a.deals}</span>
+                    </td>
+                    <td>
+                      <b className="num">{money(a.revenue)}</b>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="a-cards">
+            {AGENTS.map((a, i) => (
+              <div key={a.name} className="a-lcard">
+                <span className="a-usr-who">
+                  <span className={`od-rank num${i === 0 ? " first" : ""}`}>{i + 1}</span>
+                  <span className="a-avatar od-avatar" aria-hidden="true">{initialsOf(a.name)}</span>
+                  <span>
+                    <b>{a.name}</b>
+                    <small>{a.role}</small>
+                  </span>
+                </span>
+                <span className="a-usr-meta">
+                  <span className="a-mut" style={{ margin: 0 }}>{a.deals} deals closed</span>
+                  <b className="num">{money(a.revenue)}</b>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="a-card a-fade od-share">
+          <div className="a-card-head">
+            <h2>Revenue Share</h2>
+            <span className="a-count num">{money(TEAM_REVENUE)}</span>
+          </div>
+          <div className="a-list">
+            {AGENTS.map((a) => (
+              <div key={a.name}>
+                <span className="od-share-name">{a.name}</span>
+                <span className="a-chip c-offplan num">{((a.revenue / TEAM_REVENUE) * 100).toFixed(0)}%</span>
+              </div>
+            ))}
+          </div>
+          <p className="od-share-note">Top 5 agents of the roster shown above.</p>
+        </div>
       </section>
     </div>
   );
