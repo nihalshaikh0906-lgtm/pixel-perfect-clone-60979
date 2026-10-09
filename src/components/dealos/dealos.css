@@ -380,3 +380,9 @@
 .d-navbar {
   z-index: 999 !important;
 }
+
+/* Hero preview window: the sample dashboard grew to 20+ cards, charts and a map,
+   so it spilled out of the hero and over the next sections. Show it as a framed
+   window with a soft fade instead; the full dashboard stays in "Explore the workspace". */
+.dealos .d-hero-dashboard{max-height:max(520px,calc(100svh - 136px));overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent);mask-image:linear-gradient(to bottom,#000 78%,transparent)}
+@media (max-width:767px){.dealos .d-hero-dashboard{height:auto;max-height:440px;overflow:hidden;margin-bottom:24px}}
