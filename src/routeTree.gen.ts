@@ -70,6 +70,7 @@ import { Route as AuthenticatedAppUsersManagementRouteImport } from './routes/_a
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
 import { Route as AuthenticatedAppLeadsIndexRouteImport } from './routes/_authenticated/app.leads.index'
 import { Route as AuthenticatedAppLeadsIdRouteImport } from './routes/_authenticated/app.leads.$id'
+import { Route as AuthenticatedAppProjectIdRouteImport } from './routes/_authenticated/app.project.$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -392,6 +393,12 @@ const AuthenticatedAppLeadsIdRoute = AuthenticatedAppLeadsIdRouteImport.update({
   path: '/leads/$id',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppProjectIdRoute =
+  AuthenticatedAppProjectIdRouteImport.update({
+    id: '/project/$id',
+    path: '/project/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -453,6 +460,7 @@ export interface FileRoutesByFullPath {
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
+  '/app/project/$id': typeof AuthenticatedAppProjectIdRoute
   '/app/leads/': typeof AuthenticatedAppLeadsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -514,6 +522,7 @@ export interface FileRoutesByTo {
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
+  '/app/project/$id': typeof AuthenticatedAppProjectIdRoute
   '/app/leads': typeof AuthenticatedAppLeadsIndexRoute
 }
 export interface FileRoutesById {
@@ -578,6 +587,7 @@ export interface FileRoutesById {
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
+  '/_authenticated/app/project/$id': typeof AuthenticatedAppProjectIdRoute
   '/_authenticated/app/leads/': typeof AuthenticatedAppLeadsIndexRoute
 }
 export interface FileRouteTypes {
@@ -642,6 +652,7 @@ export interface FileRouteTypes {
     | '/client/$id'
     | '/app/'
     | '/app/leads/$id'
+    | '/app/project/$id'
     | '/app/leads/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -703,6 +714,7 @@ export interface FileRouteTypes {
     | '/client/$id'
     | '/app'
     | '/app/leads/$id'
+    | '/app/project/$id'
     | '/app/leads'
   id:
     | '__root__'
@@ -766,6 +778,7 @@ export interface FileRouteTypes {
     | '/_authenticated/client/$id'
     | '/_authenticated/app/'
     | '/_authenticated/app/leads/$id'
+    | '/_authenticated/app/project/$id'
     | '/_authenticated/app/leads/'
   fileRoutesById: FileRoutesById
 }
@@ -1215,6 +1228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppLeadsIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/project/$id': {
+      id: '/_authenticated/app/project/$id'
+      path: '/project/$id'
+      fullPath: '/app/project/$id'
+      preLoaderRoute: typeof AuthenticatedAppProjectIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
@@ -1245,6 +1265,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppUsersManagementRoute: typeof AuthenticatedAppUsersManagementRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppLeadsIdRoute: typeof AuthenticatedAppLeadsIdRoute
+  AuthenticatedAppProjectIdRoute: typeof AuthenticatedAppProjectIdRoute
   AuthenticatedAppLeadsIndexRoute: typeof AuthenticatedAppLeadsIndexRoute
 }
 
@@ -1275,6 +1296,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppUsersManagementRoute: AuthenticatedAppUsersManagementRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppLeadsIdRoute: AuthenticatedAppLeadsIdRoute,
+  AuthenticatedAppProjectIdRoute: AuthenticatedAppProjectIdRoute,
   AuthenticatedAppLeadsIndexRoute: AuthenticatedAppLeadsIndexRoute,
 }
 
