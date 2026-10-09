@@ -169,8 +169,8 @@ function SettingsPage() {
                 <Upload className="size-4 text-muted-foreground" />
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold">Drop your logo here, or click to browse</span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">PNG or JPG, up to 2 MB.</span>
+                <span className="block truncate text-sm font-semibold">Drop your logo here</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">or click to browse · PNG/JPG, up to 2 MB</span>
               </span>
             </div>
 
