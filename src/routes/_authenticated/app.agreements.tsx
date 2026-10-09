@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Copy, Download, Eye, FileSignature, FileText, X } from "lucide-react";
+import { Copy, Download, Eye, FileSignature, FileText, Printer, X } from "lucide-react";
 import { toast } from "sonner";
+
 
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
