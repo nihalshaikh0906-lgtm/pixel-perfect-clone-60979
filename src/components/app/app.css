@@ -312,16 +312,16 @@
 /* Deals pipeline chevrons: arrow segments built from the existing workspace surfaces and tokens. */
 .dapp .a-pipe{display:flex;flex-wrap:wrap;gap:6px}
 .dapp .a-pipe-step{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px 0 26px;border:0;background:transparent;color:var(--a-ink-2);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:color .15s}
-.dapp .a-pipe-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--a-cream);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);transition:background .15s}
+.dapp .a-pipe-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--a-line);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);transition:background .15s}
 .dapp .a-pipe-step:first-child{padding-left:20px}
 .dapp .a-pipe-step:first-child::before{clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%)}
 .dapp .a-pipe-step:hover{color:var(--a-ink)}
 .dapp .a-pipe-step:hover::before{background:var(--a-gold-tint)}
 .dapp .a-pipe-step:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
-.dapp .a-pipe-step[aria-selected=true]{color:#fff}
-.dapp .a-pipe-step[aria-selected=true]::before{background:var(--a-ink)}
+.dapp .a-pipe-step[aria-selected=true]{color:var(--a-ink);font-weight:700}
+.dapp .a-pipe-step[aria-selected=true]::before{background:var(--a-gold)}
 .dapp .a-pipe-step .num{font-size:13px;font-weight:700;color:var(--a-ink-2)}
-.dapp .a-pipe-step[aria-selected=true] .num{color:rgba(255,255,255,.85)}
+.dapp .a-pipe-step[aria-selected=true] .num{color:inherit;opacity:.72}
 @media(max-width:640px){.dapp .a-pipe-step{height:40px;padding:0 14px 0 20px;font-size:13px}.dapp .a-pipe-step::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}.dapp .a-pipe-step:first-child::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%)}}
 
 /* Deals table: same table surface, with right-aligned money columns and an expandable detail row. */
