@@ -2,15 +2,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogoMark } from "@/components/Logo";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, KeyRound, LineChart, MapPinned,
-  Menu, Newspaper, Settings, Sparkles, Workflow, Wrench, Zap, Search, ListChecks, LogOut, User,
+  Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, LineChart, MapPinned,
+  Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
+  FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { AiChat } from "./AiChat";
 import { AddMenu, Notifications, ThemeToggle, useTheme } from "./ShellExtras";
 import { supabase } from "@/integrations/supabase/client";
-import { queueCount } from "@/lib/demo-leads";
 
 type ShellCtx = { clientMode: boolean; openAi: () => void };
 const Ctx = createContext<ShellCtx>({ clientMode: false, openAi: () => {} });
@@ -37,28 +37,35 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   };
 
   const groups: { title: string; items: Item[] }[] = [
-    { title: "Work", items: [
-      { label: "Home", to: "/app/crm", icon: Home, exact: true },
-      { label: "Leads inbox", to: "/app/leads", icon: Inbox, badge: queueCount("respond") },
-      { label: "Team leads", to: "/app/crm", icon: Building2 },
-      { label: "Listings", to: "/app/listings", icon: ListChecks },
-      { label: "Pipelines", to: "/app/pipelines", icon: Workflow },
-      { label: "Today", to: "/app/today", icon: CalendarClock, badge: queueCount("followup") },
+    { title: "GENERAL", items: [
+      { label: "Dashboard", to: "/app/crm", icon: Home, exact: true },
+      { label: "AI Assistant", to: "/app/ai-assistant", icon: Sparkles },
     ] },
-    { title: "Property", items: [
-      { label: "Off-plan", to: "/app/off-plan", icon: Building2 },
-      { label: "Ready to buy", to: "/app/ready", icon: KeyRound },
-      { label: "Rentals", to: "/app/rentals", icon: Home },
-      { label: "Areas", to: "/app/areas", icon: MapPinned },
+    { title: "CRM", items: [
+      { label: "Properties", to: "/app/listings", icon: Building2 },
+      { label: "Leads", to: "/app/leads", icon: Inbox },
+      { label: "Follow-Ups", to: "/app/follow-ups", icon: CalendarClock },
+      { label: "Appointments", to: "/app/appointments", icon: CalendarDays },
     ] },
-    { title: "Insight", items: [
-      { label: "Market", to: "/app/market", icon: LineChart },
-      { label: "Updates", to: "/app/updates", icon: Newspaper },
-      { label: "Tools", to: "/app/tools", icon: Wrench },
+    { title: "MONEY", items: [
+      { label: "Deals", to: "/app/deals", icon: Handshake },
+      { label: "Tenancies", to: "/app/tenancies", icon: KeyRound },
+      { label: "Agreements", to: "/app/agreements", icon: FileSignature },
+      { label: "Reports", to: "/app/reports", icon: LineChart },
     ] },
-    { title: "Setup", items: [
-      { label: "Automations", to: "/app/automations", icon: Zap },
+    { title: "CATALOG", items: [
+      { label: "Owners", to: "/app/owners", icon: Users },
+      { label: "Locations", to: "/app/locations", icon: MapPinned },
+      { label: "Amenities", to: "/app/amenities", icon: Trees },
+    ] },
+    { title: "SYSTEM", items: [
+      { label: "Users Management", to: "/app/users-management", icon: Users },
       { label: "Settings", to: "/app/settings", icon: Settings },
+      { label: "Activity Logs", to: "/app/activity-logs", icon: Activity },
+      { label: "Trash", to: "/app/trash", icon: Trash2 },
+      { label: "Roles & Permissions", to: "/app/roles-permissions", icon: ShieldCheck },
+      { label: "My Account", to: "/app/my-account", icon: User },
+      { label: "About App", to: "/app/about-app", icon: Info },
     ] },
   ];
 
@@ -103,8 +110,8 @@ export function AppShell({ children, userName, initials, agency }: { children: R
           <div className="a-user-wrap">
             {userMenu ? (
               <div className="a-user-menu" role="menu">
-                <Link to="/settings" role="menuitem"><User size={16} /> Profile</Link>
-                <Link to="/app/$section" params={{ section: "settings" }} role="menuitem"><Settings size={16} /> Settings</Link>
+                <Link to="/app/my-account" role="menuitem"><User size={16} /> My Account</Link>
+                <Link to="/app/settings" role="menuitem"><Settings size={16} /> Settings</Link>
                 <button type="button" role="menuitem" onClick={() => void signOut()}><LogOut size={16} /> Log out</button>
               </div>
             ) : null}
