@@ -391,3 +391,19 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .dapp .a-lst-card{cursor:pointer}
 .dapp .a-lst-card:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
 @media(max-width:640px){.dapp .a-360-acts{width:100%}.dapp .a-360-acts .a-btn{height:34px;padding:0 12px;font-size:13px}}
+
+/* Agreements: generate panel and document sheet, built from the existing select, list and modal surfaces. */
+.dapp .a-agr-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
+.dapp .a-agr-form label{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--a-ink-2);flex:1 1 260px;min-width:0}
+.dapp .a-agr-form select{width:100%;min-width:0;height:42px;border:1px solid var(--a-line);border-radius:12px;padding:0 12px;font:inherit;background:var(--a-card);color:var(--a-ink)}
+.dapp .a-agr-form select:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
+.dapp .a-doc-row{flex-wrap:wrap}
+.dapp .a-doc-row>svg{flex-shrink:0;color:var(--a-ink-2)}
+.dapp .a-modal.a-doc-modal>div{width:min(760px,100%)}
+.dapp .a-doc-sheet{display:grid;gap:14px;border:1px solid var(--a-line);border-radius:14px;background:var(--a-cream);padding:18px}
+.dapp .a-doc-top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;border-bottom:1px solid var(--a-line);padding-bottom:10px}
+.dapp .a-doc-top b{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--a-ink-2)}
+.dapp .a-doc-clauses{display:grid;gap:7px;margin:0;padding-left:18px;font-size:13.5px;color:var(--a-ink-2)}
+.dapp .a-doc-clauses li::marker{color:var(--a-gold);font-weight:700}
+@media(max-width:560px){.dapp .a-doc-row .who{flex:1 1 100%}}
+
