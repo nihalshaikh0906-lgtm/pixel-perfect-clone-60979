@@ -140,7 +140,6 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               <AddMenu />
               <Notifications />
               <ThemeToggle {...theme} />
-              <button type="button" className="a-btn a-btn-gold" onClick={() => setAi(true)}><Sparkles size={16} /><span className="a-ask-label">Ask AI</span></button>
             </div>
           </header>
           <main className="a-content">{children}</main>

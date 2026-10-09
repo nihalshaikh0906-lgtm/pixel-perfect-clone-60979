@@ -153,9 +153,9 @@
 .a-select,.a-input{height:36px;border:1px solid var(--a-line);border-radius:10px;padding:0 12px;font-size:14px;background:var(--a-card);color:var(--a-ink)}
 .a-input{min-width:220px}
 .a-count{margin-left:auto;font-size:14px;font-weight:600;color:var(--a-ink-2)}
-.a-table-wrap{overflow-x:auto}
+.a-table-wrap{overflow-x:auto;overflow-y:hidden}
 .a-table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
-.a-table th{position:sticky;top:73px;z-index:2;background:#F7F8FC;text-align:left;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--a-eyebrow);padding:12px 14px;border-bottom:1px solid var(--a-line);white-space:nowrap}
+.a-table th{background:#F7F8FC;text-align:left;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--a-eyebrow);padding:12px 14px;border-bottom:1px solid var(--a-line);white-space:nowrap}
 .a-table td{padding:12px 14px;border-bottom:1px solid var(--a-line);height:64px;vertical-align:middle}
 .a-table tbody tr{cursor:pointer}
 .a-table tbody tr:hover td{background:var(--a-cream)}
