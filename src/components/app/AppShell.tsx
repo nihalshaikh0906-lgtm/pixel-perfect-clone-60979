@@ -16,7 +16,7 @@ type ShellCtx = { clientMode: boolean; openAi: () => void };
 const Ctx = createContext<ShellCtx>({ clientMode: false, openAi: () => {} });
 export const useShell = () => useContext(Ctx);
 
-type Item = { label: string; to: string; icon: typeof Home; badge?: number; exact?: boolean };
+type Item = { label: string; to: string; icon: typeof Home; badge?: number; exact?: boolean; adminOnly?: boolean };
 
 export function AppShell({ children, userName, initials, agency }: { children: ReactNode; userName: string; initials: string; agency: string }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -63,11 +63,11 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "Amenities", to: "/app/amenities", icon: Trees },
     ] },
     { title: "SYSTEM", items: [
-      { label: "Users Management", to: "/app/users", icon: Users },
+      { label: "Users Management", to: "/app/users", icon: Users, adminOnly: true },
       { label: "Settings", to: "/app/settings", icon: Settings },
-      { label: "Activity Logs", to: "/app/activity-logs", icon: Activity },
-      { label: "Trash", to: "/app/trash", icon: Trash2 },
-      { label: "Roles & Permissions", to: "/app/roles-permissions", icon: ShieldCheck },
+      { label: "Activity Logs", to: "/app/activity-logs", icon: Activity, adminOnly: true },
+      { label: "Trash", to: "/app/trash", icon: Trash2, adminOnly: true },
+      { label: "Roles & Permissions", to: "/app/roles-permissions", icon: ShieldCheck, adminOnly: true },
       { label: "My Account", to: "/app/my-account", icon: User },
       { label: "About App", to: "/app/about", icon: Info },
     ] },
@@ -89,9 +89,11 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   useEffect(() => { void supabase.auth.getUser().then(({ data }) => (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", data.user?.id ?? "").maybeSingle().then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))); }, []);
   const active = (it: Item) => (it.exact ? pathname === it.to || pathname === `${it.to}/` : pathname.startsWith(it.to));
 
-  // Admin-level workspace section: only company admins see the SYSTEM group.
+  // Admin-level links are hidden from everyone except company admins.
   const isAdmin = role === "company_admin";
-  const visibleGroups = isAdmin ? groups : groups.filter((g) => g.title !== "SYSTEM");
+  const visibleGroups = groups
+    .map((g) => ({ ...g, items: isAdmin ? g.items : g.items.filter((it) => !it.adminOnly) }))
+    .filter((g) => g.items.length > 0);
 
 
   return (
