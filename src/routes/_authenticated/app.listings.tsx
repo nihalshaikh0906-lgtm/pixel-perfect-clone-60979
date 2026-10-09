@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { FileText, Link2, Mail, RotateCcw, Share2, Trash2, X } from "lucide-react";
+import { RotateCcw, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
 import { DemoPropertyCards } from "@/components/app/InventoryTable";
+import { Property360Modal } from "@/components/app/Property360Modal";
 
 export const Route = createFileRoute("/_authenticated/app/listings")({
   head: () => ({
@@ -204,7 +205,7 @@ function ListingsPage() {
           <div className="a-modal-actions"><button className="a-btn a-btn-line" onClick={close}>Cancel</button><button className="a-btn a-btn-gold" onClick={() => void add()}>Save</button></div>
         </div></div>
       ) : null}
-      {active ? <Property360 l={active} onClose={close360} /> : null}
+      {active ? <Property360Modal property={active} onClose={close360} link={`${typeof window !== "undefined" ? window.location.origin : ""}/app/listings?listing=${active.id}`} /> : null}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 14 }}>
         {!bin ? <DemoPropertyCards category="ready" /> : null}
         {rows.map((l) => (
@@ -235,77 +236,5 @@ function ListingsPage() {
         {bin && !rows.length ? <div className="a-card">Bin is empty.</div> : null}
       </div>
     </div>
-  );
-}
-
-const TABS = ["Overview", "Gallery", "Interested", "Viewings", "Deal", "Docs"] as const;
-type Tab = (typeof TABS)[number];
-
-const TAB_NOTE: Record<Tab, string> = {
-  Overview: "Overview is a placeholder while this listing is completed — the full write-up, neighbourhood notes and market comparison will land here.",
-  Gallery: "No photos on file yet. Images added to this listing appear here as a strip.",
-  Interested: "Nobody has saved this listing yet. Buyers who shortlist it will show up here.",
-  Viewings: "No viewings booked. Booked and completed visits will be listed here with dates.",
-  Deal: "No deal is linked to this listing yet. Token, agreement and completion steps will show here.",
-  Docs: "No documents attached yet. Brochure, floorplan and title paperwork will collect here.",
-};
-
-function Property360({ l, onClose }: { l: L; onClose: () => void }) {
-  const [tab, setTab] = useState<Tab>("Overview");
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  const link = `${window.location.origin}/app/listings?listing=${l.id}`;
-  const summary = `${l.title}${l.community ? ` — ${l.community}` : ""}${l.price ? ` · AED ${l.price.toLocaleString("en-US")}` : ""}`;
-
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(link); toast.success("Listing link copied"); }
-    catch { toast.error("Your browser blocked the copy — grab it from the address bar"); }
-  };
-  const share = async () => {
-    if (navigator.share) { try { await navigator.share({ title: "DealOS listing", text: summary, url: link }); } catch { /* shared or dismissed */ } return; }
-    await copy();
-  };
-  const email = () => { window.location.href = `mailto:?subject=${encodeURIComponent(l.title)}&body=${encodeURIComponent(`${summary}\n${link}`)}`; };
-
-  return (
-    <div className="a-modal a-360-modal" role="dialog" aria-modal="true" aria-label={`Property 360 — ${l.title}`} onClick={(e) => e.target === e.currentTarget && onClose()}><div>
-      <div className="a-deal-head">
-        <div style={{ minWidth: 0 }}>
-          <p className="eyebrow-a" style={{ margin: 0 }}>{l.community ?? "Dubai"} · {l.type ?? "—"}</p>
-          <h2 style={{ margin: "2px 0 0" }}>{l.title}</h2>
-        </div>
-        <div className="a-360-acts">
-          <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => void share()}><Share2 size={14} /> Share</button>
-          <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => toast.info("No brochure attached to this listing yet")}><FileText size={14} /> Brochure</button>
-          <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={email}><Mail size={14} /> Email</button>
-          <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => void copy()}><Link2 size={14} /> Link</button>
-          <button type="button" className="a-btn a-btn-line a-btn-sm" aria-label="Close property 360" onClick={onClose}><X size={14} /></button>
-        </div>
-      </div>
-
-      <div className="a-tabs" role="tablist" aria-label="Property 360 sections">
-        {TABS.map((t) => (
-          <button key={t} type="button" role="tab" aria-selected={tab === t} className={`a-tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)}>{t}</button>
-        ))}
-      </div>
-
-      <div role="tabpanel" aria-label={tab} className="a-360-panel">
-        <p className="a-note" style={{ margin: 0 }}>{TAB_NOTE[tab]}</p>
-        {tab === "Overview" ? (
-          <dl className="a-kv" style={{ margin: "14px 0 0" }}>
-            <dt>Status</dt><dd>{l.status}</dd>
-            <dt>Type</dt><dd>{l.type ?? "—"}</dd>
-            <dt>Bedrooms</dt><dd>{l.bedrooms === "Studio" ? "Studio" : l.bedrooms ?? "—"}</dd>
-            <dt>Size</dt><dd>{l.size_sqft ? `${l.size_sqft} sqft` : "—"}</dd>
-            <dt>Price</dt><dd className="num">{aed(l.price)}</dd>
-          </dl>
-        ) : null}
-      </div>
-    </div></div>
   );
 }
