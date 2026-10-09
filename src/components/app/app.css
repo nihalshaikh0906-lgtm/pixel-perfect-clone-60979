@@ -479,6 +479,7 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .dapp .a-modal.a-usr-modal>div{width:min(620px,100%)}
 .dapp .a-usr-who{display:flex;align-items:center;gap:12px;min-width:0}
 .dapp .a-usr-who>span:last-child{min-width:0}
+.dapp .a-usr-who b,.dapp .a-usr-who small{display:block}
 .dapp .a-usr-who .a-avatar{flex-shrink:0}
 .dapp .a-usr-status{display:inline-flex;align-items:center;gap:10px}
 .dapp .a-usr-status small{font-size:13px;font-weight:600;color:var(--a-ink-2);white-space:nowrap}
