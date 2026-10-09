@@ -357,3 +357,26 @@
 @keyframes dTipIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.d-area-tip{animation:none}}
 @media (max-width:560px){.d-area-tip{position:static;width:auto;margin:10px;box-shadow:none}}
+
+/* --- LAYOUT OVERLAP HOTFIXES --- */
+
+/* 1. Push the Product section down so the animating Dashboard doesn't cover the title */
+#product .d-scene-inner {
+  padding-top: 280px !important; 
+}
+
+/* 2. Push the Integrations stage down so the fixed Navbar doesn't cover the text */
+.d-integration-stage {
+  padding-top: 120px !important;
+  align-content: center !important;
+}
+
+/* 3. Ensure the Hero section has the perfect scroll runway for the dashboard */
+.d-hero {
+  height: 160svh !important; 
+}
+
+/* 4. Ensure the Navbar always stays above everything */
+.d-navbar {
+  z-index: 999 !important;
+}
