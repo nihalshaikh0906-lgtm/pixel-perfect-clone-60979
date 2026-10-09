@@ -161,7 +161,6 @@ export function OwnerDashboard() {
           </div>
         </div>
 
-
         <div className="a-card a-fade od-share">
           <div className="a-card-head">
             <h2>Revenue Share</h2>
