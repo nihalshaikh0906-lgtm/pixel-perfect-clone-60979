@@ -31,7 +31,7 @@ function Page() {
   const close = () => { setDraft(null); setEditId(null); };
   const save = () => {
     if (!draft) return;
-    if (!draft.name.trim()) return toast.error("Give the location a name");
+    if (!draft.name.trim()) { toast.error("Give the location a name"); return; }
     const row = { ...draft, path: draft.path.trim() || `Dubai › ${draft.name.trim()}` };
     if (editId) setRows((r) => r.map((x) => (x.id === editId ? { ...row, id: editId } : x)));
     else setRows((r) => [{ ...row, id: `LC-${100 + r.length}` }, ...r]);

@@ -31,12 +31,12 @@ function Page() {
   const inArrears = active.filter((r) => r.arrears > 0).length;
 
   const pay = (t: T) => {
-    if (t.status === "Ended") return toast.info("This tenancy has ended");
+    if (t.status === "Ended") { toast.info("This tenancy has ended"); return; }
     setRows((r) => r.map((x) => (x.id === t.id ? { ...x, arrears: Math.max(0, x.arrears - x.rent), lastPaid: "Oct 09, 2026" } : x)));
     toast.success(`Recorded ${aed(t.rent)} from ${t.tenant}`);
   };
   const end = (t: T) => {
-    if (t.status === "Ended") return toast.info("Already ended");
+    if (t.status === "Ended") { toast.info("Already ended"); return; }
     setRows((r) => r.map((x) => (x.id === t.id ? { ...x, status: "Ended" } : x)));
     toast.success(`Tenancy for ${t.property} ended`);
   };
