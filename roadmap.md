@@ -43,3 +43,8 @@
 ## Current updates
 - [x] Update landing hero, proof and footer with enterprise CRM positioning
 - [x] Add themed monthly calendar alongside the existing Appointments diary and verify date selection (14 rows → 4 on Oct 9 → 14 after reset; isolated page check, external sign-in unavailable)
+
+## Agency assistant and Home
+- [ ] Personalize full-page AI Assistant with agency profile and existing chat component
+- [ ] Restore /app Home with exactly five requested sections and no lead tables
+- [ ] Verify page layouts and assistant input without changing the design system

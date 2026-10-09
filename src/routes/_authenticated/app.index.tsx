@@ -1,21 +1,20 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, MessageCircle, Phone, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { useCountUp, useShell } from "@/components/app/AppShell";
 import { PriorityChip, TypeChip } from "@/components/app/chips";
-import { formatAed, LEADS, nextBestActions, QUEUES, queueLeads, stats, ago, type Lead } from "@/lib/demo-leads";
+import { formatAed, nextBestActions, QUEUES, queueLeads, stats, ago } from "@/lib/demo-leads";
 
 export const Route = createFileRoute("/_authenticated/app/")({
-  beforeLoad: () => {
-    throw redirect({ to: "/app/crm", replace: true });
-  },
   head: () => ({
     meta: [
       { title: "Home — DealOS Workspace" },
       { name: "description", content: "Next best action, work queues, lead pipeline and follow-ups for today." },
       { property: "og:title", content: "Home — DealOS Workspace" },
       { property: "og:description", content: "Your day as a Dubai broker, prioritised." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HomePage,
@@ -97,10 +96,10 @@ function HomePage() {
       ) : null}
 
       <section className="a-kpis">
-        <Kpi delay={80} label="Respond now" value={s.respond} format={n} note="target: reply within 5 min" tone="t-hot" />
-        <Kpi delay={120} label="New leads today" value={s.newToday} format={n} note={`${n(s.total)} leads in total`} />
-        <Kpi delay={160} label="Sales pipeline" value={s.pipeline} format={(x) => formatAed(x)} note={clientMode ? "qualified buyers' budgets" : `qualified buyers' budgets · ≈${formatAed(s.commission)} commission at 2%`} />
-        <Kpi delay={200} label="Deals won" value={s.won} format={n} note="across off-plan, ready and rent" tone="t-ok" />
+        <Kpi delay={80} label="Respond Now" value={s.respond} format={n} note="target: reply within 5 min" tone="t-hot" />
+        <Kpi delay={120} label="New Leads Today" value={s.newToday} format={n} note={`${n(s.total)} leads in total`} />
+        <Kpi delay={160} label="Sales Pipeline" value={s.pipeline} format={(x) => formatAed(x)} note={clientMode ? "qualified buyers' budgets" : `qualified buyers' budgets · ≈${formatAed(s.commission)} commission at 2%`} />
+        <Kpi delay={200} label="Deals Won" value={s.won} format={n} note="across off-plan, ready and rent" tone="t-ok" />
       </section>
 
       <section className="a-row3">
@@ -123,7 +122,7 @@ function HomePage() {
             <svg viewBox="0 0 180 180" role="img" aria-label={`${openTotal} open leads by stage`}>
               <g transform="rotate(-90 90 90)">
                 {s.byStage.map((st, k) => {
-                  const len = (st.count / openTotal) * C; const off = acc; acc += len;
+                  const len = (openTotal > 0 ? st.count / openTotal : 0) * C; const off = acc; acc += len;
                   return <circle key={st.stage} cx="90" cy="90" r={R} fill="none" stroke={STAGE_COLORS[k % STAGE_COLORS.length]} strokeWidth={hover === k ? 24 : 18}
                     strokeDasharray={`${Math.max(len - 1.5, 0)} ${C}`} strokeDashoffset={-off} opacity={hover === null || hover === k ? 1 : 0.35}
                     onMouseEnter={() => setHover(k)} onMouseLeave={() => setHover(null)} style={{ animation: `a-fade .6s ${k * 40}ms both` }} />;
@@ -166,7 +165,7 @@ function HomePage() {
           </div>
         </div>
         <div className="a-card a-fade a-flow" style={{ animationDelay: "400ms" }}>
-          <div className="a-card-head"><h2>How to work {n(LEADS.length)} leads</h2><span className="a-note">daily flow</span></div>
+          <div className="a-card-head"><h2>How to work 1,000 leads</h2><span className="a-note">daily flow</span></div>
           <ol className="a-stepper">
             {[["Respond now", "Auto-reply sent; you call within 5 min"], ["Hot", "Qualify and send a shortlist"], ["Follow-ups", "Due calls and viewings"], ["Pipeline", "Move deals one stage forward"], ["Nurture", "Automations keep cold leads warm"]].map(([t, d], k) => (
               <li className="a-step" key={t}><i>{k + 1}</i><b>{t}</b><small>{d}</small></li>
