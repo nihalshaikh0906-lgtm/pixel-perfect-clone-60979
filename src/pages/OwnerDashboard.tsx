@@ -245,6 +245,25 @@ export function OwnerDashboard() {
         </div>
       </section>
 
+      <section className="a-card a-fade od-att">
+        <div className="a-card-head">
+          <h2>Needs Attention</h2>
+          <span className="a-count num">{ALERTS.length} items</span>
+        </div>
+        <div className="a-list">
+          {ALERTS.map((a) => (
+            <div key={a.text}>
+              <span className="od-att-ico" aria-hidden="true"><AlertTriangle size={14} /></span>
+              <span className="od-att-text">
+                {a.text}
+                <small>{a.note}</small>
+              </span>
+              <span className="a-chip c-hot">{a.tag}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
     </div>
   );
 }
