@@ -382,3 +382,11 @@
 .dapp .a-lst-tag{padding:4px 6px 4px 10px}
 .dapp .a-lst-tag button{display:grid;place-items:center;width:16px;height:16px;padding:0;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer}
 .dapp .a-lst-tag button:hover{background:rgba(20,26,51,.12)}
+
+/* Property 360: the same modal surface, header actions, and the existing inbox tab pills. */
+.dapp .a-modal.a-360-modal>div{width:min(980px,100%)}
+.dapp .a-360-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.dapp .a-360-panel{display:grid;gap:10px;padding:16px;border:1px solid var(--a-line);border-radius:14px;background:var(--a-cream)}
+.dapp .a-lst-card{cursor:pointer}
+.dapp .a-lst-card:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
+@media(max-width:640px){.dapp .a-360-acts{width:100%}.dapp .a-360-acts .a-btn{height:34px;padding:0 12px;font-size:13px}}
