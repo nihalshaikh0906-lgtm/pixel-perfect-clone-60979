@@ -48,3 +48,9 @@
 - [x] Personalize full-page AI Assistant with agency profile and existing chat component
 - [x] Restore /app Home with exactly five requested sections and no lead tables
 - [x] Verify isolated desktop/mobile page layouts, company/fallback title and assistant input; authenticated requests unverified on external Supabase
+
+## Live inventory dashboard
+- [ ] Fit dashboard metrics within cards at full and narrow widths
+- [ ] Replace dashboard mock figures with live Supabase inventory totals
+- [ ] Load all inventory through paginated Offplan, Ready Property and Rentals views
+- [ ] Verify categorization, pagination and layout; authenticated external Supabase checks may be unavailable
