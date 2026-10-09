@@ -135,3 +135,5 @@ export const getProjectDetail = createServerFn({ method: "POST" })
 export const inventorySummaryOptions = () => queryOptions({ queryKey: ["live-inventory-summary"], queryFn: () => getInventorySummary(), staleTime: 300_000 });
 export const inventoryPageOptions = (category: "offplan" | "ready" | "rental", page: number, q: string) => queryOptions({ queryKey: ["live-inventory", category, page, q], queryFn: () => getInventoryPage({ data: { category, page, q } }), staleTime: 60_000 });
 export const projectPageOptions = (page: number) => queryOptions({ queryKey: ["live-projects", page], queryFn: () => getProjectPage({ data: { page } }), staleTime: 60_000 });
+export const offplanProjectsOptions = (page: number, q: string) => queryOptions({ queryKey: ["offplan-projects", page, q], queryFn: () => getOffplanProjects({ data: { page, q } }), staleTime: 60_000 });
+export const projectDetailOptions = (id: number) => queryOptions({ queryKey: ["project-detail", id], queryFn: () => getProjectDetail({ data: { id } }), staleTime: 60_000 });
