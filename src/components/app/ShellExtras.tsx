@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Check, Monitor, Moon, Plus, Sun, Inbox, CalendarClock } from "lucide-react";
+import { Bell, Check, Monitor, Moon, Plus, Sun, Inbox, CalendarClock, Eye, Banknote, Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import * as Popover from "@radix-ui/react-popover";
