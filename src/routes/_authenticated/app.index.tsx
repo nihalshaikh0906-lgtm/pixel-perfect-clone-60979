@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, MessageCircle, Phone, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { OwnerOverview } from "@/components/app/OwnerOverview";
 
 import { useCountUp, useShell } from "@/components/app/AppShell";
 import { PriorityChip, TypeChip } from "@/components/app/chips";
@@ -41,6 +43,13 @@ function Kpi({ label, value, format, note, tone, delay }: { label: string; value
 }
 
 function HomePage() {
+  const [role, setRole] = useState<string | null | undefined>(undefined);
+  useEffect(() => { void supabase.auth.getUser().then(({ data }) => (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", data.user?.id ?? "").maybeSingle().then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))); }, []);
+  if (role === "company_admin") return <OwnerOverview />;
+  return <AgentHome />;
+}
+
+function AgentHome() {
   const { user } = Route.useRouteContext();
   const { clientMode, openAi } = useShell();
   const s = useMemo(stats, []);
