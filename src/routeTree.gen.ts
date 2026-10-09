@@ -32,7 +32,9 @@ import { Route as AuthenticatedInventoryRouteImport } from './routes/_authentica
 import { Route as AuthenticatedListingsRouteImport } from './routes/_authenticated/listings'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedNewsRouteImport } from './routes/_authenticated/news'
+import { Route as AuthenticatedOffplanRouteImport } from './routes/_authenticated/offplan'
 import { Route as AuthenticatedOwnersRouteImport } from './routes/_authenticated/owners'
+import { Route as AuthenticatedRentalsRouteImport } from './routes/_authenticated/rentals'
 import { Route as AuthenticatedRolesRouteImport } from './routes/_authenticated/roles'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -53,7 +55,9 @@ import { Route as AuthenticatedAppFollowUpsRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppListingsRouteImport } from './routes/_authenticated/app.listings'
 import { Route as AuthenticatedAppLocationsRouteImport } from './routes/_authenticated/app.locations'
 import { Route as AuthenticatedAppMyAccountRouteImport } from './routes/_authenticated/app.my-account'
+import { Route as AuthenticatedAppOffplanRouteImport } from './routes/_authenticated/app.offplan'
 import { Route as AuthenticatedAppOwnersRouteImport } from './routes/_authenticated/app.owners'
+import { Route as AuthenticatedAppRentalsRouteImport } from './routes/_authenticated/app.rentals'
 import { Route as AuthenticatedAppReportsRouteImport } from './routes/_authenticated/app.reports'
 import { Route as AuthenticatedAppRolesPermissionsRouteImport } from './routes/_authenticated/app.roles-permissions'
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
@@ -179,9 +183,19 @@ const AuthenticatedNewsRoute = AuthenticatedNewsRouteImport.update({
   path: '/news',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOffplanRoute = AuthenticatedOffplanRouteImport.update({
+  id: '/offplan',
+  path: '/offplan',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOwnersRoute = AuthenticatedOwnersRouteImport.update({
   id: '/owners',
   path: '/owners',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRentalsRoute = AuthenticatedRentalsRouteImport.update({
+  id: '/rentals',
+  path: '/rentals',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRolesRoute = AuthenticatedRolesRouteImport.update({
@@ -294,9 +308,19 @@ const AuthenticatedAppMyAccountRoute =
     path: '/my-account',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppOffplanRoute = AuthenticatedAppOffplanRouteImport.update({
+  id: '/offplan',
+  path: '/offplan',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppOwnersRoute = AuthenticatedAppOwnersRouteImport.update({
   id: '/owners',
   path: '/owners',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppRentalsRoute = AuthenticatedAppRentalsRouteImport.update({
+  id: '/rentals',
+  path: '/rentals',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
 const AuthenticatedAppReportsRoute = AuthenticatedAppReportsRouteImport.update({
@@ -373,7 +397,9 @@ export interface FileRoutesByFullPath {
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
+  '/offplan': typeof AuthenticatedOffplanRoute
   '/owners': typeof AuthenticatedOwnersRoute
+  '/rentals': typeof AuthenticatedRentalsRoute
   '/roles': typeof AuthenticatedRolesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
@@ -393,7 +419,9 @@ export interface FileRoutesByFullPath {
   '/app/listings': typeof AuthenticatedAppListingsRoute
   '/app/locations': typeof AuthenticatedAppLocationsRoute
   '/app/my-account': typeof AuthenticatedAppMyAccountRoute
+  '/app/offplan': typeof AuthenticatedAppOffplanRoute
   '/app/owners': typeof AuthenticatedAppOwnersRoute
+  '/app/rentals': typeof AuthenticatedAppRentalsRoute
   '/app/reports': typeof AuthenticatedAppReportsRoute
   '/app/roles-permissions': typeof AuthenticatedAppRolesPermissionsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
@@ -426,7 +454,9 @@ export interface FileRoutesByTo {
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
+  '/offplan': typeof AuthenticatedOffplanRoute
   '/owners': typeof AuthenticatedOwnersRoute
+  '/rentals': typeof AuthenticatedRentalsRoute
   '/roles': typeof AuthenticatedRolesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
@@ -447,7 +477,9 @@ export interface FileRoutesByTo {
   '/app/listings': typeof AuthenticatedAppListingsRoute
   '/app/locations': typeof AuthenticatedAppLocationsRoute
   '/app/my-account': typeof AuthenticatedAppMyAccountRoute
+  '/app/offplan': typeof AuthenticatedAppOffplanRoute
   '/app/owners': typeof AuthenticatedAppOwnersRoute
+  '/app/rentals': typeof AuthenticatedAppRentalsRoute
   '/app/reports': typeof AuthenticatedAppReportsRoute
   '/app/roles-permissions': typeof AuthenticatedAppRolesPermissionsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
@@ -483,7 +515,9 @@ export interface FileRoutesById {
   '/_authenticated/listings': typeof AuthenticatedListingsRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/news': typeof AuthenticatedNewsRoute
+  '/_authenticated/offplan': typeof AuthenticatedOffplanRoute
   '/_authenticated/owners': typeof AuthenticatedOwnersRoute
+  '/_authenticated/rentals': typeof AuthenticatedRentalsRoute
   '/_authenticated/roles': typeof AuthenticatedRolesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
@@ -504,7 +538,9 @@ export interface FileRoutesById {
   '/_authenticated/app/listings': typeof AuthenticatedAppListingsRoute
   '/_authenticated/app/locations': typeof AuthenticatedAppLocationsRoute
   '/_authenticated/app/my-account': typeof AuthenticatedAppMyAccountRoute
+  '/_authenticated/app/offplan': typeof AuthenticatedAppOffplanRoute
   '/_authenticated/app/owners': typeof AuthenticatedAppOwnersRoute
+  '/_authenticated/app/rentals': typeof AuthenticatedAppRentalsRoute
   '/_authenticated/app/reports': typeof AuthenticatedAppReportsRoute
   '/_authenticated/app/roles-permissions': typeof AuthenticatedAppRolesPermissionsRoute
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
@@ -541,7 +577,9 @@ export interface FileRouteTypes {
     | '/listings'
     | '/market'
     | '/news'
+    | '/offplan'
     | '/owners'
+    | '/rentals'
     | '/roles'
     | '/settings'
     | '/api/chat'
@@ -561,7 +599,9 @@ export interface FileRouteTypes {
     | '/app/listings'
     | '/app/locations'
     | '/app/my-account'
+    | '/app/offplan'
     | '/app/owners'
+    | '/app/rentals'
     | '/app/reports'
     | '/app/roles-permissions'
     | '/app/settings'
@@ -594,7 +634,9 @@ export interface FileRouteTypes {
     | '/listings'
     | '/market'
     | '/news'
+    | '/offplan'
     | '/owners'
+    | '/rentals'
     | '/roles'
     | '/settings'
     | '/api/chat'
@@ -615,7 +657,9 @@ export interface FileRouteTypes {
     | '/app/listings'
     | '/app/locations'
     | '/app/my-account'
+    | '/app/offplan'
     | '/app/owners'
+    | '/app/rentals'
     | '/app/reports'
     | '/app/roles-permissions'
     | '/app/settings'
@@ -650,7 +694,9 @@ export interface FileRouteTypes {
     | '/_authenticated/listings'
     | '/_authenticated/market'
     | '/_authenticated/news'
+    | '/_authenticated/offplan'
     | '/_authenticated/owners'
+    | '/_authenticated/rentals'
     | '/_authenticated/roles'
     | '/_authenticated/settings'
     | '/api/chat'
@@ -671,7 +717,9 @@ export interface FileRouteTypes {
     | '/_authenticated/app/listings'
     | '/_authenticated/app/locations'
     | '/_authenticated/app/my-account'
+    | '/_authenticated/app/offplan'
     | '/_authenticated/app/owners'
+    | '/_authenticated/app/rentals'
     | '/_authenticated/app/reports'
     | '/_authenticated/app/roles-permissions'
     | '/_authenticated/app/settings'
@@ -864,11 +912,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNewsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/offplan': {
+      id: '/_authenticated/offplan'
+      path: '/offplan'
+      fullPath: '/offplan'
+      preLoaderRoute: typeof AuthenticatedOffplanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/owners': {
       id: '/_authenticated/owners'
       path: '/owners'
       fullPath: '/owners'
       preLoaderRoute: typeof AuthenticatedOwnersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rentals': {
+      id: '/_authenticated/rentals'
+      path: '/rentals'
+      fullPath: '/rentals'
+      preLoaderRoute: typeof AuthenticatedRentalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/roles': {
@@ -1011,11 +1073,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppMyAccountRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/offplan': {
+      id: '/_authenticated/app/offplan'
+      path: '/offplan'
+      fullPath: '/app/offplan'
+      preLoaderRoute: typeof AuthenticatedAppOffplanRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/owners': {
       id: '/_authenticated/app/owners'
       path: '/owners'
       fullPath: '/app/owners'
       preLoaderRoute: typeof AuthenticatedAppOwnersRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/rentals': {
+      id: '/_authenticated/app/rentals'
+      path: '/rentals'
+      fullPath: '/app/rentals'
+      preLoaderRoute: typeof AuthenticatedAppRentalsRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/reports': {
@@ -1098,7 +1174,9 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppListingsRoute: typeof AuthenticatedAppListingsRoute
   AuthenticatedAppLocationsRoute: typeof AuthenticatedAppLocationsRoute
   AuthenticatedAppMyAccountRoute: typeof AuthenticatedAppMyAccountRoute
+  AuthenticatedAppOffplanRoute: typeof AuthenticatedAppOffplanRoute
   AuthenticatedAppOwnersRoute: typeof AuthenticatedAppOwnersRoute
+  AuthenticatedAppRentalsRoute: typeof AuthenticatedAppRentalsRoute
   AuthenticatedAppReportsRoute: typeof AuthenticatedAppReportsRoute
   AuthenticatedAppRolesPermissionsRoute: typeof AuthenticatedAppRolesPermissionsRoute
   AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
@@ -1124,7 +1202,9 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppListingsRoute: AuthenticatedAppListingsRoute,
   AuthenticatedAppLocationsRoute: AuthenticatedAppLocationsRoute,
   AuthenticatedAppMyAccountRoute: AuthenticatedAppMyAccountRoute,
+  AuthenticatedAppOffplanRoute: AuthenticatedAppOffplanRoute,
   AuthenticatedAppOwnersRoute: AuthenticatedAppOwnersRoute,
+  AuthenticatedAppRentalsRoute: AuthenticatedAppRentalsRoute,
   AuthenticatedAppReportsRoute: AuthenticatedAppReportsRoute,
   AuthenticatedAppRolesPermissionsRoute: AuthenticatedAppRolesPermissionsRoute,
   AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
@@ -1152,7 +1232,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedListingsRoute: typeof AuthenticatedListingsRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedNewsRoute: typeof AuthenticatedNewsRoute
+  AuthenticatedOffplanRoute: typeof AuthenticatedOffplanRoute
   AuthenticatedOwnersRoute: typeof AuthenticatedOwnersRoute
+  AuthenticatedRentalsRoute: typeof AuthenticatedRentalsRoute
   AuthenticatedRolesRoute: typeof AuthenticatedRolesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -1172,7 +1254,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedListingsRoute: AuthenticatedListingsRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedNewsRoute: AuthenticatedNewsRoute,
+  AuthenticatedOffplanRoute: AuthenticatedOffplanRoute,
   AuthenticatedOwnersRoute: AuthenticatedOwnersRoute,
+  AuthenticatedRentalsRoute: AuthenticatedRentalsRoute,
   AuthenticatedRolesRoute: AuthenticatedRolesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
