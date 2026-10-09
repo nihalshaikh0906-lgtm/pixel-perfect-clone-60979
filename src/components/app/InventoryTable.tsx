@@ -1,4 +1,4 @@
-import { byCategory, type InventoryCategory } from "@/lib/inventory-mock";
+import { byCategory, type InventoryCategory, type MockProperty } from "@/lib/inventory-mock";
 
 const aed = (n: number) => `AED ${n.toLocaleString("en-US")}`;
 
@@ -38,6 +38,29 @@ export function InventoryTable({ category, rent = false }: { category: Inventory
         </table>
       </div>
     </div>
+  );
+}
+
+export function DemoPropertyCard({ p, rent = false }: { p: MockProperty; rent?: boolean }) {
+  return (
+    <div className="a-card a-lift a-lst-card" style={{ display: "grid", gap: 6 }}>
+      <p className="eyebrow-a" style={{ margin: 0 }}>{p.community} · demo</p>
+      <b style={{ fontSize: 17 }}>{p.title}</b>
+      <span className="muted">{p.bedrooms === "Studio" ? "Studio" : `${p.bedrooms} BR`} · {p.size_sqft.toLocaleString("en-US")} sqft</span>
+      <strong className="num" style={{ fontSize: 20 }}>{aed(p.price)}{rent ? " / yr" : ""}</strong>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <span className="a-chip c-stage">{p.status}</span>
+        <span className="a-chip c-stage" style={{ marginLeft: "auto" }}>Demo</span>
+      </div>
+    </div>
+  );
+}
+
+export function DemoPropertyCards({ category, rent = false }: { category: InventoryCategory; rent?: boolean }) {
+  return (
+    <>
+      {byCategory(category).map((p) => <DemoPropertyCard key={p.id} p={p} rent={rent} />)}
+    </>
   );
 }
 

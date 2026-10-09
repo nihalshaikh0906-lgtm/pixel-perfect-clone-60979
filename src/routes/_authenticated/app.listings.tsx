@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { FileText, Link2, Mail, RotateCcw, Share2, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
-import { InventoryTable } from "@/components/app/InventoryTable";
+import { DemoPropertyCards } from "@/components/app/InventoryTable";
 
 export const Route = createFileRoute("/_authenticated/app/listings")({
   head: () => ({
@@ -205,13 +205,8 @@ function ListingsPage() {
         </div></div>
       ) : null}
       {active ? <Property360 l={active} onClose={close360} /> : null}
-      {!bin ? (
-        <div style={{ display: "grid", gap: 10 }}>
-          <p className="eyebrow-a" style={{ margin: 0 }}>Sample ready stock (demo)</p>
-          <InventoryTable category="ready" />
-        </div>
-      ) : null}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 14 }}>
+        {!bin ? <DemoPropertyCards category="ready" /> : null}
         {rows.map((l) => (
           <div
             key={l.id}
@@ -237,7 +232,7 @@ function ListingsPage() {
             </div>
           </div>
         ))}
-        {!rows.length ? <div className="a-card">{bin ? "Bin is empty." : "No ready properties yet — add your first one."}</div> : null}
+        {bin && !rows.length ? <div className="a-card">Bin is empty.</div> : null}
       </div>
     </div>
   );
