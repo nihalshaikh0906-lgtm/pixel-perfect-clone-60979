@@ -1,4 +1,4 @@
-import { Calendar, ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
+import { AlertTriangle, Calendar, ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
 
@@ -52,7 +52,17 @@ const SOURCES: Source[] = [
   { name: "Website", value: 152, token: "--a-ink-2" },
 ];
 
-const TOTAL_LEADS = SOURCES.reduce((sum, s) => sum + s.value, 0);
+const TOTAL_LEADS = SOURCES.reduce((sum, s) => sum => sum, 0);
+
+type Alert = { text: string; note: string; tag: string };
+
+// Illustrative demo alerts — sample items, not real records.
+const ALERTS: Alert[] = [
+  { text: "Agent Saad is 20% below Q3 target", note: "Sales performance · flagged 2 days ago", tag: "Target" },
+  { text: "High-value deal #1045 stalled for 14 days", note: "No activity since last follow-up", tag: "Stalled" },
+  { text: "Commission payout AED 120k pending approval", note: "Awaiting owner sign-off", tag: "Approval" },
+  { text: "3 unassigned leads waiting over 24 hours", note: "Portal enquiries · no owner yet", tag: "Leads" },
+];
 
 
 function initialsOf(name: string) {
