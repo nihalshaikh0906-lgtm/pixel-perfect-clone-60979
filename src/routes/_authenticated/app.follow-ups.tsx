@@ -336,9 +336,9 @@ function Th({
 
 function NewFollowUpModal({ onClose, onCreate }: { onClose: () => void; onCreate: (t: Task) => void }) {
   const [leadId, setLeadId] = useState("");
-  const [kind, setKind] = useState<string>(KINDS[0]);
+  const [kind, setKind] = useState<string>(KINDS[0] ?? "Call");
   const [due, setDue] = useState("");
-  const [agent, setAgent] = useState<string>(AGENTS[0]);
+  const [agent, setAgent] = useState<string>(AGENTS[0] ?? "You");
   const [note, setNote] = useState("");
 
   useEffect(() => {
