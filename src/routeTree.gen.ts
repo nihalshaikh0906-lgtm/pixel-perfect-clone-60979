@@ -27,6 +27,7 @@ import { Route as AuthenticatedInventoryRouteImport } from './routes/_authentica
 import { Route as AuthenticatedListingsRouteImport } from './routes/_authenticated/listings'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedNewsRouteImport } from './routes/_authenticated/news'
+import { Route as AuthenticatedRolesRouteImport } from './routes/_authenticated/roles'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDossierCopilotRouteImport } from './routes/api/dossier-copilot'
@@ -144,6 +145,11 @@ const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
 const AuthenticatedNewsRoute = AuthenticatedNewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRolesRoute = AuthenticatedRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -325,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
+  '/roles': typeof AuthenticatedRolesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
@@ -371,6 +378,7 @@ export interface FileRoutesByTo {
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
+  '/roles': typeof AuthenticatedRolesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
@@ -421,6 +429,7 @@ export interface FileRoutesById {
   '/_authenticated/listings': typeof AuthenticatedListingsRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/news': typeof AuthenticatedNewsRoute
+  '/_authenticated/roles': typeof AuthenticatedRolesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
@@ -472,6 +481,7 @@ export interface FileRouteTypes {
     | '/listings'
     | '/market'
     | '/news'
+    | '/roles'
     | '/settings'
     | '/api/chat'
     | '/api/dossier-copilot'
@@ -518,6 +528,7 @@ export interface FileRouteTypes {
     | '/listings'
     | '/market'
     | '/news'
+    | '/roles'
     | '/settings'
     | '/api/chat'
     | '/api/dossier-copilot'
@@ -567,6 +578,7 @@ export interface FileRouteTypes {
     | '/_authenticated/listings'
     | '/_authenticated/market'
     | '/_authenticated/news'
+    | '/_authenticated/roles'
     | '/_authenticated/settings'
     | '/api/chat'
     | '/api/dossier-copilot'
@@ -742,6 +754,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof AuthenticatedNewsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/roles': {
+      id: '/_authenticated/roles'
+      path: '/roles'
+      fullPath: '/roles'
+      preLoaderRoute: typeof AuthenticatedRolesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -1013,6 +1032,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedListingsRoute: typeof AuthenticatedListingsRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedNewsRoute: typeof AuthenticatedNewsRoute
+  AuthenticatedRolesRoute: typeof AuthenticatedRolesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedClientIdRoute: typeof AuthenticatedClientIdRoute
@@ -1026,6 +1046,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedListingsRoute: AuthenticatedListingsRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedNewsRoute: AuthenticatedNewsRoute,
+  AuthenticatedRolesRoute: AuthenticatedRolesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedClientIdRoute: AuthenticatedClientIdRoute,

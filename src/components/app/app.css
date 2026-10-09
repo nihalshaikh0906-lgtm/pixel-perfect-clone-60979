@@ -265,6 +265,21 @@
 .dapp .a-attention-foot{display:flex;justify-content:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--a-line)}
 .dapp .a-attention-foot a{width:100%;justify-content:center}
 
+/* Roles & permissions matrix: reuses the existing table, chip and card surfaces. */
+.dapp .a-role-page{display:inline-flex;align-items:center;gap:10px;min-width:0}
+.dapp .a-role-page svg{flex-shrink:0;color:var(--a-ink-2)}
+.dapp .a-role-page b{display:block;font-size:14.5px;white-space:normal}
+.dapp .a-role-page small{display:block;font-size:13px;color:var(--a-ink-2);white-space:normal}
+.dapp .a-role-none{font-size:13px;font-weight:600;color:var(--a-eyebrow)}
+.dapp .a-role-legend{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--a-eyebrow)}
+.dapp .a-role-table{border:1px solid var(--a-line);border-radius:14px}
+.dapp .a-role-table th{top:0}
+.dapp .a-role-table th:not(:first-child),.dapp .a-role-table td:not(:first-child){text-align:center}
+.dapp .a-role-table tbody tr{cursor:default}
+.dapp .a-role-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dapp .a-role-cell{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.dapp .a-mut{font-size:13.5px;color:var(--a-ink-2);margin-top:14px}
+
 /* Keep workspace content inside its available width, including narrow detail columns. */
 .dapp .a-content>*{min-width:0;max-width:100%}
 .dapp .a-top-actions{flex-shrink:0}
