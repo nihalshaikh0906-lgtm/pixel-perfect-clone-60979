@@ -108,10 +108,13 @@ function Page() {
                 <r.icon size={17} />
                 <span><b>{r.page}</b><small>{r.detail}</small></span>
               </span>
-              <div className="a-chips">
-                <span className="a-role-legend">Admin</span><Cell level={r.levels[0]} />
-                <span className="a-role-legend">Manager</span><Cell level={r.levels[1]} />
-                <span className="a-role-legend">Agent</span><Cell level={r.levels[2]} />
+              <div className="a-role-grid">
+                {(["Admin", "Manager", "Agent"] as const).map((role, i) => (
+                  <span className="a-role-cell" key={role}>
+                    <span className="a-role-legend">{role}</span>
+                    <Cell level={r.levels[i]} />
+                  </span>
+                ))}
               </div>
             </div>
           ))}

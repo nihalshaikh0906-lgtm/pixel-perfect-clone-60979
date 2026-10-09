@@ -273,9 +273,11 @@
 .dapp .a-role-none{font-size:13px;font-weight:600;color:var(--a-eyebrow)}
 .dapp .a-role-legend{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--a-eyebrow)}
 .dapp .a-role-table{border:1px solid var(--a-line);border-radius:14px}
+.dapp .a-role-table th{top:0}
 .dapp .a-role-table th:not(:first-child),.dapp .a-role-table td:not(:first-child){text-align:center}
 .dapp .a-role-table tbody tr{cursor:default}
-.dapp .a-cards .a-lcard .a-chips{align-items:center}
+.dapp .a-role-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dapp .a-role-cell{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .dapp .a-mut{font-size:13.5px;color:var(--a-ink-2);margin-top:14px}
 
 /* Keep workspace content inside its available width, including narrow detail columns. */
