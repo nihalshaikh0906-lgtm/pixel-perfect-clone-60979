@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, useMemo, useState } from "react";
-import { ChevronDown, Copy, Download } from "lucide-react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { ChevronDown, Copy, Download, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { useShell } from "@/components/app/AppShell";
@@ -89,18 +89,31 @@ function Page() {
   const [pipe, setPipe] = useState<Pipe>("All");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "amount", dir: -1 });
   const [open, setOpen] = useState<string | null>(null);
+  const [extra, setExtra] = useState<Deal[]>([]);
+  const [showNew, setShowNew] = useState(false);
+
+  // The form adds a row to the on-screen pipeline only — it never touches the database.
+  const addDeal = (d: Deal) => {
+    setExtra((x) => [d, ...x]);
+    setPipe("All");
+    setOpen(d.id);
+    toast.success("Deal added to the on-screen pipeline — demo only");
+  };
+
+
+  const ALL = useMemo(() => [...extra, ...ROWS], [extra]);
 
   const rows = useMemo(() => {
-    const filtered = pipe === "All" ? ROWS : ROWS.filter((d) => d.stage === pipe);
+    const filtered = pipe === "All" ? ALL : ALL.filter((d) => d.stage === pipe);
     return [...filtered].sort((a, b) => {
       const av = sortValue(a, sort.key);
       const bv = sortValue(b, sort.key);
       const cmp = typeof av === "number" && typeof bv === "number" ? av - bv : String(av).localeCompare(String(bv));
       return cmp * sort.dir;
     });
-  }, [pipe, sort]);
+  }, [pipe, sort, ALL]);
 
-  const count = (p: Pipe) => (p === "All" ? ROWS.length : ROWS.filter((d) => d.stage === p).length);
+  const count = (p: Pipe) => (p === "All" ? ALL.length : ALL.filter((d) => d.stage === p).length);
   const total = (pick: (d: Deal) => number) => rows.reduce((s, d) => s + pick(d), 0);
   const onSort = (key: SortKey) =>
     setSort((s) =>
@@ -149,6 +162,9 @@ function Page() {
         </div>
         <div className="a-band-actions">
           <span className="a-chip c-stage">Sample pipeline — demo records</span>
+          <button type="button" className="a-btn a-btn-gold" onClick={() => setShowNew(true)}>
+            <Plus size={16} /> New Deal
+          </button>
           <button type="button" className="a-btn a-btn-line" onClick={exportCsv}>
             <Download size={16} /> Export CSV
           </button>
@@ -310,6 +326,8 @@ function Page() {
           {clientMode ? "Commission is hidden while client mode is on." : "Switch on client mode in the top bar to hide commission."}
         </p>
       </div>
+
+      {showNew && <NewDealModal onClose={() => setShowNew(false)} onCreate={addDeal} />}
     </>
   );
 }
