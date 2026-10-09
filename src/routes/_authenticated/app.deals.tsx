@@ -519,16 +519,23 @@ function NewDealModal({ onClose, onCreate }: { onClose: () => void; onCreate: (d
           </div>
 
           <div className="a-deal-sum">
-            <h3>Summary</h3>
-            <div className="a-deal-srow"><span>Property</span><b>{picked[0] || "—"}</b></div>
-            <div className="a-deal-srow"><span>Buyer</span><b>{buyer.trim() || "—"}</b></div>
-            <div className="a-deal-srow"><span>Phone</span><b>{phone.trim() || "—"}</b></div>
-            <div className="a-deal-srow"><span>Deal amount</span><b className="num">{formatAed(amt)}</b></div>
-            <div className="a-deal-srow"><span>Commission {commPct || 0}%</span><b className="num">{formatAed(commission)}</b></div>
-            <div className="a-deal-srow"><span>Agent share {sharePct || 0}%</span><b className="num">{formatAed(agentShare)}</b></div>
-            <div className="a-deal-srow total"><span>Company net</span><b className="num">{formatAed(companyNet)}</b></div>
-            <div className="a-deal-srow"><span>Token money</span><b className="num">{formatAed(tokenAmt)} · {tokenPct}%</b></div>
-            <div className="a-deal-srow"><span>Balance after token</span><b className="num">{formatAed(balance)}</b></div>
+            <h3>Live math</h3>
+            <div className="a-deal-srow">
+              <span>Balance<em>Amount − Token · {tokenPct}% paid</em></span>
+              <b className="num">{formatAed(balance)}</b>
+            </div>
+            <div className="a-deal-srow">
+              <span>Commission<em>Amount × {commPct || 0}%</em></span>
+              <b className="num">{formatAed(commission)}</b>
+            </div>
+            <div className="a-deal-srow">
+              <span>Agent Share<em>Commission × {sharePct || 0}%</em></span>
+              <b className="num">{formatAed(agentShare)}</b>
+            </div>
+            <div className="a-deal-srow total">
+              <span>Agency Share<em>Commission − Agent Share</em></span>
+              <b className="num">{formatAed(companyNet)}</b>
+            </div>
           </div>
         </div>
 
