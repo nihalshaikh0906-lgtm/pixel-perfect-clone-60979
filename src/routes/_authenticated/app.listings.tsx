@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { FileText, Link2, Mail, RotateCcw, Share2, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
-import { InventoryTable } from "@/components/app/InventoryTable";
+import { DemoPropertyCards } from "@/components/app/InventoryTable";
 
 export const Route = createFileRoute("/_authenticated/app/listings")({
   head: () => ({
@@ -232,7 +232,7 @@ function ListingsPage() {
             </div>
           </div>
         ))}
-        {!rows.length ? <div className="a-card">{bin ? "Bin is empty." : "No ready properties yet — add your first one."}</div> : null}
+        {bin && !rows.length ? <div className="a-card">Bin is empty.</div> : null}
       </div>
     </div>
   );
