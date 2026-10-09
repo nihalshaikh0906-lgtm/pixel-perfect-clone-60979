@@ -402,7 +402,7 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 /* Agreements print dialog: an A4 sheet on a grey stage, settings sidebar on the right. */
 .dapp .a-modal.a-print-modal>div{width:min(1080px,100%)}
 .dapp .a-print-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,272px);gap:18px;align-items:start}
-.dapp .a-print-stage{display:flex;flex-direction:column;align-items:center;gap:18px;max-height:min(66vh,760px);overflow:auto;padding:22px;border:1px solid var(--a-line);border-radius:14px;background:var(--a-cream)}
+.dapp .a-print-stage{display:flex;flex-direction:column;align-items:center;gap:18px;max-height:min(72vh,800px);overflow:auto;padding:22px;border:1px solid var(--a-line);border-radius:14px;background:var(--a-cream)}
 .dapp .a-print-page{width:min(520px,100%);aspect-ratio:210/297;flex-shrink:0;background:var(--a-card);border:1px solid var(--a-line);box-shadow:var(--shadow-elevated);padding:30px 28px;font-size:12.5px;line-height:1.55;color:var(--a-ink)}
 .dapp .a-print-page.a-print-bw{filter:grayscale(1)}
 .dapp .a-print-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;border-bottom:1px solid var(--a-line);padding-bottom:8px;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--a-ink-2)}
@@ -418,7 +418,7 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .dapp .a-print-sign span{display:block;margin-top:5px;color:var(--a-ink-2)}
 .dapp .a-print-side{display:grid;gap:12px;align-content:start}
 .dapp .a-print-side h3{margin:0;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--a-ink-2)}
-@media(max-width:900px){.dapp .a-print-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.dapp .a-print-grid{grid-template-columns:minmax(0,1fr)}.dapp .a-print-stage{max-height:min(46vh,420px)}}
 @media(max-width:560px){.dapp .a-doc-row .who{flex:1 1 100%}.dapp .a-print-stage{padding:12px}.dapp .a-print-page{padding:18px 16px}}
 
 /* Printing sends only the contract itself to the browser's print / Save as PDF dialog. */
