@@ -1,11 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { WorkspacePlaceholder, workspaceHead } from "@/components/app/WorkspacePlaceholder";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/app/about-app")({
-  head: () => workspaceHead("About App"),
-  component: Page,
+  beforeLoad: () => { throw redirect({ to: "/app/about", replace: true }); },
 });
-
-function Page() {
-  return <WorkspacePlaceholder title="About App" group="SYSTEM" />;
-}
