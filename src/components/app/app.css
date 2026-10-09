@@ -355,3 +355,13 @@
 .dapp .a-deal-mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px}
 .dapp .a-deal-mdetail{display:block;font-size:13.5px;color:var(--a-ink-2);margin-top:2px}
 
+/* Record payment form: same surfaces as the new deal modal, a touch narrower. */
+.dapp .a-modal.a-pay-modal>div{width:min(760px,100%)}
+.dapp .a-pay-modal textarea{width:100%;min-width:0;min-height:74px;resize:vertical;border:1px solid var(--a-line);border-radius:12px;padding:10px 12px;font:inherit;line-height:1.45;background:var(--a-card);color:var(--a-ink);outline:0}
+.dapp .a-pay-modal textarea:focus{border-color:var(--a-gold);box-shadow:0 0 0 3px var(--a-gold-tint)}
+.dapp .a-deal-pay-quick{display:flex;align-items:center}
+.dapp .a-deal-pay-quick button{background:none;border:0;padding:0;margin:0;cursor:pointer;font-family:inherit}
+.dapp .a-deal-pay-quick button:focus-visible{outline:2px solid var(--a-gold);outline-offset:3px;border-radius:4px}
+/* Phone cards: the expanded card hands its separator to the action strip below it. */
+.dapp .a-deal-macts{display:flex;flex-wrap:wrap;gap:8px;padding:2px 20px 16px;border-bottom:1px solid var(--a-line);background:var(--a-cream)}
+.dapp .a-deal-lcard[aria-expanded=true]{border-bottom:0;background:var(--a-cream)}
