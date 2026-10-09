@@ -21,6 +21,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAgreementsRouteImport } from './routes/_authenticated/agreements'
+import { Route as AuthenticatedAmenitiesRouteImport } from './routes/_authenticated/amenities'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppointmentsRouteImport } from './routes/_authenticated/appointments'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -31,6 +32,7 @@ import { Route as AuthenticatedInventoryRouteImport } from './routes/_authentica
 import { Route as AuthenticatedListingsRouteImport } from './routes/_authenticated/listings'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedNewsRouteImport } from './routes/_authenticated/news'
+import { Route as AuthenticatedOwnersRouteImport } from './routes/_authenticated/owners'
 import { Route as AuthenticatedRolesRouteImport } from './routes/_authenticated/roles'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -121,6 +123,11 @@ const AuthenticatedAgreementsRoute = AuthenticatedAgreementsRouteImport.update({
   path: '/agreements',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAmenitiesRoute = AuthenticatedAmenitiesRouteImport.update({
+  id: '/amenities',
+  path: '/amenities',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -170,6 +177,11 @@ const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
 const AuthenticatedNewsRoute = AuthenticatedNewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOwnersRoute = AuthenticatedOwnersRouteImport.update({
+  id: '/owners',
+  path: '/owners',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRolesRoute = AuthenticatedRolesRouteImport.update({
@@ -350,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/agreements': typeof AuthenticatedAgreementsRoute
+  '/amenities': typeof AuthenticatedAmenitiesRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/appointments': typeof AuthenticatedAppointmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -360,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
+  '/owners': typeof AuthenticatedOwnersRoute
   '/roles': typeof AuthenticatedRolesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
@@ -402,6 +416,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/agreements': typeof AuthenticatedAgreementsRoute
+  '/amenities': typeof AuthenticatedAmenitiesRoute
   '/appointments': typeof AuthenticatedAppointmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deals': typeof AuthenticatedDealsRoute
@@ -411,6 +426,7 @@ export interface FileRoutesByTo {
   '/listings': typeof AuthenticatedListingsRoute
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
+  '/owners': typeof AuthenticatedOwnersRoute
   '/roles': typeof AuthenticatedRolesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
@@ -456,6 +472,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/_authenticated/agreements': typeof AuthenticatedAgreementsRoute
+  '/_authenticated/amenities': typeof AuthenticatedAmenitiesRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/appointments': typeof AuthenticatedAppointmentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -466,6 +483,7 @@ export interface FileRoutesById {
   '/_authenticated/listings': typeof AuthenticatedListingsRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/news': typeof AuthenticatedNewsRoute
+  '/_authenticated/owners': typeof AuthenticatedOwnersRoute
   '/_authenticated/roles': typeof AuthenticatedRolesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
@@ -512,6 +530,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/agreements'
+    | '/amenities'
     | '/app'
     | '/appointments'
     | '/dashboard'
@@ -522,6 +541,7 @@ export interface FileRouteTypes {
     | '/listings'
     | '/market'
     | '/news'
+    | '/owners'
     | '/roles'
     | '/settings'
     | '/api/chat'
@@ -564,6 +584,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/agreements'
+    | '/amenities'
     | '/appointments'
     | '/dashboard'
     | '/deals'
@@ -573,6 +594,7 @@ export interface FileRouteTypes {
     | '/listings'
     | '/market'
     | '/news'
+    | '/owners'
     | '/roles'
     | '/settings'
     | '/api/chat'
@@ -617,6 +639,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/welcome'
     | '/_authenticated/agreements'
+    | '/_authenticated/amenities'
     | '/_authenticated/app'
     | '/_authenticated/appointments'
     | '/_authenticated/dashboard'
@@ -627,6 +650,7 @@ export interface FileRouteTypes {
     | '/_authenticated/listings'
     | '/_authenticated/market'
     | '/_authenticated/news'
+    | '/_authenticated/owners'
     | '/_authenticated/roles'
     | '/_authenticated/settings'
     | '/api/chat'
@@ -763,6 +787,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgreementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/amenities': {
+      id: '/_authenticated/amenities'
+      path: '/amenities'
+      fullPath: '/amenities'
+      preLoaderRoute: typeof AuthenticatedAmenitiesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app': {
       id: '/_authenticated/app'
       path: '/app'
@@ -831,6 +862,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof AuthenticatedNewsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/owners': {
+      id: '/_authenticated/owners'
+      path: '/owners'
+      fullPath: '/owners'
+      preLoaderRoute: typeof AuthenticatedOwnersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/roles': {
@@ -1103,6 +1141,7 @@ const AuthenticatedAppRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgreementsRoute: typeof AuthenticatedAgreementsRoute
+  AuthenticatedAmenitiesRoute: typeof AuthenticatedAmenitiesRoute
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedAppointmentsRoute: typeof AuthenticatedAppointmentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -1113,6 +1152,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedListingsRoute: typeof AuthenticatedListingsRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedNewsRoute: typeof AuthenticatedNewsRoute
+  AuthenticatedOwnersRoute: typeof AuthenticatedOwnersRoute
   AuthenticatedRolesRoute: typeof AuthenticatedRolesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -1121,6 +1161,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgreementsRoute: AuthenticatedAgreementsRoute,
+  AuthenticatedAmenitiesRoute: AuthenticatedAmenitiesRoute,
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedAppointmentsRoute: AuthenticatedAppointmentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
@@ -1131,6 +1172,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedListingsRoute: AuthenticatedListingsRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedNewsRoute: AuthenticatedNewsRoute,
+  AuthenticatedOwnersRoute: AuthenticatedOwnersRoute,
   AuthenticatedRolesRoute: AuthenticatedRolesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
