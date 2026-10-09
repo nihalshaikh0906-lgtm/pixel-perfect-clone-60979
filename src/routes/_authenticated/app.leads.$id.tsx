@@ -115,7 +115,7 @@ function LeadDetail({ lead }: { lead: Lead }) {
         </section>
 
         <section className="a-card a-fade" style={{ animationDelay: "80ms", padding: 0, height: 600, display: "flex" }} aria-label="AI assistant for this lead">
-          <AiChat title={`AI · ${lead.name}`} context={context} onSaveSummary={saveNote} suggestions={["What should I say on the first call?", "Draft a WhatsApp follow-up", "Which matched unit fits best and why?"]} />
+          <AiChat title={`AI · ${lead.name}`} context={context} onSaveSummary={saveNote} suggestions={["Find the best matching units for this client.", "What is the average rental yield in their preferred area?", "Draft a professional WhatsApp follow-up message.", "Show me units with post-handover payment plans.", "Summarize this client's requirements and budget."]} />
         </section>
       </div>
       <PropertyPackDrawer unit={openUnit} clientId={null} clientPhone={lead.phone} onClose={() => setOpenUnit(null)} />

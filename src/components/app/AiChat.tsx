@@ -92,6 +92,11 @@ export function AiChat({ title, context, suggestions = [], onClose, onSaveSummar
       {onSaveSummary && msgs.some((m) => m.role === "assistant") ? (
         <div style={{ padding: "0 12px" }}><button type="button" className="a-btn a-btn-line a-btn-sm" disabled={busy} onClick={saveSummary}>Save summary to lead</button></div>
       ) : null}
+      {msgs.length > 0 && suggestions.length ? (
+        <div className="a-chips" style={{ padding: "0 12px", overflowX: "auto", flexWrap: "nowrap" }} aria-label="Suggested questions">
+          {suggestions.map((s) => <button type="button" key={s} className="a-btn a-btn-line a-btn-sm" style={{ whiteSpace: "nowrap" }} disabled={busy} onClick={() => send(s)}>{s}</button>)}
+        </div>
+      ) : null}
       <form className="a-chat-form" onSubmit={(e) => { e.preventDefault(); void send(input); }}>
         <textarea ref={inputRef} value={input} placeholder="Ask DealOS AI…" aria-label="Message"
           onChange={(e) => setInput(e.target.value)}
