@@ -205,13 +205,8 @@ function ListingsPage() {
         </div></div>
       ) : null}
       {active ? <Property360 l={active} onClose={close360} /> : null}
-      {!bin ? (
-        <div style={{ display: "grid", gap: 10 }}>
-          <p className="eyebrow-a" style={{ margin: 0 }}>Sample ready stock (demo)</p>
-          <InventoryTable category="ready" />
-        </div>
-      ) : null}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 14 }}>
+        {!bin ? <DemoPropertyCards category="ready" /> : null}
         {rows.map((l) => (
           <div
             key={l.id}

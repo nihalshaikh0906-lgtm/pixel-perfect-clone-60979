@@ -1,4 +1,4 @@
-import { byCategory, type InventoryCategory } from "@/lib/inventory-mock";
+import { byCategory, type InventoryCategory, type MockProperty } from "@/lib/inventory-mock";
 
 const aed = (n: number) => `AED ${n.toLocaleString("en-US")}`;
 
