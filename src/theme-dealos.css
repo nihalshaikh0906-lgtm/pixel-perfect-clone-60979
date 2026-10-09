@@ -156,7 +156,12 @@
 .owner-dash .od-share-name{font-size:14px;font-weight:600;color:var(--a-ink);min-width:0}
 .owner-dash .od-share-note{margin-top:12px;font-size:13px;color:var(--a-ink-2)}
 .owner-dash .od-col{display:flex;flex-direction:column;gap:24px;min-width:0}
-.owner-dash .od-split{align-items:start}
+.owner-dash .od-board{display:flex;flex-direction:column}
+.owner-dash .od-board .a-table-wrap{flex:1;min-height:0}
+.owner-dash .od-board .a-table{height:100%}
+.owner-dash .od-board-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--a-line);font-size:14px;color:var(--a-ink-2)}
+.owner-dash .od-board-foot b{color:var(--a-ink)}
+
 .owner-dash .od-donut-row{display:flex;align-items:center;gap:18px}
 .owner-dash .od-donut-wrap{position:relative;width:132px;height:132px;flex-shrink:0}
 .owner-dash .od-donut-loading{display:block;border-radius:50%;border:16px solid var(--a-cream)}
