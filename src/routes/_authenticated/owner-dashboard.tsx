@@ -1,3 +1,4 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { AppShell } from "@/components/app/AppShell";
@@ -5,10 +6,10 @@ import { OwnerDashboard } from "@/pages/OwnerDashboard";
 import { inventorySummaryOptions, projectPageOptions } from "@/lib/inventory.functions";
 
 export const Route = createFileRoute("/_authenticated/owner-dashboard")({
-  validateSearch: (s: Record<string, unknown>) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
+  validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
   loaderDeps: ({ search }) => ({ page: search.page }),
   loader: async ({ context, deps }) => { await Promise.all([context.queryClient.ensureQueryData(inventorySummaryOptions()), context.queryClient.ensureQueryData(projectPageOptions(deps.page))]); },
-  errorComponent: ({ error }) => <div role="alert">Unable to load inventory: {error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert">Unable to load inventory: {error instanceof Error ? error.message : "Please try again."}</div>,
   notFoundComponent: () => <div>Inventory not found.</div>,
   head: () => ({
     meta: [

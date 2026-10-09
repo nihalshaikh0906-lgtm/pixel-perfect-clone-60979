@@ -1,3 +1,4 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Eye, MessageCircle, Phone, Plus, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -8,10 +9,10 @@ import { PriorityChip } from "@/components/app/chips";
 import { LEADS, queueLeads, stats, type Lead } from "@/lib/demo-leads";
 
 export const Route = createFileRoute("/_authenticated/app/")({
-  validateSearch: (s: Record<string, unknown>) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
+  validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
   loaderDeps: ({ search }) => ({ page: search.page }),
   loader: async ({ context, deps }) => { await Promise.all([context.queryClient.ensureQueryData(inventorySummaryOptions()), context.queryClient.ensureQueryData(projectPageOptions(deps.page))]); },
-  errorComponent: ({ error }) => <div role="alert">Unable to load dashboard: {error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert">Unable to load dashboard: {error instanceof Error ? error.message : "Please try again."}</div>,
   notFoundComponent: () => <div>Dashboard not found.</div>,
   head: () => ({
     meta: [

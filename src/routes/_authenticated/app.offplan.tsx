@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_authenticated/app/offplan")({
   validateSearch: inventorySearch,
   loaderDeps: ({ search }) => search,
   loader: ({ context, deps }) => context.queryClient.ensureQueryData(inventoryPageOptions("offplan", deps.page, deps.q)),
-  errorComponent: ({ error }) => <div role="alert">Unable to load units: {error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert">Unable to load units: {error instanceof Error ? error.message : "Please try again."}</div>,
   notFoundComponent: () => <div>No inventory found.</div>,
   head: () => workspaceHead("Offplan"),
   component: Page,

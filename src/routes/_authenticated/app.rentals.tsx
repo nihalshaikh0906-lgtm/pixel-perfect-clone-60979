@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_authenticated/app/rentals")({
   validateSearch: inventorySearch,
   loaderDeps: ({ search }) => search,
   loader: ({ context, deps }) => context.queryClient.ensureQueryData(inventoryPageOptions("rental", deps.page, deps.q)),
-  errorComponent: ({ error }) => <div role="alert">Unable to load rentals: {error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert">Unable to load rentals: {error instanceof Error ? error.message : "Please try again."}</div>,
   notFoundComponent: () => <div>No rental inventory found.</div>,
   head: () => workspaceHead("Rentals"),
   component: Page,

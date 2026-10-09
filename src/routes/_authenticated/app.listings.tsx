@@ -1,3 +1,4 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -21,10 +22,10 @@ export const Route = createFileRoute("/_authenticated/app/listings")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({ ...inventorySearch(s), action: typeof s["action"] === "string" ? s["action"] : undefined, listing: typeof s["listing"] === "string" ? s["listing"] : undefined }),
+  validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ ...inventorySearch(s), action: typeof s["action"] === "string" ? s["action"] : undefined, listing: typeof s["listing"] === "string" ? s["listing"] : undefined }),
   loaderDeps: ({ search }) => ({ page: search.page, q: search.q }),
   loader: ({ context, deps }) => context.queryClient.ensureQueryData(inventoryPageOptions("ready", deps.page, deps.q)),
-  errorComponent: ({ error }) => <div role="alert">Unable to load ready units: {error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert">Unable to load ready units: {error instanceof Error ? error.message : "Please try again."}</div>,
   notFoundComponent: () => <div>No ready inventory found.</div>,
   component: ListingsPage,
 });

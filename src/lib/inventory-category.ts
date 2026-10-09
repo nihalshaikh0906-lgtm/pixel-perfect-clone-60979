@@ -1,3 +1,4 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 export type InventoryCategory = "offplan" | "ready" | "rental" | "other";
 export const CATEGORY_TYPES = {
   offplan: ["off_plan", "offplan", "off-plan"],
@@ -12,6 +13,6 @@ export function inventoryCategory(type: string | null): InventoryCategory {
   return "other";
 }
 export const INVENTORY_PAGE_SIZE = 24;
-export function inventorySearch(s: Record<string, unknown>) {
+export function inventorySearch(s: Record<string, unknown> & SearchSchemaInput) {
   return { page: Math.max(1, Math.floor(Number(s["page"]) || 1)), q: typeof s["q"] === "string" ? s["q"].slice(0, 120) : "" };
 }
