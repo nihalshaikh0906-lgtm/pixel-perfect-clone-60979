@@ -365,3 +365,20 @@
 /* Phone cards: the expanded card hands its separator to the action strip below it. */
 .dapp .a-deal-macts{display:flex;flex-wrap:wrap;gap:8px;padding:2px 20px 16px;border-bottom:1px solid var(--a-line);background:var(--a-cream)}
 .dapp .a-deal-lcard[aria-expanded=true]{border-bottom:0;background:var(--a-cream)}
+
+/* Add-listing form: same modal surface and field grid as the deal forms, just wider. */
+.dapp .a-modal.a-lst-modal>div{width:min(880px,100%)}
+.dapp .a-lst-switch{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--a-cream);border:1px solid var(--a-line);border-radius:14px;padding:12px 14px}
+.dapp .a-lst-switch b{font-size:14px;font-weight:600;color:var(--a-ink)}
+.dapp .a-switch{flex-shrink:0;position:relative;width:46px;height:26px;padding:0;border:1px solid var(--a-line);border-radius:999px;background:var(--a-card);cursor:pointer;transition:background .15s,border-color .15s}
+.dapp .a-switch span{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--a-eyebrow);transition:transform .15s,background .15s}
+.dapp .a-switch:hover{border-color:var(--a-gold)}
+.dapp .a-switch:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
+.dapp .a-switch[aria-checked=true]{background:var(--a-gold);border-color:var(--a-gold)}
+.dapp .a-switch[aria-checked=true] span{transform:translateX(20px);background:var(--a-ink)}
+.dapp .a-lst-tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:42px;padding:6px 10px;border:1px solid var(--a-line);border-radius:12px;background:var(--a-card)}
+.dapp .a-lst-tags:focus-within{border-color:var(--a-gold);box-shadow:0 0 0 3px var(--a-gold-tint)}
+.dapp .a-lst-tags input{flex:1;min-width:140px;width:auto;height:28px;padding:0;border:0;outline:0;background:transparent;font:inherit}
+.dapp .a-lst-tag{padding:4px 6px 4px 10px}
+.dapp .a-lst-tag button{display:grid;place-items:center;width:16px;height:16px;padding:0;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer}
+.dapp .a-lst-tag button:hover{background:rgba(20,26,51,.12)}
