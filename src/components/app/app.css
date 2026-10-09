@@ -287,7 +287,8 @@
 .dapp .a-role-key:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
 .dapp .a-role-key[aria-pressed=true]{background:var(--a-ink);color:#fff;border-color:var(--a-ink)}
 .dapp .a-role-key[disabled]{cursor:not-allowed}
-.dapp .a-role-key[disabled][aria-pressed=true]{background:var(--a-cream);color:var(--a-ink);border-color:var(--a-line)}
+.dapp .a-role-key[disabled][aria-pressed=true]{background:var(--a-ink);color:#fff;border-color:var(--a-ink);opacity:.5}
+.dapp .a-role-key[disabled]:not([aria-pressed=true]){background:var(--a-card);color:var(--a-eyebrow);opacity:.6}
 .dapp .a-role-th{display:inline-flex;align-items:center;gap:6px}
 .dapp .a-role-keylist{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;font-weight:600;color:var(--a-ink-2)}
 .dapp .a-role-keylist span{display:inline-flex;align-items:center;gap:6px}
