@@ -1,19 +1,20 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Info, MessageCircle, Plus, Upload } from "lucide-react";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight, Info, Link2, Mail, MessageCircle, Plus, Upload, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { PriorityChip, TypeChip } from "@/components/app/chips";
 import { Button } from "@/components/ui/button";
-import { ago, formatAed, QUEUES, queueCount, queueLeads, SOURCES, wants, type Lead, type LeadType, type Queue } from "@/lib/demo-leads";
+import { ago, formatAed, LEAD_BY_ID, QUEUES, queueCount, queueLeads, SOURCES, wants, type Lead, type LeadType, type Queue } from "@/lib/demo-leads";
 
 const QIDS: Queue[] = ["respond", "hot", "followup", "nurture", "all"];
-type Search = { queue: Queue; q?: string | undefined };
+type Search = { queue: Queue; q?: string | undefined; lead?: string | undefined };
 
 export const Route = createFileRoute("/_authenticated/app/leads/")({
   validateSearch: (s: Record<string, unknown>): Search => ({
     queue: QIDS.includes(s["queue"] as Queue) ? (s["queue"] as Queue) : "respond",
     q: typeof s["q"] === "string" && s["q"] ? (s["q"] as string) : undefined,
+    lead: typeof s["lead"] === "string" && s["lead"] ? (s["lead"] as string) : undefined,
   }),
   head: () => ({
     meta: [
@@ -36,8 +37,8 @@ function timeOf(l: Lead) {
 }
 
 function Inbox() {
-  const { queue, q } = Route.useSearch();
-  const navigate = useNavigate();
+  const { queue, q, lead } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const [type, setType] = useState<"All" | LeadType>("All");
   const [source, setSource] = useState("All");
   const [text, setText] = useState(q ?? "");
@@ -52,10 +53,13 @@ function Inbox() {
   const pages = Math.max(1, Math.ceil(rows.length / PAGE));
   const view = rows.slice(page * PAGE, page * PAGE + PAGE);
   const info = QUEUES.find((x) => x.id === queue);
-  const open = (l: Lead) => navigate({ to: "/app/leads/$id", params: { id: l.id } });
+  const open = (l: Lead) => void navigate({ search: (s) => ({ ...s, lead: l.id }) });
+  const openLead = (l: Lead) => void navigate({ to: "/app/leads/$id", params: { id: l.id } });
+  const close360 = () => void navigate({ search: (s) => ({ ...s, lead: undefined }) });
   const toggle = (id: string) => setSel((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const allOn = view.length > 0 && view.every((l) => sel.has(l.id));
   const bulk = (what: string) => toast(`${what}: ${sel.size} lead${sel.size === 1 ? "" : "s"} (demo — nothing was sent)`);
+  const active = lead ? LEAD_BY_ID.get(lead) ?? null : null;
 
   return (
     <>
@@ -101,7 +105,7 @@ function Inbox() {
             </tr></thead>
             <tbody>
               {view.map((l) => { const t = timeOf(l); return (
-                <tr key={l.id} onClick={() => open(l)}>
+                <tr key={l.id} onClick={() => open(l)} tabIndex={0} aria-label={`Open Lead 360 for ${l.name}`} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); open(l); } }}>
                   <td onClick={(e) => e.stopPropagation()}><input type="checkbox" aria-label={`Select ${l.name}`} checked={sel.has(l.id)} onChange={() => toggle(l.id)} /></td>
                   <td><b>{l.name}</b><small className="num">{l.id} · {l.country}</small></td>
                   <td><TypeChip type={l.type} /></td>
@@ -119,11 +123,11 @@ function Inbox() {
 
         <div className="a-cards">
           {view.map((l) => { const t = timeOf(l); return (
-            <Link key={l.id} to="/app/leads/$id" params={{ id: l.id }} className="a-lcard">
+            <button key={l.id} type="button" className="a-lcard" aria-label={`Open Lead 360 for ${l.name}`} onClick={() => open(l)}>
               <span style={{ display: "flex", justifyContent: "space-between", gap: 10 }}><b>{l.name}</b><span className={`a-time ${t.late ? "t-hot" : ""}`} style={{ fontSize: 13.5 }}>{t.text}</span></span>
               <span className="muted" style={{ fontSize: 14 }}>{wants(l)} · <span className="num">{formatAed(l.budget)}</span></span>
               <span className="a-chips"><TypeChip type={l.type} /><PriorityChip lead={l} /><span className="a-chip c-stage">{l.stage}</span></span>
-            </Link>
+            </button>
           ); })}
         </div>
 
@@ -137,6 +141,8 @@ function Inbox() {
         </div>
       </section>
 
+      {active ? <Lead360 l={active} onClose={close360} onOpenLead={() => openLead(active)} /> : null}
+
       {sel.size ? (
         <div className="a-bulk" role="toolbar" aria-label="Bulk actions">
           <b className="num">{sel.size} selected</b>
@@ -145,5 +151,118 @@ function Inbox() {
         </div>
       ) : null}
     </>
+  );
+}
+
+const L360_TABS = ["Overview", "Timeline", "Follow-Ups", "Viewings", "Offers", "Matching"] as const;
+type L360Tab = (typeof L360_TABS)[number];
+
+const L360_NOTE: Record<L360Tab, string> = {
+  Overview: "Overview is a placeholder while this lead's profile is being built — qualification notes and the next best action will land here.",
+  Timeline: "Every reply, stage change and note for this lead will collect here as they happen.",
+  "Follow-Ups": "Follow-up tasks you set for this lead will show here with their due dates.",
+  Viewings: "No viewings booked yet. Booked and completed visits will be listed here with dates.",
+  Offers: "No offer recorded yet. Offers, token money and agreements for this lead will show here.",
+  Matching: "Matched units come from your own inventory search, which runs on the full lead page.",
+};
+
+function Lead360({ l, onClose, onOpenLead }: { l: Lead; onClose: () => void; onOpenLead: () => void }) {
+  const [tab, setTab] = useState<L360Tab>("Overview");
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const link = `${window.location.origin}/app/leads?lead=${l.id}`;
+  const summary = `${l.name} — ${wants(l)} · ${formatAed(l.budget)}`;
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(link); toast.success("Lead link copied"); }
+    catch { toast.error("Your browser blocked the copy — grab it from the address bar"); }
+  };
+  const email = () => { window.location.href = `mailto:?subject=${encodeURIComponent(`Lead: ${l.name}`)}&body=${encodeURIComponent(`${summary}\n${link}`)}`; };
+
+  const due = l.followUpDueInHours === null
+    ? null
+    : l.followUpDueInHours <= 0
+      ? `${ago(-l.followUpDueInHours || 0.5)} overdue`
+      : `due in ${Math.round(l.followUpDueInHours)} h`;
+
+  const events: { h: string; s: string }[] = [
+    { h: `Now at stage ${l.stage}`, s: "current stage" },
+    l.contacted ? { h: "First contact made", s: "by you" } : { h: "Waiting for a first reply", s: "nobody has answered yet" },
+    { h: `“${l.message}”`, s: `Message via ${l.source} · ${ago(l.receivedHoursAgo)}` },
+    { h: "Lead created", s: `${l.source} · ${ago(l.receivedHoursAgo)}` },
+  ];
+
+  return (
+    <div className="a-modal a-360-modal" role="dialog" aria-modal="true" aria-label={`Lead 360 — ${l.name}`} onClick={(e) => e.target === e.currentTarget && onClose()}><div>
+      <div className="a-deal-head">
+        <div style={{ minWidth: 0 }}>
+          <p className="eyebrow-a" style={{ margin: 0 }}>Lead <span className="num">{l.id}</span> · {l.country}</p>
+          <h2 style={{ margin: "2px 0 0" }}>{l.name}</h2>
+          <div className="a-chips" style={{ marginTop: 8 }}>
+            <PriorityChip lead={l} />
+            <TypeChip type={l.type} />
+            <span className="a-chip c-stage">{l.stage}</span>
+          </div>
+        </div>
+        <div className="a-360-acts">
+          <a className="a-btn a-btn-line a-btn-sm" href={waLink(l)} target="_blank" rel="noreferrer"><MessageCircle size={14} /> WhatsApp</a>
+          <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={email}><Mail size={14} /> Email</button>
+          <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => void copy()}><Link2 size={14} /> Link</button>
+          <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={onOpenLead}><ArrowUpRight size={14} /> Open lead</button>
+          <button type="button" className="a-btn a-btn-line a-btn-sm" aria-label="Close lead 360" onClick={onClose}><X size={14} /></button>
+        </div>
+      </div>
+
+      <div className="a-tabs" role="tablist" aria-label="Lead 360 sections">
+        {L360_TABS.map((t) => (
+          <button key={t} type="button" role="tab" aria-selected={tab === t} className={`a-tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)}>{t}</button>
+        ))}
+      </div>
+
+      <div role="tabpanel" aria-label={tab} className="a-360-panel">
+        <p className="a-note" style={{ margin: 0 }}>{L360_NOTE[tab]}</p>
+
+        {tab === "Overview" ? (
+          <>
+            <p style={{ margin: "10px 0 0", fontSize: 14.5, lineHeight: 1.6 }}>
+              {l.name} came in through {l.source} asking about {wants(l)}, on a {l.payment.toLowerCase()} basis at {formatAed(l.budget)}.
+              The enquiry is still open at {l.stage.toLowerCase()} with a {l.score} score, so this file needs a reply and a shortlist before anything else.
+              This panel is a placeholder — the qualification summary and the next best action will be written here.
+            </p>
+            <dl className="a-kv" style={{ margin: "14px 0 0" }}>
+              <dt>Wants</dt><dd>{wants(l)}</dd>
+              <dt>Budget</dt><dd className="num">{formatAed(l.budget)}{l.type === "Rent" ? " / year" : ""}</dd>
+              <dt>Payment</dt><dd>{l.payment}</dd>
+              <dt>Phone</dt><dd className="num">{l.phone}</dd>
+              <dt>Source</dt><dd>{l.source}</dd>
+              <dt>Received</dt><dd>{ago(l.receivedHoursAgo)}</dd>
+            </dl>
+          </>
+        ) : null}
+
+        {tab === "Timeline" ? (
+          <ul className="a-timeline" style={{ margin: "12px 0 0" }}>
+            {events.map((e) => <li key={e.h}>{e.h}<small>{e.s}</small></li>)}
+          </ul>
+        ) : null}
+
+        {tab === "Follow-Ups" ? (
+          due ? (
+            <dl className="a-kv" style={{ margin: "14px 0 0" }}>
+              <dt>Next task</dt><dd>{l.task}</dd>
+              <dt>Due</dt><dd>{due}</dd>
+            </dl>
+          ) : <p className="a-note" style={{ margin: 0 }}>No follow-up is scheduled for this lead yet.</p>
+        ) : null}
+
+        {tab === "Matching" ? (
+          <button type="button" className="a-btn a-btn-gold a-btn-sm" style={{ justifySelf: "start" }} onClick={onOpenLead}><ArrowUpRight size={14} /> Run the inventory search</button>
+        ) : null}
+      </div>
+    </div></div>
   );
 }
