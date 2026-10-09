@@ -1,10 +1,9 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Check, Monitor, Moon, Plus, Sun, X } from "lucide-react";
+import { Bell, Check, Monitor, Moon, Plus, Sun, Inbox, CalendarClock } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import * as Popover from "@radix-ui/react-popover";
 
-const db = supabase as unknown as { from: (t: string) => any };
 export type ThemePref = "light" | "dark" | "system";
 
 export function useTheme() {
@@ -60,49 +59,39 @@ export function AddMenu() {
   );
 }
 
-type Notif = { id: string; title: string; body: string | null; link: string | null; is_read: boolean; created_at: string };
+// Illustrative attention counts only; these alerts never write to Supabase.
+const attentionItems = [
+  { title: "Unassigned leads", detail: "3 leads awaiting assignment", count: 3, icon: Inbox, to: "/app/crm" },
+  { title: "Overdue follow-ups", detail: "2 follow-ups past their due date", count: 2, icon: CalendarClock, to: "/app/follow-ups" },
+] as const;
 
 export function Notifications() {
   const [open, setOpen] = useState(false);
-  const qc = useQueryClient();
-  const q = useQuery({
-    queryKey: ["notifications"],
-    queryFn: async () => ((await db.from("notifications").select("*").order("created_at", { ascending: false }).limit(50)).data ?? []) as Notif[],
-    refetchInterval: 60_000,
-  });
-  useEffect(() => {
-    const ch = supabase.channel("notif").on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, () => qc.invalidateQueries({ queryKey: ["notifications"] })).subscribe();
-    return () => { void supabase.removeChannel(ch); };
-  }, [qc]);
-  const list = q.data ?? [];
-  const unread = list.filter((n) => !n.is_read).length;
-  const markAll = async () => {
-    const ids = list.filter((n) => !n.is_read).map((n) => n.id);
-    if (ids.length) await db.from("notifications").update({ is_read: true }).in("id", ids);
-    void qc.invalidateQueries({ queryKey: ["notifications"] });
-  };
-  const read = async (id: string) => { await db.from("notifications").update({ is_read: true }).eq("id", id); void qc.invalidateQueries({ queryKey: ["notifications"] }); };
+  const total = attentionItems.reduce((sum, item) => sum + item.count, 0);
   return (
-    <>
-      <button type="button" className="a-btn a-btn-line a-bell" style={{ width: 42, padding: 0 }} aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`} onClick={() => setOpen(true)}>
-        <Bell size={17} />{unread ? <span className="a-bell-n num">{unread > 99 ? "99+" : unread}</span> : null}
-      </button>
-      {open ? (
-        <>
-          <div className="a-scrim" style={{ display: "block" }} onClick={() => setOpen(false)} aria-hidden />
-          <aside className="a-ndrawer" role="dialog" aria-label="Notifications">
-            <header><h2>Notifications</h2><button type="button" className="a-btn a-btn-line" onClick={() => void markAll()} disabled={!unread}>Mark all read</button><button type="button" className="a-btn a-btn-line" style={{ width: 38, padding: 0 }} aria-label="Close" onClick={() => setOpen(false)}><X size={16} /></button></header>
-            <div className="a-nlist">
-              {list.map((n) => (
-                <Link key={n.id} to={(n.link as "/app/crm") || "/app/crm"} className={`a-nitem ${n.is_read ? "" : "unread"}`} onClick={() => { void read(n.id); setOpen(false); }}>
-                  <b>{n.title}</b>{n.body ? <span>{n.body}</span> : null}<small>{new Date(n.created_at).toLocaleString("en-GB", { timeZone: "Asia/Dubai", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</small>
-                </Link>
-              ))}
-              {!list.length ? <p className="muted" style={{ padding: 20 }}>You're all caught up.</p> : null}
-            </div>
-          </aside>
-        </>
-      ) : null}
-    </>
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <div className="a-pop-wrap">
+        <Popover.Trigger asChild>
+          <Button variant="ghost" size="icon" className="a-btn a-btn-line a-bell" aria-label={`Needs Attention, ${total} demo alerts`}>
+            <Bell size={17} /><span className="a-bell-n num">{total}</span>
+          </Button>
+        </Popover.Trigger>
+        <Popover.Content align="end" sideOffset={8} collisionPadding={12} className="a-pop a-attention" aria-label="Needs Attention">
+          <div className="a-card-head">
+            <h2>Needs Attention</h2>
+            <span className="a-chip c-stage">Demo data</span>
+          </div>
+          {attentionItems.map((item) => (
+            <Button key={item.title} asChild variant="ghost" className="a-attention-item" onClick={() => setOpen(false)}>
+              <Link to={item.to}>
+                <item.icon size={18} />
+                <span className="a-attention-copy"><b>{item.title}</b><small>{item.detail}</small></span>
+                <span className="a-badge num">{item.count}</span>
+              </Link>
+            </Button>
+          ))}
+        </Popover.Content>
+      </div>
+    </Popover.Root>
   );
 }

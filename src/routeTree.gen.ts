@@ -34,8 +34,25 @@ import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copi
 import { Route as MediaSplatRouteImport } from './routes/media.$'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
+import { Route as AuthenticatedAppAboutAppRouteImport } from './routes/_authenticated/app.about-app'
+import { Route as AuthenticatedAppActivityLogsRouteImport } from './routes/_authenticated/app.activity-logs'
+import { Route as AuthenticatedAppAgreementsRouteImport } from './routes/_authenticated/app.agreements'
+import { Route as AuthenticatedAppAiAssistantRouteImport } from './routes/_authenticated/app.ai-assistant'
+import { Route as AuthenticatedAppAmenitiesRouteImport } from './routes/_authenticated/app.amenities'
+import { Route as AuthenticatedAppAppointmentsRouteImport } from './routes/_authenticated/app.appointments'
 import { Route as AuthenticatedAppCrmRouteImport } from './routes/_authenticated/app.crm'
+import { Route as AuthenticatedAppDealsRouteImport } from './routes/_authenticated/app.deals'
+import { Route as AuthenticatedAppFollowUpsRouteImport } from './routes/_authenticated/app.follow-ups'
 import { Route as AuthenticatedAppListingsRouteImport } from './routes/_authenticated/app.listings'
+import { Route as AuthenticatedAppLocationsRouteImport } from './routes/_authenticated/app.locations'
+import { Route as AuthenticatedAppMyAccountRouteImport } from './routes/_authenticated/app.my-account'
+import { Route as AuthenticatedAppOwnersRouteImport } from './routes/_authenticated/app.owners'
+import { Route as AuthenticatedAppReportsRouteImport } from './routes/_authenticated/app.reports'
+import { Route as AuthenticatedAppRolesPermissionsRouteImport } from './routes/_authenticated/app.roles-permissions'
+import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
+import { Route as AuthenticatedAppTenanciesRouteImport } from './routes/_authenticated/app.tenancies'
+import { Route as AuthenticatedAppTrashRouteImport } from './routes/_authenticated/app.trash'
+import { Route as AuthenticatedAppUsersManagementRouteImport } from './routes/_authenticated/app.users-management'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
 import { Route as AuthenticatedAppLeadsIndexRouteImport } from './routes/_authenticated/app.leads.index'
 import { Route as AuthenticatedAppLeadsIdRouteImport } from './routes/_authenticated/app.leads.$id'
@@ -164,15 +181,113 @@ const AuthenticatedAppSectionRoute = AuthenticatedAppSectionRouteImport.update({
   path: '/$section',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppAboutAppRoute =
+  AuthenticatedAppAboutAppRouteImport.update({
+    id: '/about-app',
+    path: '/about-app',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppActivityLogsRoute =
+  AuthenticatedAppActivityLogsRouteImport.update({
+    id: '/activity-logs',
+    path: '/activity-logs',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAgreementsRoute =
+  AuthenticatedAppAgreementsRouteImport.update({
+    id: '/agreements',
+    path: '/agreements',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAiAssistantRoute =
+  AuthenticatedAppAiAssistantRouteImport.update({
+    id: '/ai-assistant',
+    path: '/ai-assistant',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAmenitiesRoute =
+  AuthenticatedAppAmenitiesRouteImport.update({
+    id: '/amenities',
+    path: '/amenities',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAppointmentsRoute =
+  AuthenticatedAppAppointmentsRouteImport.update({
+    id: '/appointments',
+    path: '/appointments',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppCrmRoute = AuthenticatedAppCrmRouteImport.update({
   id: '/crm',
   path: '/crm',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppDealsRoute = AuthenticatedAppDealsRouteImport.update({
+  id: '/deals',
+  path: '/deals',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppFollowUpsRoute =
+  AuthenticatedAppFollowUpsRouteImport.update({
+    id: '/follow-ups',
+    path: '/follow-ups',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppListingsRoute =
   AuthenticatedAppListingsRouteImport.update({
     id: '/listings',
     path: '/listings',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppLocationsRoute =
+  AuthenticatedAppLocationsRouteImport.update({
+    id: '/locations',
+    path: '/locations',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppMyAccountRoute =
+  AuthenticatedAppMyAccountRouteImport.update({
+    id: '/my-account',
+    path: '/my-account',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppOwnersRoute = AuthenticatedAppOwnersRouteImport.update({
+  id: '/owners',
+  path: '/owners',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppReportsRoute = AuthenticatedAppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppRolesPermissionsRoute =
+  AuthenticatedAppRolesPermissionsRouteImport.update({
+    id: '/roles-permissions',
+    path: '/roles-permissions',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppSettingsRoute =
+  AuthenticatedAppSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppTenanciesRoute =
+  AuthenticatedAppTenanciesRouteImport.update({
+    id: '/tenancies',
+    path: '/tenancies',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppTrashRoute = AuthenticatedAppTrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppUsersManagementRoute =
+  AuthenticatedAppUsersManagementRouteImport.update({
+    id: '/users-management',
+    path: '/users-management',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedClientIdRoute = AuthenticatedClientIdRouteImport.update({
@@ -216,8 +331,25 @@ export interface FileRoutesByFullPath {
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/media/$': typeof MediaSplatRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
+  '/app/about-app': typeof AuthenticatedAppAboutAppRoute
+  '/app/activity-logs': typeof AuthenticatedAppActivityLogsRoute
+  '/app/agreements': typeof AuthenticatedAppAgreementsRoute
+  '/app/ai-assistant': typeof AuthenticatedAppAiAssistantRoute
+  '/app/amenities': typeof AuthenticatedAppAmenitiesRoute
+  '/app/appointments': typeof AuthenticatedAppAppointmentsRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
+  '/app/deals': typeof AuthenticatedAppDealsRoute
+  '/app/follow-ups': typeof AuthenticatedAppFollowUpsRoute
   '/app/listings': typeof AuthenticatedAppListingsRoute
+  '/app/locations': typeof AuthenticatedAppLocationsRoute
+  '/app/my-account': typeof AuthenticatedAppMyAccountRoute
+  '/app/owners': typeof AuthenticatedAppOwnersRoute
+  '/app/reports': typeof AuthenticatedAppReportsRoute
+  '/app/roles-permissions': typeof AuthenticatedAppRolesPermissionsRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/tenancies': typeof AuthenticatedAppTenanciesRoute
+  '/app/trash': typeof AuthenticatedAppTrashRoute
+  '/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -246,8 +378,25 @@ export interface FileRoutesByTo {
   '/media/$': typeof MediaSplatRoute
   '/': typeof AuthenticatedIndexRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
+  '/app/about-app': typeof AuthenticatedAppAboutAppRoute
+  '/app/activity-logs': typeof AuthenticatedAppActivityLogsRoute
+  '/app/agreements': typeof AuthenticatedAppAgreementsRoute
+  '/app/ai-assistant': typeof AuthenticatedAppAiAssistantRoute
+  '/app/amenities': typeof AuthenticatedAppAmenitiesRoute
+  '/app/appointments': typeof AuthenticatedAppAppointmentsRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
+  '/app/deals': typeof AuthenticatedAppDealsRoute
+  '/app/follow-ups': typeof AuthenticatedAppFollowUpsRoute
   '/app/listings': typeof AuthenticatedAppListingsRoute
+  '/app/locations': typeof AuthenticatedAppLocationsRoute
+  '/app/my-account': typeof AuthenticatedAppMyAccountRoute
+  '/app/owners': typeof AuthenticatedAppOwnersRoute
+  '/app/reports': typeof AuthenticatedAppReportsRoute
+  '/app/roles-permissions': typeof AuthenticatedAppRolesPermissionsRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/tenancies': typeof AuthenticatedAppTenanciesRoute
+  '/app/trash': typeof AuthenticatedAppTrashRoute
+  '/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -279,8 +428,25 @@ export interface FileRoutesById {
   '/media/$': typeof MediaSplatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
+  '/_authenticated/app/about-app': typeof AuthenticatedAppAboutAppRoute
+  '/_authenticated/app/activity-logs': typeof AuthenticatedAppActivityLogsRoute
+  '/_authenticated/app/agreements': typeof AuthenticatedAppAgreementsRoute
+  '/_authenticated/app/ai-assistant': typeof AuthenticatedAppAiAssistantRoute
+  '/_authenticated/app/amenities': typeof AuthenticatedAppAmenitiesRoute
+  '/_authenticated/app/appointments': typeof AuthenticatedAppAppointmentsRoute
   '/_authenticated/app/crm': typeof AuthenticatedAppCrmRoute
+  '/_authenticated/app/deals': typeof AuthenticatedAppDealsRoute
+  '/_authenticated/app/follow-ups': typeof AuthenticatedAppFollowUpsRoute
   '/_authenticated/app/listings': typeof AuthenticatedAppListingsRoute
+  '/_authenticated/app/locations': typeof AuthenticatedAppLocationsRoute
+  '/_authenticated/app/my-account': typeof AuthenticatedAppMyAccountRoute
+  '/_authenticated/app/owners': typeof AuthenticatedAppOwnersRoute
+  '/_authenticated/app/reports': typeof AuthenticatedAppReportsRoute
+  '/_authenticated/app/roles-permissions': typeof AuthenticatedAppRolesPermissionsRoute
+  '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/_authenticated/app/tenancies': typeof AuthenticatedAppTenanciesRoute
+  '/_authenticated/app/trash': typeof AuthenticatedAppTrashRoute
+  '/_authenticated/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
@@ -312,8 +478,25 @@ export interface FileRouteTypes {
     | '/api/general-copilot'
     | '/media/$'
     | '/app/$section'
+    | '/app/about-app'
+    | '/app/activity-logs'
+    | '/app/agreements'
+    | '/app/ai-assistant'
+    | '/app/amenities'
+    | '/app/appointments'
     | '/app/crm'
+    | '/app/deals'
+    | '/app/follow-ups'
     | '/app/listings'
+    | '/app/locations'
+    | '/app/my-account'
+    | '/app/owners'
+    | '/app/reports'
+    | '/app/roles-permissions'
+    | '/app/settings'
+    | '/app/tenancies'
+    | '/app/trash'
+    | '/app/users-management'
     | '/client/$id'
     | '/app/'
     | '/app/leads/$id'
@@ -342,8 +525,25 @@ export interface FileRouteTypes {
     | '/media/$'
     | '/'
     | '/app/$section'
+    | '/app/about-app'
+    | '/app/activity-logs'
+    | '/app/agreements'
+    | '/app/ai-assistant'
+    | '/app/amenities'
+    | '/app/appointments'
     | '/app/crm'
+    | '/app/deals'
+    | '/app/follow-ups'
     | '/app/listings'
+    | '/app/locations'
+    | '/app/my-account'
+    | '/app/owners'
+    | '/app/reports'
+    | '/app/roles-permissions'
+    | '/app/settings'
+    | '/app/tenancies'
+    | '/app/trash'
+    | '/app/users-management'
     | '/client/$id'
     | '/app'
     | '/app/leads/$id'
@@ -374,8 +574,25 @@ export interface FileRouteTypes {
     | '/media/$'
     | '/_authenticated/'
     | '/_authenticated/app/$section'
+    | '/_authenticated/app/about-app'
+    | '/_authenticated/app/activity-logs'
+    | '/_authenticated/app/agreements'
+    | '/_authenticated/app/ai-assistant'
+    | '/_authenticated/app/amenities'
+    | '/_authenticated/app/appointments'
     | '/_authenticated/app/crm'
+    | '/_authenticated/app/deals'
+    | '/_authenticated/app/follow-ups'
     | '/_authenticated/app/listings'
+    | '/_authenticated/app/locations'
+    | '/_authenticated/app/my-account'
+    | '/_authenticated/app/owners'
+    | '/_authenticated/app/reports'
+    | '/_authenticated/app/roles-permissions'
+    | '/_authenticated/app/settings'
+    | '/_authenticated/app/tenancies'
+    | '/_authenticated/app/trash'
+    | '/_authenticated/app/users-management'
     | '/_authenticated/client/$id'
     | '/_authenticated/app/'
     | '/_authenticated/app/leads/$id'
@@ -576,6 +793,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppSectionRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/about-app': {
+      id: '/_authenticated/app/about-app'
+      path: '/about-app'
+      fullPath: '/app/about-app'
+      preLoaderRoute: typeof AuthenticatedAppAboutAppRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/activity-logs': {
+      id: '/_authenticated/app/activity-logs'
+      path: '/activity-logs'
+      fullPath: '/app/activity-logs'
+      preLoaderRoute: typeof AuthenticatedAppActivityLogsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/agreements': {
+      id: '/_authenticated/app/agreements'
+      path: '/agreements'
+      fullPath: '/app/agreements'
+      preLoaderRoute: typeof AuthenticatedAppAgreementsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/ai-assistant': {
+      id: '/_authenticated/app/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/app/ai-assistant'
+      preLoaderRoute: typeof AuthenticatedAppAiAssistantRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/amenities': {
+      id: '/_authenticated/app/amenities'
+      path: '/amenities'
+      fullPath: '/app/amenities'
+      preLoaderRoute: typeof AuthenticatedAppAmenitiesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/appointments': {
+      id: '/_authenticated/app/appointments'
+      path: '/appointments'
+      fullPath: '/app/appointments'
+      preLoaderRoute: typeof AuthenticatedAppAppointmentsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/crm': {
       id: '/_authenticated/app/crm'
       path: '/crm'
@@ -583,11 +842,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppCrmRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/deals': {
+      id: '/_authenticated/app/deals'
+      path: '/deals'
+      fullPath: '/app/deals'
+      preLoaderRoute: typeof AuthenticatedAppDealsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/follow-ups': {
+      id: '/_authenticated/app/follow-ups'
+      path: '/follow-ups'
+      fullPath: '/app/follow-ups'
+      preLoaderRoute: typeof AuthenticatedAppFollowUpsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/listings': {
       id: '/_authenticated/app/listings'
       path: '/listings'
       fullPath: '/app/listings'
       preLoaderRoute: typeof AuthenticatedAppListingsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/locations': {
+      id: '/_authenticated/app/locations'
+      path: '/locations'
+      fullPath: '/app/locations'
+      preLoaderRoute: typeof AuthenticatedAppLocationsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/my-account': {
+      id: '/_authenticated/app/my-account'
+      path: '/my-account'
+      fullPath: '/app/my-account'
+      preLoaderRoute: typeof AuthenticatedAppMyAccountRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/owners': {
+      id: '/_authenticated/app/owners'
+      path: '/owners'
+      fullPath: '/app/owners'
+      preLoaderRoute: typeof AuthenticatedAppOwnersRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/reports': {
+      id: '/_authenticated/app/reports'
+      path: '/reports'
+      fullPath: '/app/reports'
+      preLoaderRoute: typeof AuthenticatedAppReportsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/roles-permissions': {
+      id: '/_authenticated/app/roles-permissions'
+      path: '/roles-permissions'
+      fullPath: '/app/roles-permissions'
+      preLoaderRoute: typeof AuthenticatedAppRolesPermissionsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/settings': {
+      id: '/_authenticated/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/tenancies': {
+      id: '/_authenticated/app/tenancies'
+      path: '/tenancies'
+      fullPath: '/app/tenancies'
+      preLoaderRoute: typeof AuthenticatedAppTenanciesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/trash': {
+      id: '/_authenticated/app/trash'
+      path: '/trash'
+      fullPath: '/app/trash'
+      preLoaderRoute: typeof AuthenticatedAppTrashRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/users-management': {
+      id: '/_authenticated/app/users-management'
+      path: '/users-management'
+      fullPath: '/app/users-management'
+      preLoaderRoute: typeof AuthenticatedAppUsersManagementRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/client/$id': {
@@ -616,8 +952,25 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSectionRoute: typeof AuthenticatedAppSectionRoute
+  AuthenticatedAppAboutAppRoute: typeof AuthenticatedAppAboutAppRoute
+  AuthenticatedAppActivityLogsRoute: typeof AuthenticatedAppActivityLogsRoute
+  AuthenticatedAppAgreementsRoute: typeof AuthenticatedAppAgreementsRoute
+  AuthenticatedAppAiAssistantRoute: typeof AuthenticatedAppAiAssistantRoute
+  AuthenticatedAppAmenitiesRoute: typeof AuthenticatedAppAmenitiesRoute
+  AuthenticatedAppAppointmentsRoute: typeof AuthenticatedAppAppointmentsRoute
   AuthenticatedAppCrmRoute: typeof AuthenticatedAppCrmRoute
+  AuthenticatedAppDealsRoute: typeof AuthenticatedAppDealsRoute
+  AuthenticatedAppFollowUpsRoute: typeof AuthenticatedAppFollowUpsRoute
   AuthenticatedAppListingsRoute: typeof AuthenticatedAppListingsRoute
+  AuthenticatedAppLocationsRoute: typeof AuthenticatedAppLocationsRoute
+  AuthenticatedAppMyAccountRoute: typeof AuthenticatedAppMyAccountRoute
+  AuthenticatedAppOwnersRoute: typeof AuthenticatedAppOwnersRoute
+  AuthenticatedAppReportsRoute: typeof AuthenticatedAppReportsRoute
+  AuthenticatedAppRolesPermissionsRoute: typeof AuthenticatedAppRolesPermissionsRoute
+  AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
+  AuthenticatedAppTenanciesRoute: typeof AuthenticatedAppTenanciesRoute
+  AuthenticatedAppTrashRoute: typeof AuthenticatedAppTrashRoute
+  AuthenticatedAppUsersManagementRoute: typeof AuthenticatedAppUsersManagementRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppLeadsIdRoute: typeof AuthenticatedAppLeadsIdRoute
   AuthenticatedAppLeadsIndexRoute: typeof AuthenticatedAppLeadsIndexRoute
@@ -625,8 +978,25 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSectionRoute: AuthenticatedAppSectionRoute,
+  AuthenticatedAppAboutAppRoute: AuthenticatedAppAboutAppRoute,
+  AuthenticatedAppActivityLogsRoute: AuthenticatedAppActivityLogsRoute,
+  AuthenticatedAppAgreementsRoute: AuthenticatedAppAgreementsRoute,
+  AuthenticatedAppAiAssistantRoute: AuthenticatedAppAiAssistantRoute,
+  AuthenticatedAppAmenitiesRoute: AuthenticatedAppAmenitiesRoute,
+  AuthenticatedAppAppointmentsRoute: AuthenticatedAppAppointmentsRoute,
   AuthenticatedAppCrmRoute: AuthenticatedAppCrmRoute,
+  AuthenticatedAppDealsRoute: AuthenticatedAppDealsRoute,
+  AuthenticatedAppFollowUpsRoute: AuthenticatedAppFollowUpsRoute,
   AuthenticatedAppListingsRoute: AuthenticatedAppListingsRoute,
+  AuthenticatedAppLocationsRoute: AuthenticatedAppLocationsRoute,
+  AuthenticatedAppMyAccountRoute: AuthenticatedAppMyAccountRoute,
+  AuthenticatedAppOwnersRoute: AuthenticatedAppOwnersRoute,
+  AuthenticatedAppReportsRoute: AuthenticatedAppReportsRoute,
+  AuthenticatedAppRolesPermissionsRoute: AuthenticatedAppRolesPermissionsRoute,
+  AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
+  AuthenticatedAppTenanciesRoute: AuthenticatedAppTenanciesRoute,
+  AuthenticatedAppTrashRoute: AuthenticatedAppTrashRoute,
+  AuthenticatedAppUsersManagementRoute: AuthenticatedAppUsersManagementRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppLeadsIdRoute: AuthenticatedAppLeadsIdRoute,
   AuthenticatedAppLeadsIndexRoute: AuthenticatedAppLeadsIndexRoute,

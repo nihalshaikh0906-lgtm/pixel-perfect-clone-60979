@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Match final CRM sidebar groups and create all missing placeholder pages without changing the design
+- [x] Add and verify the Needs Attention bell dropdown with clearly labelled mock alerts; all 20 destinations, collapse and narrow-screen navigation passed
+
 - [x] Connect New lead to the existing saved-lead form; saved and read back through CRM
 - [x] Fit matched-property cards, property photos and map controls to the available screen
 - [x] Verify lead creation and property layout with real inventory photos on wide/narrow screens
