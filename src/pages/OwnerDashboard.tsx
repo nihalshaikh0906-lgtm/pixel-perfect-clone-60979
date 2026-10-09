@@ -1,7 +1,11 @@
 import { Calendar, ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useInView, useReducedMotion } from "framer-motion";
 
 import { useCountUp } from "@/components/app/AppShell";
+
+const LeadSourceDonut = lazy(() => import("@/components/app/LeadSourceDonut"));
+
 
 const RANGES = [
   "Jan 1 – Dec 31, 2026",
@@ -36,6 +40,19 @@ const AGENTS: Agent[] = [
 ];
 
 const TEAM_REVENUE = AGENTS.reduce((sum, a) => sum + a.revenue, 0);
+
+type Source = { name: string; value: number; token: string };
+
+// Illustrative demo split — sample leads by the channel they arrived through.
+const SOURCES: Source[] = [
+  { name: "Property Finder", value: 412, token: "--brand-blue" },
+  { name: "Bayut", value: 293, token: "--brand-violet" },
+  { name: "Referrals", value: 228, token: "--brand-deep" },
+  { name: "Website", value: 152, token: "--a-ink-2" },
+];
+
+const TOTAL_LEADS = SOURCES.reduce((sum, s) => sum + s.value, 0);
+
 
 function initialsOf(name: string) {
   return name
