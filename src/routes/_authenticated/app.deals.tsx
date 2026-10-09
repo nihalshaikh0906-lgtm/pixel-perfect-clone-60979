@@ -435,7 +435,7 @@ function NewDealModal({ onClose, onCreate }: { onClose: () => void; onCreate: (d
         <div className="a-deal-head">
           <div>
             <h2 style={{ margin: 0 }}>New deal</h2>
-            <p className="a-note" style={{ margin: 0 }}>Type on the left and the summary on the right keeps up.</p>
+            <p className="a-note" style={{ margin: 0 }}>Fill the details and the summary updates as you type.</p>
           </div>
           <button
             type="button"
