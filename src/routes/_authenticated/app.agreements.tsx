@@ -4,6 +4,7 @@ import { Copy, Download, Eye, FileSignature, FileText, Printer, X } from "lucide
 import { toast } from "sonner";
 
 
+import { LogoMark } from "@/components/Logo";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
 export const Route = createFileRoute("/_authenticated/app/agreements")({
@@ -21,6 +22,44 @@ const CHIP: Record<Status, string> = {
   Issued: "c-offplan",
   Signed: "c-ok",
 };
+
+// Letterhead for generated documents — sample company details, not real ones.
+const BRAND = {
+  word: "Skyline Realty",
+  tag: "Real Estate Brokerage",
+  name: "Skyline Realty LLC",
+  lines: [
+    "Office 1204, Boulevard Plaza Tower 1",
+    "Downtown Dubai, P.O. Box 12345",
+    "Dubai, United Arab Emirates",
+    "hello@skylinerealty.ae · +971 4 000 0000",
+  ],
+};
+
+function Letterhead({ docRef, page }: { docRef: string; page: string }) {
+  return (
+    <div className="a-print-brand">
+      <span className="a-print-mark">
+        <i aria-hidden>
+          <LogoMark size={26} />
+        </i>
+        <span>
+          <b>{BRAND.word}</b>
+          <small>{BRAND.tag}</small>
+        </span>
+      </span>
+      <div className="a-print-addr">
+        <b>{BRAND.name}</b>
+        {BRAND.lines.map((l) => (
+          <span key={l}>{l}</span>
+        ))}
+        <span className="num">
+          {docRef} · {page}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 type Doc = {
   id: string;
@@ -444,12 +483,7 @@ function DocModal({ doc, onClose }: { doc: Doc; onClose: () => void }) {
           <div className="a-print-stage">
             {show1 && (
               <div className={sheet}>
-                <div className="a-print-head">
-                  <span>DealOS CRM</span>
-                  <span className="num">
-                    {doc.ref} · 1 / 2
-                  </span>
-                </div>
+                <Letterhead docRef={doc.ref} page="1 / 2" />
                 <h3 className="a-print-title">{doc.type}</h3>
                 <p className="a-print-sub">
                   {termOf(doc, "Property", "For")} · {termOf(doc, "Area")}
