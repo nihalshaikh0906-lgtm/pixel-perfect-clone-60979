@@ -52,7 +52,7 @@ const SOURCES: Source[] = [
   { name: "Website", value: 152, token: "--a-ink-2" },
 ];
 
-const TOTAL_LEADS = SOURCES.reduce((sum, s) => sum => sum, 0);
+const TOTAL_LEADS = SOURCES.reduce((sum, s) => sum + s.value, 0);
 
 type Alert = { text: string; note: string; tag: string };
 
