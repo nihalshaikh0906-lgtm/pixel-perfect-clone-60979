@@ -44,7 +44,7 @@ function Page() {
     setDraft("");
     setThinking(true);
     window.setTimeout(() => {
-      setMsgs((m) => [...m, { role: "ai", text: REPLIES[replyIdx.current++ % REPLIES.length] }]);
+      setMsgs((m) => [...m, { role: "ai", text: REPLIES[replyIdx.current++ % REPLIES.length] ?? REPLIES[0]! }]);
       setThinking(false);
     }, 900);
   };
