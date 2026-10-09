@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, MessageCircle, Phone, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { Eye, MessageCircle, Phone, Plus, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OwnerOverview } from "@/components/app/OwnerOverview";
