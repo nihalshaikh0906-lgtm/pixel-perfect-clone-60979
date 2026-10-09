@@ -214,7 +214,7 @@ function Page() {
           />
         </div>
 
-        <div className="a-deal-fields" style={{ marginTop: 18 }}>
+        <div className="a-deal-fields a-acc-fields" style={{ marginTop: 18 }}>
           <label className="a-deal-span">
             Full Name
             <input
@@ -258,7 +258,7 @@ function Page() {
         </div>
 
         <div className="a-deal-grid">
-          <div className="a-deal-fields">
+          <div className="a-deal-fields a-acc-fields">
             <label className="a-deal-span">
               Current Password
               <input
