@@ -39,3 +39,5 @@
 
 - Render /app as the five-section broker Home without redirecting to the CRM table; the owner dashboard remains a separate destination.
 - The full-page agency assistant reuses the existing AiChat and its established transport unchanged, rather than introducing duplicate chat primitives or a new provider integration.
+- Dashboard inventory totals and category views read existing Supabase projects/units through authenticated server functions; scan summary rows in bounded batches and paginate displayed rows so no default row limit silently truncates inventory.
+- Categorize units by their stored listing_type, mapping secondary sales to Ready Property and keeping rental and unknown types separate; never infer rental stock or agency revenue from unit prices.
