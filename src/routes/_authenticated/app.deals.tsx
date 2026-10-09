@@ -289,7 +289,10 @@ function Page() {
                 <small>{d.unit} · {d.area} · {d.buyer}</small>
                 <span className="a-deal-mrow">
                   <span className={`a-chip ${CHIP[d.stage]}`}>{d.stage}</span>
-                  <span className="num">{formatAed(d.amount)}</span>
+                  <span className="a-deal-mamt num">
+                    {formatAed(d.amount)}
+                    <ChevronDown size={15} style={{ transform: isOpen ? "rotate(180deg)" : undefined }} />
+                  </span>
                 </span>
                 {isOpen && (
                   <span className="a-deal-mdetail">

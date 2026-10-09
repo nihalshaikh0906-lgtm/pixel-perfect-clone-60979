@@ -322,7 +322,7 @@
 .dapp .a-pipe-step[aria-selected=true]::before{background:var(--a-gold)}
 .dapp .a-pipe-step .num{font-size:13px;font-weight:700;color:var(--a-ink-2)}
 .dapp .a-pipe-step[aria-selected=true] .num{color:#fff;opacity:.85}
-@media(max-width:640px){.dapp .a-pipe-step{height:40px;padding:0 14px 0 20px;font-size:13px}.dapp .a-pipe-step::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}.dapp .a-pipe-step:first-child::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%)}}
+@media(max-width:640px){.dapp .a-pipe{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}.dapp .a-pipe-step{flex-shrink:0;height:40px;padding:0 14px 0 20px;font-size:13px}.dapp .a-pipe-step::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}.dapp .a-pipe-step:first-child::before{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%)}}
 
 /* Deals table: same table surface, with right-aligned money columns and an expandable detail row. */
 .dapp .a-deal-table th{background:var(--a-cream);position:static}
