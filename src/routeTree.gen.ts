@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as OdPreviewRouteImport } from './routes/od-preview'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -88,6 +89,11 @@ const FaqRoute = FaqRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OdPreviewRoute = OdPreviewRouteImport.update({
+  id: '/od-preview',
+  path: '/od-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -398,6 +404,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/od-preview': typeof OdPreviewRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -459,6 +466,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/od-preview': typeof OdPreviewRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -522,6 +530,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/od-preview': typeof OdPreviewRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -587,6 +596,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/faq'
     | '/login'
+    | '/od-preview'
     | '/pricing'
     | '/privacy'
     | '/reset-password'
@@ -648,6 +658,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/faq'
     | '/login'
+    | '/od-preview'
     | '/pricing'
     | '/privacy'
     | '/reset-password'
@@ -710,6 +721,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/faq'
     | '/login'
+    | '/od-preview'
     | '/pricing'
     | '/privacy'
     | '/reset-password'
@@ -774,6 +786,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   FaqRoute: typeof FaqRoute
   LoginRoute: typeof LoginRoute
+  OdPreviewRoute: typeof OdPreviewRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -814,6 +827,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/od-preview': {
+      id: '/od-preview'
+      path: '/od-preview'
+      fullPath: '/od-preview'
+      preLoaderRoute: typeof OdPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -1335,6 +1355,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   FaqRoute: FaqRoute,
   LoginRoute: LoginRoute,
+  OdPreviewRoute: OdPreviewRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
