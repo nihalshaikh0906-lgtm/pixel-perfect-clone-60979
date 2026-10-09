@@ -101,7 +101,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
         <aside className={`a-side ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`} aria-label="Workspace navigation">
           <div className="a-brand"><LogoMark size={32} /><span className="a-brand-text logo-word">Deal<span className="text-gradient">OS</span></span><span className="a-demo a-brand-text">DEMO</span></div>
           <nav className="a-nav">
-            {groups.map((g) => (
+            {visibleGroups.map((g) => (
               <div className="a-group" key={g.title}>
                 <p>{g.title}</p>
                 {g.items.map((it) => (
