@@ -33,6 +33,7 @@ import { Route as AuthenticatedListingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedNewsRouteImport } from './routes/_authenticated/news'
 import { Route as AuthenticatedOffplanRouteImport } from './routes/_authenticated/offplan'
+import { Route as AuthenticatedOwnerDashboardRouteImport } from './routes/_authenticated/owner-dashboard'
 import { Route as AuthenticatedOwnersRouteImport } from './routes/_authenticated/owners'
 import { Route as AuthenticatedRentalsRouteImport } from './routes/_authenticated/rentals'
 import { Route as AuthenticatedRolesRouteImport } from './routes/_authenticated/roles'
@@ -190,6 +191,12 @@ const AuthenticatedOffplanRoute = AuthenticatedOffplanRouteImport.update({
   path: '/offplan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOwnerDashboardRoute =
+  AuthenticatedOwnerDashboardRouteImport.update({
+    id: '/owner-dashboard',
+    path: '/owner-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOwnersRoute = AuthenticatedOwnersRouteImport.update({
   id: '/owners',
   path: '/owners',
@@ -410,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
   '/offplan': typeof AuthenticatedOffplanRoute
+  '/owner-dashboard': typeof AuthenticatedOwnerDashboardRoute
   '/owners': typeof AuthenticatedOwnersRoute
   '/rentals': typeof AuthenticatedRentalsRoute
   '/roles': typeof AuthenticatedRolesRoute
@@ -469,6 +477,7 @@ export interface FileRoutesByTo {
   '/market': typeof AuthenticatedMarketRoute
   '/news': typeof AuthenticatedNewsRoute
   '/offplan': typeof AuthenticatedOffplanRoute
+  '/owner-dashboard': typeof AuthenticatedOwnerDashboardRoute
   '/owners': typeof AuthenticatedOwnersRoute
   '/rentals': typeof AuthenticatedRentalsRoute
   '/roles': typeof AuthenticatedRolesRoute
@@ -532,6 +541,7 @@ export interface FileRoutesById {
   '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/news': typeof AuthenticatedNewsRoute
   '/_authenticated/offplan': typeof AuthenticatedOffplanRoute
+  '/_authenticated/owner-dashboard': typeof AuthenticatedOwnerDashboardRoute
   '/_authenticated/owners': typeof AuthenticatedOwnersRoute
   '/_authenticated/rentals': typeof AuthenticatedRentalsRoute
   '/_authenticated/roles': typeof AuthenticatedRolesRoute
@@ -596,6 +606,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/news'
     | '/offplan'
+    | '/owner-dashboard'
     | '/owners'
     | '/rentals'
     | '/roles'
@@ -655,6 +666,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/news'
     | '/offplan'
+    | '/owner-dashboard'
     | '/owners'
     | '/rentals'
     | '/roles'
@@ -717,6 +729,7 @@ export interface FileRouteTypes {
     | '/_authenticated/market'
     | '/_authenticated/news'
     | '/_authenticated/offplan'
+    | '/_authenticated/owner-dashboard'
     | '/_authenticated/owners'
     | '/_authenticated/rentals'
     | '/_authenticated/roles'
@@ -941,6 +954,13 @@ declare module '@tanstack/react-router' {
       path: '/offplan'
       fullPath: '/offplan'
       preLoaderRoute: typeof AuthenticatedOffplanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/owner-dashboard': {
+      id: '/_authenticated/owner-dashboard'
+      path: '/owner-dashboard'
+      fullPath: '/owner-dashboard'
+      preLoaderRoute: typeof AuthenticatedOwnerDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/owners': {
@@ -1275,6 +1295,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedNewsRoute: typeof AuthenticatedNewsRoute
   AuthenticatedOffplanRoute: typeof AuthenticatedOffplanRoute
+  AuthenticatedOwnerDashboardRoute: typeof AuthenticatedOwnerDashboardRoute
   AuthenticatedOwnersRoute: typeof AuthenticatedOwnersRoute
   AuthenticatedRentalsRoute: typeof AuthenticatedRentalsRoute
   AuthenticatedRolesRoute: typeof AuthenticatedRolesRoute
@@ -1297,6 +1318,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedNewsRoute: AuthenticatedNewsRoute,
   AuthenticatedOffplanRoute: AuthenticatedOffplanRoute,
+  AuthenticatedOwnerDashboardRoute: AuthenticatedOwnerDashboardRoute,
   AuthenticatedOwnersRoute: AuthenticatedOwnersRoute,
   AuthenticatedRentalsRoute: AuthenticatedRentalsRoute,
   AuthenticatedRolesRoute: AuthenticatedRolesRoute,

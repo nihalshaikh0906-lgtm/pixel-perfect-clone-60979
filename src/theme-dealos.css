@@ -135,3 +135,17 @@
 .dapp .a-drop{border:2px dashed var(--a-line);border-radius:16px;padding:28px;text-align:center;cursor:pointer}
 .dapp .a-drop.on{border-color:#3A64FF;background:var(--a-gold-tint)}
 .dapp.a-dark .a-side{background:var(--a-card)!important;border-color:var(--a-line)}.dapp.a-dark .a-link{color:var(--a-ink-2)}.dapp.a-dark .a-user b{color:#fff}
+
+/* ---------- Owner Dashboard — executive burgundy/gold accents (scoped) ---------- */
+.owner-dash .eyebrow-a{background:linear-gradient(90deg,#800020,#C5B358);-webkit-background-clip:text;background-clip:text;color:transparent}
+.owner-dash .od-gold{color:#C5B358}
+.owner-dash .od-range{display:inline-flex;align-items:center;gap:8px}
+.owner-dash .od-kpi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.owner-dash .od-value{color:#800020}
+.owner-dash .od-trend{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.owner-dash .od-trend.up{color:#16A34A;background:var(--a-ok-bg)}
+.owner-dash .od-trend.down{color:#E5484D;background:var(--a-hot-bg)}
+.owner-dash .a-pop button.od-on{background:var(--a-gold-tint);font-weight:700}
+.owner-dash .a-btn-gold{background:#800020;color:#fff}
+.owner-dash .a-btn-gold:hover{box-shadow:0 12px 30px rgba(128,0,32,.28)}
+.owner-dash .a-kpi{border-top:3px solid #C5B358}
