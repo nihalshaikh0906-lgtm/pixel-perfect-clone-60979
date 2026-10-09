@@ -129,7 +129,32 @@ export const getProjectDetail = createServerFn({ method: "POST" })
       .order("price_aed", { ascending: true, nullsFirst: false })
       .limit(24);
     if (unitError) throw new Error(unitError.message);
-    return { project, units: units ?? [] };
+    const rows = units ?? [];
+    const countQuery = context.supabase.from("units")
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", data.id)
+      .in("status", ["available", "active", "Available", "Active"]);
+    const cheapest = rows.find((u) => u.price_aed != null) ?? rows[0] ?? null;
+    let available_units = 0;
+    let payment_plan_summary: string | null = null;
+    if (cheapest) {
+      const [countResult, packResult] = await Promise.all([
+        countQuery,
+        context.supabase.rpc("get_property_pack", { p_project_id: data.id, p_unit_id: cheapest.id }),
+      ]);
+      if (countResult.error) throw new Error(countResult.error.message);
+      available_units = countResult.count ?? 0;
+      if (!packResult.error) {
+        const plan = (packResult.data as { plans?: Array<{ steps?: Array<{ percent?: unknown }>; post_handover?: unknown }> } | null)?.plans?.[0];
+        const booking = Math.round(Number(plan?.steps?.[0]?.percent ?? 0));
+        if (booking > 0 && booking < 100) payment_plan_summary = `${booking}% booking · ${100 - booking}% to handover`;
+      }
+    } else {
+      const countResult = await countQuery;
+      if (countResult.error) throw new Error(countResult.error.message);
+      available_units = countResult.count ?? 0;
+    }
+    return { project, units: rows, available_units, payment_plan_summary };
   });
 
 export const inventorySummaryOptions = () => queryOptions({ queryKey: ["live-inventory-summary"], queryFn: () => getInventorySummary(), staleTime: 300_000 });
