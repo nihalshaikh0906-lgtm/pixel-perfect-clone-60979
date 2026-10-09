@@ -89,6 +89,11 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   useEffect(() => { void supabase.auth.getUser().then(({ data }) => (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", data.user?.id ?? "").maybeSingle().then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))); }, []);
   const active = (it: Item) => (it.exact ? pathname === it.to || pathname === `${it.to}/` : pathname.startsWith(it.to));
 
+  // Admin-level workspace section: only company admins see the SYSTEM group.
+  const isAdmin = role === "company_admin";
+  const visibleGroups = isAdmin ? groups : groups.filter((g) => g.title !== "SYSTEM");
+
+
   return (
     <Ctx.Provider value={{ clientMode, openAi: () => setAi(true) }}>
       <div className={`dapp ${theme.dark ? "a-dark" : ""}`}>
@@ -96,7 +101,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
         <aside className={`a-side ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`} aria-label="Workspace navigation">
           <div className="a-brand"><LogoMark size={32} /><span className="a-brand-text logo-word">Deal<span className="text-gradient">OS</span></span><span className="a-demo a-brand-text">DEMO</span></div>
           <nav className="a-nav">
-            {groups.map((g) => (
+            {visibleGroups.map((g) => (
               <div className="a-group" key={g.title}>
                 <p>{g.title}</p>
                 {g.items.map((it) => (
