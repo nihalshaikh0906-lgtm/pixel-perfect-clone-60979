@@ -405,6 +405,19 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .dapp .a-print-stage{display:flex;flex-direction:column;align-items:center;gap:18px;max-height:min(72vh,800px);overflow:auto;padding:22px;border:1px solid var(--a-line);border-radius:14px;background:var(--a-cream)}
 .dapp .a-print-page{width:min(520px,100%);aspect-ratio:210/297;flex-shrink:0;background:var(--a-card);border:1px solid var(--a-line);box-shadow:var(--shadow-elevated);padding:30px 28px;font-size:12.5px;line-height:1.55;color:var(--a-ink)}
 .dapp .a-print-page.a-print-bw{filter:grayscale(1)}
+/* Corporate letterhead at the top of the contract sheet. */
+.dapp .a-print-brand{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start;position:relative;padding-bottom:10px;margin-bottom:11px;border-bottom:1px solid var(--a-line)}
+.dapp .a-print-brand::after{content:"";position:absolute;left:0;bottom:-2px;width:54px;height:2px;border-radius:2px;background:var(--a-gold)}
+.dapp .a-print-mark{display:flex;align-items:center;gap:9px;min-width:0}
+.dapp .a-print-mark i{display:grid;place-items:center;width:40px;height:40px;flex-shrink:0;border:1px solid var(--a-line);border-radius:10px;background:var(--a-cream)}
+.dapp .a-print-mark>span{min-width:0}
+.dapp .a-print-mark b{display:block;font-size:13px;font-weight:800;letter-spacing:-.01em;color:var(--a-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dapp .a-print-mark small{display:block;margin-top:2px;font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--a-eyebrow)}
+.dapp .a-print-addr{text-align:right;font-size:10px;line-height:1.55;color:var(--a-ink-2)}
+.dapp .a-print-addr b{display:block;margin-bottom:2px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--a-ink)}
+.dapp .a-print-addr span{display:block}
+.dapp .a-print-addr .num{margin-top:3px;color:var(--a-eyebrow);font-weight:700;letter-spacing:.08em}
+@media(max-width:560px){.dapp .a-print-brand{gap:10px}.dapp .a-print-mark i{width:32px;height:32px}.dapp .a-print-addr{font-size:9px}}
 .dapp .a-print-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;border-bottom:1px solid var(--a-line);padding-bottom:8px;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--a-ink-2)}
 .dapp .a-print-title{margin:14px 0 2px;font-size:17px;letter-spacing:.05em;text-transform:uppercase;color:var(--a-ink)}
 .dapp .a-print-sub{font-size:12px;color:var(--a-ink-2)}
