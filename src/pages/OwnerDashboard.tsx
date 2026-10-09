@@ -40,6 +40,7 @@ const AGENTS: Agent[] = [
 ];
 
 const TEAM_REVENUE = AGENTS.reduce((sum, a) => sum + a.revenue, 0);
+const TEAM_DEALS = AGENTS.reduce((sum, a) => sum + a.deals, 0);
 
 type Source = { name: string; value: number; token: string };
 
@@ -182,7 +183,12 @@ export function OwnerDashboard() {
               </div>
             ))}
           </div>
+          <div className="od-board-foot">
+            <span>Team total</span>
+            <b className="num">{TEAM_DEALS} deals · {money(TEAM_REVENUE)}</b>
+          </div>
         </div>
+
 
         <div className="od-col" ref={chartsRef}>
           <div className="a-card a-fade od-share">
