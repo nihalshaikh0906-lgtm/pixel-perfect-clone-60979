@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogoMark } from "@/components/Logo";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, LineChart, MapPinned,
+  Building, Building2, CalendarClock, ChevronsLeft, ChevronsRight, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
 } from "lucide-react";
@@ -42,7 +42,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "AI Assistant", to: "/app/ai-assistant", icon: Sparkles },
     ] },
     { title: "CRM", items: [
-      { label: "Properties", to: "/app/listings", icon: Building2 },
+      { label: "Ready Property", to: "/app/listings", icon: Building2 },
+      { label: "Offplan", to: "/app/offplan", icon: Building },
+      { label: "Rentals", to: "/app/rentals", icon: Key },
       { label: "Leads", to: "/app/leads", icon: Inbox },
       { label: "Follow-Ups", to: "/app/follow-ups", icon: CalendarClock },
       { label: "Appointments", to: "/app/appointments", icon: CalendarDays },
