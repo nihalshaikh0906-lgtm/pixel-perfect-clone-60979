@@ -163,7 +163,7 @@ function SettingsPage() {
               onDragEnter={(e) => { e.preventDefault(); setDragging(true); }}
               onDragLeave={() => setDragging(false)}
               onDrop={(e) => { e.preventDefault(); setDragging(false); readDocLogo(e.dataTransfer.files?.[0]); }}
-              className={`flex cursor-pointer items-center gap-3 rounded-xl border border-dashed px-4 py-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${dragging ? "border-primary/60 bg-primary/5" : "border-border bg-secondary/40 hover:border-primary/60"}`}
+              className={`flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-dashed px-4 py-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${dragging ? "border-primary/60 bg-primary/5" : "border-border bg-secondary/40 hover:border-primary/60"}`}
             >
               <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-border bg-card">
                 <Upload className="size-4 text-muted-foreground" />
