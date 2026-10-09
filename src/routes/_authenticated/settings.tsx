@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { Check, ImagePlus, Loader2, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Check, ImagePlus, Loader2, LogOut, Upload, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { TopBar } from "@/components/TopBar";
@@ -52,6 +52,11 @@ function SettingsPage() {
   const [theme, setTheme] = useState("gold");
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [docName, setDocName] = useState("");
+  const [docLogo, setDocLogo] = useState<string | null>(null);
+  const [docLogoName, setDocLogoName] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const docLogoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data, error }) => {
@@ -90,6 +95,17 @@ function SettingsPage() {
     setLogoPath(path);
     setLogoPreview(URL.createObjectURL(file));
     toast.success("Logo saved");
+  }
+
+  // Document Branding: the picked file is read in the browser as a Data URL for preview only.
+  function readDocLogo(file: File | undefined): void {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2 MB."); return; }
+    const reader = new FileReader();
+    reader.onload = () => { setDocLogo(typeof reader.result === "string" ? reader.result : null); setDocLogoName(file.name); };
+    reader.onerror = () => toast.error("Couldn't read that file.");
+    reader.readAsDataURL(file);
   }
 
   async function save(e: React.FormEvent): Promise<void> {
