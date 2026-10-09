@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { WorkspacePlaceholder, workspaceHead } from "@/components/app/WorkspacePlaceholder";
+import { InventoryPage } from "@/components/app/InventoryTable";
+import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
 export const Route = createFileRoute("/_authenticated/app/offplan")({
   head: () => workspaceHead("Offplan"),
@@ -7,5 +8,5 @@ export const Route = createFileRoute("/_authenticated/app/offplan")({
 });
 
 function Page() {
-  return <WorkspacePlaceholder title="Offplan" group="CRM" />;
+  return <InventoryPage title="Offplan" blurb="Under-construction launches and payment-plan stock." category="offplan" />;
 }
