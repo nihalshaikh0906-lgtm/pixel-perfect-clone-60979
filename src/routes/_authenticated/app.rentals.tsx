@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { byCategory } from "@/lib/inventory-mock";
 import { DemoPropertyCards } from "@/components/app/InventoryTable";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
@@ -8,6 +9,7 @@ export const Route = createFileRoute("/_authenticated/app/rentals")({
 });
 
 function Page() {
+  const count = byCategory("rental").length;
   return (
     <div style={{ display: "grid", gap: 20 }}>
       <div style={{ display: "flex", alignItems: "end", gap: 8, flexWrap: "wrap" }}>
