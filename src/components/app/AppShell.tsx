@@ -69,7 +69,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "Trash", to: "/app/trash", icon: Trash2 },
       { label: "Roles & Permissions", to: "/app/roles-permissions", icon: ShieldCheck },
       { label: "My Account", to: "/app/my-account", icon: User },
-      { label: "About App", to: "/app/about-app", icon: Info },
+      { label: "About App", to: "/app/about", icon: Info },
     ] },
   ];
 
