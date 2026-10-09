@@ -141,6 +141,3 @@ function LeadRow({ lead, bin, onRestore }: { lead: Lead; bin: boolean; onRestore
     </tr>
   );
 }
-
-// Kept for reference: icon used in the discarded-lead affordance.
-void Trash2;
