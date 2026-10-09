@@ -39,7 +39,10 @@ export const getInventorySummary = createServerFn({ method: "POST" })
 
 export const getInventoryPage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { category: "offplan" | "ready" | "rental"; page: number; q: string }) => ({ ...input, page: Math.max(1, Math.floor(input.page)), q: input.q.slice(0, 120) }))
+  .inputValidator((input: { category: "offplan" | "ready" | "rental"; page: number; q: string }) => {
+    if (!["offplan", "ready", "rental"].includes(input.category)) throw new Error("Invalid inventory category");
+    return { category: input.category, page: Number.isFinite(input.page) ? Math.max(1, Math.floor(input.page)) : 1, q: typeof input.q === "string" ? input.q.slice(0, 120) : "" };
+  })
   .handler(async ({ data, context }) => {
     let query = context.supabase.from("units")
       .select("id,project_id,unit_number,bedrooms,size_sqft,price_aed,status,unit_type,projects!inner(id,name,developer_name,district,handover_date,cover_image_url)", { count: "exact" })
@@ -52,7 +55,7 @@ export const getInventoryPage = createServerFn({ method: "POST" })
 
 export const getProjectPage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { page: number }) => ({ page: Math.max(1, Math.floor(input.page)) }))
+  .inputValidator((input: { page: number }) => ({ page: Number.isFinite(input.page) ? Math.max(1, Math.floor(input.page)) : 1 }))
   .handler(async ({ data, context }) => {
     const { data: rows, count, error } = await context.supabase.from("projects")
       .select("id,name,developer_name,district,handover_date,sale_status", { count: "exact" })
