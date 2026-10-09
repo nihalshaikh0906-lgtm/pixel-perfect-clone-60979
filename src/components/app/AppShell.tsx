@@ -89,6 +89,11 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   useEffect(() => { void supabase.auth.getUser().then(({ data }) => (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", data.user?.id ?? "").maybeSingle().then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))); }, []);
   const active = (it: Item) => (it.exact ? pathname === it.to || pathname === `${it.to}/` : pathname.startsWith(it.to));
 
+  // Admin-level workspace section: only company admins see the SYSTEM group.
+  const isAdmin = role === "company_admin";
+  const visibleGroups = isAdmin ? groups : groups.filter((g) => g.title !== "SYSTEM");
+
+
   return (
     <Ctx.Provider value={{ clientMode, openAi: () => setAi(true) }}>
       <div className={`dapp ${theme.dark ? "a-dark" : ""}`}>
