@@ -17,6 +17,7 @@
 - Property tour links are resolved only in src/lib/youtube.ts (findTourUrl/youtubeEmbed) and rendered by ProjectTourModal — packs expose `videos`/`tours` arrays, so never assume a dedicated youtube_url column exists.
 
 - Keep DealOS public landing components and semantic token overrides scoped under `.dealos`; this preserves the authenticated PropFlow visual system.
+- Lazy-load illustrative dashboard Recharts panels after visibility, with stable chart heights and landing-token colours; this keeps the initial render light and chart styling consistent.
 - Use lightweight scroll-linked opacity and transforms, pause offscreen ambient animation, and avoid artificial loading delays; this preserves reversible transitions without expensive blur or clipping.
 - Drive landing scroll effects directly from scroll progress without spring interpolation or animated section scaling/radii, and avoid global pointer tracking; this reduces per-frame work and settling lag.
 - Use native page scrolling, memoized landing scenes, and visibility-gated CSS tile motion; this keeps input immediate and prevents navigation updates from rerendering the whole page.

@@ -19,6 +19,7 @@
 - [x] n8n production workflow returns replies
 
 ## DealOS public experience
+- [ ] Add and verify illustrative leads trend and deals pipeline charts below the existing dashboard panels
 - [x] Remove the custom cursor and reduce scroll/mouse animation overhead while retaining live controls
 - [x] Build foundation, hero, product, insights, integrations, tools, workflow and modes from uploaded briefs
 - [x] Build proof, pricing, CTA and footer scenes
