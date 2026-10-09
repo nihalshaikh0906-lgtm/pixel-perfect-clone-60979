@@ -61,8 +61,10 @@ export function AddMenu() {
 
 // Illustrative attention counts only; these alerts never write to Supabase.
 const attentionItems = [
-  { title: "Unassigned leads", detail: "3 leads awaiting assignment", count: 3, icon: Inbox, to: "/app/crm" },
-  { title: "Overdue follow-ups", detail: "2 follow-ups past their due date", count: 2, icon: CalendarClock, to: "/app/follow-ups" },
+  { title: "4 unassigned leads waiting", detail: "No owner yet — assign one to start the follow-up.", count: 4, icon: Inbox, to: "/app/crm" },
+  { title: "8 overdue follow-ups", detail: "Past their due date — a call or message is needed.", count: 8, icon: CalendarClock, to: "/app/follow-ups" },
+  { title: "3 viewings today", detail: "Appointments scheduled for today.", count: 3, icon: Eye, to: "/app/appointments" },
+  { title: "1 agent payout pending", detail: "Commission awaiting approval.", count: 1, icon: Banknote, to: "/app/reports" },
 ] as const;
 
 export function Notifications() {
@@ -90,6 +92,11 @@ export function Notifications() {
               </Link>
             </Button>
           ))}
+          <div className="a-attention-foot">
+            <Button asChild variant="outline" size="sm" className="a-btn a-btn-line a-btn-sm" onClick={() => setOpen(false)}>
+              <Link to="/app/activity-logs"><Activity size={14} /> View activity log</Link>
+            </Button>
+          </div>
         </Popover.Content>
       </div>
     </Popover.Root>
