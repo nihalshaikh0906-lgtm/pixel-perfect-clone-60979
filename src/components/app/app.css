@@ -475,5 +475,16 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 @media(max-width:900px){.dapp .a-sys-panels{grid-template-columns:minmax(0,1fr)}.dapp .a-sys-panels>:last-child{grid-column:auto}}
 @media(max-width:560px){.dapp .a-sys-panels .a-lst-switch{flex-direction:column;align-items:stretch;gap:10px}.dapp .a-sys-panels .a-lst-switch .a-switch{align-self:flex-end}.dapp .a-sys-panels .a-lst-switch .a-acc-acts{justify-content:flex-end}}
 
+/* Users Management */
+.dapp .a-modal.a-usr-modal>div{width:min(620px,100%)}
+.dapp .a-usr-who{display:flex;align-items:center;gap:12px;min-width:0}
+.dapp .a-usr-who>span:last-child{min-width:0}
+.dapp .a-usr-who .a-avatar{flex-shrink:0}
+.dapp .a-usr-status{display:inline-flex;align-items:center;gap:10px}
+.dapp .a-usr-status small{font-size:13px;font-weight:600;color:var(--a-ink-2);white-space:nowrap}
+.dapp .a-usr-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.dapp .a-usr-table tbody tr{cursor:default}
+@media(max-width:640px){.dapp .a-usr-who b{white-space:normal}.dapp .a-usr-status small{white-space:normal}}
+
 
 

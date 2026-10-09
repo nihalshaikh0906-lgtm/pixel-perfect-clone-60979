@@ -291,7 +291,7 @@ function Page() {
                   ))}
                 </select>
               </label>
-              <div className="a-lst-switch">
+              <div className="a-lst-switch a-deal-span">
                 <b>Account status</b>
                 <StatusToggle user={draft} onToggle={() => setDraft({ ...draft, active: !draft.active })} />
               </div>
