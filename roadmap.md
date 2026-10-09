@@ -39,3 +39,7 @@
 - [x] Broker workspace /app: home, leads inbox, lead detail, placeholders
 - [ ] Workspace sections (Pipelines, Today, Off-plan, Ready, Rentals, Areas, Listings, Market, Updates, Tools, Automations, Settings) — placeholders until specified
 - [x] Deals workspace page: five-step chevron pipeline, ten-column demo table, search/sort/expand/copy/CSV, phone cards, client mode hides commission; /deals shortcut added
+
+## Current updates
+- [x] Update landing hero, proof and footer with enterprise CRM positioning
+- [x] Add themed monthly calendar alongside the existing Appointments diary and verify date selection (14 rows → 4 on Oct 9 → 14 after reset; isolated page check, external sign-in unavailable)

@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Fragment, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { LEAD_BY_ID, formatAed, wants, type Lead } from "@/lib/demo-leads";
@@ -79,6 +81,8 @@ function Page() {
   const [pipe, setPipe] = useState<Pipe>("All");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "at", dir: 1 });
   const [open, setOpen] = useState<string | null>(null);
+  const [date, setDate] = useState<Date>();
+  const selectedDay = date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}` : undefined;
 
   // Demo lead records back the diary rows: name, phone and what the client asked for.
   const ALL = useMemo(
@@ -98,14 +102,14 @@ function Page() {
   };
 
   const rows = useMemo(() => {
-    const filtered = pipe === "All" ? ALL : ALL.filter((a) => a.status === pipe);
+    const filtered = ALL.filter((a) => (pipe === "All" || a.status === pipe) && (!selectedDay || a.at.slice(0, 10) === selectedDay));
     return [...filtered].sort((x, y) => {
       const av = sortValue(x, sort.key);
       const bv = sortValue(y, sort.key);
       const cmp = typeof av === "number" && typeof bv === "number" ? av - bv : String(av).localeCompare(String(bv));
       return cmp * sort.dir;
     });
-  }, [pipe, sort, ALL]);
+  }, [pipe, sort, ALL, selectedDay]);
 
   const count = (p: Pipe) => (p === "All" ? ALL.length : ALL.filter((a) => a.status === p).length);
   const ahead = ALL.filter((a) => a.status === "Scheduled" || a.status === "Confirmed").length;
@@ -160,7 +164,19 @@ function Page() {
         </div>
       </div>
 
-      <div className="a-card">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+        <aside className="a-card min-w-0">
+          <div className="a-card-head"><h2>Calendar</h2></div>
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(value) => { setDate(value); setOpen(null); }}
+            defaultMonth={new Date(2026, 9, 1)}
+            className="pointer-events-auto mx-auto max-w-full bg-transparent text-[var(--a-ink)]"
+          />
+          {selectedDay ? <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"><span className="a-note min-w-0">{dayLabel(selectedDay)}</span><Button variant="outline" className="a-btn a-btn-line shrink-0" onClick={() => { setDate(undefined); setOpen(null); }}>All dates</Button></div> : null}
+        </aside>
+      <div className="a-card min-w-0 lg:col-span-2">
         <div className="a-card-head">
           <h2>{pipe === "All" ? "All appointments" : `${pipe} appointments`}</h2>
           <span className="a-count num">{rows.length} appointments</span>
@@ -256,7 +272,7 @@ function Page() {
               {!rows.length && (
                 <tr>
                   <td colSpan={6} className="a-deal-empty">
-                    No {emptyLabel} appointments right now.
+                    No {emptyLabel} appointments{selectedDay ? " on this date" : " right now"}.
                   </td>
                 </tr>
               )}
@@ -292,12 +308,13 @@ function Page() {
               </button>
             );
           })}
-          {!rows.length && <p className="a-mut">No {emptyLabel} appointments right now.</p>}
+          {!rows.length && <p className="a-mut">No {emptyLabel} appointments{selectedDay ? " on this date" : " right now"}.</p>}
         </div>
 
         <p className="a-mut">
           Every row here is sample data for the layout — nothing on this page is saved to your database.
         </p>
+      </div>
       </div>
     </>
   );

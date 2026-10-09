@@ -34,3 +34,5 @@
 - Client dossier shortlists read the existing shortlists table through RLS and refresh after saving; property cards share the recommendation inspection flow.
 
 - Company/agent roles live in org_members (separate from profiles) and are checked via my_org()/is_org_admin() security-definer functions; avoids RLS recursion and role spoofing. New tables are now allowed by the user.
+
+- Keep the Appointments calendar and diary in the canonical /app/appointments leaf; /appointments redirects there so both entry points share the same filters and layout.
