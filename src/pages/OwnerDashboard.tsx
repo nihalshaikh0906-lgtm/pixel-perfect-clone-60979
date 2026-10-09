@@ -1,4 +1,4 @@
-import { Calendar, ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
+import { AlertTriangle, Calendar, ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
 
@@ -53,6 +53,16 @@ const SOURCES: Source[] = [
 ];
 
 const TOTAL_LEADS = SOURCES.reduce((sum, s) => sum + s.value, 0);
+
+type Alert = { text: string; note: string; tag: string };
+
+// Illustrative demo alerts — sample items, not real records.
+const ALERTS: Alert[] = [
+  { text: "Agent Saad is 20% below Q3 target", note: "Sales performance · flagged 2 days ago", tag: "Target" },
+  { text: "High-value deal #1045 stalled for 14 days", note: "No activity since last follow-up", tag: "Stalled" },
+  { text: "Commission payout AED 120k pending approval", note: "Awaiting owner sign-off", tag: "Approval" },
+  { text: "3 unassigned leads waiting over 24 hours", note: "Portal enquiries · no owner yet", tag: "Leads" },
+];
 
 
 function initialsOf(name: string) {
@@ -232,6 +242,25 @@ export function OwnerDashboard() {
             </div>
             <p className="od-share-note">Illustrative demo split of sample leads by channel.</p>
           </div>
+        </div>
+      </section>
+
+      <section className="a-card a-fade od-att">
+        <div className="a-card-head">
+          <h2>Needs Attention</h2>
+          <span className="a-count num">{ALERTS.length} items</span>
+        </div>
+        <div className="a-list">
+          {ALERTS.map((a) => (
+            <div key={a.text}>
+              <span className="od-att-ico" aria-hidden="true"><AlertTriangle size={14} /></span>
+              <span className="od-att-text">
+                {a.text}
+                <small>{a.note}</small>
+              </span>
+              <span className="a-chip c-hot">{a.tag}</span>
+            </div>
+          ))}
         </div>
       </section>
 

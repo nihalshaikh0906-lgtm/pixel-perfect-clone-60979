@@ -161,6 +161,14 @@
 .owner-dash .od-board .a-table{height:100%}
 .owner-dash .od-board-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--a-line);font-size:14px;color:var(--a-ink-2)}
 .owner-dash .od-board-foot b{color:var(--a-ink)}
+.owner-dash .od-att{margin-top:24px}
+.owner-dash .od-att .a-list>div{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--a-line)}
+.owner-dash .od-att .a-list>div:last-child{border-bottom:0}
+.owner-dash .od-att-ico{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--a-hot-bg);color:var(--a-hot);flex-shrink:0}
+.owner-dash .od-att-text{font-size:14px;font-weight:600;color:var(--a-ink);min-width:0}
+.owner-dash .od-att-text small{display:block;margin-top:2px;font-size:12.5px;font-weight:500;color:var(--a-ink-2)}
+.owner-dash .od-att .a-chip{margin-left:auto;flex-shrink:0}
+@media (max-width:640px){.owner-dash .od-att .a-list>div{align-items:flex-start}}
 
 .owner-dash .od-donut-row{display:flex;align-items:center;gap:18px}
 .owner-dash .od-donut-wrap{position:relative;width:132px;height:132px;flex-shrink:0}
