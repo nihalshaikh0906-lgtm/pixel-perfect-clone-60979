@@ -294,7 +294,7 @@ function Page() {
                 <span className="a-deal-mrow">
                   <span className={`a-chip ${CHIP[t.status]}`}>{t.status}</span>
                   <span className="a-deal-mamt num">
-                    {t.lead ? wants(t.lead) : t.property ?? t.phone}
+                    {t.lead ? wants(t.lead) : t.phone}
                     <ChevronDown size={15} style={{ transform: isOpen ? "rotate(180deg)" : undefined }} />
                   </span>
                 </span>
