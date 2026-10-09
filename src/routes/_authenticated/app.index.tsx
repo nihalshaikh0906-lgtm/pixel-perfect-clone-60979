@@ -1,12 +1,19 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Eye, MessageCircle, Phone, Plus, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { OwnerOverview } from "@/components/app/OwnerOverview";
+import { OwnerDashboard } from "@/pages/OwnerDashboard";
+import { inventorySummaryOptions, projectPageOptions } from "@/lib/inventory.functions";
 import { PriorityChip } from "@/components/app/chips";
 import { LEADS, queueLeads, stats, type Lead } from "@/lib/demo-leads";
 
 export const Route = createFileRoute("/_authenticated/app/")({
+  validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
+  loaderDeps: ({ search }) => ({ page: search.page }),
+  loader: async ({ context, deps }) => { await Promise.all([context.queryClient.ensureQueryData(inventorySummaryOptions()), context.queryClient.ensureQueryData(projectPageOptions(deps.page))]); },
+  errorComponent: ({ error }) => <div role="alert">Unable to load dashboard: {error instanceof Error ? error.message : "Please try again."}</div>,
+  notFoundComponent: () => <div>Dashboard not found.</div>,
   head: () => ({
     meta: [
       { title: "Home — DealOS Workspace" },
@@ -21,9 +28,11 @@ export const Route = createFileRoute("/_authenticated/app/")({
 });
 
 function HomePage() {
+  const { page } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const [role, setRole] = useState<string | null | undefined>(undefined);
   useEffect(() => { void supabase.auth.getUser().then(({ data }) => (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", data.user?.id ?? "").maybeSingle().then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))); }, []);
-  if (role === "company_admin") return <OwnerOverview />;
+  if (role === "company_admin") return <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} />;
   return <AgentHome />;
 }
 

@@ -1,12 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { InventoryPage } from "@/components/app/InventoryTable";
+import { LiveInventory } from "@/components/app/LiveInventory";
+import { inventoryPageOptions } from "@/lib/inventory.functions";
+import { inventorySearch } from "@/lib/inventory-category";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
 export const Route = createFileRoute("/_authenticated/app/offplan")({
+  validateSearch: inventorySearch,
+  loaderDeps: ({ search }) => search,
+  loader: ({ context, deps }) => context.queryClient.ensureQueryData(inventoryPageOptions("offplan", deps.page, deps.q)),
+  errorComponent: ({ error }) => <div role="alert">Unable to load units: {error instanceof Error ? error.message : "Please try again."}</div>,
+  notFoundComponent: () => <div>No inventory found.</div>,
   head: () => workspaceHead("Offplan"),
   component: Page,
 });
 
 function Page() {
-  return <InventoryPage title="Offplan" blurb="Under-construction launches and payment-plan stock." category="offplan" />;
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  return <LiveInventory title="Offplan" category="offplan" {...search} onSearch={(next) => void navigate({ search: next })} />;
 }

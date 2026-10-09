@@ -1,3 +1,4 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -5,19 +6,27 @@ import { toast } from "sonner";
 import { RotateCcw, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
-import { DemoPropertyCards } from "@/components/app/InventoryTable";
+import { LiveInventory } from "@/components/app/LiveInventory";
+import { inventoryPageOptions } from "@/lib/inventory.functions";
+import { inventorySearch } from "@/lib/inventory-category";
 import { Property360Modal } from "@/components/app/Property360Modal";
 
 export const Route = createFileRoute("/_authenticated/app/listings")({
   head: () => ({
     meta: [
-      { title: "Listings — DealOS" },
+      { title: "Ready Property — DealOS" },
       { name: "description", content: "Your agency's own listings: drafts, live, reserved and sold, with CSV import." },
-      { property: "og:title", content: "Listings — DealOS" },
-      { property: "og:description", content: "Manage your brokerage listings in one place." },
+      { property: "og:title", content: "Ready Property — DealOS" },
+      { property: "og:description", content: "Live secondary-sale units and your brokerage listings." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { action?: string | undefined; listing?: string | undefined } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined, listing: typeof s["listing"] === "string" ? s["listing"] : undefined }),
+  validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ ...inventorySearch(s), action: typeof s["action"] === "string" ? s["action"] : undefined, listing: typeof s["listing"] === "string" ? s["listing"] : undefined }),
+  loaderDeps: ({ search }) => ({ page: search.page, q: search.q }),
+  loader: ({ context, deps }) => context.queryClient.ensureQueryData(inventoryPageOptions("ready", deps.page, deps.q)),
+  errorComponent: ({ error }) => <div role="alert">Unable to load ready units: {error instanceof Error ? error.message : "Please try again."}</div>,
+  notFoundComponent: () => <div>No ready inventory found.</div>,
   component: ListingsPage,
 });
 
@@ -33,7 +42,7 @@ const EMPTY_X = { area_unit: "sqft", society: "", street: "", lat: "", lng: "", 
 
 function ListingsPage() {
   const qc = useQueryClient();
-  const { action, listing } = Route.useSearch();
+  const { action, listing, page, q: searchQuery } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [bin, setBin] = useState(false);
   const [f, setF] = useState(EMPTY);
@@ -113,14 +122,15 @@ function ListingsPage() {
     toast.success("Listing saved as draft"); refresh(); reset(); close();
   };
 
-  if (org.isLoading) return <div className="a-card">Loading…</div>;
-  if (!org.data) return <div className="a-card">Set up your company on the Team leads page first.</div>;
+  const liveInventory = <LiveInventory title="Ready Property" category="ready" page={page} q={searchQuery} onSearch={(next) => void navigate({ search: (prev) => ({ ...prev, ...next }) })} />;
+  if (org.isLoading || !org.data) return liveInventory;
   // Ready Property shows ready stock only — rent/rental and off-plan rows stay out.
   const rows = (q.data ?? []).filter((l) => (bin ? l.deleted_at : !l.deleted_at) && l.type === "ready");
   const active = (q.data ?? []).find((l) => l.id === listing) ?? null;
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
+      {liveInventory}
       <div style={{ display: "flex", alignItems: "end", gap: 8, flexWrap: "wrap" }}>
         <div style={{ marginRight: "auto" }}><p className="eyebrow-a">Your inventory</p><h1 style={{ margin: 0, fontSize: 32 }}>Listings</h1></div>
         <button className={`a-btn ${!bin ? "a-btn-gold" : "a-btn-line"}`} onClick={() => setBin(false)}>Active</button>
@@ -207,7 +217,6 @@ function ListingsPage() {
       ) : null}
       {active ? <Property360Modal property={active} onClose={close360} link={`${typeof window !== "undefined" ? window.location.origin : ""}/app/listings?listing=${active.id}`} /> : null}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 14 }}>
-        {!bin ? <DemoPropertyCards category="ready" /> : null}
         {rows.map((l) => (
           <div
             key={l.id}

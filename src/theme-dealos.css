@@ -139,7 +139,28 @@
 /* ---------- Owner Dashboard — executive accents (existing blue/violet tokens only) ---------- */
 .owner-dash .od-range{display:inline-flex;align-items:center;gap:8px}
 .owner-dash .od-kpi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.owner-dash .od-value{color:var(--a-ink)}
+.dapp .a-kpi{min-width:0}
+.dapp .a-kpi strong{font-size:30px;line-height:1.2;letter-spacing:0;overflow-wrap:anywhere}
+.owner-dash .a-kpis{gap:18px}
+.owner-dash .a-kpi{padding:20px;min-height:150px}
+.owner-dash .a-kpi .eyebrow-a{margin:0;font-size:11px;letter-spacing:0}
+.owner-dash .a-kpi strong.od-value{font-size:28px;color:var(--a-ink);margin-top:14px}
+.owner-dash .a-kpi p:last-child{font-size:12px;line-height:1.6}
+.owner-dash .od-value{color:var(--a-ink);font-size:28px;line-height:1.2;letter-spacing:0;overflow-wrap:anywhere}
+.od-inventory-categories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:24px}
+.od-category{display:block;min-width:0;color:var(--a-ink)}
+.od-category h2{display:flex;align-items:center;gap:8px}
+.od-category svg{color:var(--brand-blue);flex-shrink:0}
+.od-category p{font-size:13px;color:var(--a-ink-2);margin-top:12px}
+.od-projects{margin-top:28px;min-width:0}
+.od-projects .a-table-wrap{display:block;overflow-x:auto}
+.od-projects .a-table{min-width:700px}
+.od-live-inventory{display:grid;gap:20px;min-width:0}
+.od-inventory-search{display:flex;gap:10px;flex-wrap:wrap}
+.od-inventory-search input{flex:1;min-width:140px}
+.od-unit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:18px}
+.od-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:16px;color:var(--a-ink-2);font-size:13px}
+@media(max-width:900px){.od-inventory-categories{grid-template-columns:minmax(0,1fr)}}
 .owner-dash .od-trend{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
 .owner-dash .od-trend.up{color:var(--a-ok);background:var(--a-ok-bg)}
 .owner-dash .od-trend.down{color:var(--a-hot);background:var(--a-hot-bg)}
