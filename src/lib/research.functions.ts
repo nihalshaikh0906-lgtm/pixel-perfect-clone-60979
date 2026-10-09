@@ -23,13 +23,16 @@ export const getNews = createServerFn({ method: "POST" })
     const res = await fetch("https://connector-gateway.lovable.dev/firecrawl/v2/search", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${lovable}`, "X-Connection-Api-Key": fc },
-      body: JSON.stringify({ query: "Dubai real estate property market news", limit: 10, tbs: "qdr:w", sources: ["news"] }),
+      body: JSON.stringify({ query: "Dubai real estate property market news", limit: 10, tbs: "qdr:w", sources: ["news", "web"] }),
     });
     const body = await res.text();
     if (!res.ok) throw new Error(`News search failed [${res.status}]: ${body.slice(0, 300)}`);
     const j = JSON.parse(body);
-    const raw: { title?: string; url?: string; snippet?: string; description?: string; date?: string; imageUrl?: string }[] =
-      j?.data?.news ?? j?.data?.web ?? (Array.isArray(j?.data) ? j.data : []);
+    type Found = { title?: string; url?: string; snippet?: string; description?: string; date?: string; imageUrl?: string };
+    const buckets = [j?.data?.news, j?.data?.web, Array.isArray(j?.data) ? j.data : []].filter((b): b is Found[] => Array.isArray(b));
+    const seen = new Set<string>();
+    const raw: Found[] = [];
+    for (const b of buckets) for (const r of b) if (r?.url && !seen.has(r.url)) { seen.add(r.url); raw.push(r); }
     const clean = (t = "") =>
       t.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[#*_>`]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 700);
     const found = raw.filter((r) => r.url && r.title).slice(0, 9);
