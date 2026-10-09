@@ -141,7 +141,26 @@ export function OwnerDashboard() {
               </tbody>
             </table>
           </div>
+          <div className="a-cards">
+            {AGENTS.map((a, i) => (
+              <div key={a.name} className="a-lcard">
+                <span className="a-usr-who">
+                  <span className={`od-rank num${i === 0 ? " first" : ""}`}>{i + 1}</span>
+                  <span className="a-avatar od-avatar" aria-hidden="true">{initialsOf(a.name)}</span>
+                  <span>
+                    <b>{a.name}</b>
+                    <small>{a.role}</small>
+                  </span>
+                </span>
+                <span className="a-usr-meta">
+                  <span className="a-mut" style={{ margin: 0 }}>{a.deals} deals closed</span>
+                  <b className="num">{money(a.revenue)}</b>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
+
 
         <div className="a-card a-fade od-share">
           <div className="a-card-head">
