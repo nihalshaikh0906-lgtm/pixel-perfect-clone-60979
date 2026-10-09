@@ -472,7 +472,7 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .dapp .a-sys-key{display:flex;gap:8px;align-items:center}
 .dapp .a-sys-key input{flex:1;min-width:0}
 .dapp .a-sys-key .a-sys-eye{height:42px;width:44px;padding:0;flex-shrink:0}
-@media(max-width:900px){.dapp .a-sys-panels{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.dapp .a-sys-panels{grid-template-columns:minmax(0,1fr)}.dapp .a-sys-panels>:last-child{grid-column:auto}}
 
 
 
