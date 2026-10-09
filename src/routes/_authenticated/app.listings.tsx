@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { RotateCcw, Trash2, X } from "lucide-react";
+import { FileText, Link2, Mail, RotateCcw, Share2, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
 
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/app/listings")({
       { property: "og:description", content: "Manage your brokerage listings in one place." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { action?: string | undefined } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined }),
+  validateSearch: (s: Record<string, unknown>): { action?: string | undefined; listing?: string | undefined } => ({ action: typeof s["action"] === "string" ? s["action"] : undefined, listing: typeof s["listing"] === "string" ? s["listing"] : undefined }),
   component: ListingsPage,
 });
 
@@ -31,7 +31,7 @@ const EMPTY_X = { area_unit: "sqft", society: "", street: "", lat: "", lng: "", 
 
 function ListingsPage() {
   const qc = useQueryClient();
-  const { action } = Route.useSearch();
+  const { action, listing } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [bin, setBin] = useState(false);
   const [f, setF] = useState(EMPTY);
@@ -54,6 +54,8 @@ function ListingsPage() {
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["listings"] });
   const close = () => void navigate({ search: {} });
+  const open360 = (id: string) => void navigate({ search: { listing: id } });
+  const close360 = () => void navigate({ search: {} });
   const reset = () => { setF(EMPTY); setX(EMPTY_X); setFeatured(false); setAmenities([]); setAmenity(""); };
   const setXf = (k: keyof typeof EMPTY_X, v: string) => setX((s) => ({ ...s, [k]: v }));
 
@@ -112,6 +114,7 @@ function ListingsPage() {
   if (org.isLoading) return <div className="a-card">Loading…</div>;
   if (!org.data) return <div className="a-card">Set up your company on the Team leads page first.</div>;
   const rows = (q.data ?? []).filter((l) => (bin ? l.deleted_at : !l.deleted_at));
+  const active = (q.data ?? []).find((l) => l.id === listing) ?? null;
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
