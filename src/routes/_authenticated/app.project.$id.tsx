@@ -43,16 +43,43 @@ function Page() {
     { label: "Developer", value: project.developer_name ?? "—" },
     { label: "Handover", value: quarterOf(project.handover_date) },
   ];
+  const unitTypes = [...new Set(data.units.map((u) => u.unit_type).filter((t): t is string => Boolean(t)))];
+  const mainImage = pickedImage ?? (project.cover_image_url ? mediaUrl(project.cover_image_url) : galleryA);
+  const details = [
+    { label: "Project Name", value: project.name },
+    { label: "Developer", value: project.developer_name ?? "—" },
+    { label: "Property Class", value: "—" },
+    { label: "Unit Types", value: unitTypes.length ? unitTypes.slice(0, 3).join(" · ") : "—" },
+    { label: "Construction Status", value: "—" },
+    { label: "Handover Quarter", value: quarterOf(project.handover_date) || "—" },
+    { label: "Furnishing", value: "—" },
+  ];
   return <section className="od-live-inventory">
     <div className="a-card-head"><div><p className="eyebrow-a">Project details</p><h1>{project.name}</h1></div><span className="a-count num">{data.units.length} units shown</span></div>
     <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[7fr_3fr]">
       <div className="min-w-0 space-y-5">
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border bg-secondary shadow-sm">
-          {project.cover_image_url ? (
-            <img src={mediaUrl(project.cover_image_url)} alt={project.name} className="size-full object-cover" />
-          ) : (
-            <div className="flex size-full items-center justify-center text-muted-foreground"><Building2 className="size-8" /></div>
-          )}
+        <div className="space-y-3">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border bg-secondary shadow-sm">
+            <img src={mainImage} alt={project.name} className="size-full object-cover" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {[galleryA, galleryB].map((thumb, i) => (
+              <button key={i} type="button" onClick={() => setPickedImage(thumb)} aria-label={`Show view ${i + 1}`} className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border bg-secondary shadow-sm transition-opacity hover:opacity-90" style={mainImage === thumb ? { boxShadow: "0 0 0 2px var(--brand-blue)" } : undefined}>
+                <img src={thumb} alt={`${project.name} view ${i + 1}`} loading="lazy" width={1024} height={1024} className="size-full object-cover" />
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="a-card p-5">
+          <p className="eyebrow-a">Details</p>
+          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-3">
+            {details.map((item) => (
+              <div key={item.label} className="min-w-0">
+                <p className="text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>{item.label}</p>
+                <p className="mt-1 truncate text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item.value}</p>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="od-unit-grid">{data.units.map((unit) => {
           const row: MatchRow = { unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null };
