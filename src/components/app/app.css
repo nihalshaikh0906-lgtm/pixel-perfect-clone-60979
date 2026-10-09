@@ -327,6 +327,7 @@
 /* Deals table: same table surface, with right-aligned money columns and an expandable detail row. */
 .dapp .a-deal-table th{background:var(--a-cream)}
 .dapp .a-deal-table td small{white-space:normal}
+.dapp .a-deal-table td b{white-space:normal}
 .dapp .a-table th.a-deal-num,.dapp .a-table td.a-deal-num{text-align:right}
 .dapp .a-deal-sort{display:inline-flex;align-items:center;gap:5px;background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
 .dapp .a-deal-sort:focus-visible{outline:2px solid var(--a-gold);outline-offset:3px;border-radius:4px}
