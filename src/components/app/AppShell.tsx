@@ -63,7 +63,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "Amenities", to: "/app/amenities", icon: Trees },
     ] },
     { title: "SYSTEM", items: [
-      { label: "Users Management", to: "/app/users-management", icon: Users },
+      { label: "Users Management", to: "/app/users", icon: Users },
       { label: "Settings", to: "/app/settings", icon: Settings },
       { label: "Activity Logs", to: "/app/activity-logs", icon: Activity },
       { label: "Trash", to: "/app/trash", icon: Trash2 },
