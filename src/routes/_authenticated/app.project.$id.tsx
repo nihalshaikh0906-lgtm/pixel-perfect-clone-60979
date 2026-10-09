@@ -29,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
 function Page() {
   const { data } = useSuspenseQuery(projectDetailOptions(Number(Route.useParams().id)));
   const [selected, setSelected] = useState<MatchRow | null>(null);
+  if (!data) return null;
   const project = data.project;
   return <section className="od-live-inventory">
     <div className="a-card-head"><div><p className="eyebrow-a">Project</p><h1>{project.name}</h1></div><span className="a-count num">{data.units.length} units shown</span></div>
