@@ -63,6 +63,7 @@ import { Route as AuthenticatedAppRolesPermissionsRouteImport } from './routes/_
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
 import { Route as AuthenticatedAppTenanciesRouteImport } from './routes/_authenticated/app.tenancies'
 import { Route as AuthenticatedAppTrashRouteImport } from './routes/_authenticated/app.trash'
+import { Route as AuthenticatedAppUsersRouteImport } from './routes/_authenticated/app.users'
 import { Route as AuthenticatedAppUsersManagementRouteImport } from './routes/_authenticated/app.users-management'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
 import { Route as AuthenticatedAppLeadsIndexRouteImport } from './routes/_authenticated/app.leads.index'
@@ -351,6 +352,11 @@ const AuthenticatedAppTrashRoute = AuthenticatedAppTrashRouteImport.update({
   path: '/trash',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppUsersRoute = AuthenticatedAppUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppUsersManagementRoute =
   AuthenticatedAppUsersManagementRouteImport.update({
     id: '/users-management',
@@ -427,6 +433,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/tenancies': typeof AuthenticatedAppTenanciesRoute
   '/app/trash': typeof AuthenticatedAppTrashRoute
+  '/app/users': typeof AuthenticatedAppUsersRoute
   '/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app/': typeof AuthenticatedAppIndexRoute
@@ -485,6 +492,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/tenancies': typeof AuthenticatedAppTenanciesRoute
   '/app/trash': typeof AuthenticatedAppTrashRoute
+  '/app/users': typeof AuthenticatedAppUsersRoute
   '/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -546,6 +554,7 @@ export interface FileRoutesById {
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/tenancies': typeof AuthenticatedAppTenanciesRoute
   '/_authenticated/app/trash': typeof AuthenticatedAppTrashRoute
+  '/_authenticated/app/users': typeof AuthenticatedAppUsersRoute
   '/_authenticated/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
@@ -607,6 +616,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/tenancies'
     | '/app/trash'
+    | '/app/users'
     | '/app/users-management'
     | '/client/$id'
     | '/app/'
@@ -665,6 +675,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/tenancies'
     | '/app/trash'
+    | '/app/users'
     | '/app/users-management'
     | '/client/$id'
     | '/app'
@@ -725,6 +736,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/settings'
     | '/_authenticated/app/tenancies'
     | '/_authenticated/app/trash'
+    | '/_authenticated/app/users'
     | '/_authenticated/app/users-management'
     | '/_authenticated/client/$id'
     | '/_authenticated/app/'
@@ -1129,6 +1141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppTrashRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/users': {
+      id: '/_authenticated/app/users'
+      path: '/users'
+      fullPath: '/app/users'
+      preLoaderRoute: typeof AuthenticatedAppUsersRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/users-management': {
       id: '/_authenticated/app/users-management'
       path: '/users-management'
@@ -1182,6 +1201,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
   AuthenticatedAppTenanciesRoute: typeof AuthenticatedAppTenanciesRoute
   AuthenticatedAppTrashRoute: typeof AuthenticatedAppTrashRoute
+  AuthenticatedAppUsersRoute: typeof AuthenticatedAppUsersRoute
   AuthenticatedAppUsersManagementRoute: typeof AuthenticatedAppUsersManagementRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppLeadsIdRoute: typeof AuthenticatedAppLeadsIdRoute
@@ -1210,6 +1230,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
   AuthenticatedAppTenanciesRoute: AuthenticatedAppTenanciesRoute,
   AuthenticatedAppTrashRoute: AuthenticatedAppTrashRoute,
+  AuthenticatedAppUsersRoute: AuthenticatedAppUsersRoute,
   AuthenticatedAppUsersManagementRoute: AuthenticatedAppUsersManagementRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppLeadsIdRoute: AuthenticatedAppLeadsIdRoute,
