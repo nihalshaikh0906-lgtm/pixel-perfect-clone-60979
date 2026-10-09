@@ -38,3 +38,4 @@
 - [x] Readability pass on /welcome (contrast, min 13px text, no stuck fades, dashboard at real size)
 - [x] Broker workspace /app: home, leads inbox, lead detail, placeholders
 - [ ] Workspace sections (Pipelines, Today, Off-plan, Ready, Rentals, Areas, Listings, Market, Updates, Tools, Automations, Settings) — placeholders until specified
+- [x] Deals workspace page: five-step chevron pipeline, ten-column demo table, search/sort/expand/copy/CSV, phone cards, client mode hides commission; /deals shortcut added
