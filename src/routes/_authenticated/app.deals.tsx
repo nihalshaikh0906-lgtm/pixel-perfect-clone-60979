@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, useMemo, useState } from "react";
-import { ChevronDown, Copy, Download } from "lucide-react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { ChevronDown, Copy, Download, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { useShell } from "@/components/app/AppShell";
@@ -89,18 +89,31 @@ function Page() {
   const [pipe, setPipe] = useState<Pipe>("All");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "amount", dir: -1 });
   const [open, setOpen] = useState<string | null>(null);
+  const [extra, setExtra] = useState<Deal[]>([]);
+  const [showNew, setShowNew] = useState(false);
+
+  // The form adds a row to the on-screen pipeline only — it never touches the database.
+  const addDeal = (d: Deal) => {
+    setExtra((x) => [d, ...x]);
+    setPipe("All");
+    setOpen(d.id);
+    toast.success("Deal added to the on-screen pipeline — demo only");
+  };
+
+
+  const ALL = useMemo(() => [...extra, ...ROWS], [extra]);
 
   const rows = useMemo(() => {
-    const filtered = pipe === "All" ? ROWS : ROWS.filter((d) => d.stage === pipe);
+    const filtered = pipe === "All" ? ALL : ALL.filter((d) => d.stage === pipe);
     return [...filtered].sort((a, b) => {
       const av = sortValue(a, sort.key);
       const bv = sortValue(b, sort.key);
       const cmp = typeof av === "number" && typeof bv === "number" ? av - bv : String(av).localeCompare(String(bv));
       return cmp * sort.dir;
     });
-  }, [pipe, sort]);
+  }, [pipe, sort, ALL]);
 
-  const count = (p: Pipe) => (p === "All" ? ROWS.length : ROWS.filter((d) => d.stage === p).length);
+  const count = (p: Pipe) => (p === "All" ? ALL.length : ALL.filter((d) => d.stage === p).length);
   const total = (pick: (d: Deal) => number) => rows.reduce((s, d) => s + pick(d), 0);
   const onSort = (key: SortKey) =>
     setSort((s) =>
@@ -149,6 +162,9 @@ function Page() {
         </div>
         <div className="a-band-actions">
           <span className="a-chip c-stage">Sample pipeline — demo records</span>
+          <button type="button" className="a-btn a-btn-gold" onClick={() => setShowNew(true)}>
+            <Plus size={16} /> New Deal
+          </button>
           <button type="button" className="a-btn a-btn-line" onClick={exportCsv}>
             <Download size={16} /> Export CSV
           </button>
@@ -310,6 +326,8 @@ function Page() {
           {clientMode ? "Commission is hidden while client mode is on." : "Switch on client mode in the top bar to hide commission."}
         </p>
       </div>
+
+      {showNew && <NewDealModal onClose={() => setShowNew(false)} onCreate={addDeal} />}
     </>
   );
 }
@@ -335,5 +353,197 @@ function Th({
         {active && <ChevronDown size={12} style={{ transform: sort.dir === 1 ? "rotate(180deg)" : undefined }} />}
       </button>
     </th>
+  );
+}
+
+const PROPERTIES = Array.from(
+  new Map(
+    ROWS.map((d) => [`${d.property}|${d.unit}|${d.area}`, { property: d.property, unit: d.unit, area: d.area }]),
+  ).values(),
+);
+
+function NewDealModal({ onClose, onCreate }: { onClose: () => void; onCreate: (d: Deal) => void }) {
+  const [prop, setProp] = useState("");
+  const [buyer, setBuyer] = useState("");
+  const [phone, setPhone] = useState("");
+  const [amount, setAmount] = useState("");
+  const [commPct, setCommPct] = useState("2");
+  const [sharePct, setSharePct] = useState("40");
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const amt = Number(amount) || 0;
+  const tokenAmt = Number(token) || 0;
+  const commission = (amt * (Number(commPct) || 0)) / 100;
+  const agentShare = (commission * (Number(sharePct) || 0)) / 100;
+  const companyNet = commission - agentShare;
+  const balance = Math.max(0, amt - tokenAmt);
+  const tokenPct = amt > 0 ? Math.round((tokenAmt / amt) * 100) : 0;
+  const picked = prop ? prop.split("|") : [];
+
+  const submit = () => {
+    if (!prop) {
+      toast.error("Choose a property first");
+      return;
+    }
+    if (!buyer.trim()) {
+      toast.error("Buyer name is required");
+      return;
+    }
+    if (amt <= 0) {
+      toast.error("Deal amount must be more than zero");
+      return;
+    }
+    const [property = "", unit = "", area = ""] = picked;
+    onCreate({
+      id: `ND-${Date.now().toString().slice(-5)}`,
+      property,
+      unit,
+      area,
+      buyer: buyer.trim(),
+      source: phone.trim() ? `Phone ${phone.trim()}` : "Added manually",
+      type: "Sale",
+      amount: amt,
+      paid: tokenAmt,
+      commission: Math.round(commission),
+      agent: "You",
+      stage: "Token",
+      plan: "Not set yet",
+      next: tokenAmt > 0 ? "Token received — agree the payment plan" : "Token money still due",
+      note: "Created with the New Deal form. Demo record — nothing was saved to your database.",
+      updated: new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }),
+    });
+    onClose();
+  };
+
+  return (
+    <div
+      className="a-modal a-deal-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="New deal"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div>
+        <div className="a-deal-head">
+          <div>
+            <h2 style={{ margin: 0 }}>New deal</h2>
+            <p className="a-note" style={{ margin: 0 }}>Fill the details and the summary updates as you type.</p>
+          </div>
+          <button
+            type="button"
+            className="a-btn a-btn-line a-btn-sm"
+            aria-label="Close new deal form"
+            onClick={onClose}
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="a-deal-grid">
+          <div className="a-deal-fields">
+            <label className="a-deal-span">
+              Property
+              <select value={prop} onChange={(e) => setProp(e.target.value)} autoFocus>
+                <option value="">Choose a property…</option>
+                {PROPERTIES.map((p) => (
+                  <option key={`${p.property}|${p.unit}|${p.area}`} value={`${p.property}|${p.unit}|${p.area}`}>
+                    {p.property} · {p.unit} · {p.area}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Buyer name
+              <input value={buyer} onChange={(e) => setBuyer(e.target.value)} placeholder="Full name" />
+            </label>
+            <label>
+              Buyer phone
+              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+971 5x xxx xxxx" />
+            </label>
+            <label>
+              Deal amount
+              <input
+                type="number"
+                min="0"
+                step="1000"
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0"
+              />
+            </label>
+            <label>
+              Commission %
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                inputMode="decimal"
+                value={commPct}
+                onChange={(e) => setCommPct(e.target.value)}
+              />
+            </label>
+            <label>
+              Agent share %
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                inputMode="decimal"
+                value={sharePct}
+                onChange={(e) => setSharePct(e.target.value)}
+              />
+            </label>
+            <label>
+              Token money
+              <input
+                type="number"
+                min="0"
+                step="1000"
+                inputMode="decimal"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="0"
+              />
+            </label>
+          </div>
+
+          <div className="a-deal-sum">
+            <h3>Summary</h3>
+            <div className="a-deal-srow"><span>Property</span><b>{picked[0] || "—"}</b></div>
+            <div className="a-deal-srow"><span>Buyer</span><b>{buyer.trim() || "—"}</b></div>
+            <div className="a-deal-srow"><span>Phone</span><b>{phone.trim() || "—"}</b></div>
+            <div className="a-deal-srow"><span>Deal amount</span><b className="num">{formatAed(amt)}</b></div>
+            <div className="a-deal-srow"><span>Commission {commPct || 0}%</span><b className="num">{formatAed(commission)}</b></div>
+            <div className="a-deal-srow"><span>Agent share {sharePct || 0}%</span><b className="num">{formatAed(agentShare)}</b></div>
+            <div className="a-deal-srow total"><span>Company net</span><b className="num">{formatAed(companyNet)}</b></div>
+            <div className="a-deal-srow"><span>Token money</span><b className="num">{formatAed(tokenAmt)} · {tokenPct}%</b></div>
+            <div className="a-deal-srow"><span>Balance after token</span><b className="num">{formatAed(balance)}</b></div>
+          </div>
+        </div>
+
+        <div className="a-modal-actions">
+          <button type="button" className="a-btn a-btn-line" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="button" className="a-btn a-btn-gold" onClick={submit}>
+            Add to pipeline
+          </button>
+        </div>
+        <p className="a-mut" style={{ margin: 0 }}>
+          Demo only — this puts the deal in the on-screen pipeline. Nothing is written to your database.
+        </p>
+      </div>
+    </div>
   );
 }
