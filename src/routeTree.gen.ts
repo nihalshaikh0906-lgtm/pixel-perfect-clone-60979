@@ -43,6 +43,7 @@ import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copi
 import { Route as MediaSplatRouteImport } from './routes/media.$'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
+import { Route as AuthenticatedAppAboutRouteImport } from './routes/_authenticated/app.about'
 import { Route as AuthenticatedAppAboutAppRouteImport } from './routes/_authenticated/app.about-app'
 import { Route as AuthenticatedAppActivityLogsRouteImport } from './routes/_authenticated/app.activity-logs'
 import { Route as AuthenticatedAppAgreementsRouteImport } from './routes/_authenticated/app.agreements'
@@ -239,6 +240,11 @@ const AuthenticatedAppSectionRoute = AuthenticatedAppSectionRouteImport.update({
   path: '/$section',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppAboutRoute = AuthenticatedAppAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppAboutAppRoute =
   AuthenticatedAppAboutAppRouteImport.update({
     id: '/about-app',
@@ -413,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/media/$': typeof MediaSplatRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
+  '/app/about': typeof AuthenticatedAppAboutRoute
   '/app/about-app': typeof AuthenticatedAppAboutAppRoute
   '/app/activity-logs': typeof AuthenticatedAppActivityLogsRoute
   '/app/agreements': typeof AuthenticatedAppAgreementsRoute
@@ -472,6 +479,7 @@ export interface FileRoutesByTo {
   '/media/$': typeof MediaSplatRoute
   '/': typeof AuthenticatedIndexRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
+  '/app/about': typeof AuthenticatedAppAboutRoute
   '/app/about-app': typeof AuthenticatedAppAboutAppRoute
   '/app/activity-logs': typeof AuthenticatedAppActivityLogsRoute
   '/app/agreements': typeof AuthenticatedAppAgreementsRoute
@@ -534,6 +542,7 @@ export interface FileRoutesById {
   '/media/$': typeof MediaSplatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
+  '/_authenticated/app/about': typeof AuthenticatedAppAboutRoute
   '/_authenticated/app/about-app': typeof AuthenticatedAppAboutAppRoute
   '/_authenticated/app/activity-logs': typeof AuthenticatedAppActivityLogsRoute
   '/_authenticated/app/agreements': typeof AuthenticatedAppAgreementsRoute
@@ -596,6 +605,7 @@ export interface FileRouteTypes {
     | '/api/general-copilot'
     | '/media/$'
     | '/app/$section'
+    | '/app/about'
     | '/app/about-app'
     | '/app/activity-logs'
     | '/app/agreements'
@@ -655,6 +665,7 @@ export interface FileRouteTypes {
     | '/media/$'
     | '/'
     | '/app/$section'
+    | '/app/about'
     | '/app/about-app'
     | '/app/activity-logs'
     | '/app/agreements'
@@ -716,6 +727,7 @@ export interface FileRouteTypes {
     | '/media/$'
     | '/_authenticated/'
     | '/_authenticated/app/$section'
+    | '/_authenticated/app/about'
     | '/_authenticated/app/about-app'
     | '/_authenticated/app/activity-logs'
     | '/_authenticated/app/agreements'
@@ -1001,6 +1013,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppSectionRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/about': {
+      id: '/_authenticated/app/about'
+      path: '/about'
+      fullPath: '/app/about'
+      preLoaderRoute: typeof AuthenticatedAppAboutRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/about-app': {
       id: '/_authenticated/app/about-app'
       path: '/about-app'
@@ -1181,6 +1200,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSectionRoute: typeof AuthenticatedAppSectionRoute
+  AuthenticatedAppAboutRoute: typeof AuthenticatedAppAboutRoute
   AuthenticatedAppAboutAppRoute: typeof AuthenticatedAppAboutAppRoute
   AuthenticatedAppActivityLogsRoute: typeof AuthenticatedAppActivityLogsRoute
   AuthenticatedAppAgreementsRoute: typeof AuthenticatedAppAgreementsRoute
@@ -1210,6 +1230,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSectionRoute: AuthenticatedAppSectionRoute,
+  AuthenticatedAppAboutRoute: AuthenticatedAppAboutRoute,
   AuthenticatedAppAboutAppRoute: AuthenticatedAppAboutAppRoute,
   AuthenticatedAppActivityLogsRoute: AuthenticatedAppActivityLogsRoute,
   AuthenticatedAppAgreementsRoute: AuthenticatedAppAgreementsRoute,

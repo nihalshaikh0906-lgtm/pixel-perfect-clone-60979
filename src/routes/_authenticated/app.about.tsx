@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Fragment } from "react";
 import { MessageCircle, Youtube } from "lucide-react";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
@@ -48,7 +49,7 @@ function Page() {
       <div className="a-card a-fade" style={{ marginTop: 20 }}>
         <div className="a-card-head"><h2>Data Storage</h2></div>
         <dl className="a-kv" style={{ margin: 0 }}>
-          {STORAGE.map(([k, v]) => <><dt key={`${k}-t`}>{k}</dt><dd key={`${k}-d`} style={{ fontWeight: 500 }}>{v}</dd></>)}
+          {STORAGE.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd style={{ fontWeight: 500 }}>{v}</dd></Fragment>)}
         </dl>
       </div>
 
