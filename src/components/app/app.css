@@ -448,4 +448,23 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
   .dapp .a-print-side,.dapp .a-deal-head,.dapp .a-modal-actions,.dapp .a-mut{display:none!important}
 }
 
+/* My Account: profile picture picker and password meter, built from the existing workspace surfaces and tokens. */
+.dapp .a-acc-photo{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.dapp .a-acc-frame{display:grid;place-items:center;width:92px;height:92px;overflow:hidden;flex-shrink:0;border:1px dashed var(--a-line);border-radius:20px;background:var(--a-cream);color:var(--a-ink-2);cursor:pointer;transition:border-color .15s,background .15s}
+.dapp .a-acc-frame:hover,.dapp .a-acc-frame.drag{border-color:var(--a-gold);background:var(--a-gold-tint)}
+.dapp .a-acc-frame:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
+.dapp .a-acc-frame img{width:100%;height:100%;object-fit:cover}
+.dapp .a-acc-initials{font-size:26px;font-weight:800;color:var(--a-gold-text)}
+.dapp .a-acc-meta{display:grid;gap:3px;min-width:0}
+.dapp .a-acc-meta b{font-size:14px;font-weight:600;color:var(--a-ink);overflow-wrap:anywhere}
+.dapp .a-acc-file{display:none}
+.dapp .a-acc-acts{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dapp .a-acc-meter{display:flex;gap:6px;flex:1;min-width:120px}
+.dapp .a-acc-meter i{flex:1;height:4px;border-radius:999px;background:var(--a-line)}
+.dapp .a-acc-meter i.on{background:var(--a-gold)}
+.dapp .a-acc-fields input{width:100%;min-width:0;height:42px;border:1px solid var(--a-line);border-radius:12px;padding:0 12px;font:inherit;background:var(--a-card);color:var(--a-ink)}
+.dapp .a-acc-fields input:focus-visible{outline:2px solid var(--a-gold);outline-offset:2px}
+@media(max-width:560px){.dapp .a-acc-photo{gap:12px}.dapp .a-acc-frame{width:76px;height:76px}.dapp .a-acc-initials{font-size:22px}}
+
+
 
