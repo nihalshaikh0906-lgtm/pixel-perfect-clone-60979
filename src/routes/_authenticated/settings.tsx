@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { Check, ImagePlus, Loader2, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Check, ImagePlus, Loader2, LogOut, Upload, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { TopBar } from "@/components/TopBar";
@@ -52,6 +52,11 @@ function SettingsPage() {
   const [theme, setTheme] = useState("gold");
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [docName, setDocName] = useState("");
+  const [docLogo, setDocLogo] = useState<string | null>(null);
+  const [docLogoName, setDocLogoName] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const docLogoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data, error }) => {
@@ -92,6 +97,17 @@ function SettingsPage() {
     toast.success("Logo saved");
   }
 
+  // Document Branding: the picked file is read in the browser as a Data URL for preview only.
+  function readDocLogo(file: File | undefined): void {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2 MB."); return; }
+    const reader = new FileReader();
+    reader.onload = () => { setDocLogo(typeof reader.result === "string" ? reader.result : null); setDocLogoName(file.name); };
+    reader.onerror = () => toast.error("Couldn't read that file.");
+    reader.readAsDataURL(file);
+  }
+
   async function save(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     setSaving(true);
@@ -120,6 +136,79 @@ function SettingsPage() {
         <p className="eyebrow">Account</p>
         <h1 className="mt-1 text-3xl uppercase">Settings</h1>
         <p className="mt-2 text-muted-foreground">Your details appear on every PDF you send to clients.</p>
+
+        <section className="mt-8 rounded-2xl border border-border bg-card p-6">
+          <p className="eyebrow">Document Branding</p>
+          <p className="mt-2 text-sm text-muted-foreground">The name and mark that sit at the top of your client documents.</p>
+
+          <label className="mt-5 block">
+            <span className="eyebrow">Company / Agent Name</span>
+            <Input
+              className="mt-1.5"
+              value={docName}
+              onChange={(e) => setDocName(e.target.value)}
+              placeholder="e.g. Skyline Realty"
+              autoComplete="off"
+            />
+          </label>
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Company logo — drop an image here, or press Enter to browse"
+              onClick={() => docLogoRef.current?.click()}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); docLogoRef.current?.click(); } }}
+              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+              onDragEnter={(e) => { e.preventDefault(); setDragging(true); }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => { e.preventDefault(); setDragging(false); readDocLogo(e.dataTransfer.files?.[0]); }}
+              className={`flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-dashed px-4 py-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${dragging ? "border-primary/60 bg-primary/5" : "border-border bg-secondary/40 hover:border-primary/60"}`}
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-border bg-card">
+                <Upload className="size-4 text-muted-foreground" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold">Drop your logo here</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">or click to browse · PNG/JPG, up to 2 MB</span>
+              </span>
+            </div>
+
+            <input
+              ref={docLogoRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => { readDocLogo(e.target.files?.[0]); e.target.value = ""; }}
+            />
+
+            <div className="flex items-center gap-3 justify-self-start sm:justify-self-end">
+              <div className="grid size-20 place-items-center overflow-hidden rounded-xl border border-border bg-secondary">
+                {docLogo ? <img src={docLogo} alt="Company logo preview" className="size-full object-contain" /> : <ImagePlus className="size-6 text-muted-foreground" />}
+              </div>
+              {docLogo ? (
+                <button
+                  type="button"
+                  onClick={() => { setDocLogo(null); setDocLogoName(null); }}
+                  className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-3.5" /> Remove
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          <p className="mt-3 text-xs text-muted-foreground">
+            {docLogo ? (
+              <>
+                Previewing <span className="font-semibold text-foreground">{docLogoName}</span>
+                {docName.trim() ? <> for <span className="font-semibold text-foreground">{docName.trim()}</span></> : null} — shown on this page only, nothing is uploaded.
+              </>
+            ) : (
+              "Nothing picked yet — the preview stays on this page."
+            )}
+          </p>
+        </section>
 
         {loading ? (
           <div className="mt-10 flex items-center gap-2 text-muted-foreground">
