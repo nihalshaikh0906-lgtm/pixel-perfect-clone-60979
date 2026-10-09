@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Copy, Download, Eye, FileSignature, FileText, X } from "lucide-react";
+import { Copy, Download, Eye, FileSignature, FileText, Printer, X } from "lucide-react";
 import { toast } from "sonner";
+
 
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
@@ -358,7 +359,30 @@ function Page() {
   );
 }
 
+// Print dialog options — the browser's own print / Save as PDF step does the rest.
+const DESTINATIONS = ["Save as PDF", "DealOS office printer", "Print to file"];
+const PAGE_OPTIONS = ["All", "Page 1", "Page 2"];
+const COLORS = ["Black and white", "Color"];
+
+const PARTIES: Record<DocType, [string, string]> = {
+  "Sale Agreement": ["Seller", "Buyer"],
+  "Rental Agreement": ["Landlord", "Tenant"],
+  "Payment Receipt": ["Issued by", "Received from"],
+};
+
+const termOf = (doc: Doc, ...keys: string[]): string => {
+  for (const k of keys) {
+    const hit = doc.terms.find(([key]) => key === k);
+    if (hit) return hit[1];
+  }
+  return "—";
+};
+
 function DocModal({ doc, onClose }: { doc: Doc; onClose: () => void }) {
+  const [dest, setDest] = useState<string>(DESTINATIONS[0] ?? "Save as PDF");
+  const [pages, setPages] = useState<string>(PAGE_OPTIONS[0] ?? "All");
+  const [color, setColor] = useState<string>(COLORS[0] ?? "Black and white");
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -386,68 +410,180 @@ function DocModal({ doc, onClose }: { doc: Doc; onClose: () => void }) {
     toast.success("Draft downloaded — demo only");
   };
 
+  const [p1, p2] = PARTIES[doc.type];
+  const first =
+    doc.type === "Payment Receipt" ? `DealOS CRM (${doc.agent})` : termOf(doc, "Seller", "Landlord", "Received from");
+  const show1 = pages === "All" || pages === "Page 1";
+  const show2 = pages === "All" || pages === "Page 2";
+  const sheets = (show1 ? 1 : 0) + (show2 ? 1 : 0);
+  const mono = color === "Black and white";
+  const sheet = `a-print-page${mono ? " a-print-bw" : ""}`;
+
   return (
     <div
-      className="a-modal a-doc-modal"
+      className="a-modal a-print-modal"
       role="dialog"
       aria-modal="true"
-      aria-label={`${doc.type} preview`}
+      aria-label={`${doc.type} print preview`}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div>
         <div className="a-deal-head">
           <div>
-            <h2 style={{ margin: 0 }}>{doc.type}</h2>
+            <h2 style={{ margin: 0 }}>Print preview</h2>
             <p className="a-note" style={{ margin: 0 }}>
               {doc.title} · <span className="num">{doc.ref}</span> · {doc.status}
             </p>
           </div>
-          <button type="button" className="a-btn a-btn-line a-btn-sm" aria-label="Close document" onClick={onClose}>
+          <button type="button" className="a-btn a-btn-line a-btn-sm" aria-label="Close print preview" onClick={onClose}>
             <X size={14} />
           </button>
         </div>
 
-        <div className="a-doc-sheet">
-          <div className="a-doc-top">
-            <b>DealOS CRM</b>
-            <span className="a-note num">
-              {doc.ref} · {doc.date}
-            </span>
-          </div>
-          <dl className="a-kv">
-            {doc.terms.map(([k, v]) => (
-              <div key={k} style={{ display: "contents" }}>
-                <dt>{k}</dt>
-                <dd className={isMoney(v) ? "num" : undefined}>{v}</dd>
+        <div className="a-print-grid">
+          <div className="a-print-stage">
+            {show1 && (
+              <div className={sheet}>
+                <div className="a-print-head">
+                  <span>DealOS CRM</span>
+                  <span className="num">
+                    {doc.ref} · 1 / 2
+                  </span>
+                </div>
+                <h3 className="a-print-title">{doc.type}</h3>
+                <p className="a-print-sub">
+                  {termOf(doc, "Property", "For")} · {termOf(doc, "Area")}
+                </p>
+                <p className="a-print-body">
+                  Agreement <span className="num">{doc.ref}</span> is made on {doc.date} at Dubai, United Arab
+                  Emirates, between:
+                </p>
+                <p className="a-print-body">
+                  <b>{p1}</b> — {first} ("the First Party")
+                </p>
+                <p className="a-print-body">
+                  <b>{p2}</b> — {doc.party} ("the Second Party")
+                </p>
+                <p className="a-print-body">
+                  The parties agree to the terms set out below and to the deal summary in Schedule A, which forms part
+                  of this document. All amounts are in UAE dirhams and are taken from the deal record.
+                </p>
+                <ol className="a-print-clauses">
+                  {doc.clauses.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ol>
               </div>
-            ))}
-          </dl>
-          <ol className="a-doc-clauses">
-            {doc.clauses.map((c) => (
-              <li key={c}>{c}</li>
-            ))}
-          </ol>
-          <p className="a-note" style={{ margin: 0 }}>
-            Draft generated from the deal record. Clause wording is placeholder text — replace it with your own
-            template before anything is signed.
-          </p>
-        </div>
+            )}
 
-        <div className="a-modal-actions">
-          <button type="button" className="a-btn a-btn-line" onClick={copy}>
-            <Copy size={15} /> Copy text
-          </button>
-          <button type="button" className="a-btn a-btn-line" onClick={download}>
-            <Download size={15} /> Download draft
-          </button>
-          <button type="button" className="a-btn a-btn-gold" onClick={onClose}>
-            Close
-          </button>
+            {show2 && (
+              <div className={sheet}>
+                <div className="a-print-head">
+                  <span>Schedule A</span>
+                  <span className="num">
+                    {doc.ref} · 2 / 2
+                  </span>
+                </div>
+                <h3 className="a-print-title">Deal summary</h3>
+                <dl className="a-kv">
+                  {doc.terms.map(([k, v]) => (
+                    <div key={k} style={{ display: "contents" }}>
+                      <dt>{k}</dt>
+                      <dd className={isMoney(v) ? "num" : undefined}>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <h4 className="a-print-h2">Signatures</h4>
+                <div className="a-print-sign">
+                  <div>
+                    {p1}: {first}
+                    <span>Name · date · signature</span>
+                  </div>
+                  <div>
+                    {p2}: {doc.party}
+                    <span>Name · date · signature</span>
+                  </div>
+                </div>
+                <p className="a-print-sub" style={{ marginTop: 16 }}>
+                  Generated from the deal record. Clause wording is placeholder text — replace it with your own
+                  template before anything is signed.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <aside className="a-print-side">
+            <h3>Print settings</h3>
+            <label>
+              Destination
+              <select value={dest} onChange={(e) => setDest(e.target.value)}>
+                {DESTINATIONS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Pages
+              <select value={pages} onChange={(e) => setPages(e.target.value)}>
+                {PAGE_OPTIONS.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Color
+              <select value={color} onChange={(e) => setColor(e.target.value)}>
+                {COLORS.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="a-deal-sum">
+              <h3>Summary</h3>
+              <div className="a-deal-srow">
+                <span>
+                  Paper<em>Portrait</em>
+                </span>
+                <b>A4</b>
+              </div>
+              <div className="a-deal-srow">
+                <span>
+                  Sheets<em>{pages}</em>
+                </span>
+                <b className="num">{sheets}</b>
+              </div>
+              <div className="a-deal-srow total">
+                <span>
+                  Output<em>{dest}</em>
+                </span>
+                <b>{mono ? "Mono" : "Colour"}</b>
+              </div>
+            </div>
+
+            <button type="button" className="a-btn a-btn-gold" onClick={() => window.print()}>
+              <Printer size={16} /> Print / Download PDF
+            </button>
+            <button type="button" className="a-btn a-btn-line" onClick={copy}>
+              <Copy size={15} /> Copy text
+            </button>
+            <button type="button" className="a-btn a-btn-line" onClick={download}>
+              <Download size={15} /> Download draft (.txt)
+            </button>
+            <p className="a-note" style={{ margin: 0 }}>
+              Opens your browser's print dialog — choose Save as PDF there to keep a copy. Nothing is saved to your
+              database and nothing is sent to the client.
+            </p>
+          </aside>
         </div>
-        <p className="a-mut" style={{ margin: 0 }}>
-          Demo only — this document is not saved to your database and nothing is sent to the client.
-        </p>
       </div>
     </div>
   );
 }
+
