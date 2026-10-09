@@ -458,6 +458,7 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .dapp .a-acc-meta{display:grid;gap:3px;min-width:0}
 .dapp .a-acc-meta b{font-size:14px;font-weight:600;color:var(--a-ink);overflow-wrap:anywhere}
 .dapp .a-acc-file{display:none}
+.dapp .a-acc-acts{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
 .dapp .a-acc-meter{display:flex;gap:6px;flex:1;min-width:120px}
 .dapp .a-acc-meter i{flex:1;height:4px;border-radius:999px;background:var(--a-line)}
 .dapp .a-acc-meter i.on{background:var(--a-gold)}

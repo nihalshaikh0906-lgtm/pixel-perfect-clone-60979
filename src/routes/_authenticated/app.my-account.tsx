@@ -183,7 +183,7 @@ function Page() {
                 ? "Previewing on this page only — nothing is uploaded."
                 : "Drop a PNG or JPG here, or click the frame to browse. Up to 2 MB."}
             </span>
-            <span className="a-deal-acts" style={{ marginTop: 4 }}>
+            <span className="a-acc-acts" style={{ marginTop: 4 }}>
               <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => photoRef.current?.click()}>
                 <Upload size={13} /> {photo ? "Replace photo" : "Choose photo"}
               </button>
@@ -392,7 +392,7 @@ function Page() {
             {" · "}
             {whatsappAlerts ? "WhatsApp alerts on" : "WhatsApp alerts off"}
           </span>
-          <span className="a-deal-acts">
+          <span className="a-acc-acts">
             <button type="button" className="a-btn a-btn-line" onClick={discard}>
               Discard
             </button>
