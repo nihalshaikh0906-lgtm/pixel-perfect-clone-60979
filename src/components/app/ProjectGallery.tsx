@@ -21,7 +21,7 @@ export function ProjectGallery({ photos, title }: { photos: string[]; title: str
       </Button>)}
     </div>
     <Dialog open={index != null && photos.length > 0} onOpenChange={(open) => { if (!open) setIndex(null); }}>
-      <DialogContent className="!fixed !inset-0 !left-0 !top-0 !flex !h-dvh !w-screen !max-w-none !translate-x-0 !translate-y-0 flex-col !rounded-none !border-0 !p-6 sm:!p-10" onKeyDown={(event) => {
+      <DialogContent className="dapp !fixed !inset-0 !left-0 !top-0 !flex !h-dvh !w-screen !max-w-none !translate-x-0 !translate-y-0 flex-col !rounded-none !border-0 !p-6 sm:!p-10" onKeyDown={(event) => {
         if (event.key === "ArrowRight") { event.preventDefault(); move(1); }
         if (event.key === "ArrowLeft") { event.preventDefault(); move(-1); }
       }}>
