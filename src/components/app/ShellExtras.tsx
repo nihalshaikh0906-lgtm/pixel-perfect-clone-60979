@@ -7,9 +7,9 @@ import * as Popover from "@radix-ui/react-popover";
 export type ThemePref = "light" | "dark" | "system";
 
 export function useTheme() {
-  const [pref, setPref] = useState<ThemePref>("light");
-  const [dark, setDark] = useState(false);
-  useEffect(() => { setPref((localStorage.getItem("dealos.theme") as ThemePref) || "light"); }, []);
+  const [pref, setPref] = useState<ThemePref>("dark");
+  const [dark, setDark] = useState(true);
+  useEffect(() => { setPref((localStorage.getItem("dealos.theme") as ThemePref) || "dark"); }, []);
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const apply = () => setDark(pref === "dark" || (pref === "system" && mq.matches));

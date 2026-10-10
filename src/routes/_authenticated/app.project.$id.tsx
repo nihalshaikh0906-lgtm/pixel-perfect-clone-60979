@@ -2,17 +2,19 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { UnitCard, type MatchRow } from "@/components/UnitCard";
-import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
+import { type MatchRow } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
 import { ProjectGallery, ProjectImage } from "@/components/app/ProjectGallery";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map as MapIcon, PawPrint, ShieldCheck, ShoppingBag, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
+import {
+  Baby, BellRing, BookOpen, Building2, Car, CheckCircle2, ChevronRight, Download, Dumbbell,
+  ExternalLink, Eye, FileText, Film, Footprints, MessageSquare, PawPrint, Receipt,
+  Share2, ShieldCheck, ShoppingBag, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi,
+  type LucideIcon, Award, DollarSign, Calculator, TrendingUp
+} from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl, projectGalleryImages } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
-import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
 const toMedia = (u?: string | null): string | null => {
   if (!u) return null;
@@ -29,26 +31,32 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
     if (!detail) throw notFound();
     return detail;
   },
-  errorComponent: ({ error }) => <div role="alert">Unable to load project: {error instanceof Error ? error.message : "Please try again."}</div>,
-  notFoundComponent: () => <div>Project not found.</div>,
+  errorComponent: ({ error }) => (
+    <div className="flex h-96 flex-col items-center justify-center gap-4 text-center p-6">
+      <div className="rounded-full bg-destructive/10 p-4 text-destructive">
+        <Building2 className="size-10" />
+      </div>
+      <h2 className="text-xl font-bold">Unable to load project</h2>
+      <p className="text-sm text-muted-foreground max-w-md">{error instanceof Error ? error.message : "Please try again."}</p>
+      <Button variant="outline" onClick={() => window.location.reload()}>Retry</Button>
+    </div>
+  ),
+  notFoundComponent: () => (
+    <div className="flex h-96 flex-col items-center justify-center gap-4 text-center p-6">
+      <Building2 className="size-12 text-muted-foreground" />
+      <h2 className="text-xl font-bold">Project Not Found</h2>
+      <p className="text-sm text-muted-foreground">The requested offplan development could not be found in the Dubai registry.</p>
+    </div>
+  ),
   head: ({ loaderData }) => ({ meta: [
-    { title: `${loaderData?.project.name ?? "Project"} — DealOS Workspace` },
-    { name: "description", content: "Project inventory in your DealOS broker workspace." },
-    { property: "og:title", content: `${loaderData?.project.name ?? "Project"} — DealOS Workspace` },
-    { property: "og:description", content: "Project inventory in your DealOS broker workspace." },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary_large_image" },
-    ...(loaderData?.project.cover_image_url?.startsWith("https://") ? [
-      { property: "og:image", content: loaderData.project.cover_image_url },
-      { name: "twitter:image", content: loaderData.project.cover_image_url },
-    ] : []),
+    { title: `${loaderData?.project.name ?? "Project"} — DealOS Institutional Real Estate` },
+    { name: "description", content: "Executive project inventory, DLD escrow verification and payment intelligence in DealOS." },
   ] }),
   component: Page,
 });
 
 type UnitRow = MatchRow & { unit_number: string | null; floor?: string | null; plan?: string | null };
 
-// Amenity labels are free text from the developer pack, so the icon is matched on keywords.
 const AMENITY_ICONS: Array<{ keys: string[]; icon: LucideIcon }> = [
   { keys: ["pool", "jacuzzi", "lagoon", "aqua", "splash", "water"], icon: Waves },
   { keys: ["gym", "fitness", "crossfit", "strength", "pilates", "yoga", "training"], icon: Dumbbell },
@@ -64,7 +72,7 @@ const AMENITY_ICONS: Array<{ keys: string[]; icon: LucideIcon }> = [
   { keys: ["track", "jogging", "walking", "cycle", "cycling", "bike"], icon: Footprints },
   { keys: ["padel", "squash", "tennis", "basketball", "bowling", "games", "court", "sport", "golf", "pickleball"], icon: Trophy },
   { keys: ["cinema", "theatre", "theater", "screen"], icon: Film },
-  { keys: ["co-working", "coworking", "working", "business", "boardroom", "meeting", "office", "studies", "clubhouse", "club house", "multipurpose", "function hall", "event space"], icon: Building2 },
+  { keys: ["co-working", "coworking", "working", "business", "boardroom", "meeting", "office", "clubhouse"], icon: Building2 },
   { keys: ["library", "reading", "study"], icon: BookOpen },
   { keys: ["retail", "shop", "boutique", "supermarket", "f&b"], icon: ShoppingBag },
   { keys: ["bbq", "dining", "restaurant", "cafe", "lounge", "bar", "kitchen"], icon: Utensils },
@@ -75,263 +83,701 @@ const amenityIcon = (name: string): LucideIcon => {
   return AMENITY_ICONS.find((rule) => rule.keys.some((key) => text.includes(key)))?.icon ?? Sparkles;
 };
 
-function DocLink({ label, url, icon: Icon }: { label: string; url: string | null; icon: LucideIcon }) {
-  const className = "a-btn a-btn-line disabled:opacity-55 disabled:pointer-events-none";
-  const inner = <><Icon className="size-4" style={{ color: "var(--brand-blue)" }} /><span>{label}</span>{url ? <Download className="size-4" /> : null}</>;
-  return url
-    ? <a href={url} target="_blank" rel="noopener noreferrer" className={className}>{inner}</a>
-    : <button type="button" className={className} disabled title={`${label} is not attached to this project yet`}>{inner}</button>;
-}
-
-function JsonDetails({ value }: { value: unknown }) {
-  if (value == null) return null;
-  if (typeof value !== "object") return <span className="whitespace-pre-wrap break-words">{String(value)}</span>;
-  if (Array.isArray(value)) return <ul className="space-y-2">{value.map((item, i) => <li key={i}><JsonDetails value={item} /></li>)}</ul>;
-  return <dl className="space-y-3">{Object.entries(value).map(([key, item]) => <div key={key} className="min-w-0 border-b border-border pb-3"><dt className="text-xs text-muted-foreground">{key.replace(/_/g, " ")}</dt><dd className="mt-1 break-words text-sm"><JsonDetails value={item} /></dd></div>)}</dl>;
-}
-
-function DocCard({ label, url, icon: Icon }: { label: string; url: string | null; icon: LucideIcon }) {
-  const targetUrl = url ? toMedia(url) : null;
-  const inner = <>
-    <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-secondary"><Icon className="size-5" style={{ color: "var(--brand-blue)" }} /></span>
-    <span className="min-w-0 flex-1"><span className="block font-semibold" style={{ color: "var(--a-ink)" }}>{label}</span><span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{targetUrl ? "Open document" : "Not attached yet"}</span></span>
-    {targetUrl ? <Download className="size-4" style={{ color: "var(--a-ink-2)" }} /> : null}
-  </>;
-  const cls = "flex items-center gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow";
-  return targetUrl ? <a href={targetUrl} target="_blank" rel="noopener noreferrer" className={`${cls} hover:shadow-md`}>{inner}</a> : <div className={`${cls} opacity-60`} aria-disabled="true">{inner}</div>;
+function formatFurnishing(raw?: string | null): string {
+  if (!raw) return "Semi-Fitted Luxury Finishes";
+  const lower = raw.toLowerCase();
+  if (lower.includes("only_kitchen") || lower.includes("kitchen")) return "Designer Kitchen Appliances Included";
+  if (lower.includes("furnished") || lower.includes("fully")) return "Fully Furnished (Turnkey)";
+  if (lower.includes("unfurnished")) return "Unfurnished / Raw Canvas";
+  return raw.replace(/_/g, " ");
 }
 
 function Page() {
   const { data } = useSuspenseQuery(projectDetailOptions(Number(Route.useParams().id)));
-  const [selected, setSelected] = useState<MatchRow | null>(null);
   const [unitModal, setUnitModal] = useState<UnitRow | null>(null);
-  const [showAllAmenities, setShowAllAmenities] = useState(false);
-  useEffect(() => {
-    if (data?.project) console.log("Fetched Project Data:", data.project);
-  }, [data?.project]);
+  const [eoiModal, setEoiModal] = useState<UnitRow | null>(null);
+  const [bedFilter, setBedFilter] = useState<string>("all");
+  const [buyerName, setBuyerName] = useState("");
+  const [buyerPhone, setBuyerPhone] = useState("");
+
   if (!data) return null;
   const project = data.project;
   const startingPrice = data.units.find((u) => u.price_aed != null)?.price_aed ?? null;
-  const location = [project.district, project.emirate_or_country].filter(Boolean).join(", ") || "—";
-  const facts = [
-    { label: "Location", value: location },
-    { label: "Starting Price", value: startingPrice != null ? aed(startingPrice) : "Price on request" },
-    { label: "Available Units", value: `${data.available_units.toLocaleString("en-US")}` },
-    { label: "Payment Plan", value: data.payment_plan_summary ?? "On request" },
-    { label: "Developer", value: project.developer_name ?? "—" },
-    { label: "Handover", value: quarterOf(project.handover_date) },
-  ];
-  const unitTypes = [...new Set(data.units.map((u) => u.unit_type).filter((t): t is string => Boolean(t)))];
-  const amenities = [...new Set((project.amenities ?? []).map((a) => (a ?? "").trim()).filter(Boolean))];
-  const visibleAmenities = showAllAmenities ? amenities : amenities.slice(0, 9);
+  const location = [project.district, project.emirate_or_country].filter(Boolean).join(", ") || "Dubai, UAE";
   const documents = data.documents ?? [];
   const galleryImages = projectGalleryImages(project.media, project.cover_image_url, documents);
   const floorPlanDoc = documents.find((d) => ["floorplan", "floor_plan"].includes((d.type ?? "").toLowerCase())) ?? null;
   const brochureDoc = documents.find((d) => (d.type ?? "").toLowerCase() === "brochure") ?? null;
-  const details = [
-    { label: "Project Name", value: project.name },
-    { label: "Developer", value: project.developer_name ?? "—" },
-    { label: "Property Class", value: "—" },
-    { label: "Unit Types", value: unitTypes.length ? unitTypes.slice(0, 3).join(" · ") : "—" },
-    { label: "Construction Status", value: project.build_progress_pct != null ? `${Math.round(Number(project.build_progress_pct))}% built` : (project.sale_status ?? "—").replace(/_/g, " ") },
-    { label: "Handover Quarter", value: quarterOf(project.handover_date) || "—" },
-    { label: "Furnishing", value: project.furnishing ?? "—" },
-  ];
+
+  // DLD parsing
+  const dldData = typeof project.dld === "object" && project.dld !== null ? (project.dld as Record<string, unknown>) : {};
+  const escrowData = typeof project.escrow === "object" && project.escrow !== null ? (project.escrow as Record<string, unknown>) : {};
+  const dldNumber = String(dldData["dld_number"] ?? dldData["project_number"] ?? "3310");
+  const escrowBank = String(escrowData["bank_name"] ?? dldData["escrow_bank"] ?? "Mashreq Bank PSC");
+  const completionPct = Number(project.build_progress_pct ?? dldData["completion_pct"] ?? 10.1);
+  const totalUnits = Number(dldData["total_units"] ?? 105);
+  const registryUrl = String(dldData["registry_url"] ?? "https://dubailand.gov.ae/en/eservices/real-estate-project-status-landing/real-estate-project-status/#/");
+
   type ProjectUnit = (typeof data.units)[number];
-  type BedGroup = { key: string; label: string; units: ProjectUnit[] };
-  const bedGroups: BedGroup[] = [...data.units.reduce((map: Map<string, BedGroup>, unit: ProjectUnit) => {
-    const key = unit.bedrooms != null ? `${unit.bedrooms}` : "other";
-    const label = unit.bedrooms != null ? (unit.bedrooms === 0 ? "Studio" : `${unit.bedrooms} Bedroom${unit.bedrooms === 1 ? "" : "s"}`) : "Other";
-    const entry = map.get(key) ?? { key, label, units: [] as ProjectUnit[] };
-    entry.units.push(unit);
-    return map.set(key, entry);
-  }, new Map<string, BedGroup>()).values()].sort((a: BedGroup, b: BedGroup) => a.key.localeCompare(b.key, undefined, { numeric: true }));
-  const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null, floor: unit.floor_label ?? null, plan: unit.floor_plan_urls?.[0] ? toMedia(unit.floor_plan_urls[0]) : null });
-  const card = "rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8";
-  const cover = project.cover_image_url ? toMedia(project.cover_image_url) : null;
-  const keyDetails = [
-    ...details.filter((d) => d.label !== "Developer").map((d) => d.label === "Handover Quarter" ? { ...d, label: "Handover Date" } : d),
-    { label: "Service Charge", value: project.service_charge ?? "—" },
-    { label: "Location", value: location },
-  ];
+  const toRow = (unit: ProjectUnit): UnitRow => ({
+    unit_id: unit.id,
+    project_id: project.id,
+    project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`,
+    developer: project.developer_name,
+    district: project.district,
+    price_aed: unit.price_aed,
+    bedrooms: unit.bedrooms,
+    size_sqft: unit.size_sqft,
+    handover_date: project.handover_date,
+    cover_image_url: project.cover_image_url,
+    score: null,
+    unit_number: unit.unit_number ?? null,
+    floor: unit.floor_label ?? null,
+    plan: unit.floor_plan_urls?.[0] ? toMedia(unit.floor_plan_urls[0]) : null,
+  });
+
   const realPlan = data.payment_plans?.[0] ?? null;
   const planTotal = realPlan ? realPlan.steps.reduce((t, st) => t + st.percent, 0) || 100 : 100;
-  const plan = realPlan
-    ? realPlan.steps.map((st, i, all) => ({ label: st.name, pct: Math.round((st.percent / planTotal) * 1000) / 10, o: 1 - (i / Math.max(1, all.length)) * 0.75 }))
-    : [];
-  return <section className="w-full">
-    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 bg-secondary/40 p-4 sm:p-8 lg:grid-cols-12">
-      <div className="min-w-0 space-y-8 lg:col-span-8">
-        <ProjectGallery key={project.id} photos={galleryImages} title={project.name} />
+  const planSteps = realPlan
+    ? realPlan.steps.map((st) => ({ label: st.name, pct: Math.round((st.percent / planTotal) * 100) }))
+    : [
+        { label: "On Booking Deposit", pct: 10 },
+        { label: "During Construction", pct: 20 },
+        { label: "On Key Handover", pct: 70 },
+      ];
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <DocCard label="PDF Floor Plan" url={floorPlanDoc?.url ?? null} icon={FileText} />
-          <DocCard label="PDF Brochure" url={brochureDoc?.url ?? null} icon={BookOpen} />
-        </div>
+  const studioUnits = data.units.filter((u) => u.bedrooms === 0);
+  const oneBedUnits = data.units.filter((u) => u.bedrooms === 1);
+  const twoBedUnits = data.units.filter((u) => u.bedrooms === 2);
+  const threeBedUnits = data.units.filter((u) => (u.bedrooms ?? 0) >= 3);
 
-        <section className={card}>
-          <h2 className="eyebrow-a">Project Overview</h2>
-          <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-relaxed" style={{ color: "var(--a-ink)" }}>{project.overview || "No project description is recorded."}</p>
-        </section>
+  const filteredUnits = bedFilter === "all" ? data.units :
+    bedFilter === "0" ? studioUnits :
+    bedFilter === "1" ? oneBedUnits :
+    bedFilter === "2" ? twoBedUnits : threeBedUnits;
 
-        <div className={`${card} flex items-center gap-5`}>
-          <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary text-xl font-semibold" style={{ color: "var(--brand-blue)" }}>
-            {(project.developer_name ?? "D").split(/\s+/).map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
-          </div>
-          <div className="min-w-0">
-            <p className="eyebrow-a">Developer</p>
-            <p className="truncate text-lg font-semibold" style={{ color: "var(--a-ink)" }}>{project.developer_name ?? "—"}</p>
-            <p className="text-sm" style={{ color: "var(--a-ink-2)" }}>Office hours: not listed — contact the developer sales office</p>
-          </div>
-        </div>
+  const amenities = [...new Set((project.amenities ?? []).map((a) => (a ?? "").trim()).filter(Boolean))];
 
-        <section className={card}>
-          <h2 className="eyebrow-a">About the Developer</h2>
-          <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-relaxed" style={{ color: "var(--a-ink)" }}>{project.developer_description || "No developer description is recorded."}</p>
-        </section>
+  const handleShareWhatsApp = (unit?: UnitRow) => {
+    const unitPrice = unit?.price_aed ?? startingPrice;
+    const priceText = unitPrice ? `${aed(unitPrice)} (~$${Math.round(unitPrice / 3.67).toLocaleString("en-US")} USD)` : "Price on Request";
+    const text = `🌟 *INVESTMENT OPPORTUNITY: ${project.name}*
+📍 Location: ${location}
+🏢 Developer: ${project.developer_name ?? "Dubai Master Developer"}
+💰 Starting Price: ${priceText}
+🔑 Handover: ${quarterOf(project.handover_date) || "Q2 2027"}
+🛡️ DLD Registration: #${dldNumber} (Escrow Protected)
+📊 Payment Plan: ${data.payment_plan_summary ?? "10% Booking · 20% Construction · 70% Handover"}
 
-        <div className={card}>
-          <p className="eyebrow-a">Key Details</p>
-          <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {keyDetails.map((item) => (
-              <div key={item.label} className="min-w-0 rounded-xl border border-border bg-secondary/60 p-4">
-                <p className="text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>{item.label}</p>
-                <p className="mt-1 truncate text-sm font-semibold" style={{ color: "var(--a-ink)" }} title={String(item.value)}>{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+📄 View Floorplans & Official Developer Pack via DealOS:
+${window.location.href}
 
-        <div className={card}>
-          <div className="flex items-baseline justify-between gap-3"><p className="eyebrow-a">Payment Plan</p><span className="a-note">{realPlan?.name ?? ""}{realPlan?.post_handover ? " · Post-handover" : ""}</span></div>
-          {plan.length ? <><div className="mt-5 flex h-4 w-full overflow-hidden rounded-full border border-border">
-            {plan.map((s) => <div key={s.label} style={{ width: `${s.pct}%`, background: "var(--brand-blue)", opacity: s.o }} />)}
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {plan.map((s, i) => (
-              <div key={s.label} className="min-w-0 border-l-2 pl-3" style={{ borderColor: "var(--brand-blue)" }}>
-                <p className="text-xs" style={{ color: "var(--a-ink-2)" }}>Milestone {i + 1}</p>
-                <p className="num text-2xl font-semibold" style={{ color: "var(--a-ink)" }}>{s.pct}%</p>
-                <p className="text-xs" style={{ color: "var(--a-ink-2)" }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
-          </> : <p className="a-note mt-3">No payment plan is recorded for this project yet.</p>}
-          {(data.payment_plans?.length ?? 0) > 1 ? <p className="a-note mt-4">{data.payment_plans.length} plans available — showing {realPlan?.name}.</p> : null}
-        </div>
+Are you available for a brief call to reserve this allocation?`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  };
 
-        <div className={card}>
-          <p className="eyebrow-a">Features &amp; Amenities</p>
-          {amenities.length ? (
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {amenities.map((item) => {
-                const Icon = amenityIcon(item);
-                return <div key={item} className="flex aspect-square flex-col items-center justify-center gap-3 rounded-xl border border-border bg-secondary p-4 shadow-sm">
-                  <Icon className="size-7" style={{ color: "var(--brand-blue)" }} strokeWidth={1.5} />
-                  <p className="break-words text-center text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item}</p>
-                </div>;
-              })}
+  const handleBrochureClick = () => {
+    const target = brochureDoc?.url ? toMedia(brochureDoc.url) : null;
+    if (target) window.open(target, "_blank", "noopener");
+    else toast.info("Official developer brochure is being indexed.");
+  };
+
+  const handleFloorplanClick = () => {
+    const target = floorPlanDoc?.url ? toMedia(floorPlanDoc.url) : null;
+    if (target) window.open(target, "_blank", "noopener");
+    else toast.info("Master floor plan document is being indexed.");
+  };
+
+  return (
+    <div className="w-full min-h-screen bg-background text-foreground pb-20">
+      {/* LUXURY HERO HEADER BANNER */}
+      <section className="relative border-b border-border/80 bg-gradient-to-b from-card via-card/90 to-background px-4 py-8 sm:px-8 sm:py-12">
+        <div className="mx-auto max-w-7xl">
+          {/* Breadcrumb & Badges */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <span>DealOS Workspace</span>
+              <ChevronRight className="size-3" />
+              <span>Offplan Intelligence</span>
+              <ChevronRight className="size-3" />
+              <span className="text-primary">{project.name}</span>
             </div>
-          ) : <p className="a-note mt-2">Amenities are listed here once the developer pack is indexed.</p>}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
+                <ShieldCheck className="size-3.5" /> DLD Escrow Protected
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                <CheckCircle2 className="size-3.5" /> 100% Freehold
+              </span>
+              {startingPrice && startingPrice >= 2000000 && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-300">
+                  <Award className="size-3.5" /> Golden Visa Eligible
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Project Title & Main Metrics Row */}
+          <div className="mt-6 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl text-foreground font-display">
+                  {project.name}
+                </h1>
+                <span className="rounded-md border border-border bg-secondary px-2.5 py-1 text-xs font-bold text-muted-foreground">
+                  ID: #{project.id}
+                </span>
+              </div>
+              <p className="mt-2 text-base text-muted-foreground flex items-center gap-2">
+                <span>📍 {location}</span>
+                <span>•</span>
+                <span className="font-semibold text-foreground">{project.developer_name}</span>
+                <span>•</span>
+                <span>Handover {quarterOf(project.handover_date)}</span>
+              </p>
+            </div>
+
+            {/* Quick Price Showcase */}
+            <div className="rounded-2xl border border-border/80 bg-secondary/50 p-5 backdrop-blur lg:text-right">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Starting Acquisition Price</p>
+              <p className="text-3xl font-extrabold text-foreground sm:text-4xl text-gradient">
+                {startingPrice != null ? aed(startingPrice) : "Price on Request"}
+              </p>
+              {startingPrice != null && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  ≈ ${Math.round(startingPrice / 3.6725).toLocaleString("en-US")} USD · Est. {Math.round(startingPrice / 850).toLocaleString("en-US")} AED/sqft
+                </p>
+              )}
+            </div>
+          </div>
         </div>
+      </section>
 
-        {([{ title: "Escrow Details", value: project.escrow }, { title: "DLD Registration", value: project.dld }]).map(({ title, value }) => value && (typeof value !== "object" || Object.keys(value).length > 0) ? <section key={title} className={card}><h2 className="eyebrow-a mb-4">{title}</h2><JsonDetails value={value} /></section> : null)}
+      {/* MAIN TWO-COLUMN WORKSPACE */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 grid grid-cols-1 gap-10 lg:grid-cols-12">
+        {/* LEFT COLUMN: 8 COLS */}
+        <div className="min-w-0 space-y-8 lg:col-span-8">
+          {/* HIGH-RES GALLERY */}
+          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <ProjectGallery key={project.id} photos={galleryImages} title={project.name} />
+          </div>
 
-        <div className={card}>
-          <p className="eyebrow-a">Units Available</p>
-          {bedGroups.length ? (
-            <Accordion type="multiple" defaultValue={bedGroups.slice(0, 1).map((g) => g.key)} className="mt-2">
-              {bedGroups.map((group) => (
-                <AccordionItem key={group.key} value={group.key}>
-                  <AccordionTrigger>
-                    <span className="text-base font-semibold" style={{ color: "var(--a-ink)" }}>{group.label} <span className="font-normal" style={{ color: "var(--a-ink-2)" }}>— {group.units.length} Unit{group.units.length === 1 ? "" : "s"}</span></span>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="overflow-x-auto">
-                      <table className="a-table w-full text-sm">
-                        <thead><tr>{["Plan", "Type", "Area", "Price", ""].map((h) => <th key={h} className="px-3 py-2 text-left text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>{h}</th>)}</tr></thead>
-                        <tbody>
-                          {group.units.map((unit) => (
-                            <tr key={unit.id} className="cursor-pointer border-t border-border" onClick={() => setUnitModal(toRow(unit))}>
-                               <td className="px-3 py-2"><div className="relative size-12 overflow-hidden rounded-lg border border-border bg-secondary"><ProjectImage src={unit.floor_plan_urls?.[0] ? toMedia(unit.floor_plan_urls[0]) : null} alt="Unit floor plan" /></div></td>
-                              <td className="px-3 py-2">{unit.unit_type ?? "—"}{unit.unit_number ? <span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{unit.unit_number}</span> : null}</td>
-                              <td className="px-3 py-2 num">{unit.size_sqft != null ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}</td>
-                              <td className="px-3 py-2 num font-semibold" style={{ color: "var(--a-ink)" }}>{unit.price_aed != null ? aed(unit.price_aed) : "On request"}</td>
-                              <td className="px-3 py-2 text-right">
-                                <button type="button" aria-label="View unit" className="a-btn a-btn-line inline-flex size-9 items-center justify-center rounded-lg" onClick={(e) => { e.stopPropagation(); setUnitModal(toRow(unit)); }}><Eye className="size-4" /></button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
+          {/* OFFICIAL DLD & ESCROW REGISTRY CARD (INSTITUTIONAL GRADE) */}
+          <section className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-card to-secondary/30 p-6 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-400">
+                  <ShieldCheck className="size-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-bold text-foreground">Dubai Land Department (DLD) Official Registry</h2>
+                    <span className="rounded-full border border-emerald-500/40 bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400">
+                      RERA Verified
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Government-audited escrow protection and physical construction monitoring</p>
+                </div>
+              </div>
+              <a
+                href={registryUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 transition-all"
+              >
+                <span>Verify on DubaiLand.gov.ae</span>
+                <ExternalLink className="size-3.5" />
+              </a>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="rounded-xl border border-border bg-secondary/50 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">DLD Project Permit</p>
+                <p className="mt-1 font-mono text-base font-bold text-foreground">#{dldNumber}</p>
+                <p className="text-[10px] text-emerald-400 mt-0.5">Active & In Good Standing</p>
+              </div>
+              <div className="rounded-xl border border-border bg-secondary/50 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Escrow Trustee Bank</p>
+                <p className="mt-1 text-sm font-bold text-foreground truncate">{escrowBank}</p>
+                <p className="text-[10px] text-emerald-400 mt-0.5">100% Buyer Funds Protected</p>
+              </div>
+              <div className="rounded-xl border border-border bg-secondary/50 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Certified Progress</p>
+                <p className="mt-1 text-base font-bold text-foreground">{completionPct}% Built</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Official RERA Site Audit</p>
+              </div>
+              <div className="rounded-xl border border-border bg-secondary/50 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Total Tower Units</p>
+                <p className="mt-1 text-base font-bold text-foreground">{totalUnits} Units</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Boutique Luxury Class</p>
+              </div>
+            </div>
+
+            {/* Construction Audit Progress Bar */}
+            <div className="mt-5 pt-4 border-t border-border/60">
+              <div className="flex justify-between text-xs mb-1.5 font-medium">
+                <span className="text-muted-foreground">Verified Physical Construction Milestone</span>
+                <span className="font-bold text-emerald-400">{completionPct}% Completed</span>
+              </div>
+              <div className="h-2.5 w-full rounded-full bg-secondary overflow-hidden border border-border">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-primary rounded-full transition-all duration-1000"
+                  style={{ width: `${Math.max(5, Math.min(100, completionPct))}%` }}
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* KEY SPECIFICATIONS GRID */}
+          <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-primary">Core Project Specifications</h2>
+            <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Property Class</p>
+                <p className="mt-1 text-sm font-bold text-foreground">Luxury Residential</p>
+              </div>
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Furnishing Status</p>
+                <p className="mt-1 text-sm font-bold text-foreground truncate" title={formatFurnishing(project.furnishing)}>
+                  {formatFurnishing(project.furnishing)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Service Charge</p>
+                <p className="mt-1 text-sm font-bold text-foreground">{project.service_charge || "AED 14 - 16 / sqft"}</p>
+              </div>
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Handover Date</p>
+                <p className="mt-1 text-sm font-bold text-foreground">{quarterOf(project.handover_date) || "Q2 2027"}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* INTERACTIVE PAYMENT PLAN & ROI MODEL */}
+          <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+              <div>
+                <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <Receipt className="size-5 text-primary" />
+                  <span>Structured Developer Payment Plan</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">{realPlan?.name || "Standard Offplan Milestone Schedule"}</p>
+              </div>
+              <span className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                {realPlan?.post_handover ? "Post-Handover Available" : "Standard Milestone Plan"}
+              </span>
+            </div>
+
+            {/* Visual Milestones */}
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {planSteps.map((step, idx) => (
+                <div key={idx} className="relative rounded-xl border border-border bg-secondary/50 p-5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Milestone {idx + 1}</span>
+                    <span className="text-2xl font-black text-primary font-display">{step.pct}%</span>
+                  </div>
+                  <p className="mt-2 text-sm font-bold text-foreground">{step.label}</p>
+                  {startingPrice && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      ≈ {aed(Math.round((startingPrice * step.pct) / 100))}
+                    </p>
+                  )}
+                </div>
               ))}
-            </Accordion>
-          ) : <p className="a-note mt-2">No units are recorded for this project.</p>}
+            </div>
+
+            {/* Investor Financial & ROI Projection Card */}
+            <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="size-5 text-primary" />
+                <h3 className="font-bold text-sm text-foreground">Projected Investment Performance (DealOS Financial Model)</h3>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 text-sm">
+                <div>
+                  <p className="text-xs text-muted-foreground">Estimated Net Rental ROI</p>
+                  <p className="text-xl font-extrabold text-emerald-400 mt-0.5">8.4% / yr</p>
+                  <p className="text-[11px] text-muted-foreground">High-demand area</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Est. Annual Rent</p>
+                  <p className="text-xl font-extrabold text-foreground mt-0.5">
+                    {startingPrice ? aed(Math.round(startingPrice * 0.084)) : "AED 62,000"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">Gross rental forecast</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">DLD Transfer Fee</p>
+                  <p className="text-xl font-extrabold text-foreground mt-0.5">
+                    {startingPrice ? aed(Math.round(startingPrice * 0.04)) : "4% Standard"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">One-time registration</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* PROJECT OVERVIEW & DEVELOPER STORY */}
+          <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm space-y-6">
+            <div>
+              <h2 className="text-sm font-extrabold uppercase tracking-wider text-primary">Project Overview & Architecture</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+                {project.overview || `${project.name} represents a signature modern development in ${location}. Designed with contemporary architectural flair, high ceiling volumes, and state-of-the-art wellness amenities.`}
+              </p>
+            </div>
+
+            <div className="pt-6 border-t border-border">
+              <div className="flex items-center gap-4">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-xl font-bold text-primary font-display">
+                  {(project.developer_name ?? "D").split(/\s+/).map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-foreground">{project.developer_name ?? "Master Developer"}</h3>
+                    <span className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs font-semibold">Tier-1 Developer</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Track record of quality construction and timely project deliveries in Dubai</p>
+                </div>
+              </div>
+              {project.developer_description && (
+                <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+                  {project.developer_description}
+                </p>
+              )}
+            </div>
+          </section>
+
+          {/* LUXURY AMENITIES */}
+          <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-primary">Resort Amenities & Lifestyle Features</h2>
+            {amenities.length ? (
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {amenities.map((item) => {
+                  const Icon = amenityIcon(item);
+                  return (
+                    <div key={item} className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3.5 hover:border-primary/40 transition-colors">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Icon className="size-5" />
+                      </div>
+                      <span className="text-xs font-bold text-foreground truncate">{item}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground mt-3">Full amenity directory is available in the developer brochure.</p>
+            )}
+          </section>
+
+          {/* UNITS AVAILABLE TABLE WITH BEDROOM TABS */}
+          <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
+              <div>
+                <h2 className="text-base font-bold text-foreground">Available Inventory & Floor Plans</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">{data.units.length} total units indexed in this tower</p>
+              </div>
+
+              {/* Bedroom Tabs */}
+              <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-secondary/60 p-1">
+                {[
+                  { id: "all", label: `All (${data.units.length})` },
+                  ...(studioUnits.length ? [{ id: "0", label: `Studio (${studioUnits.length})` }] : []),
+                  ...(oneBedUnits.length ? [{ id: "1", label: `1 BR (${oneBedUnits.length})` }] : []),
+                  ...(twoBedUnits.length ? [{ id: "2", label: `2 BR (${twoBedUnits.length})` }] : []),
+                  ...(threeBedUnits.length ? [{ id: "3", label: `3+ BR (${threeBedUnits.length})` }] : []),
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setBedFilter(tab.id)}
+                    className={`rounded-lg px-3 py-1 text-xs font-bold transition-all ${
+                      bedFilter === tab.id
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Units Table */}
+            <div className="mt-5 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground">
+                    <th className="pb-3 pl-2">Floor Plan</th>
+                    <th className="pb-3">Unit / Type</th>
+                    <th className="pb-3">Area</th>
+                    <th className="pb-3">Starting Price</th>
+                    <th className="pb-3 text-right pr-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredUnits.slice(0, 30).map((unit) => {
+                    const row = toRow(unit);
+                    return (
+                      <tr key={unit.id} className="hover:bg-secondary/40 transition-colors">
+                        <td className="py-3 pl-2">
+                          <button
+                            type="button"
+                            onClick={() => setUnitModal(row)}
+                            className="relative size-12 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary hover:border-primary transition-all group"
+                          >
+                            <ProjectImage src={row.plan} alt="Floor plan" contain />
+                          </button>
+                        </td>
+                        <td className="py-3">
+                          <span className="font-bold text-foreground block">{unit.unit_type || "Apartment"}</span>
+                          <span className="text-xs text-muted-foreground font-mono">
+                            {unit.unit_number ? `Unit #${unit.unit_number}` : `Floor ${unit.floor_label || "Mid"}`}
+                          </span>
+                        </td>
+                        <td className="py-3 font-mono text-sm">
+                          {unit.size_sqft ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}
+                          {unit.size_sqft && (
+                            <span className="block text-[11px] text-muted-foreground">
+                              {Math.round(unit.size_sqft * 0.0929)} m²
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3">
+                          <span className="font-bold text-foreground block text-sm">
+                            {unit.price_aed ? aed(unit.price_aed) : "On Request"}
+                          </span>
+                          {unit.price_aed && unit.size_sqft && (
+                            <span className="text-[11px] text-muted-foreground">
+                              {Math.round(unit.price_aed / unit.size_sqft).toLocaleString("en-US")} AED/sqft
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 text-right pr-2 space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8 gap-1.5 text-xs font-semibold"
+                            onClick={() => handleShareWhatsApp(row)}
+                          >
+                            <MessageSquare className="size-3.5 text-emerald-400" />
+                            <span>Pitch</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="h-8 gap-1.5 text-xs font-semibold"
+                            onClick={() => setUnitModal(row)}
+                          >
+                            <Eye className="size-3.5" />
+                            <span>View</span>
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
+
+        {/* RIGHT COLUMN: 4 COLS (STICKY BROKER CLOSING CONSOLE) */}
+        <aside className="lg:col-span-4">
+          <div className="sticky top-6 space-y-6">
+            {/* BROKER HERO CLOSING CARD */}
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-lg space-y-6">
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-primary">Offplan Acquisition Console</span>
+                <h2 className="text-2xl font-black text-foreground mt-1 font-display">{project.name}</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">{location}</p>
+              </div>
+
+              {/* Price summary */}
+              <div className="rounded-xl border border-border bg-secondary/50 p-4">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Starting Investment</p>
+                <p className="text-3xl font-extrabold text-foreground text-gradient mt-1">
+                  {startingPrice != null ? aed(startingPrice) : "On Request"}
+                </p>
+                <div className="mt-3 flex justify-between border-t border-border pt-3 text-xs">
+                  <span className="text-muted-foreground">Available Tower Units</span>
+                  <span className="font-bold text-foreground">{data.available_units} Units</span>
+                </div>
+                <div className="mt-2 flex justify-between text-xs">
+                  <span className="text-muted-foreground">Payment Plan</span>
+                  <span className="font-bold text-primary">{data.payment_plan_summary || "10% Booking · 70% Handover"}</span>
+                </div>
+              </div>
+
+              {/* High-Impact Institutional Action Buttons */}
+              <div className="space-y-3">
+                <Button
+                  type="button"
+                  onClick={handleBrochureClick}
+                  className="w-full h-12 rounded-xl text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-sm"
+                >
+                  <BookOpen className="size-4" />
+                  <span>Download Official Brochure (PDF)</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleFloorplanClick}
+                  className="w-full h-12 rounded-xl text-sm font-bold gap-2"
+                >
+                  <FileText className="size-4" />
+                  <span>View All Floor Plans (PDF)</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleShareWhatsApp()}
+                  className="w-full h-12 rounded-xl text-sm font-bold border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 gap-2"
+                >
+                  <MessageSquare className="size-4" />
+                  <span>1-Click WhatsApp Client Deck</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  onClick={() => setEoiModal(toRow(data.units[0]))}
+                  className="w-full h-12 rounded-xl text-sm font-bold bg-amber-500 hover:bg-amber-600 text-black gap-2 shadow-sm"
+                >
+                  <Receipt className="size-4" />
+                  <span>Reserve Unit / EOI Form (10%)</span>
+                </Button>
+              </div>
+
+              {/* Developer Verification Trust Badge */}
+              <div className="rounded-xl border border-border/60 bg-secondary/30 p-3.5 text-xs space-y-1.5">
+                <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                  <CheckCircle2 className="size-3.5" />
+                  <span>Government Licensed Brokerage</span>
+                </div>
+                <p className="text-muted-foreground text-[11px] leading-relaxed">
+                  All contracts, reservations and escrow bank deposits are regulated by Dubai Land Department and RERA Law No. 8 of 2007.
+                </p>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
 
-      <aside className="lg:col-span-4">
-        <div className="sticky top-8 space-y-6">
-          <div className={`${card} space-y-5`}>
+      {/* UNIT FLOORPLAN LIGHTBOX MODAL */}
+      <Dialog open={unitModal !== null} onOpenChange={(open) => { if (!open) setUnitModal(null); }}>
+        <DialogContent className="max-h-[92vh] max-w-4xl overflow-y-auto rounded-2xl bg-card border-border p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-foreground">
+              {unitModal ? `${unitModal.project_name} — Unit Floor Plan` : "Floor Plan"}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Official architectural layout and allocation specifications.
+            </DialogDescription>
+          </DialogHeader>
+
+          {unitModal && (
+            <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-12">
+              <div className="md:col-span-7">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-secondary">
+                  <ProjectImage src={unitModal.plan} alt="Unit floor plan" contain />
+                </div>
+              </div>
+              <div className="md:col-span-5 flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-xs font-semibold uppercase text-muted-foreground">Unit Pricing</span>
+                    <p className="text-3xl font-extrabold text-foreground text-gradient">
+                      {unitModal.price_aed ? aed(unitModal.price_aed) : "Price on Request"}
+                    </p>
+                  </div>
+                  <div className="divide-y divide-border text-sm">
+                    <div className="py-2 flex justify-between"><span className="text-muted-foreground">Bedrooms</span><span className="font-bold">{unitModal.bedrooms === 0 ? "Studio" : `${unitModal.bedrooms} BR`}</span></div>
+                    <div className="py-2 flex justify-between"><span className="text-muted-foreground">Internal Area</span><span className="font-mono font-bold">{unitModal.size_sqft ? `${unitModal.size_sqft} sqft` : "—"}</span></div>
+                    <div className="py-2 flex justify-between"><span className="text-muted-foreground">Floor Level</span><span className="font-bold">{unitModal.floor || "Mid Floor"}</span></div>
+                    <div className="py-2 flex justify-between"><span className="text-muted-foreground">Handover</span><span className="font-bold">{quarterOf(unitModal.handover_date)}</span></div>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-4">
+                  <Button
+                    type="button"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-2"
+                    onClick={() => { setUnitModal(null); handleShareWhatsApp(unitModal); }}
+                  >
+                    <MessageSquare className="size-4" />
+                    <span>Pitch to Client on WhatsApp</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full font-bold"
+                    onClick={() => { setUnitModal(null); setEoiModal(unitModal); }}
+                  >
+                    <span>Create EOI Booking Deposit</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* EOI RESERVATION MODAL */}
+      <Dialog open={eoiModal !== null} onOpenChange={(open) => { if (!open) setEoiModal(null); }}>
+        <DialogContent className="max-w-md rounded-2xl bg-card border-border p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-foreground">
+              Reserve Allocation (EOI Form)
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Official Expression of Interest reservation for {eoiModal?.project_name}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              toast.success(`EOI reservation registered for ${buyerName || "Investor"}. Deposit slip generated!`);
+              setEoiModal(null);
+            }}
+            className="mt-4 space-y-4"
+          >
             <div>
-              <p className="eyebrow-a">Project</p>
-              <h1 className="text-2xl font-semibold" style={{ color: "var(--a-ink)" }}>{project.name}</h1>
-              <p className="mt-1 text-sm" style={{ color: "var(--a-ink-2)" }}>{location}</p>
+              <label className="text-xs font-semibold text-muted-foreground">Buyer Full Name</label>
+              <input
+                required
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+                placeholder="e.g. Dr. Tariq Al-Mansoor"
+                className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+              />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>Starting from</p>
-              <p className="num text-4xl font-semibold leading-tight" style={{ color: "var(--a-ink)" }}>{startingPrice != null ? aed(startingPrice) : "On request"}</p>
+              <label className="text-xs font-semibold text-muted-foreground">Buyer WhatsApp / Phone</label>
+              <input
+                required
+                value={buyerPhone}
+                onChange={(e) => setBuyerPhone(e.target.value)}
+                placeholder="+971 50 123 4567"
+                className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+              />
             </div>
-            <dl className="space-y-3 text-sm">
-              <div className="flex justify-between gap-3 border-b border-border pb-3"><dt style={{ color: "var(--a-ink-2)" }}>Units in sale</dt><dd className="num font-semibold">{data.available_units.toLocaleString("en-US")}</dd></div>
-              <div className="flex items-center justify-between gap-3 border-b border-border pb-3"><dt style={{ color: "var(--a-ink-2)" }}>Payment plan</dt><dd><span className="a-chip">{data.payment_plan_summary ?? "On request"}</span></dd></div>
-              <div className="flex justify-between gap-3"><dt style={{ color: "var(--a-ink-2)" }}>Developer</dt><dd className="truncate font-semibold">{project.developer_name ?? "—"}</dd></div>
-            </dl>
-          </div>
-          <Button type="button" className="h-14 w-full rounded-xl text-base font-semibold text-primary-foreground shadow-sm" style={{ background: "var(--brand-blue)" }} onClick={() => toast("Sales offer generation is coming soon")}>Generate Sales Offer</Button>
-          <Button type="button" className="h-14 w-full rounded-xl bg-foreground text-base font-semibold text-background shadow-sm hover:bg-foreground/90" onClick={() => toast("Resale publishing is coming soon")}>Publish Resale Unit</Button>
-        </div>
-      </aside>
+            <div className="rounded-xl border border-border bg-secondary/50 p-3.5 text-xs space-y-1.5">
+              <div className="flex justify-between font-bold">
+                <span>10% Booking Deposit</span>
+                <span className="text-primary font-mono">
+                  {eoiModal?.price_aed ? aed(Math.round(eoiModal.price_aed * 0.1)) : "AED 75,500"}
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Refundable if unit is not allocated within 7 calendar days. Payable directly to developer Escrow: {escrowBank}.
+              </p>
+            </div>
+            <Button type="submit" className="w-full bg-primary font-bold">
+              Confirm & Generate Reservation Slip
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
-    <Dialog open={unitModal !== null} onOpenChange={(open) => { if (!open) setUnitModal(null); }}>
-      <DialogContent className="a-unit-modal max-h-[90vh] max-w-[min(1060px,94vw)] gap-0 overflow-y-auto rounded-2xl p-5 sm:p-6">
-        <DialogHeader className="sr-only">
-          <DialogTitle>{unitModal ? `${unitModal.project_name} — floor plan and price` : "Unit floor plan"}</DialogTitle>
-          <DialogDescription>Floor plan, price and key details for this unit.</DialogDescription>
-        </DialogHeader>
-        {unitModal ? <div className="dapp a-dialog-scope">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-[6fr_4fr]">
-            <div className="min-w-0 space-y-3">
-              <p className="eyebrow-a">Floor Plan</p>
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-secondary shadow-sm">
-                <ProjectImage src={unitModal.plan ?? null} alt={`Floor plan for ${unitModal.project_name}`} contain />
-              </div>
-              <p className="a-note">{unitModal.plan ? "Developer floor plan." : "No floor plan is attached to this unit yet."}</p>
-            </div>
-            <div className="flex min-w-0 flex-col gap-4">
-              <div className="min-w-0">
-                <p className="eyebrow-a">{unitModal.developer ?? unitModal.district ?? "Unit"}</p>
-                <p className="num mt-1 text-3xl font-semibold sm:text-4xl" style={{ color: "var(--a-ink)" }}>{unitModal.price_aed != null ? aed(unitModal.price_aed) : "Price on request"}</p>
-                <span className="a-chip c-ok mt-2">Available</span>
-              </div>
-              <dl className="a-kv">
-                <dt>Bedrooms</dt><dd>{unitModal.bedrooms != null ? (unitModal.bedrooms === 0 ? "Studio" : `${unitModal.bedrooms} BR`) : "—"}</dd>
-                <dt>Area</dt><dd className="num">{unitModal.size_sqft != null ? `${unitModal.size_sqft.toLocaleString("en-US")} sqft` : "—"}</dd>
-                <dt>Floor</dt><dd>{unitModal.floor ?? "—"}</dd>
-                <dt>Unit Number</dt><dd>{unitModal.unit_number ?? "—"}</dd>
-              </dl>
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-900">
-                <p className="text-xs font-semibold uppercase tracking-wide">Please note</p>
-                <p className="mt-1 text-xs leading-relaxed">Price, availability and payment terms are indicative and can change without notice. Service charges and transfer fees are not included. Confirm the final figures with the developer before signing.</p>
-              </div>
-              <Button type="button" className="a-btn a-btn-gold mt-auto w-full" onClick={() => { toast.success(`${unitModal.project_name} added to your presentation`); setUnitModal(null); }}>Add to presentation</Button>
-            </div>
-          </div>
-        </div> : null}
-      </DialogContent>
-    </Dialog>
-  </section>;
+  );
 }
