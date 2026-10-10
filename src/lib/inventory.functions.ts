@@ -118,7 +118,7 @@ export const getProjectDetail = createServerFn({ method: "POST" })
   .inputValidator((input: { id: number }) => ({ id: Math.floor(Number(input.id)) }))
   .handler(async ({ data, context }) => {
     const { data: project, error } = await context.supabase.from("projects")
-      .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status,amenities,latitude,longitude,furnishing,service_charge,build_progress_pct,developer_logo_url")
+      .select("id,name,developer_name,district,emirate_or_country,media,handover_date,cover_image_url,sale_status,amenities,latitude,longitude,furnishing,service_charge,build_progress_pct,developer_logo_url")
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
