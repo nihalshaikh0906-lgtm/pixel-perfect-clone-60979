@@ -14,10 +14,12 @@ import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl, projectGalleryImages } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
 
+const CLOUDFLARE_R2_DEV = "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev";
+
 const toMedia = (u?: string | null): string | null => {
   if (!u) return null;
   try { if (typeof mediaUrl === "function") return mediaUrl(u); } catch {}
-  if (u.startsWith("/media/")) return `https://reelly-backend.s3.amazonaws.com/${u.slice("/media/".length)}`;
+  if (u.startsWith("/media/")) return `${CLOUDFLARE_R2_DEV}/${u.slice("/media/".length)}`;
   return u;
 };
 

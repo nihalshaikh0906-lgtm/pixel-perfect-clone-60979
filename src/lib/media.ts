@@ -1,9 +1,9 @@
-const UPSTREAM = "https://reelly-backend.s3.amazonaws.com/";
+const CLOUDFLARE_R2_CDN = "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/";
 
 export function mediaUrl<T extends string | null | undefined>(u: T): T {
   if (!u || typeof u !== "string") return u;
   if (u.startsWith("/media/")) {
-    return `${UPSTREAM}${u.slice("/media/".length)}` as T;
+    return `${CLOUDFLARE_R2_CDN}${u.slice("/media/".length)}` as T;
   }
   return u;
 }
@@ -37,7 +37,7 @@ if (typeof globalThis !== "undefined") {
   (globalThis as unknown as Record<string, unknown>).deepMedia = deepMedia;
 }
 
-export const MEDIA_UPSTREAM = UPSTREAM;
+export const MEDIA_UPSTREAM = CLOUDFLARE_R2_CDN;
 
 // Supabase media contains images [{ url, type, order }], alongside videos and plans.
 export function projectGalleryImages(media: unknown, cover?: string | null, files: Array<{ url: string | null; type: string | null }> = []): string[] {
