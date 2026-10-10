@@ -10,7 +10,7 @@ import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map as MapIcon, PawPrint, ShieldCheck, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
+import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map as MapIcon, PawPrint, ShieldCheck, ShoppingBag, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
@@ -49,9 +49,11 @@ const AMENITY_ICONS: Array<{ keys: string[]; icon: LucideIcon }> = [
   { keys: ["garden", "park", "green", "landscap", "courtyard", "tree", "bonsai", "picnic"], icon: Trees },
   { keys: ["wifi", "smart", "automat"], icon: Wifi },
   { keys: ["track", "jogging", "walking", "cycle", "cycling", "bike"], icon: Footprints },
-  { keys: ["padel", "squash", "tennis", "basketball", "bowling", "games", "court", "sport"], icon: Trophy },
+  { keys: ["padel", "squash", "tennis", "basketball", "bowling", "games", "court", "sport", "golf", "pickleball"], icon: Trophy },
   { keys: ["cinema", "theatre", "theater", "screen"], icon: Film },
-  { keys: ["co-working", "coworking", "working", "business", "boardroom", "meeting", "office", "studies"], icon: Building2 },
+  { keys: ["co-working", "coworking", "working", "business", "boardroom", "meeting", "office", "studies", "clubhouse", "club house", "multipurpose", "function hall", "event space"], icon: Building2 },
+  { keys: ["library", "reading", "study"], icon: BookOpen },
+  { keys: ["retail", "shop", "boutique", "supermarket", "f&b"], icon: ShoppingBag },
   { keys: ["bbq", "dining", "restaurant", "cafe", "lounge", "bar", "kitchen"], icon: Utensils },
 ];
 
