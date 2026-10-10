@@ -1,18 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, useEffect, useMemo, useState } from "react";
-import { Banknote, ChevronDown, Copy, Download, Plus, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  Banknote, ChevronDown, Copy, Download, Plus, X, LayoutGrid,
+  List, TrendingUp, CheckCircle2, Clock, AlertCircle, ArrowRight,
+  User, Building2, Share2, DollarSign, ShieldCheck
+} from "lucide-react";
 import { toast } from "sonner";
-
 import { useShell } from "@/components/app/AppShell";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { formatAed } from "@/lib/demo-leads";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/app/deals")({
-  head: () => workspaceHead("Deals"),
+  head: () => workspaceHead("Deals & Commissions"),
   component: Page,
 });
 
-type Stage = "Token" | "Agreement" | "Completed" | "Cancelled";
+type Stage = "EOI Token" | "SPA Contract" | "DLD Registration" | "Commission Due" | "Closed Won";
 type Pipe = "All" | Stage;
 
 type Deal = {
@@ -22,785 +27,629 @@ type Deal = {
   area: string;
   buyer: string;
   source: string;
-  type: "Sale" | "Rent" | "Assignment";
+  type: "Off-Plan Sale" | "Secondary Sale" | "Rental";
   amount: number;
   paid: number;
   commission: number;
   agent: string;
   stage: Stage;
   plan: string;
-  next: string;
-  note: string;
+  nextMilestone: string;
   updated: string;
 };
 
-type PayLog = {
-  deal: string;
-  amount: number;
-  method: string;
-  reference: string;
-  note: string;
-  at: string;
-};
-
-const PIPE: Pipe[] = ["All", "Token", "Agreement", "Completed", "Cancelled"];
-const CHIP: Record<Stage, string> = {
-  Token: "c-offplan",
-  Agreement: "c-warm",
-  Completed: "c-ok",
-  Cancelled: "c-hot",
-};
-
-// Sample pipeline — every row below is illustrative demo data, not saved anywhere.
-const ROWS: Deal[] = [
-  { id: "DL-1041", property: "Marina Heights", unit: "2BR", area: "Dubai Marina", buyer: "Rania Haddad", source: "via Bayut", type: "Sale", amount: 2450000, paid: 245000, commission: 49000, agent: "Saad", stage: "Token", plan: "10 / 40 / 50", next: "40% due on SPA signature", note: "Buyer is waiting on mortgage pre-approval.", updated: "Thu 8 Oct" },
-  { id: "DL-1042", property: "Verdana III", unit: "1BR", area: "JVC", buyer: "Faisal Al Menhali", source: "WhatsApp referral", type: "Sale", amount: 1180000, paid: 118000, commission: 23600, agent: "Aisha", stage: "Token", plan: "20 / 30 / 50", next: "Second 20% due 1 Dec 2026", note: "Asked for the 10 / 30 / 60 plan; developer confirmation pending.", updated: "Fri 9 Oct" },
-  { id: "DL-1043", property: "Creek Horizon", unit: "3BR", area: "Dubai Creek Harbour", buyer: "Priya Nair", source: "via Property Finder", type: "Sale", amount: 3240000, paid: 324000, commission: 64800, agent: "Omar", stage: "Token", plan: "15 / 35 / 50", next: "35% due at slab completion", note: "Two units shortlisted; comparing against Dubai Hills.", updated: "Wed 7 Oct" },
-  { id: "DL-1044", property: "Marina Star", unit: "Studio", area: "Dubai Marina", buyer: "Tomás Ferreira", source: "via Dubizzle", type: "Assignment", amount: 1610000, paid: 161000, commission: 32200, agent: "Priya", stage: "Token", plan: "Seller funded", next: "NOC requested from the developer", note: "Assignment fee split agreed with the seller's agent.", updated: "Mon 5 Oct" },
-  { id: "DL-1035", property: "Reportage Hills", unit: "3BR", area: "Dubai Hills Estate", buyer: "Elena Petrova", source: "Client referral", type: "Sale", amount: 3860000, paid: 1158000, commission: 77200, agent: "Saad", stage: "Agreement", plan: "30 / 40 / 30", next: "40% due at handover, Q1 2027", note: "SPA drafted by the developer; buyer's lawyer is reviewing.", updated: "Thu 8 Oct" },
-  { id: "DL-1036", property: "Downtown Vista", unit: "2BR", area: "Downtown Dubai", buyer: "Amira Salem", source: "via Meta Ads", type: "Sale", amount: 4120000, paid: 824000, commission: 82400, agent: "Aisha", stage: "Agreement", plan: "20 / 50 / 30", next: "Signature appointment Sat 11 Oct", note: "Buyer asked for a 30-day handover delay.", updated: "Fri 9 Oct" },
-  { id: "DL-1037", property: "Palm Reserve", unit: "4BR", area: "Palm Jumeirah", buyer: "Khalid Al Suwaidi", source: "Client referral", type: "Sale", amount: 9450000, paid: 2835000, commission: 189000, agent: "Omar", stage: "Agreement", plan: "30 / 30 / 40", next: "Balance due at transfer", note: "Title deed check in progress with the developer.", updated: "Tue 6 Oct" },
-  { id: "DL-1038", property: "Business Yard", unit: "1BR", area: "Business Bay", buyer: "Grace Okafor", source: "via Website", type: "Sale", amount: 1480000, paid: 296000, commission: 29600, agent: "Priya", stage: "Agreement", plan: "20 / 40 / 40", next: "40% due at key handover", note: "Mortgage valuation booked for 14 Oct.", updated: "Wed 7 Oct" },
-  { id: "DL-1021", property: "Marina Star", unit: "Studio", area: "Dubai Marina", buyer: "Jonah Reyes", source: "WhatsApp", type: "Rent", amount: 96000, paid: 96000, commission: 9600, agent: "Priya", stage: "Completed", plan: "Annual, one cheque", next: "Renewal reminder in 12 months", note: "Tenant moved in; Ejari filed.", updated: "Fri 2 Oct" },
-  { id: "DL-1022", property: "Arjan Gate", unit: "2BR", area: "Arjan", buyer: "Sofia Duarte", source: "via Bayut", type: "Rent", amount: 132000, paid: 132000, commission: 13200, agent: "Aisha", stage: "Completed", plan: "Two cheques", next: "Renewal notice 60 days out", note: "Commission split 50/50 with the landlord's agent.", updated: "Thu 1 Oct" },
-  { id: "DL-1023", property: "JVC Parkside", unit: "3BR", area: "JVC", buyer: "Daniel Okonkwo", source: "Client referral", type: "Sale", amount: 2260000, paid: 2260000, commission: 45200, agent: "Saad", stage: "Completed", plan: "Cash, full transfer", next: "Transfer completed at the land department", note: "Seller's NOC and clearance letter filed.", updated: "Mon 29 Sep" },
-  { id: "DL-1024", property: "Hills Walk", unit: "2BR", area: "Dubai Hills Estate", buyer: "Mei Lin Chen", source: "via Property Finder", type: "Sale", amount: 2890000, paid: 2890000, commission: 57800, agent: "Omar", stage: "Completed", plan: "Cash, full transfer", next: "Title deed issued in the buyer's name", note: "Buyer also asked for a rental valuation.", updated: "Sat 27 Sep" },
-  { id: "DL-1011", property: "Marina Heights", unit: "1BR", area: "Dubai Marina", buyer: "Victor Ilyin", source: "via Meta Ads", type: "Sale", amount: 1720000, paid: 0, commission: 0, agent: "Aisha", stage: "Cancelled", plan: "10 / 40 / 50", next: "No next milestone", note: "Token refunded after financing was declined.", updated: "Tue 30 Sep" },
-  { id: "DL-1012", property: "Creek Horizon", unit: "2BR", area: "Dubai Creek Harbour", buyer: "Hana Yoshida", source: "via Website", type: "Sale", amount: 2050000, paid: 0, commission: 0, agent: "Saad", stage: "Cancelled", plan: "15 / 35 / 50", next: "No next milestone", note: "Buyer went with a competing launch; keep warm for the next phase.", updated: "Sun 28 Sep" },
+const STAGES: Stage[] = [
+  "EOI Token",
+  "SPA Contract",
+  "DLD Registration",
+  "Commission Due",
+  "Closed Won",
 ];
 
-type SortKey = "property" | "buyer" | "type" | "amount" | "paid" | "balance" | "commission" | "agent" | "stage";
-const TEXT_KEYS: SortKey[] = ["property", "buyer", "type", "agent", "stage"];
-
-const sortValue = (d: Deal, k: SortKey): string | number => {
-  if (k === "balance") return d.amount - d.paid;
-  if (k === "stage") return PIPE.indexOf(d.stage);
-  return d[k];
+const STAGE_CONFIG: Record<Stage, { color: string; bg: string; border: string }> = {
+  "EOI Token": { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30" },
+  "SPA Contract": { color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/30" },
+  "DLD Registration": { color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/30" },
+  "Commission Due": { color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/30" },
+  "Closed Won": { color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30" },
 };
 
-const initials = (n: string) =>
-  n.split(/\s+/).map((p) => p[0]).join("").slice(0, 2).toUpperCase();
+const INITIAL_DEALS: Deal[] = [
+  {
+    id: "DL-1041",
+    property: "Celestara Residences",
+    unit: "Unit #1006 · Studio",
+    area: "JVC",
+    buyer: "Tariq Mansoor",
+    source: "WhatsApp Referral",
+    type: "Off-Plan Sale",
+    amount: 498000,
+    paid: 49800,
+    commission: 14940,
+    agent: "Saad Khan",
+    stage: "EOI Token",
+    plan: "10 / 50 / 40",
+    nextMilestone: "SPA signing scheduled 15 Oct",
+    updated: "Today",
+  },
+  {
+    id: "DL-1042",
+    property: "09 Life Residences",
+    unit: "Unit #101 · 1 BR",
+    area: "DLRC",
+    buyer: "Sophie Laurent",
+    source: "Meta Campaign",
+    type: "Off-Plan Sale",
+    amount: 1545000,
+    paid: 154500,
+    commission: 38625,
+    agent: "Aisha Salem",
+    stage: "EOI Token",
+    plan: "10 / 20 / 70",
+    nextMilestone: "Awaiting developer KYC review",
+    updated: "Yesterday",
+  },
+  {
+    id: "DL-1035",
+    property: "Binghatti Dusk",
+    unit: "Unit #402 · 2 BR",
+    area: "JVC",
+    buyer: "Elena Petrova",
+    source: "Property Finder",
+    type: "Off-Plan Sale",
+    amount: 1890000,
+    paid: 378000,
+    commission: 47250,
+    agent: "Omar Farooq",
+    stage: "SPA Contract",
+    plan: "20 / 50 / 30",
+    nextMilestone: "Buyer legal counsel reviewing SPA",
+    updated: "2 days ago",
+  },
+  {
+    id: "DL-1036",
+    property: "Amali Residences",
+    unit: "Unit #1204 · 3 BR",
+    area: "Business Bay",
+    buyer: "Khalid Al Suwaidi",
+    source: "Client Referral",
+    type: "Off-Plan Sale",
+    amount: 4250000,
+    paid: 850000,
+    commission: 106250,
+    agent: "Saad Khan",
+    stage: "DLD Registration",
+    plan: "20 / 40 / 40",
+    nextMilestone: "DLD 4% Oqood certificate pending",
+    updated: "3 days ago",
+  },
+  {
+    id: "DL-1025",
+    property: "DIFC Heights Tower",
+    unit: "Unit #805 · 1 BR",
+    area: "DIFC",
+    buyer: "Marcus Vance",
+    source: "Bayut Direct",
+    type: "Off-Plan Sale",
+    amount: 2150000,
+    paid: 860000,
+    commission: 53750,
+    agent: "Priya Nair",
+    stage: "Commission Due",
+    plan: "40 / 60",
+    nextMilestone: "Developer invoice #INV-492 submitted",
+    updated: "4 days ago",
+  },
+  {
+    id: "DL-1018",
+    property: "Marina Heights",
+    unit: "Unit #1802 · 2 BR",
+    area: "Dubai Marina",
+    buyer: "Daniel Okonkwo",
+    source: "Direct Broker Network",
+    type: "Secondary Sale",
+    amount: 2850000,
+    paid: 2850000,
+    commission: 57000,
+    agent: "Saad Khan",
+    stage: "Closed Won",
+    plan: "Full Cash Transfer",
+    nextMilestone: "Title Deed issued · Commission distributed",
+    updated: "Last week",
+  },
+];
 
-// Compact money for the table cells; the card head states the currency once.
-const money = (n: number) =>
-  n >= 1e6
-    ? `${(n / 1e6).toFixed(2).replace(/\.?0+$/, "")}M`
-    : n >= 1e3
-      ? `${Math.round(n / 1e3)}K`
-      : String(n);
-
-const TYPE_LABEL: Record<Deal["type"], string> = { Sale: "Sale", Rent: "Rent", Assignment: "Assign." };
-
-const csvCell = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+function moneyAed(val: number) {
+  if (val >= 1_000_000) return `AED ${(val / 1_000_000).toFixed(2)}M`;
+  if (val >= 1_000) return `AED ${Math.round(val / 1_000)}K`;
+  return `AED ${val.toLocaleString()}`;
+}
 
 function Page() {
   const { clientMode } = useShell();
-  const [pipe, setPipe] = useState<Pipe>("All");
-  const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "amount", dir: -1 });
-  const [open, setOpen] = useState<string | null>(null);
-  const [extra, setExtra] = useState<Deal[]>([]);
-  const [showNew, setShowNew] = useState(false);
-  const [payFor, setPayFor] = useState<string | null>(null);
-  const [paidAdj, setPaidAdj] = useState<Record<string, number>>({});
-  const [logs, setLogs] = useState<PayLog[]>([]);
+  const [deals, setDeals] = useState<Deal[]>(INITIAL_DEALS);
+  const [viewMode, setViewMode] = useState<"kanban" | "table">("kanban");
+  const [activeStage, setActiveStage] = useState<Pipe>("All");
+  const [newDealOpen, setNewDealOpen] = useState(false);
 
-  // The form adds a row to the on-screen pipeline only — it never touches the database.
-  const addDeal = (d: Deal) => {
-    setExtra((x) => [d, ...x]);
-    setPipe("All");
-    setOpen(d.id);
-    toast.success("Deal added to the on-screen pipeline — demo only");
-  };
+  // New deal form state
+  const [propName, setPropName] = useState("");
+  const [unitLabel, setUnitLabel] = useState("");
+  const [areaLabel, setAreaLabel] = useState("");
+  const [buyerName, setBuyerName] = useState("");
+  const [dealAmount, setDealAmount] = useState("");
+  const [dealStage, setDealStage] = useState<Stage>("EOI Token");
 
-
-  // Recorded payments only move the on-screen totals — nothing is written to the database.
-  const ALL = useMemo(
-    () =>
-      [...extra, ...ROWS].map((d) => {
-        const add = paidAdj[d.id];
-        if (!add) return d;
-        return { ...d, paid: Math.min(d.amount, d.paid + add) };
-      }),
-    [extra, paidAdj],
+  // KPI Calculations
+  const totalVolume = useMemo(() => deals.reduce((acc, d) => acc + d.amount, 0), [deals]);
+  const totalCollected = useMemo(() => deals.reduce((acc, d) => acc + d.paid, 0), [deals]);
+  const totalCommissions = useMemo(() => deals.reduce((acc, d) => acc + d.commission, 0), [deals]);
+  const closedVolume = useMemo(
+    () => deals.filter((d) => d.stage === "Closed Won").reduce((acc, d) => acc + d.amount, 0),
+    [deals],
   );
 
-  const payDeal = payFor ? ALL.find((d) => d.id === payFor) ?? null : null;
+  const filteredDeals = useMemo(() => {
+    if (activeStage === "All") return deals;
+    return deals.filter((d) => d.stage === activeStage);
+  }, [deals, activeStage]);
 
-  const recordPayment = (
-    d: Deal,
-    p: { amount: number; method: string; reference: string; note: string },
-  ) => {
-    setPaidAdj((x) => ({ ...x, [d.id]: (x[d.id] ?? 0) + p.amount }));
-    setLogs((x) => [
-      {
-        deal: d.id,
-        ...p,
-        at: new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }),
-      },
-      ...x,
-    ]);
-    setOpen(d.id);
-    toast.success(`${formatAed(p.amount)} recorded against ${d.property} — demo only`);
+  const handleStageChange = (dealId: string, nextStage: Stage) => {
+    setDeals((prev) =>
+      prev.map((d) => {
+        if (d.id !== dealId) return d;
+        return {
+          ...d,
+          stage: nextStage,
+          updated: "Just now",
+        };
+      }),
+    );
+    toast.success(`Deal moved to ${nextStage}`);
   };
 
-  const rows = useMemo(() => {
-    const filtered = pipe === "All" ? ALL : ALL.filter((d) => d.stage === pipe);
-    return [...filtered].sort((a, b) => {
-      const av = sortValue(a, sort.key);
-      const bv = sortValue(b, sort.key);
-      const cmp = typeof av === "number" && typeof bv === "number" ? av - bv : String(av).localeCompare(String(bv));
-      return cmp * sort.dir;
-    });
-  }, [pipe, sort, ALL]);
-
-  const count = (p: Pipe) => (p === "All" ? ALL.length : ALL.filter((d) => d.stage === p).length);
-  const total = (pick: (d: Deal) => number) => rows.reduce((s, d) => s + pick(d), 0);
-  const onSort = (key: SortKey) =>
-    setSort((s) =>
-      s.key === key
-        ? { key, dir: s.dir === 1 ? -1 : 1 }
-        : { key, dir: TEXT_KEYS.includes(key) ? 1 : -1 },
-    );
-
-  const copyDeal = async (d: Deal) => {
-    const line = `${d.property} (${d.unit}, ${d.area}) — ${d.buyer} · ${d.type} · ${formatAed(d.amount)} · paid ${formatAed(d.paid)} · balance ${formatAed(d.amount - d.paid)} · ${d.stage}`;
-    try {
-      await navigator.clipboard.writeText(line);
-      toast.success("Deal summary copied");
-    } catch {
-      toast.error("Your browser blocked clipboard access");
-    }
+  const handleCreateDeal = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amountNum = parseFloat(dealAmount.replace(/[^0-9.]/g, "")) || 1000000;
+    const comm = Math.round(amountNum * 0.025); // 2.5% avg Dubai off-plan commission
+    const newDeal: Deal = {
+      id: `DL-${Math.floor(1000 + Math.random() * 9000)}`,
+      property: propName || "Off-Plan Project",
+      unit: unitLabel || "1 BR Apartment",
+      area: areaLabel || "Dubai",
+      buyer: buyerName || "Investor Client",
+      source: "Manual Entry",
+      type: "Off-Plan Sale",
+      amount: amountNum,
+      paid: Math.round(amountNum * 0.1),
+      commission: comm,
+      agent: "You",
+      stage: dealStage,
+      plan: "10 / 20 / 70",
+      nextMilestone: "Initial deposit confirmation",
+      updated: "Just now",
+    };
+    setDeals([newDeal, ...deals]);
+    setNewDealOpen(false);
+    toast.success("New deal logged in pipeline!");
+    setPropName("");
+    setUnitLabel("");
+    setBuyerName("");
+    setDealAmount("");
   };
 
   const exportCsv = () => {
-    const head = ["Deal", "Property", "Unit", "Area", "Buyer", "Type", "Amount", "Paid", "Balance", "Commission", "Agent", "Status"];
-    const lines = [head.map(csvCell).join(",")].concat(
-      rows.map((d) =>
-        [d.id, d.property, d.unit, d.area, d.buyer, d.type, d.amount, d.paid, d.amount - d.paid, d.commission, d.agent, d.stage]
-          .map(csvCell)
-          .join(","),
-      ),
-    );
-    const url = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "dealos-deals-sample.csv";
-    a.click();
+    const headers = ["Deal ID", "Property", "Unit", "Area", "Buyer", "Type", "Amount (AED)", "Paid (AED)", "Commission (AED)", "Agent", "Stage"];
+    const rows = deals.map((d) => [
+      d.id,
+      `"${d.property}"`,
+      `"${d.unit}"`,
+      `"${d.area}"`,
+      `"${d.buyer}"`,
+      d.type,
+      d.amount,
+      d.paid,
+      d.commission,
+      `"${d.agent}"`,
+      d.stage,
+    ]);
+    const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `dealos-pipeline-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
     URL.revokeObjectURL(url);
-    toast.success("Sample deals exported");
+    toast.success("Pipeline exported to CSV");
   };
 
-  const cols = clientMode ? 9 : 10;
-
   return (
-    <>
-      <section className="a-band a-fade">
-        <div>
-          <p className="eyebrow-a">Money</p>
-          <h1>Deals</h1>
-          <p className="sub">Token, agreement and completion across your pipeline.</p>
-        </div>
-        <div className="a-band-actions">
-          <span className="a-chip c-stage">Sample pipeline — demo records</span>
-          <button type="button" className="a-btn a-btn-gold" onClick={() => setShowNew(true)}>
-            <Plus size={16} /> New Deal
-          </button>
-          <button type="button" className="a-btn a-btn-line" onClick={exportCsv}>
-            <Download size={16} /> Export CSV
-          </button>
-        </div>
-      </section>
+    <div className="min-h-screen bg-background pb-20">
+      {/* ═══ TOP HEADER ═══ */}
+      <div className="border-b border-border/70 bg-card/60 backdrop-blur px-4 py-6 sm:px-8">
+        <div className="mx-auto max-w-7xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-primary">Brokerage Money</span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground">Dubai Land Department & Escrow Tracked</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight mt-1 font-display">
+              Deals & Commission Pipeline
+            </h1>
+          </div>
 
-      <div className="a-card a-fade">
-        <div className="a-card-head">
-          <h2>Deal pipeline</h2>
-          <span className="a-note num">
-            {formatAed(total((d) => d.amount))} across {rows.length} deals · {formatAed(total((d) => d.paid))} collected
-          </span>
-        </div>
-        <div className="a-pipe" role="tablist" aria-label="Deal status">
-          {PIPE.map((p) => (
-            <button
-              key={p}
-              type="button"
-              role="tab"
-              aria-selected={pipe === p}
-              className="a-pipe-step"
-              onClick={() => {
-                setPipe(p);
-                setOpen(null);
-              }}
-            >
-              {p}
-              <span className="num">{count(p)}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="a-card">
-        <div className="a-card-head">
-          <h2>{pipe === "All" ? "All deals" : `${pipe} deals`}</h2>
-          <span className="a-count num">Amounts in AED · {rows.length} deals</span>
-        </div>
-
-        <div className="a-table-wrap">
-          <table className="a-table a-deal-table">
-            <thead>
-              <tr>
-                <Th label="Property" k="property" sort={sort} onSort={onSort} />
-                <Th label="Buyer" k="buyer" sort={sort} onSort={onSort} />
-                <Th label="Type" k="type" sort={sort} onSort={onSort} />
-                <Th label="Amount" k="amount" sort={sort} onSort={onSort} num />
-                <Th label="Paid" k="paid" sort={sort} onSort={onSort} num />
-                <Th label="Balance" k="balance" sort={sort} onSort={onSort} num />
-                {!clientMode && <Th label="Commission" k="commission" sort={sort} onSort={onSort} num />}
-                <Th label="Agent" k="agent" sort={sort} onSort={onSort} />
-                <Th label="Status" k="stage" sort={sort} onSort={onSort} />
-                <th scope="col" className="a-deal-num">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((d) => {
-                const balance = d.amount - d.paid;
-                const isOpen = open === d.id;
-                return (
-                  <Fragment key={d.id}>
-                    <tr onClick={() => setOpen(isOpen ? null : d.id)}>
-                      <td>
-                        <b>{d.property}</b>
-                        <small>{d.unit} · {d.area}</small>
-                      </td>
-                      <td>
-                        <b>{d.buyer}</b>
-                        <small>{d.source}</small>
-                      </td>
-                      <td>{TYPE_LABEL[d.type]}</td>
-                      <td className="a-deal-num num">{money(d.amount)}</td>
-                      <td className="a-deal-num num">{money(d.paid)}</td>
-                      <td className="a-deal-num num">{money(balance)}</td>
-                      {!clientMode && <td className="a-deal-num num">{money(d.commission)}</td>}
-                      <td>
-                        <span className="a-deal-agent">
-                          <span className="a-deal-initials" aria-hidden>{initials(d.agent)}</span>
-                          {d.agent}
-                        </span>
-                      </td>
-                      <td><span className={`a-chip ${CHIP[d.stage]}`}>{d.stage}</span></td>
-                      <td className="a-deal-num">
-                        <span className="a-deal-acts" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            type="button"
-                            className="a-btn a-btn-line a-btn-sm"
-                            aria-label={isOpen ? `Hide details for ${d.property}` : `Show details for ${d.property}`}
-                            aria-expanded={isOpen}
-                            onClick={() => setOpen(isOpen ? null : d.id)}
-                          >
-                            {isOpen ? <ChevronDown size={14} style={{ transform: "rotate(180deg)" }} /> : <ChevronDown size={14} />}
-                          </button>
-                          <button
-                            type="button"
-                            className="a-btn a-btn-line a-btn-sm"
-                            aria-label={`Record payment for ${d.property}`}
-                            title="Record payment"
-                            onClick={() => setPayFor(d.id)}
-                          >
-                            <Banknote size={14} />
-                          </button>
-                          <button
-                            type="button"
-                            className="a-btn a-btn-line a-btn-sm"
-                            aria-label={`Copy summary for ${d.property}`}
-                            onClick={() => void copyDeal(d)}
-                          >
-                            <Copy size={14} />
-                          </button>
-                        </span>
-                      </td>
-                    </tr>
-                    {isOpen && (
-                      <tr>
-                        <td colSpan={cols} className="a-deal-detail">
-                          <dl className="a-kv">
-                            <dt>Payment plan</dt><dd>{d.plan}</dd>
-                            <dt>Next milestone</dt><dd>{d.next}</dd>
-                            <dt>Balance</dt><dd className="num">{formatAed(balance)}</dd>
-                            {!clientMode && <><dt>Commission</dt><dd className="num">{formatAed(d.commission)}</dd></>}
-                            <dt>Updated</dt><dd>{d.updated}</dd>
-                            {logs.some((l) => l.deal === d.id) && (
-                              <>
-                                <dt>Payments</dt>
-                                <dd>
-                                  {logs
-                                    .filter((l) => l.deal === d.id)
-                                    .map((l) => `${formatAed(l.amount)} · ${l.method}${l.reference ? ` · ref ${l.reference}` : ""}`)
-                                    .join(" · ")}
-                                </dd>
-                              </>
-                            )}
-                          </dl>
-                          <p className="a-mut">{d.note}</p>
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                );
-              })}
-              {!rows.length && (
-                <tr>
-                  <td colSpan={cols} className="a-deal-empty">No {pipe.toLowerCase()} deals right now.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="a-cards">
-          {rows.map((d) => {
-            const balance = d.amount - d.paid;
-            const isOpen = open === d.id;
-            return (
-              <Fragment key={d.id}>
-              <button type="button" className="a-lcard a-deal-lcard" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : d.id)}>
-                <b>{d.property}</b>
-                <small>{d.unit} · {d.area} · {d.buyer}</small>
-                <span className="a-deal-mrow">
-                  <span className={`a-chip ${CHIP[d.stage]}`}>{d.stage}</span>
-                  <span className="a-deal-mamt num">
-                    {formatAed(d.amount)}
-                    <ChevronDown size={15} style={{ transform: isOpen ? "rotate(180deg)" : undefined }} />
-                  </span>
-                </span>
-                {isOpen && (
-                  <span className="a-deal-mdetail">
-                    Plan {d.plan} · paid {formatAed(d.paid)} · balance {formatAed(balance)} · {d.next}
-                  </span>
-                )}
+          <div className="flex items-center gap-2.5">
+            {/* View Switcher */}
+            <div className="flex items-center rounded-lg border border-border bg-secondary/80 p-0.5">
+              <button
+                onClick={() => setViewMode("kanban")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === "kanban"
+                    ? "bg-card text-foreground shadow-sm border border-border"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <LayoutGrid className="size-3.5" />
+                <span>Kanban</span>
               </button>
-              {isOpen && (
-                <span className="a-deal-macts">
-                  <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => setPayFor(d.id)}>
-                    <Banknote size={14} /> Record payment
-                  </button>
-                  <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => void copyDeal(d)}>
-                    <Copy size={14} /> Copy summary
-                  </button>
-                </span>
-              )}
-              </Fragment>
-            );
-          })}
-          {!rows.length && <p className="a-mut">No {pipe.toLowerCase()} deals right now.</p>}
-        </div>
+              <button
+                onClick={() => setViewMode("table")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === "table"
+                    ? "bg-card text-foreground shadow-sm border border-border"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <List className="size-3.5" />
+                <span>Table</span>
+              </button>
+            </div>
 
-        <p className="a-mut">
-          Every row here is sample data for the layout — nothing on this page is saved to your database.{" "}
-          {clientMode ? "Commission is hidden while client mode is on." : "Switch on client mode in the top bar to hide commission."}
-        </p>
+            <Button variant="outline" size="sm" onClick={exportCsv} className="h-9 gap-1.5 text-xs font-semibold">
+              <Download className="size-3.5" />
+              <span>Export</span>
+            </Button>
+
+            <Button size="sm" onClick={() => setNewDealOpen(true)} className="h-9 gap-1.5 text-xs font-bold bg-primary text-primary-foreground">
+              <Plus className="size-3.5" />
+              <span>New Deal</span>
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {showNew && <NewDealModal onClose={() => setShowNew(false)} onCreate={addDeal} />}
-      {payDeal && (
-        <PaymentModal
-          deal={payDeal}
-          onClose={() => setPayFor(null)}
-          onRecord={(p) => {
-            recordPayment(payDeal, p);
-            setPayFor(null);
-          }}
-        />
-      )}
-    </>
-  );
-}
-
-function Th({
-  label, k, sort, onSort, num,
-}: {
-  label: string;
-  k: SortKey;
-  sort: { key: SortKey; dir: 1 | -1 };
-  onSort: (k: SortKey) => void;
-  num?: boolean;
-}) {
-  const active = sort.key === k;
-  return (
-    <th
-      scope="col"
-      className={num ? "a-deal-num" : undefined}
-      aria-sort={active ? (sort.dir === 1 ? "ascending" : "descending") : "none"}
-    >
-      <button type="button" className="a-deal-sort" onClick={() => onSort(k)}>
-        {label}
-        {active && <ChevronDown size={12} style={{ transform: sort.dir === 1 ? "rotate(180deg)" : undefined }} />}
-      </button>
-    </th>
-  );
-}
-
-const PROPERTIES = Array.from(
-  new Map(
-    ROWS.map((d) => [`${d.property}|${d.unit}|${d.area}`, { property: d.property, unit: d.unit, area: d.area }]),
-  ).values(),
-);
-
-function NewDealModal({ onClose, onCreate }: { onClose: () => void; onCreate: (d: Deal) => void }) {
-  const [prop, setProp] = useState("");
-  const [buyer, setBuyer] = useState("");
-  const [phone, setPhone] = useState("");
-  const [amount, setAmount] = useState("");
-  const [commPct, setCommPct] = useState("2");
-  const [sharePct, setSharePct] = useState("40");
-  const [token, setToken] = useState("");
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  const amt = Number(amount) || 0;
-  const tokenAmt = Number(token) || 0;
-  const commission = (amt * (Number(commPct) || 0)) / 100;
-  const agentShare = (commission * (Number(sharePct) || 0)) / 100;
-  const companyNet = commission - agentShare;
-  const balance = Math.max(0, amt - tokenAmt);
-  const tokenPct = amt > 0 ? Math.round((tokenAmt / amt) * 100) : 0;
-  const picked = prop ? prop.split("|") : [];
-
-  const submit = () => {
-    if (!prop) {
-      toast.error("Choose a property first");
-      return;
-    }
-    if (!buyer.trim()) {
-      toast.error("Buyer name is required");
-      return;
-    }
-    if (amt <= 0) {
-      toast.error("Deal amount must be more than zero");
-      return;
-    }
-    const [property = "", unit = "", area = ""] = picked;
-    onCreate({
-      id: `ND-${Date.now().toString().slice(-5)}`,
-      property,
-      unit,
-      area,
-      buyer: buyer.trim(),
-      source: phone.trim() ? `Phone ${phone.trim()}` : "Added manually",
-      type: "Sale",
-      amount: amt,
-      paid: tokenAmt,
-      commission: Math.round(commission),
-      agent: "You",
-      stage: "Token",
-      plan: "Not set yet",
-      next: tokenAmt > 0 ? "Token received — agree the payment plan" : "Token money still due",
-      note: "Created with the New Deal form. Demo record — nothing was saved to your database.",
-      updated: new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }),
-    });
-    onClose();
-  };
-
-  return (
-    <div
-      className="a-modal a-deal-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-label="New deal"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div>
-        <div className="a-deal-head">
-          <div>
-            <h2 style={{ margin: 0 }}>New deal</h2>
-            <p className="a-note" style={{ margin: 0 }}>Fill the details and the summary updates as you type.</p>
-          </div>
-          <button
-            type="button"
-            className="a-btn a-btn-line a-btn-sm"
-            aria-label="Close new deal form"
-            onClick={onClose}
-          >
-            <X size={14} />
-          </button>
-        </div>
-
-        <div className="a-deal-grid">
-          <div className="a-deal-fields">
-            <label className="a-deal-span">
-              Property
-              <select value={prop} onChange={(e) => setProp(e.target.value)} autoFocus>
-                <option value="">Choose a property…</option>
-                {PROPERTIES.map((p) => (
-                  <option key={`${p.property}|${p.unit}|${p.area}`} value={`${p.property}|${p.unit}|${p.area}`}>
-                    {p.property} · {p.unit} · {p.area}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Buyer name
-              <input value={buyer} onChange={(e) => setBuyer(e.target.value)} placeholder="Full name" />
-            </label>
-            <label>
-              Buyer phone
-              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+971 5x xxx xxxx" />
-            </label>
-            <label>
-              Deal amount
-              <input
-                type="number"
-                min="0"
-                step="1000"
-                inputMode="decimal"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-              />
-            </label>
-            <label>
-              Commission %
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                inputMode="decimal"
-                value={commPct}
-                onChange={(e) => setCommPct(e.target.value)}
-              />
-            </label>
-            <label>
-              Agent share %
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                inputMode="decimal"
-                value={sharePct}
-                onChange={(e) => setSharePct(e.target.value)}
-              />
-            </label>
-            <label>
-              Token money
-              <input
-                type="number"
-                min="0"
-                step="1000"
-                inputMode="decimal"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                placeholder="0"
-              />
-            </label>
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-8 space-y-6">
+        {/* ═══ EXECUTIVE KPI CARDS ═══ */}
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider">Total Pipeline</span>
+              <Building2 className="size-4 text-primary" />
+            </div>
+            <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+              {moneyAed(totalVolume)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{deals.length} active off-plan & ready deals</p>
           </div>
 
-          <div className="a-deal-sum">
-            <h3>Live math</h3>
-            <div className="a-deal-srow">
-              <span>Balance<em>Amount − Token · {tokenPct}% paid</em></span>
-              <b className="num">{formatAed(balance)}</b>
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider">Escrow Collected</span>
+              <ShieldCheck className="size-4 text-emerald-400" />
             </div>
-            <div className="a-deal-srow">
-              <span>Commission<em>Amount × {commPct || 0}%</em></span>
-              <b className="num">{formatAed(commission)}</b>
-            </div>
-            <div className="a-deal-srow">
-              <span>Agent Share<em>Commission × {sharePct || 0}%</em></span>
-              <b className="num">{formatAed(agentShare)}</b>
-            </div>
-            <div className="a-deal-srow total">
-              <span>Agency Share<em>Commission − Agent Share</em></span>
-              <b className="num">{formatAed(companyNet)}</b>
-            </div>
-          </div>
-        </div>
-
-        <div className="a-modal-actions">
-          <button type="button" className="a-btn a-btn-line" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="button" className="a-btn a-btn-gold" onClick={submit}>
-            Add to pipeline
-          </button>
-        </div>
-        <p className="a-mut" style={{ margin: 0 }}>
-          Demo only — this puts the deal in the on-screen pipeline. Nothing is written to your database.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-const METHODS = [
-  "Bank transfer",
-  "Manager's cheque",
-  "Personal cheque",
-  "Cash",
-  "Card payment",
-  "Crypto transfer",
-] as const;
-
-function PaymentModal({
-  deal, onClose, onRecord,
-}: {
-  deal: Deal;
-  onClose: () => void;
-  onRecord: (p: { amount: number; method: string; reference: string; note: string }) => void;
-}) {
-  const balance = deal.amount - deal.paid;
-  const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<string>(METHODS[0]);
-  const [reference, setReference] = useState("");
-  const [note, setNote] = useState("");
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  const amt = Math.max(0, Number(amount) || 0);
-  const paidAfter = Math.min(deal.amount, deal.paid + amt);
-  const balanceAfter = deal.amount - paidAfter;
-  const paidBeforePct = deal.amount > 0 ? Math.round((deal.paid / deal.amount) * 100) : 0;
-  const paidAfterPct = deal.amount > 0 ? Math.round((paidAfter / deal.amount) * 100) : 0;
-  const settled = balance <= 0;
-
-  const submit = () => {
-    if (settled) {
-      toast.error("This deal is already settled");
-      return;
-    }
-    if (amt <= 0) {
-      toast.error("Enter the payment amount first");
-      return;
-    }
-    if (amt > balance) {
-      toast.error(`That is more than the ${formatAed(balance)} still due`);
-      return;
-    }
-    onRecord({ amount: amt, method, reference: reference.trim(), note: note.trim() });
-    onClose();
-  };
-
-  return (
-    <div
-      className="a-modal a-deal-modal a-pay-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`Record payment for ${deal.property}`}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div>
-        <div className="a-deal-head">
-          <div>
-            <h2 style={{ margin: 0 }}>Record payment</h2>
-            <p className="a-note" style={{ margin: 0 }}>
-              {deal.property} · {deal.unit} · {deal.buyer}
+            <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight">
+              {moneyAed(totalCollected)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {Math.round((totalCollected / (totalVolume || 1)) * 100)}% of total transaction value
             </p>
           </div>
-          <button
-            type="button"
-            className="a-btn a-btn-line a-btn-sm"
-            aria-label="Close payment form"
-            onClick={onClose}
-          >
-            <X size={14} />
-          </button>
+
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider">Commission Forecast</span>
+              <Banknote className="size-4 text-amber-400" />
+            </div>
+            <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-amber-400 tracking-tight">
+              {moneyAed(totalCommissions)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Agent split (50%): <span className="font-semibold text-foreground">{moneyAed(totalCommissions * 0.5)}</span>
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider">Closed Won</span>
+              <CheckCircle2 className="size-4 text-teal-400" />
+            </div>
+            <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+              {moneyAed(closedVolume)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">Title deeds cleared & paid</p>
+          </div>
         </div>
 
-        <div className="a-deal-grid">
-          <div className="a-deal-fields">
-            <label>
-              Amount
-              <input
-                type="number"
-                min="0"
-                step="1000"
-                inputMode="decimal"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-                autoFocus
-              />
-            </label>
-            <label>
-              Method
-              <select value={method} onChange={(e) => setMethod(e.target.value)}>
-                {METHODS.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {!settled && (
-              <div className="a-deal-span a-deal-pay-quick">
-                <button type="button" className="a-link-gold" onClick={() => setAmount(String(balance))}>
-                  <Banknote size={13} /> Pay the full balance · {formatAed(balance)}
-                </button>
+        {/* ═══ KANBAN PIPELINE VIEW ═══ */}
+        {viewMode === "kanban" ? (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 items-start">
+            {STAGES.map((stage) => {
+              const stageDeals = deals.filter((d) => d.stage === stage);
+              const stageTotal = stageDeals.reduce((acc, d) => acc + d.amount, 0);
+              const cfg = STAGE_CONFIG[stage];
+
+              return (
+                <div key={stage} className="flex flex-col rounded-2xl border border-border bg-card/40 p-3 min-h-[480px]">
+                  {/* Column Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2">
+                      <span className={`size-2 rounded-full ${cfg.bg} border ${cfg.border}`} />
+                      <span className="text-xs font-bold text-foreground">{stage}</span>
+                    </div>
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-muted-foreground">
+                      {stageDeals.length}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] font-mono text-muted-foreground py-2 border-b border-border/40">
+                    Vol: {moneyAed(stageTotal)}
+                  </p>
+
+                  {/* Deals in this stage */}
+                  <div className="space-y-3 pt-3 flex-1">
+                    {stageDeals.map((deal) => (
+                      <div
+                        key={deal.id}
+                        className="group relative rounded-xl border border-border bg-card p-4 shadow-sm hover:border-primary/50 transition-all hover:shadow-md space-y-3"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <span className="text-[10px] font-mono text-muted-foreground">{deal.id}</span>
+                            <h4 className="text-sm font-bold text-foreground line-clamp-1">{deal.property}</h4>
+                            <p className="text-xs text-muted-foreground">{deal.unit}</p>
+                          </div>
+                          <span className="text-[10px] rounded bg-secondary px-1.5 py-0.5 text-muted-foreground shrink-0 font-medium">
+                            {deal.area}
+                          </span>
+                        </div>
+
+                        <div className="rounded-lg bg-secondary/50 p-2.5 space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Deal Value:</span>
+                            <span className="font-bold text-foreground">{moneyAed(deal.amount)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Commission:</span>
+                            <span className="font-bold text-amber-400">{moneyAed(deal.commission)}</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1 text-xs">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <User className="size-3 text-primary" />
+                            <span className="font-medium text-foreground truncate">{deal.buyer}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-muted-foreground text-[11px]">
+                            <Clock className="size-3" />
+                            <span className="truncate">{deal.nextMilestone}</span>
+                          </div>
+                        </div>
+
+                        {/* Move stage selector */}
+                        <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[11px]">
+                          <span className="text-muted-foreground font-mono">{deal.agent}</span>
+                          <select
+                            value={deal.stage}
+                            onChange={(e) => handleStageChange(deal.id, e.target.value as Stage)}
+                            className="bg-secondary text-foreground text-[11px] rounded px-2 py-1 border border-border focus:outline-none focus:border-primary cursor-pointer"
+                          >
+                            {STAGES.map((st) => (
+                              <option key={st} value={st}>
+                                → {st}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    ))}
+
+                    {stageDeals.length === 0 && (
+                      <div className="h-32 flex items-center justify-center rounded-xl border border-dashed border-border/60 text-xs text-muted-foreground">
+                        No deals
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* ═══ TABLE PIPELINE VIEW ═══ */
+          <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-foreground">Filter by Stage:</span>
+                <div className="flex gap-1">
+                  {(["All", ...STAGES] as Pipe[]).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveStage(tab)}
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                        activeStage === tab
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
-            <label className="a-deal-span">
-              Reference
-              <input
-                value={reference}
-                onChange={(e) => setReference(e.target.value)}
-                placeholder="Transaction, cheque or receipt number"
-              />
-            </label>
-            <label className="a-deal-span">
-              Notes
-              <textarea
-                rows={3}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Anything worth remembering about this payment"
-              />
-            </label>
-          </div>
+              <span className="text-xs text-muted-foreground font-mono">{filteredDeals.length} transactions</span>
+            </div>
 
-          <div className="a-deal-sum">
-            <h3>Impact</h3>
-            <div className="a-deal-srow">
-              <span>Deal Amount<em>{deal.type} · {deal.plan}</em></span>
-              <b className="num">{formatAed(deal.amount)}</b>
-            </div>
-            <div className="a-deal-srow">
-              <span>Paid so far<em>{paidBeforePct}% of the deal</em></span>
-              <b className="num">{formatAed(deal.paid)}</b>
-            </div>
-            <div className="a-deal-srow">
-              <span>This Payment<em>{method}{reference.trim() ? ` · ${reference.trim()}` : ""}</em></span>
-              <b className="num">{formatAed(amt)}</b>
-            </div>
-            <div className="a-deal-srow total">
-              <span>Balance After<em>{paidAfterPct}% paid once this is in</em></span>
-              <b className="num">{formatAed(balanceAfter)}</b>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground bg-secondary/30">
+                    <th className="py-3.5 pl-4">Deal & Property</th>
+                    <th className="py-3.5">Buyer</th>
+                    <th className="py-3.5">Amount</th>
+                    <th className="py-3.5">Collected</th>
+                    <th className="py-3.5">Broker Commission</th>
+                    <th className="py-3.5">Agent</th>
+                    <th className="py-3.5">Stage</th>
+                    <th className="py-3.5 text-right pr-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredDeals.map((deal) => {
+                    const cfg = STAGE_CONFIG[deal.stage];
+                    return (
+                      <tr key={deal.id} className="hover:bg-secondary/40 transition-colors">
+                        <td className="py-3.5 pl-4">
+                          <span className="font-bold text-foreground block">{deal.property}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {deal.unit} · {deal.area}
+                          </span>
+                        </td>
+                        <td className="py-3.5">
+                          <span className="font-semibold text-foreground block">{deal.buyer}</span>
+                          <span className="text-xs text-muted-foreground">{deal.source}</span>
+                        </td>
+                        <td className="py-3.5 font-bold font-mono text-foreground">{moneyAed(deal.amount)}</td>
+                        <td className="py-3.5 font-mono text-emerald-400">
+                          {moneyAed(deal.paid)}
+                          <span className="block text-[10px] text-muted-foreground">
+                            {Math.round((deal.paid / deal.amount) * 100)}%
+                          </span>
+                        </td>
+                        <td className="py-3.5">
+                          <span className="font-bold text-amber-400 font-mono block">{moneyAed(deal.commission)}</span>
+                          <span className="text-[10px] text-muted-foreground">50% Agent: {moneyAed(deal.commission * 0.5)}</span>
+                        </td>
+                        <td className="py-3.5 text-xs text-foreground font-medium">{deal.agent}</td>
+                        <td className="py-3.5">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${cfg.bg} ${cfg.color} border ${cfg.border}`}
+                          >
+                            {deal.stage}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-right pr-4">
+                          <select
+                            value={deal.stage}
+                            onChange={(e) => handleStageChange(deal.id, e.target.value as Stage)}
+                            className="bg-secondary text-foreground text-xs rounded-lg px-2.5 py-1.5 border border-border focus:outline-none focus:border-primary cursor-pointer"
+                          >
+                            {STAGES.map((st) => (
+                              <option key={st} value={st}>
+                                Move: {st}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
-
-        <div className="a-modal-actions">
-          <button type="button" className="a-btn a-btn-line" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="button" className="a-btn a-btn-gold" onClick={submit}>
-            Record payment
-          </button>
-        </div>
-        <p className="a-mut" style={{ margin: 0 }}>
-          Demo only — this updates the on-screen totals. Nothing is written to your database.
-        </p>
+        )}
       </div>
+
+      {/* ═══ NEW DEAL MODAL ═══ */}
+      <Dialog open={newDealOpen} onOpenChange={setNewDealOpen}>
+        <DialogContent className="max-w-md rounded-2xl bg-card border-border p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-foreground">Log New Transaction</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Add a new off-plan or secondary property deal to track escrow and commissions.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateDeal} className="mt-4 space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Project / Property Name</label>
+              <input
+                required
+                value={propName}
+                onChange={(e) => setPropName(e.target.value)}
+                placeholder="e.g. Celestara Residences"
+                className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Unit Details</label>
+                <input
+                  required
+                  value={unitLabel}
+                  onChange={(e) => setUnitLabel(e.target.value)}
+                  placeholder="e.g. Unit 402 · 1 BR"
+                  className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Community / Area</label>
+                <input
+                  required
+                  value={areaLabel}
+                  onChange={(e) => setAreaLabel(e.target.value)}
+                  placeholder="e.g. JVC, Dubai"
+                  className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Buyer Name</label>
+              <input
+                required
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+                placeholder="e.g. Tariq Mansoor"
+                className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Sale Price (AED)</label>
+                <input
+                  required
+                  value={dealAmount}
+                  onChange={(e) => setDealAmount(e.target.value)}
+                  placeholder="1,250,000"
+                  className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Initial Stage</label>
+                <select
+                  value={dealStage}
+                  onChange={(e) => setDealStage(e.target.value as Stage)}
+                  className="mt-1 h-10 w-full rounded-xl border border-border bg-secondary px-3 text-sm focus:border-primary focus:outline-none"
+                >
+                  {STAGES.map((st) => (
+                    <option key={st} value={st}>
+                      {st}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full h-11 bg-primary text-primary-foreground font-bold">
+              Add Deal to Pipeline
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
