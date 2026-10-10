@@ -2,10 +2,10 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import floorplan from "@/assets/floorplan-placeholder.jpg";
 import { UnitCard, type MatchRow } from "@/components/UnitCard";
 import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
 import { Button } from "@/components/ui/button";
+import { ProjectGallery, ProjectImage } from "@/components/app/ProjectGallery";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map as MapIcon, PawPrint, ShieldCheck, ShoppingBag, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
@@ -74,11 +74,11 @@ function DocLink({ label, url, icon: Icon }: { label: string; url: string | null
     : <button type="button" className={className} disabled title={`${label} is not attached to this project yet`}>{inner}</button>;
 }
 
-function ProjectImage({ src, alt, lazy = false }: { src: string | null; alt: string; lazy?: boolean }) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  return src && failedSrc !== src
-    ? <img src={src} alt={alt} loading={lazy ? "lazy" : "eager"} onError={() => setFailedSrc(src)} className="absolute inset-0 size-full object-cover" />
-    : <div role="img" aria-label={`${alt} — image unavailable`} className="absolute inset-0 flex items-center justify-center bg-secondary text-muted-foreground"><Building2 className="size-10 opacity-40" strokeWidth={1} /></div>;
+function JsonDetails({ value }: { value: unknown }) {
+  if (value == null) return null;
+  if (typeof value !== "object") return <span className="whitespace-pre-wrap break-words">{String(value)}</span>;
+  if (Array.isArray(value)) return <ul className="space-y-2">{value.map((item, i) => <li key={i}><JsonDetails value={item} /></li>)}</ul>;
+  return <dl className="space-y-3">{Object.entries(value).map(([key, item]) => <div key={key} className="min-w-0 border-b border-border pb-3"><dt className="text-xs text-muted-foreground">{key.replace(/_/g, " ")}</dt><dd className="mt-1 break-words text-sm"><JsonDetails value={item} /></dd></div>)}</dl>;
 }
 
 function DocCard({ label, url, icon: Icon }: { label: string; url: string | null; icon: LucideIcon }) {
@@ -103,7 +103,6 @@ function Page() {
   const project = data.project;
   const startingPrice = data.units.find((u) => u.price_aed != null)?.price_aed ?? null;
   const location = [project.district, project.emirate_or_country].filter(Boolean).join(", ") || "—";
-  const galleryImages = projectGalleryImages(project.media, project.cover_image_url);
   const facts = [
     { label: "Location", value: location },
     { label: "Starting Price", value: startingPrice != null ? aed(startingPrice) : "Price on request" },
@@ -116,8 +115,9 @@ function Page() {
   const amenities = [...new Set((project.amenities ?? []).map((a) => (a ?? "").trim()).filter(Boolean))];
   const visibleAmenities = showAllAmenities ? amenities : amenities.slice(0, 9);
   const documents = data.documents ?? [];
-  const floorPlanDoc = documents.find((d) => (d.type ?? "").includes("floor")) ?? null;
-  const brochureDoc = documents.find((d) => (d.type ?? "").includes("brochure")) ?? null;
+  const galleryImages = projectGalleryImages(project.media, project.cover_image_url, documents);
+  const floorPlanDoc = documents.find((d) => ["floorplan", "floor_plan"].includes((d.type ?? "").toLowerCase())) ?? null;
+  const brochureDoc = documents.find((d) => (d.type ?? "").toLowerCase() === "brochure") ?? null;
   const details = [
     { label: "Project Name", value: project.name },
     { label: "Developer", value: project.developer_name ?? "—" },
@@ -152,21 +152,17 @@ function Page() {
   return <section className="w-full">
     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 bg-secondary/40 p-4 sm:p-8 lg:grid-cols-12">
       <div className="min-w-0 space-y-8 lg:col-span-8">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:grid-rows-2">
-          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border shadow-sm sm:col-span-2 sm:row-span-2 sm:aspect-auto sm:min-h-[420px]">
-            <ProjectImage src={cover} alt={project.name} />
-          </div>
-          {[0, 1].map((i) => (
-            <div key={i} className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border shadow-sm sm:aspect-auto">
-              <ProjectImage src={galleryImages[i] ?? null} alt={`${project.name} gallery ${i + 1}`} lazy />
-            </div>
-          ))}
-        </div>
+        <ProjectGallery key={project.id} photos={galleryImages} title={project.name} />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <DocCard label="PDF Floor Plan" url={floorPlanDoc?.url ?? null} icon={FileText} />
           <DocCard label="PDF Brochure" url={brochureDoc?.url ?? null} icon={BookOpen} />
         </div>
+
+        <section className={card}>
+          <h2 className="eyebrow-a">Project Overview</h2>
+          <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-relaxed" style={{ color: "var(--a-ink)" }}>{project.overview || "No project description is recorded."}</p>
+        </section>
 
         <div className={`${card} flex items-center gap-5`}>
           <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary text-xl font-semibold" style={{ color: "var(--brand-blue)" }}>
@@ -178,6 +174,11 @@ function Page() {
             <p className="text-sm" style={{ color: "var(--a-ink-2)" }}>Office hours: not listed — contact the developer sales office</p>
           </div>
         </div>
+
+        <section className={card}>
+          <h2 className="eyebrow-a">About the Developer</h2>
+          <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-relaxed" style={{ color: "var(--a-ink)" }}>{project.developer_description || "No developer description is recorded."}</p>
+        </section>
 
         <div className={card}>
           <p className="eyebrow-a">Key Details</p>
@@ -213,17 +214,18 @@ function Page() {
           <p className="eyebrow-a">Features &amp; Amenities</p>
           {amenities.length ? (
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {amenities.slice(0, 9).map((item) => {
+              {amenities.map((item) => {
                 const Icon = amenityIcon(item);
                 return <div key={item} className="flex aspect-square flex-col items-center justify-center gap-3 rounded-xl border border-border bg-secondary p-4 shadow-sm">
                   <Icon className="size-7" style={{ color: "var(--brand-blue)" }} strokeWidth={1.5} />
-                  <p className="line-clamp-3 text-center text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item}</p>
+                  <p className="break-words text-center text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item}</p>
                 </div>;
               })}
             </div>
           ) : <p className="a-note mt-2">Amenities are listed here once the developer pack is indexed.</p>}
-          {amenities.length > 9 ? <p className="a-note mt-3">+{amenities.length - 9} more: {amenities.slice(9).join(" · ")}</p> : null}
         </div>
+
+        {([{ title: "Escrow Details", value: project.escrow }, { title: "DLD Registration", value: project.dld }]).map(({ title, value }) => value && (typeof value !== "object" || Object.keys(value).length > 0) ? <section key={title} className={card}><h2 className="eyebrow-a mb-4">{title}</h2><JsonDetails value={value} /></section> : null)}
 
         <div className={card}>
           <p className="eyebrow-a">Units Available</p>
@@ -241,7 +243,7 @@ function Page() {
                         <tbody>
                           {group.units.map((unit) => (
                             <tr key={unit.id} className="cursor-pointer border-t border-border" onClick={() => setUnitModal(toRow(unit))}>
-                              <td className="px-3 py-2"><div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary"><img src={unit.floor_plan_urls?.[0] ? mediaUrl(unit.floor_plan_urls[0]) : floorplan} alt="" loading="lazy" className="size-full object-cover" /></div></td>
+                               <td className="px-3 py-2"><div className="relative size-12 overflow-hidden rounded-lg border border-border bg-secondary"><ProjectImage src={unit.floor_plan_urls?.[0] ? mediaUrl(unit.floor_plan_urls[0]) : null} alt="Unit floor plan" /></div></td>
                               <td className="px-3 py-2">{unit.unit_type ?? "—"}{unit.unit_number ? <span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{unit.unit_number}</span> : null}</td>
                               <td className="px-3 py-2 num">{unit.size_sqft != null ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}</td>
                               <td className="px-3 py-2 num font-semibold" style={{ color: "var(--a-ink)" }}>{unit.price_aed != null ? aed(unit.price_aed) : "On request"}</td>
@@ -295,9 +297,9 @@ function Page() {
             <div className="min-w-0 space-y-3">
               <p className="eyebrow-a">Floor Plan</p>
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-secondary shadow-sm">
-                <img src={unitModal.plan ?? floorplan} alt={`Floor plan for ${unitModal.project_name}`} loading="lazy" width={1280} height={960} className="size-full object-cover" />
+                <ProjectImage src={unitModal.plan ?? null} alt={`Floor plan for ${unitModal.project_name}`} contain />
               </div>
-              <p className="a-note">{unitModal.plan ? "Developer floor plan." : "Illustrative floor plan — no plan is attached to this unit yet."}</p>
+              <p className="a-note">{unitModal.plan ? "Developer floor plan." : "No floor plan is attached to this unit yet."}</p>
             </div>
             <div className="flex min-w-0 flex-col gap-4">
               <div className="min-w-0">
