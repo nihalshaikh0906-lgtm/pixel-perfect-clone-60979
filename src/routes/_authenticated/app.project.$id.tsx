@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
   component: Page,
 });
 
-type UnitRow = MatchRow & { unit_number: string | null };
+type UnitRow = MatchRow & { unit_number: string | null; floor?: string | null; plan?: string | null };
 
 // Amenity labels are free text from the developer pack, so the icon is matched on keywords.
 const AMENITY_ICONS: Array<{ keys: string[]; icon: LucideIcon }> = [
@@ -118,9 +118,9 @@ function Page() {
     { label: "Developer", value: project.developer_name ?? "—" },
     { label: "Property Class", value: "—" },
     { label: "Unit Types", value: unitTypes.length ? unitTypes.slice(0, 3).join(" · ") : "—" },
-    { label: "Construction Status", value: "—" },
+    { label: "Construction Status", value: project.build_progress_pct != null ? `${Math.round(Number(project.build_progress_pct))}% built` : (project.sale_status ?? "—").replace(/_/g, " ") },
     { label: "Handover Quarter", value: quarterOf(project.handover_date) || "—" },
-    { label: "Furnishing", value: "—" },
+    { label: "Furnishing", value: project.furnishing ?? "—" },
   ];
   type ProjectUnit = (typeof data.units)[number];
   type BedGroup = { key: string; label: string; units: ProjectUnit[] };
@@ -131,15 +131,19 @@ function Page() {
     entry.units.push(unit);
     return map.set(key, entry);
   }, new Map<string, BedGroup>()).values()].sort((a: BedGroup, b: BedGroup) => a.key.localeCompare(b.key, undefined, { numeric: true }));
-  const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null });
+  const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null, floor: unit.floor_label ?? null, plan: unit.floor_plan_urls?.[0] ? mediaUrl(unit.floor_plan_urls[0]) : null });
   const card = "rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8";
   const cover = project.cover_image_url ? mediaUrl(project.cover_image_url) : PHOTOS[0];
   const keyDetails = [
     ...details.filter((d) => d.label !== "Developer").map((d) => d.label === "Handover Quarter" ? { ...d, label: "Handover Date" } : d),
-    { label: "Service Charge", value: "—" },
+    { label: "Service Charge", value: project.service_charge ?? "—" },
     { label: "Location", value: project.district ?? "—" },
   ];
-  const plan = [{ label: "On Booking", pct: 20, o: 1 }, { label: "During Construction", pct: 40, o: 0.6 }, { label: "On Handover", pct: 40, o: 0.3 }];
+  const realPlan = data.payment_plans?.[0] ?? null;
+  const planTotal = realPlan ? realPlan.steps.reduce((t, st) => t + st.percent, 0) || 100 : 100;
+  const plan = realPlan
+    ? realPlan.steps.map((st, i, all) => ({ label: st.name, pct: Math.round((st.percent / planTotal) * 1000) / 10, o: 1 - (i / Math.max(1, all.length)) * 0.75 }))
+    : [];
   return <section className="w-full">
     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 bg-secondary/40 p-4 sm:p-8 lg:grid-cols-12">
       <div className="min-w-0 space-y-8 lg:col-span-8">
@@ -183,11 +187,11 @@ function Page() {
         </div>
 
         <div className={card}>
-          <div className="flex items-baseline justify-between gap-3"><p className="eyebrow-a">Payment Plan</p><span className="a-note">Illustrative split</span></div>
-          <div className="mt-5 flex h-4 w-full overflow-hidden rounded-full border border-border">
+          <div className="flex items-baseline justify-between gap-3"><p className="eyebrow-a">Payment Plan</p><span className="a-note">{realPlan?.name ?? ""}{realPlan?.post_handover ? " · Post-handover" : ""}</span></div>
+          {plan.length ? <><div className="mt-5 flex h-4 w-full overflow-hidden rounded-full border border-border">
             {plan.map((s) => <div key={s.label} style={{ width: `${s.pct}%`, background: "var(--brand-blue)", opacity: s.o }} />)}
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {plan.map((s, i) => (
               <div key={s.label} className="min-w-0 border-l-2 pl-3" style={{ borderColor: "var(--brand-blue)" }}>
                 <p className="text-xs" style={{ color: "var(--a-ink-2)" }}>Milestone {i + 1}</p>
@@ -196,7 +200,8 @@ function Page() {
               </div>
             ))}
           </div>
-          {data.payment_plan_summary ? <p className="a-note mt-4">Recorded plan: {data.payment_plan_summary}</p> : null}
+          </> : <p className="a-note mt-3">No payment plan is recorded for this project yet.</p>}
+          {(data.payment_plans?.length ?? 0) > 1 ? <p className="a-note mt-4">{data.payment_plans.length} plans available — showing {realPlan?.name}.</p> : null}
         </div>
 
         <div className={card}>
@@ -231,7 +236,7 @@ function Page() {
                         <tbody>
                           {group.units.map((unit) => (
                             <tr key={unit.id} className="cursor-pointer border-t border-border" onClick={() => setUnitModal(toRow(unit))}>
-                              <td className="px-3 py-2"><div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary"><img src={floorplan} alt="" loading="lazy" className="size-full object-cover" /></div></td>
+                              <td className="px-3 py-2"><div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary"><img src={unit.floor_plan_urls?.[0] ? mediaUrl(unit.floor_plan_urls[0]) : floorplan} alt="" loading="lazy" className="size-full object-cover" /></div></td>
                               <td className="px-3 py-2">{unit.unit_type ?? "—"}{unit.unit_number ? <span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{unit.unit_number}</span> : null}</td>
                               <td className="px-3 py-2 num">{unit.size_sqft != null ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}</td>
                               <td className="px-3 py-2 num font-semibold" style={{ color: "var(--a-ink)" }}>{unit.price_aed != null ? aed(unit.price_aed) : "On request"}</td>
@@ -285,9 +290,9 @@ function Page() {
             <div className="min-w-0 space-y-3">
               <p className="eyebrow-a">Floor Plan</p>
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-secondary shadow-sm">
-                <img src={floorplan} alt={`Floor plan for ${unitModal.project_name}`} loading="lazy" width={1280} height={960} className="size-full object-cover" />
+                <img src={unitModal.plan ?? floorplan} alt={`Floor plan for ${unitModal.project_name}`} loading="lazy" width={1280} height={960} className="size-full object-cover" />
               </div>
-              <p className="a-note">Illustrative floor plan — this unit's own plan replaces it once documents are attached.</p>
+              <p className="a-note">{unitModal.plan ? "Developer floor plan." : "Illustrative floor plan — no plan is attached to this unit yet."}</p>
             </div>
             <div className="flex min-w-0 flex-col gap-4">
               <div className="min-w-0">
@@ -298,7 +303,7 @@ function Page() {
               <dl className="a-kv">
                 <dt>Bedrooms</dt><dd>{unitModal.bedrooms != null ? (unitModal.bedrooms === 0 ? "Studio" : `${unitModal.bedrooms} BR`) : "—"}</dd>
                 <dt>Area</dt><dd className="num">{unitModal.size_sqft != null ? `${unitModal.size_sqft.toLocaleString("en-US")} sqft` : "—"}</dd>
-                <dt>Floor</dt><dd>—</dd>
+                <dt>Floor</dt><dd>{unitModal.floor ?? "—"}</dd>
                 <dt>Unit Number</dt><dd>{unitModal.unit_number ?? "—"}</dd>
               </dl>
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-900">

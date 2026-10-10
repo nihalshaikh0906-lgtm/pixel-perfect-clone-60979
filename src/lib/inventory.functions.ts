@@ -118,16 +118,16 @@ export const getProjectDetail = createServerFn({ method: "POST" })
   .inputValidator((input: { id: number }) => ({ id: Math.floor(Number(input.id)) }))
   .handler(async ({ data, context }) => {
     const { data: project, error } = await context.supabase.from("projects")
-      .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status,amenities,latitude,longitude")
+      .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status,amenities,latitude,longitude,furnishing,service_charge,build_progress_pct,developer_logo_url")
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!project) return null;
     const { data: units, error: unitError } = await context.supabase.from("units")
-      .select("id,project_id,unit_number,bedrooms,size_sqft,price_aed,status,unit_type")
+      .select("id,project_id,unit_number,bedrooms,size_sqft,price_aed,status,unit_type,floor_label,floor_plan_urls")
       .eq("project_id", data.id)
       .order("price_aed", { ascending: true, nullsFirst: false })
-      .limit(24);
+      .limit(200);
     if (unitError) throw new Error(unitError.message);
     const rows = units ?? [];
     const { data: files, error: filesError } = await context.supabase.from("project_files")
@@ -160,7 +160,17 @@ export const getProjectDetail = createServerFn({ method: "POST" })
       if (countResult.error) throw new Error(countResult.error.message);
       available_units = countResult.count ?? 0;
     }
-    return { project, units: rows, available_units, payment_plan_summary, documents: files ?? [] };
+    const { data: plans } = await context.supabase.from("payment_plans")
+      .select("id,name,has_post_handover,payment_plan_steps(name,percentage,position,stage_type,parent_step_id)")
+      .eq("project_id", data.id).limit(10);
+    const payment_plans = (plans ?? []).map((pl) => ({
+      id: pl.id, name: pl.name, post_handover: pl.has_post_handover,
+      steps: ((pl.payment_plan_steps ?? []) as Array<{ name: string | null; percentage: number | null; position: number | null; parent_step_id: string | null }>)
+        .filter((st) => !st.parent_step_id && Number(st.percentage) > 0)
+        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        .map((st) => ({ name: st.name ?? "Instalment", percent: Number(st.percentage) })),
+    })).filter((pl) => pl.steps.length);
+    return { project, units: rows, available_units, payment_plan_summary, documents: files ?? [], payment_plans };
   });
 
 export const inventorySummaryOptions = () => queryOptions({ queryKey: ["live-inventory-summary"], queryFn: () => getInventorySummary(), staleTime: 300_000 });
