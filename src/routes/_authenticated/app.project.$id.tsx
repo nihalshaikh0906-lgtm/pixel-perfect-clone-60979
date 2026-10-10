@@ -19,7 +19,8 @@ const toMedia = (u?: string | null): string | null => {
   try {
     if (typeof mediaUrl === "function") return mediaUrl(u);
   } catch {}
-  return u.replace(/https?:\/\/reelly-backend\.s3\.amazonaws\.com\//g, "/media/");
+  if (u.startsWith("/media/")) return `https://reelly-backend.s3.amazonaws.com/${u.slice("/media/".length)}`;
+  return u;
 };
 
 export const Route = createFileRoute("/_authenticated/app/project/$id")({
@@ -90,13 +91,14 @@ function JsonDetails({ value }: { value: unknown }) {
 }
 
 function DocCard({ label, url, icon: Icon }: { label: string; url: string | null; icon: LucideIcon }) {
+  const targetUrl = url ? toMedia(url) : null;
   const inner = <>
     <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-secondary"><Icon className="size-5" style={{ color: "var(--brand-blue)" }} /></span>
-    <span className="min-w-0 flex-1"><span className="block font-semibold" style={{ color: "var(--a-ink)" }}>{label}</span><span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{url ? "Open document" : "Not attached yet"}</span></span>
-    {url ? <Download className="size-4" style={{ color: "var(--a-ink-2)" }} /> : null}
+    <span className="min-w-0 flex-1"><span className="block font-semibold" style={{ color: "var(--a-ink)" }}>{label}</span><span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{targetUrl ? "Open document" : "Not attached yet"}</span></span>
+    {targetUrl ? <Download className="size-4" style={{ color: "var(--a-ink-2)" }} /> : null}
   </>;
   const cls = "flex items-center gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow";
-  return url ? <a href={url} target="_blank" rel="noopener noreferrer" className={`${cls} hover:shadow-md`}>{inner}</a> : <div className={`${cls} opacity-60`} aria-disabled="true">{inner}</div>;
+  return targetUrl ? <a href={targetUrl} target="_blank" rel="noopener noreferrer" className={`${cls} hover:shadow-md`}>{inner}</a> : <div className={`${cls} opacity-60`} aria-disabled="true">{inner}</div>;
 }
 
 function Page() {

@@ -1,14 +1,9 @@
-// Rewrites upstream media links to our own /media/ path so the source host never shows in the app.
 const UPSTREAM = "https://reelly-backend.s3.amazonaws.com/";
 
 export function mediaUrl<T extends string | null | undefined>(u: T): T {
-  if (typeof u === "string") {
-    if (u.startsWith(UPSTREAM)) {
-      return `/media/${u.slice(UPSTREAM.length)}` as T;
-    }
-    if (u.includes("reelly-backend.s3.amazonaws.com/")) {
-      return u.replace(/https?:\/\/reelly-backend\.s3\.amazonaws\.com\//g, "/media/") as T;
-    }
+  if (!u || typeof u !== "string") return u;
+  if (u.startsWith("/media/")) {
+    return `${UPSTREAM}${u.slice("/media/".length)}` as T;
   }
   return u;
 }
@@ -20,10 +15,6 @@ if (typeof globalThis !== "undefined") {
 export function absoluteMediaUrl(u: string | null | undefined): string {
   const local = mediaUrl(u);
   if (!local) return "";
-  if (local.startsWith("/media/")) {
-    const origin = typeof window !== "undefined" && window.location.origin ? window.location.origin : "https://dealos.ae";
-    return `${origin}${local}`;
-  }
   return local;
 }
 
@@ -59,14 +50,16 @@ export function projectGalleryImages(media: unknown, cover?: string | null, file
     const entry = image && typeof image === "object" ? image as Record<string, unknown> : null;
     const url = typeof image === "string" ? image : entry?.["url"];
     const type = typeof entry?.["type"] === "string" ? entry["type"].toLowerCase() : "";
-    if (typeof url !== "string" || !/^https?:\/\//i.test(url) || /cover|plan|video|tour/.test(type)) return [];
-    return url === cover ? [] : [mediaUrl(url)];
+    if (typeof url !== "string" || (!/^https?:\/\//i.test(url) && !url.startsWith("/media/")) || /cover|plan|video|tour/.test(type)) return [];
+    const resolved = mediaUrl(url);
+    return resolved === mediaUrl(cover) ? [] : [resolved];
   });
   const fileImages = files.flatMap((file) => {
     const type = (file.type ?? "").toLowerCase();
     const url = file.url;
-    if (!url || !/^https?:\/\//i.test(url) || /brochure|floor.?plan|document|video|tour/.test(type)) return [];
+    if (!url || (!/^https?:\/\//i.test(url) && !url.startsWith("/media/")) || /brochure|floor.?plan|document|video|tour/.test(type)) return [];
     return /\.(?:jpe?g|png|webp|avif|gif)(?:[?#]|$)/i.test(url) || /^(?:image|photo|gallery|exterior|interior)/.test(type) ? [mediaUrl(url)] : [];
   });
-  return [...new Set([...(cover && /^https?:\/\//i.test(cover) ? [mediaUrl(cover)] : []), ...urls, ...fileImages])];
+  const coverUrl = cover ? mediaUrl(cover) : null;
+  return [...new Set([...(coverUrl ? [coverUrl] : []), ...urls, ...fileImages])];
 }
