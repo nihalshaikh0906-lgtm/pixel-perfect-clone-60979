@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { CATEGORY_TYPES, inventoryCategory, INVENTORY_PAGE_SIZE } from "./inventory-category";
+import { mediaUrl, deepMedia } from "./media";
 
 export const getInventorySummary = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
