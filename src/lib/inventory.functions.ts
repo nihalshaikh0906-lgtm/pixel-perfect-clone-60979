@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { CATEGORY_TYPES, inventoryCategory, INVENTORY_PAGE_SIZE } from "./inventory-category";
-import { mediaUrl, deepMedia } from "./media";
 
 export const getInventorySummary = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -174,11 +173,11 @@ export const getProjectDetail = createServerFn({ method: "POST" })
         .map((st) => ({ name: st.name ?? "Instalment", percent: Number(st.percentage) })),
     })).filter((pl) => pl.steps.length);
     return {
-      project: { ...project, cover_image_url: mediaUrl(project.cover_image_url), media: deepMedia(project.media) },
-      units: rows.map((u) => ({ ...u, floor_plan_urls: (u.floor_plan_urls ?? []).map(mediaUrl) })),
+      project,
+      units: rows,
       available_units,
       payment_plan_summary,
-      documents: (files ?? []).map((f) => ({ ...f, url: mediaUrl(f.url) })),
+      documents: files ?? [],
       payment_plans,
     };
   });
