@@ -1,11 +1,14 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 import galleryA from "@/assets/project-gallery-1.jpg";
 import galleryB from "@/assets/project-gallery-2.jpg";
+import floorplan from "@/assets/floorplan-placeholder.jpg";
 import { UnitCard, type MatchRow } from "@/components/UnitCard";
 import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Eye } from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
@@ -30,10 +33,13 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
   component: Page,
 });
 
+type UnitRow = MatchRow & { unit_number: string | null };
+
 function Page() {
   const { data } = useSuspenseQuery(projectDetailOptions(Number(Route.useParams().id)));
   const [selected, setSelected] = useState<MatchRow | null>(null);
   const [pickedImage, setPickedImage] = useState<string | null>(null);
+  const [unitModal, setUnitModal] = useState<UnitRow | null>(null);
   if (!data) return null;
   const project = data.project;
   const startingPrice = data.units.find((u) => u.price_aed != null)?.price_aed ?? null;
@@ -65,6 +71,7 @@ function Page() {
     entry.units.push(unit);
     return map.set(key, entry);
   }, new Map<string, BedGroup>()).values()].sort((a: BedGroup, b: BedGroup) => a.key.localeCompare(b.key, undefined, { numeric: true }));
+  const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null });
   return <section className="od-live-inventory">
     <div className="a-card-head"><div><p className="eyebrow-a">Project details</p><h1>{project.name}</h1></div><span className="a-count num">{data.units.length} units shown</span></div>
     <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[7fr_3fr]">
@@ -130,7 +137,7 @@ function Page() {
                         </thead>
                         <tbody>
                           {group.units.map((unit) => (
-                            <tr key={unit.id} className="border-t border-border">
+                            <tr key={unit.id} className="border-t border-border" onClick={() => setUnitModal(toRow(unit))}>
                               <td className="px-3 py-2">
                                 <div className="size-10 overflow-hidden rounded-lg border border-border bg-secondary">
                                   {project.cover_image_url ? <img src={mediaUrl(project.cover_image_url)} alt="" loading="lazy" className="size-full object-cover" /> : null}
@@ -143,7 +150,7 @@ function Page() {
                               <td className="px-3 py-2 num">{unit.size_sqft != null ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}</td>
                               <td className="px-3 py-2 num font-semibold" style={{ color: "var(--a-ink)" }}>{unit.price_aed != null ? aed(unit.price_aed) : "On request"}</td>
                               <td className="px-3 py-2">
-                                <button type="button" aria-label="View unit" className="a-btn a-btn-line inline-flex size-8 items-center justify-center rounded-lg" onClick={() => setSelected({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null })}>
+                                <button type="button" aria-label="View unit" className="a-btn a-btn-line inline-flex size-8 items-center justify-center rounded-lg" onClick={(e) => { e.stopPropagation(); setUnitModal(toRow(unit)); }}>
                                   <Eye className="size-4" />
                                 </button>
                               </td>
@@ -158,10 +165,7 @@ function Page() {
             </Accordion>
           ) : <p className="a-note mt-2">No units are recorded for this project.</p>}
         </div>
-        <div className="od-unit-grid">{data.units.map((unit) => {
-          const row: MatchRow = { unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null };
-          return <UnitCard key={unit.id} row={row} onOpen={setSelected} />;
-        })}</div>
+        <div className="od-unit-grid">{data.units.map((unit) => <UnitCard key={unit.id} row={toRow(unit)} onOpen={setSelected} />)}</div>
         {!data.units.length ? <p className="a-note">No units are recorded for this project.</p> : null}
       </div>
       <aside className="a-card space-y-4 self-start p-5 lg:sticky lg:top-24">
@@ -183,6 +187,43 @@ function Page() {
         </div>
       </aside>
     </div>
+    <Dialog open={unitModal !== null} onOpenChange={(open) => { if (!open) setUnitModal(null); }}>
+      <DialogContent className="a-unit-modal max-h-[90vh] max-w-[min(1060px,94vw)] gap-0 overflow-y-auto rounded-2xl p-5 sm:p-6">
+        <DialogHeader className="sr-only">
+          <DialogTitle>{unitModal ? `${unitModal.project_name} — floor plan and price` : "Unit floor plan"}</DialogTitle>
+          <DialogDescription>Floor plan, price and key details for this unit.</DialogDescription>
+        </DialogHeader>
+        {unitModal ? <div className="dapp a-dialog-scope">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[6fr_4fr]">
+            <div className="min-w-0 space-y-3">
+              <p className="eyebrow-a">Floor Plan</p>
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-secondary shadow-sm">
+                <img src={floorplan} alt={`Floor plan for ${unitModal.project_name}`} loading="lazy" width={1280} height={960} className="size-full object-cover" />
+              </div>
+              <p className="a-note">Illustrative floor plan — this unit's own plan replaces it once documents are attached.</p>
+            </div>
+            <div className="flex min-w-0 flex-col gap-4">
+              <div className="min-w-0">
+                <p className="eyebrow-a">{unitModal.developer ?? unitModal.district ?? "Unit"}</p>
+                <p className="num mt-1 text-3xl font-semibold sm:text-4xl" style={{ color: "var(--a-ink)" }}>{unitModal.price_aed != null ? aed(unitModal.price_aed) : "Price on request"}</p>
+                <span className="a-chip c-ok mt-2">Available</span>
+              </div>
+              <dl className="a-kv">
+                <dt>Bedrooms</dt><dd>{unitModal.bedrooms != null ? (unitModal.bedrooms === 0 ? "Studio" : `${unitModal.bedrooms} BR`) : "—"}</dd>
+                <dt>Area</dt><dd className="num">{unitModal.size_sqft != null ? `${unitModal.size_sqft.toLocaleString("en-US")} sqft` : "—"}</dd>
+                <dt>Floor</dt><dd>—</dd>
+                <dt>Unit Number</dt><dd>{unitModal.unit_number ?? "—"}</dd>
+              </dl>
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-900">
+                <p className="text-xs font-semibold uppercase tracking-wide">Please note</p>
+                <p className="mt-1 text-xs leading-relaxed">Price, availability and payment terms are indicative and can change without notice. Service charges and transfer fees are not included. Confirm the final figures with the developer before signing.</p>
+              </div>
+              <Button type="button" className="a-btn a-btn-gold mt-auto w-full" onClick={() => { toast.success(`${unitModal.project_name} added to your presentation`); setUnitModal(null); }}>Add to presentation</Button>
+            </div>
+          </div>
+        </div> : null}
+      </DialogContent>
+    </Dialog>
     <PropertyPackDrawer unit={selected} clientId={null} clientPhone={null} onClose={() => setSelected(null)} />
   </section>;
 }
