@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ProjectGallery, ProjectImage } from "@/components/app/ProjectGallery";
@@ -50,6 +50,39 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
 /* ─── helpers ─── */
 const bedLabel = (n: number) => n === 0 ? "Studio" : `${n} BR`;
 
+function parseOverview(raw?: string | null) {
+  if (!raw) return { summary: "", sections: [] as Array<{ title: string; text: string }> };
+  const parts = raw.split(/#{2,6}\s+/g).map((s) => s.trim()).filter(Boolean);
+  const sections: Array<{ title: string; text: string }> = [];
+  let summary = "";
+
+  for (const part of parts) {
+    const lines = part.split("\n").map((l) => l.trim()).filter(Boolean);
+    if (!lines.length) continue;
+    const firstLine = lines[0].replace(/^#+\s*/, "").trim();
+    const remainingText = lines.slice(1).join("\n\n").trim();
+    
+    if (/project general facts|general facts|overview/i.test(firstLine)) {
+      summary = remainingText || lines.slice(1).join(" ") || lines.join(" ");
+    } else if (/location/i.test(firstLine)) {
+      sections.push({ title: "Location & Surroundings", text: remainingText || lines.slice(1).join(" ") });
+    } else if (/finish|material/i.test(firstLine)) {
+      sections.push({ title: "Finishing & Materials", text: remainingText || lines.slice(1).join(" ") });
+    } else if (/kitchen|appliance/i.test(firstLine)) {
+      sections.push({ title: "Kitchen & Appliances", text: remainingText || lines.slice(1).join(" ") });
+    } else {
+      if (!summary) summary = remainingText || lines.join(" ");
+      else sections.push({ title: firstLine, text: remainingText || lines.slice(1).join(" ") });
+    }
+  }
+
+  const clean = (t: string) => (t || "").replace(/#{1,6}\s*/g, "").replace(/\*\*/g, "").trim();
+  return {
+    summary: clean(summary || parts[0] || ""),
+    sections: sections.map((s) => ({ title: clean(s.title), text: clean(s.text) })),
+  };
+}
+
 function Page() {
   const { data } = useSuspenseQuery(projectDetailOptions(Number(Route.useParams().id)));
   const [bedFilter, setBedFilter] = useState<string>("all");
@@ -57,9 +90,11 @@ function Page() {
   const [eoiOpen, setEoiOpen] = useState(false);
   const [buyerName, setBuyerName] = useState("");
   const [buyerPhone, setBuyerPhone] = useState("");
+  const [showFullOverview, setShowFullOverview] = useState(false);
 
   if (!data) return null;
   const p = data.project;
+  const parsedOverview = useMemo(() => parseOverview(p.overview), [p.overview]);
   const startPrice = data.units.find((u) => u.price_aed != null)?.price_aed ?? null;
   const location = [p.district, p.emirate_or_country].filter(Boolean).join(", ") || "Dubai";
   const docs = data.documents ?? [];
@@ -178,13 +213,45 @@ function Page() {
             </div>
           </div>
 
-          {/* Overview — max 3 lines, no walls */}
-          {p.overview && (
-            <div className="rounded-xl border border-border bg-card p-5">
-              <h2 className="text-sm font-semibold text-foreground mb-2">About</h2>
-              <p className="text-sm leading-relaxed text-muted-foreground line-clamp-3">
-                {p.overview}
-              </p>
+          {/* About / Project Narrative — Clean, structured & no raw markdown */}
+          {parsedOverview.summary && (
+            <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-foreground">About {p.name}</h2>
+                <span className="text-[11px] font-medium text-muted-foreground">{location}</span>
+              </div>
+
+              <div className="text-sm leading-relaxed text-muted-foreground space-y-2.5">
+                {parsedOverview.summary
+                  .split("\n\n")
+                  .slice(0, showFullOverview ? undefined : 2)
+                  .map((para, idx) => (
+                    <p key={idx}>{para}</p>
+                  ))}
+              </div>
+
+              {/* Expandable sub-sections */}
+              {showFullOverview && parsedOverview.sections.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-border grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {parsedOverview.sections.map((sec, idx) => (
+                    <div key={idx} className="rounded-lg bg-secondary/50 p-3.5 border border-border/60 space-y-1">
+                      <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">{sec.title}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{sec.text}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {(parsedOverview.summary.split("\n\n").length > 2 || parsedOverview.sections.length > 0) && (
+                <button
+                  type="button"
+                  onClick={() => setShowFullOverview(!showFullOverview)}
+                  className="text-xs font-semibold text-primary hover:underline pt-1 inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <span>{showFullOverview ? "Show less" : "Read full development details"}</span>
+                  <span className="text-[10px]">{showFullOverview ? "▲" : "▼"}</span>
+                </button>
+              )}
             </div>
           )}
 
