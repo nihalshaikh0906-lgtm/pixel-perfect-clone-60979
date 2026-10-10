@@ -10,7 +10,7 @@ import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map, PawPrint, ShieldCheck, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
+import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map as MapIcon, PawPrint, ShieldCheck, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
@@ -232,7 +232,7 @@ function Page() {
         <div className="a-card p-5">
           <p className="eyebrow-a">Location Map</p>
           <div className="mt-3 flex aspect-[21/9] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-secondary">
-            <Map className="size-8" style={{ color: "var(--brand-blue)" }} />
+            <MapIcon className="size-8" style={{ color: "var(--brand-blue)" }} />
             <p className="text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{project.district ?? "Location"}</p>
             <p className="a-note">Map preview coming soon.</p>
           </div>
