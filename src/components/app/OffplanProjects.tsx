@@ -12,6 +12,33 @@ function bedLabel(n: number): string {
   return n === 0 ? "Studio" : `${n} BR`;
 }
 
+function OffplanCardImage({ src, alt }: { src: string | null; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return (
+      <div className="flex size-full items-center justify-center text-muted-foreground bg-secondary">
+        <Building2 className="size-8 opacity-40" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {!loaded && <div className="absolute inset-0 animate-pulse bg-secondary" />}
+      <img
+        src={mediaUrl(src)}
+        alt={alt}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={() => setFailed(true)}
+        className={`size-full object-cover transition-transform duration-500 group-hover:scale-105 ${loaded ? "opacity-100" : "opacity-0"}`}
+      />
+    </>
+  );
+}
+
 export function OffplanProjects({ page, q, onSearch }: {
   page: number; q: string;
   onSearch: (search: { page: number; q: string }) => void;
@@ -106,18 +133,7 @@ export function OffplanProjects({ page, q, onSearch }: {
               className="group block overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-amber-500/40"
             >
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
-                {project.cover_image_url ? (
-                  <img
-                    src={mediaUrl(project.cover_image_url)}
-                    alt={project.name}
-                    loading="lazy"
-                    className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex size-full items-center justify-center text-muted-foreground">
-                    <Building2 className="size-8" />
-                  </div>
-                )}
+                <OffplanCardImage src={project.cover_image_url} alt={project.name} />
                 <span className="metric absolute right-3 top-3 rounded-full border border-border bg-background/80 px-2.5 py-1 text-xs text-muted-foreground backdrop-blur">
                   {quarterOf(project.handover_date)}
                 </span>
@@ -155,14 +171,14 @@ export function OffplanProjects({ page, q, onSearch }: {
                   {project.starting_price_aed != null ? `From ${aed(project.starting_price_aed)}` : "Price on request"}
                 </p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
-                  {project.bed_types.slice(0, 4).map((bed) => (
+                  {(project.bed_types ?? []).slice(0, 4).map((bed) => (
                     <span key={bed} className="metric rounded-md border border-border bg-secondary/60 px-2 py-1 text-xs text-muted-foreground">
                       {bedLabel(bed)}
                     </span>
                   ))}
-                  {project.bed_types.length > 4 ? (
+                  {(project.bed_types ?? []).length > 4 ? (
                     <span className="metric rounded-md border border-border bg-secondary/60 px-2 py-1 text-xs text-muted-foreground">
-                      +{project.bed_types.length - 4}
+                      +{(project.bed_types ?? []).length - 4}
                     </span>
                   ) : null}
                 </div>

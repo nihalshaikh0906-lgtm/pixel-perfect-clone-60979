@@ -159,9 +159,9 @@ function Page() {
   });
 
   const realPlan = data.payment_plans?.[0] ?? null;
-  const planTotal = realPlan ? realPlan.steps.reduce((t, st) => t + st.percent, 0) || 100 : 100;
-  const planSteps = realPlan
-    ? realPlan.steps.map((st) => ({ label: st.name, pct: Math.round((st.percent / planTotal) * 100) }))
+  const planTotal = realPlan && Array.isArray(realPlan.steps) ? realPlan.steps.reduce((t, st) => t + (st?.percent ?? 0), 0) || 100 : 100;
+  const planSteps = realPlan && Array.isArray(realPlan.steps) && realPlan.steps.length > 0
+    ? realPlan.steps.map((st) => ({ label: st.name, pct: Math.round(((st?.percent ?? 0) / planTotal) * 100) }))
     : [
         { label: "On Booking Deposit", pct: 10 },
         { label: "During Construction", pct: 20 },
@@ -534,7 +534,7 @@ Are you available for a brief call to reserve this allocation?`;
 
             {/* Units Table */}
             <div className="mt-5 overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground">
                     <th className="pb-3 pl-2">Floor Plan</th>
@@ -611,7 +611,7 @@ Are you available for a brief call to reserve this allocation?`;
         </div>
 
         {/* RIGHT COLUMN: 4 COLS (STICKY BROKER CLOSING CONSOLE) */}
-        <aside className="lg:col-span-4">
+        <aside className="min-w-0 lg:col-span-4">
           <div className="sticky top-6 space-y-6">
             {/* BROKER HERO CLOSING CARD */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-lg space-y-6">
@@ -695,7 +695,7 @@ Are you available for a brief call to reserve this allocation?`;
 
       {/* UNIT FLOORPLAN LIGHTBOX MODAL */}
       <Dialog open={unitModal !== null} onOpenChange={(open) => { if (!open) setUnitModal(null); }}>
-        <DialogContent className="max-h-[92vh] max-w-4xl overflow-y-auto rounded-2xl bg-card border-border p-6">
+        <DialogContent className="max-h-[92vh] max-w-4xl w-[calc(100vw-32px)] overflow-y-auto rounded-2xl bg-card border-border p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-foreground">
               {unitModal ? `${unitModal.project_name} — Unit Floor Plan` : "Floor Plan"}
@@ -754,7 +754,7 @@ Are you available for a brief call to reserve this allocation?`;
 
       {/* EOI RESERVATION MODAL */}
       <Dialog open={eoiModal !== null} onOpenChange={(open) => { if (!open) setEoiModal(null); }}>
-        <DialogContent className="max-w-md rounded-2xl bg-card border-border p-6">
+        <DialogContent className="max-w-md w-[calc(100vw-32px)] rounded-2xl bg-card border-border p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-foreground">
               Reserve Allocation (EOI Form)

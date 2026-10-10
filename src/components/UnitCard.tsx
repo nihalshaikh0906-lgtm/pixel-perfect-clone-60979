@@ -23,6 +23,7 @@ export type MatchRow = {
 
 export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRow) => void }) {
   const [coverFailed, setCoverFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const photo = useQuery({
     queryKey: ["unit-cover", row.project_id, row.unit_id],
     enabled: coverFailed || !row.cover_image_url,
@@ -44,16 +45,20 @@ export function UnitCard({ row, onOpen }: { row: MatchRow; onOpen: (row: MatchRo
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
         {image ? (
-          <img
-            src={mediaUrl(image)}
-            onError={() => setCoverFailed(true)}
-            alt={row.project_name ?? "Project"}
-            loading="lazy"
-            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          <>
+            {!loaded && <div className="absolute inset-0 animate-pulse bg-secondary" />}
+            <img
+              src={mediaUrl(image)}
+              onLoad={() => setLoaded(true)}
+              onError={() => setCoverFailed(true)}
+              alt={row.project_name ?? "Project"}
+              loading="lazy"
+              className={`size-full object-cover transition-transform duration-500 group-hover:scale-105 ${loaded ? "opacity-100" : "opacity-0"}`}
+            />
+          </>
         ) : (
           <div className="flex size-full items-center justify-center text-muted-foreground">
-            <Building2 className="size-8" />
+            <Building2 className="size-8 opacity-40" />
           </div>
         )}
         {row.score != null && Math.round(row.score) > 0 ? (
