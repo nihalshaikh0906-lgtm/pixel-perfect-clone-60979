@@ -10,7 +10,7 @@ import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Eye } from "lucide-react";
+import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map as MapIcon, PawPrint, ShieldCheck, ShoppingBag, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
@@ -35,11 +35,47 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
 
 type UnitRow = MatchRow & { unit_number: string | null };
 
+// Amenity labels are free text from the developer pack, so the icon is matched on keywords.
+const AMENITY_ICONS: Array<{ keys: string[]; icon: LucideIcon }> = [
+  { keys: ["pool", "jacuzzi", "lagoon", "aqua", "splash", "water"], icon: Waves },
+  { keys: ["gym", "fitness", "crossfit", "strength", "pilates", "yoga", "training"], icon: Dumbbell },
+  { keys: ["spa", "sauna", "steam", "massage", "therapy", "wellness", "cryo", "hyperbaric", "salon"], icon: Sparkles },
+  { keys: ["parking", "garage", "valet"], icon: Car },
+  { keys: ["security", "cctv", "surveillance", "guard"], icon: ShieldCheck },
+  { keys: ["beach", "cabana", "sunbed", "marina", "boardwalk"], icon: Umbrella },
+  { keys: ["pet", "paw", "dog"], icon: PawPrint },
+  { keys: ["kid", "child", "playroom", "playground", "creche", "nursery", "teen"], icon: Baby },
+  { keys: ["concierge", "reception", "lobby", "room service"], icon: BellRing },
+  { keys: ["garden", "park", "green", "landscap", "courtyard", "tree", "bonsai", "picnic"], icon: Trees },
+  { keys: ["wifi", "smart", "automat"], icon: Wifi },
+  { keys: ["track", "jogging", "walking", "cycle", "cycling", "bike"], icon: Footprints },
+  { keys: ["padel", "squash", "tennis", "basketball", "bowling", "games", "court", "sport", "golf", "pickleball"], icon: Trophy },
+  { keys: ["cinema", "theatre", "theater", "screen"], icon: Film },
+  { keys: ["co-working", "coworking", "working", "business", "boardroom", "meeting", "office", "studies", "clubhouse", "club house", "multipurpose", "function hall", "event space"], icon: Building2 },
+  { keys: ["library", "reading", "study"], icon: BookOpen },
+  { keys: ["retail", "shop", "boutique", "supermarket", "f&b"], icon: ShoppingBag },
+  { keys: ["bbq", "dining", "restaurant", "cafe", "lounge", "bar", "kitchen"], icon: Utensils },
+];
+
+const amenityIcon = (name: string): LucideIcon => {
+  const text = name.toLowerCase();
+  return AMENITY_ICONS.find((rule) => rule.keys.some((key) => text.includes(key)))?.icon ?? Sparkles;
+};
+
+function DocLink({ label, url, icon: Icon }: { label: string; url: string | null; icon: LucideIcon }) {
+  const className = "a-btn a-btn-line disabled:opacity-55 disabled:pointer-events-none";
+  const inner = <><Icon className="size-4" style={{ color: "var(--brand-blue)" }} /><span>{label}</span>{url ? <Download className="size-4" /> : null}</>;
+  return url
+    ? <a href={url} target="_blank" rel="noopener noreferrer" className={className}>{inner}</a>
+    : <button type="button" className={className} disabled title={`${label} is not attached to this project yet`}>{inner}</button>;
+}
+
 function Page() {
   const { data } = useSuspenseQuery(projectDetailOptions(Number(Route.useParams().id)));
   const [selected, setSelected] = useState<MatchRow | null>(null);
   const [pickedImage, setPickedImage] = useState<string | null>(null);
   const [unitModal, setUnitModal] = useState<UnitRow | null>(null);
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
   if (!data) return null;
   const project = data.project;
   const startingPrice = data.units.find((u) => u.price_aed != null)?.price_aed ?? null;
@@ -52,6 +88,11 @@ function Page() {
     { label: "Handover", value: quarterOf(project.handover_date) },
   ];
   const unitTypes = [...new Set(data.units.map((u) => u.unit_type).filter((t): t is string => Boolean(t)))];
+  const amenities = [...new Set((project.amenities ?? []).map((a) => (a ?? "").trim()).filter(Boolean))];
+  const visibleAmenities = showAllAmenities ? amenities : amenities.slice(0, 9);
+  const documents = data.documents ?? [];
+  const floorPlanDoc = documents.find((d) => (d.type ?? "").includes("floor")) ?? null;
+  const brochureDoc = documents.find((d) => (d.type ?? "").includes("brochure")) ?? null;
   const mainImage = pickedImage ?? (project.cover_image_url ? mediaUrl(project.cover_image_url) : galleryA);
   const details = [
     { label: "Project Name", value: project.name },
@@ -167,6 +208,45 @@ function Page() {
         </div>
         <div className="od-unit-grid">{data.units.map((unit) => <UnitCard key={unit.id} row={toRow(unit)} onOpen={setSelected} />)}</div>
         {!data.units.length ? <p className="a-note">No units are recorded for this project.</p> : null}
+        <div className="a-card p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <p className="eyebrow-a">Features &amp; Amenities</p>
+            {amenities.length > 9 ? (
+              <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => setShowAllAmenities((v) => !v)} aria-expanded={showAllAmenities}>{showAllAmenities ? "Show less" : `Show all ${amenities.length}`}</button>
+            ) : null}
+          </div>
+          {amenities.length ? (
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {visibleAmenities.map((item) => {
+                const Icon = amenityIcon(item);
+                return (
+                  <div key={item} className="flex min-w-0 items-center gap-3 rounded-xl border border-border bg-secondary px-3 py-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg" style={{ background: "var(--a-cream)" }}>
+                      <Icon className="size-4" style={{ color: "var(--brand-blue)" }} />
+                    </span>
+                    <span className="min-w-0 text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : <p className="a-note mt-2">Amenities are listed here once the developer pack is indexed.</p>}
+        </div>
+        <div className="a-card p-5">
+          <p className="eyebrow-a">Location Map</p>
+          <div className="mt-3 flex aspect-[21/9] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-secondary">
+            <MapIcon className="size-8" style={{ color: "var(--brand-blue)" }} />
+            <p className="text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{project.district ?? "Location"}</p>
+            <p className="a-note">Map preview coming soon.</p>
+          </div>
+        </div>
+        <div className="a-card p-5">
+          <p className="eyebrow-a">Documents &amp; Links</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <DocLink label="Floor Plan" url={floorPlanDoc?.url ?? null} icon={FileText} />
+            <DocLink label="Brochure" url={brochureDoc?.url ?? null} icon={BookOpen} />
+          </div>
+          {!floorPlanDoc || !brochureDoc ? <p className="a-note mt-3">Some documents aren’t attached to this project yet.</p> : null}
+        </div>
       </div>
       <aside className="a-card space-y-4 self-start p-5 lg:sticky lg:top-24">
         <div>
