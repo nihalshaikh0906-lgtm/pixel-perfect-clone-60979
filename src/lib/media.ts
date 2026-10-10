@@ -20,20 +20,24 @@ export function deepMedia<T>(v: T): T {
 export const MEDIA_UPSTREAM = UPSTREAM;
 
 // Supabase media contains images [{ url, type, order }], alongside videos and plans.
-export function projectGalleryImages(media: unknown, cover?: string | null): string[] {
+export function projectGalleryImages(media: unknown, cover?: string | null, files: Array<{ url: string | null; type: string | null }> = []): string[] {
   let parsed = media;
   if (typeof parsed === "string") {
-    try { parsed = JSON.parse(parsed); } catch { return []; }
+    try { parsed = JSON.parse(parsed); } catch { parsed = null; }
   }
-  if (!parsed || typeof parsed !== "object") return [];
-  const images = Array.isArray(parsed) ? parsed : (parsed as Record<string, unknown>)["images"];
-  if (!Array.isArray(images)) return [];
-  const urls = images.flatMap((image) => {
+  const images = Array.isArray(parsed) ? parsed : parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>)["images"] : [];
+  const urls = (Array.isArray(images) ? images : []).flatMap((image) => {
     const entry = image && typeof image === "object" ? image as Record<string, unknown> : null;
     const url = typeof image === "string" ? image : entry?.["url"];
     const type = typeof entry?.["type"] === "string" ? entry["type"].toLowerCase() : "";
     if (typeof url !== "string" || !/^https?:\/\//i.test(url) || /cover|plan|video|tour/.test(type)) return [];
     return url === cover ? [] : [mediaUrl(url)];
   });
-  return [...new Set(urls)];
+  const fileImages = files.flatMap((file) => {
+    const type = (file.type ?? "").toLowerCase();
+    const url = file.url;
+    if (!url || !/^https?:\/\//i.test(url) || /brochure|floor.?plan|document|video|tour/.test(type)) return [];
+    return /\.(?:jpe?g|png|webp|avif|gif)(?:[?#]|$)/i.test(url) || /^(?:image|photo|gallery|exterior|interior)/.test(type) ? [mediaUrl(url)] : [];
+  });
+  return [...new Set([...(cover && /^https?:\/\//i.test(cover) ? [mediaUrl(cover)] : []), ...urls, ...fileImages])];
 }

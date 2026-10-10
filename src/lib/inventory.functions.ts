@@ -118,7 +118,7 @@ export const getProjectDetail = createServerFn({ method: "POST" })
   .inputValidator((input: { id: number }) => ({ id: Math.floor(Number(input.id)) }))
   .handler(async ({ data, context }) => {
     const { data: project, error } = await context.supabase.from("projects")
-      .select("id,name,developer_name,district,emirate_or_country,media,handover_date,cover_image_url,sale_status,amenities,latitude,longitude,furnishing,service_charge,build_progress_pct,developer_logo_url")
+      .select("id,name,developer_name,developer_description,overview,escrow,dld,district,emirate_or_country,media,handover_date,cover_image_url,sale_status,amenities,latitude,longitude,furnishing,service_charge,build_progress_pct,developer_logo_url")
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -130,12 +130,14 @@ export const getProjectDetail = createServerFn({ method: "POST" })
       .limit(200);
     if (unitError) throw new Error(unitError.message);
     const rows = units ?? [];
-    const { data: files, error: filesError } = await context.supabase.from("project_files")
-      .select("id,name,type,url")
-      .eq("project_id", data.id)
-      .order("type")
-      .limit(30);
-    if (filesError) throw new Error(filesError.message);
+    const files: Array<{ id: string; project_id: number | null; name: string | null; type: string | null; url: string | null }> = [];
+    for (let from = 0; ; from += 1000) {
+      const { data: batch, error: filesError } = await context.supabase.from("project_files")
+        .select("*").eq("project_id", data.id).order("id").range(from, from + 999);
+      if (filesError) throw new Error(filesError.message);
+      files.push(...(batch ?? []));
+      if ((batch?.length ?? 0) < 1000) break;
+    }
     const countQuery = context.supabase.from("units")
       .select("id", { count: "exact", head: true })
       .eq("project_id", data.id)
