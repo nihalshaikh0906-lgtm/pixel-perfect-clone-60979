@@ -70,6 +70,25 @@ function DocLink({ label, url, icon: Icon }: { label: string; url: string | null
     : <button type="button" className={className} disabled title={`${label} is not attached to this project yet`}>{inner}</button>;
 }
 
+const U = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=75`;
+// Illustrative photography (exterior, bedroom, kitchen) — real cover replaces the first when present.
+const PHOTOS = [U("photo-1545324418-cc1a3fa10c00"), U("photo-1616594039964-ae9021a400a0"), U("photo-1556909114-f6e7ad7d3136")];
+const AMENITY_PHOTOS = [
+  U("photo-1576013551627-0cc20b96c2a7"), U("photo-1534438327276-14e5300c3a48"), U("photo-1544161515-4ab6ce6db874"),
+  U("photo-1566073771259-6a8506099945"), U("photo-1555396273-367ea4eb4db5"), U("photo-1441986300917-64674bd600d8"),
+  U("photo-1600607687939-ce8a6c25118c"), U("photo-1519046904884-53103b34b206"), U("photo-1582719478250-c89cae4dc85b"),
+];
+
+function DocCard({ label, url, icon: Icon }: { label: string; url: string | null; icon: LucideIcon }) {
+  const inner = <>
+    <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-secondary"><Icon className="size-5" style={{ color: "var(--brand-blue)" }} /></span>
+    <span className="min-w-0 flex-1"><span className="block font-semibold" style={{ color: "var(--a-ink)" }}>{label}</span><span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{url ? "Open document" : "Not attached yet"}</span></span>
+    {url ? <Download className="size-4" style={{ color: "var(--a-ink-2)" }} /> : null}
+  </>;
+  const cls = "flex items-center gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow";
+  return url ? <a href={url} target="_blank" rel="noopener noreferrer" className={`${cls} hover:shadow-md`}>{inner}</a> : <div className={`${cls} opacity-60`} aria-disabled="true">{inner}</div>;
+}
+
 function Page() {
   const { data } = useSuspenseQuery(projectDetailOptions(Number(Route.useParams().id)));
   const [selected, setSelected] = useState<MatchRow | null>(null);
@@ -113,87 +132,111 @@ function Page() {
     return map.set(key, entry);
   }, new Map<string, BedGroup>()).values()].sort((a: BedGroup, b: BedGroup) => a.key.localeCompare(b.key, undefined, { numeric: true }));
   const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null });
-  return <section className="od-live-inventory">
-    <div className="a-card-head"><div><p className="eyebrow-a">Project details</p><h1>{project.name}</h1></div><span className="a-count num">{data.units.length} units shown</span></div>
-    <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[7fr_3fr]">
-      <div className="min-w-0 space-y-5">
-        <div className="space-y-3">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border bg-secondary shadow-sm">
-            <img src={mainImage} alt={project.name} className="size-full object-cover" />
+  const card = "rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8";
+  const cover = project.cover_image_url ? mediaUrl(project.cover_image_url) : PHOTOS[0];
+  const keyDetails = [
+    ...details.filter((d) => d.label !== "Developer").map((d) => d.label === "Handover Quarter" ? { ...d, label: "Handover Date" } : d),
+    { label: "Service Charge", value: "—" },
+    { label: "Location", value: project.district ?? "—" },
+  ];
+  const plan = [{ label: "On Booking", pct: 20, o: 1 }, { label: "During Construction", pct: 40, o: 0.6 }, { label: "On Handover", pct: 40, o: 0.3 }];
+  return <section className="w-full">
+    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 bg-secondary/40 p-4 sm:p-8 lg:grid-cols-12">
+      <div className="min-w-0 space-y-8 lg:col-span-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:grid-rows-2">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border shadow-sm sm:col-span-2 sm:row-span-2 sm:aspect-auto sm:min-h-[420px]">
+            <img src={cover} alt={project.name} className="absolute inset-0 size-full object-cover" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[galleryA, galleryB].map((thumb, i) => (
-              <button key={i} type="button" onClick={() => setPickedImage(thumb)} aria-label={`Show view ${i + 1}`} className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border bg-secondary shadow-sm transition-opacity hover:opacity-90" style={mainImage === thumb ? { boxShadow: "0 0 0 2px var(--brand-blue)" } : undefined}>
-                <img src={thumb} alt={`${project.name} view ${i + 1}`} loading="lazy" width={1024} height={1024} className="size-full object-cover" />
-              </button>
-            ))}
+          {[PHOTOS[1], PHOTOS[2]].map((src, i) => (
+            <div key={src} className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border shadow-sm sm:aspect-auto">
+              <img src={src} alt={`${project.name} interior ${i + 1}`} loading="lazy" className="absolute inset-0 size-full object-cover" />
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <DocCard label="PDF Floor Plan" url={floorPlanDoc?.url ?? null} icon={FileText} />
+          <DocCard label="PDF Brochure" url={brochureDoc?.url ?? null} icon={BookOpen} />
+        </div>
+
+        <div className={`${card} flex items-center gap-5`}>
+          <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary text-xl font-semibold" style={{ color: "var(--brand-blue)" }}>
+            {(project.developer_name ?? "D").split(/\s+/).map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <p className="eyebrow-a">Developer</p>
+            <p className="truncate text-lg font-semibold" style={{ color: "var(--a-ink)" }}>{project.developer_name ?? "—"}</p>
+            <p className="text-sm" style={{ color: "var(--a-ink-2)" }}>Office hours: not listed — contact the developer sales office</p>
           </div>
         </div>
-        <div className="a-card p-5">
-          <p className="eyebrow-a">Details</p>
-          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-3">
-            {details.map((item) => (
-              <div key={item.label} className="min-w-0">
+
+        <div className={card}>
+          <p className="eyebrow-a">Key Details</p>
+          <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {keyDetails.map((item) => (
+              <div key={item.label} className="min-w-0 rounded-xl border border-border bg-secondary/60 p-4">
                 <p className="text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>{item.label}</p>
-                <p className="mt-1 truncate text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item.value}</p>
+                <p className="mt-1 truncate text-sm font-semibold" style={{ color: "var(--a-ink)" }} title={String(item.value)}>{item.value}</p>
               </div>
             ))}
           </div>
         </div>
-        <div className="a-card p-5">
-          <p className="eyebrow-a">Payment Plan</p>
-          <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full border border-border">
-            <div style={{ width: "20%", background: "var(--brand-blue)" }} />
-            <div style={{ width: "60%", background: "var(--brand-blue)", opacity: 0.55 }} />
-            <div style={{ width: "20%", background: "var(--brand-blue)", opacity: 0.25 }} />
+
+        <div className={card}>
+          <div className="flex items-baseline justify-between gap-3"><p className="eyebrow-a">Payment Plan</p><span className="a-note">Illustrative split</span></div>
+          <div className="mt-5 flex h-4 w-full overflow-hidden rounded-full border border-border">
+            {plan.map((s) => <div key={s.label} style={{ width: `${s.pct}%`, background: "var(--brand-blue)", opacity: s.o }} />)}
           </div>
-          <div className="mt-3 grid grid-cols-3 gap-3">
-            {[{ label: "On Booking", value: "20%" }, { label: "During Construction", value: "60%" }, { label: "On Handover", value: "20%" }].map((seg) => (
-              <div key={seg.label} className="min-w-0">
-                <p className="metric text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{seg.value}</p>
-                <p className="text-xs" style={{ color: "var(--a-ink-2)" }}>{seg.label}</p>
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            {plan.map((s, i) => (
+              <div key={s.label} className="min-w-0 border-l-2 pl-3" style={{ borderColor: "var(--brand-blue)" }}>
+                <p className="text-xs" style={{ color: "var(--a-ink-2)" }}>Milestone {i + 1}</p>
+                <p className="num text-2xl font-semibold" style={{ color: "var(--a-ink)" }}>{s.pct}%</p>
+                <p className="text-xs" style={{ color: "var(--a-ink-2)" }}>{s.label}</p>
               </div>
             ))}
           </div>
+          {data.payment_plan_summary ? <p className="a-note mt-4">Recorded plan: {data.payment_plan_summary}</p> : null}
         </div>
-        <div className="a-card p-5">
-          <p className="eyebrow-a">Available Units</p>
+
+        <div className={card}>
+          <p className="eyebrow-a">Features &amp; Amenities</p>
+          {amenities.length ? (
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {amenities.slice(0, 9).map((item, i) => (
+                <div key={item} className="relative aspect-square overflow-hidden rounded-xl border border-border shadow-sm">
+                  <img src={AMENITY_PHOTOS[i % AMENITY_PHOTOS.length]} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/10 to-transparent" />
+                  <p className="absolute inset-x-3 bottom-3 line-clamp-2 text-sm font-semibold text-background">{item}</p>
+                </div>
+              ))}
+            </div>
+          ) : <p className="a-note mt-2">Amenities are listed here once the developer pack is indexed.</p>}
+          {amenities.length > 9 ? <p className="a-note mt-3">+{amenities.length - 9} more: {amenities.slice(9).join(" · ")}</p> : null}
+        </div>
+
+        <div className={card}>
+          <p className="eyebrow-a">Units Available</p>
           {bedGroups.length ? (
             <Accordion type="multiple" defaultValue={bedGroups.slice(0, 1).map((g) => g.key)} className="mt-2">
               {bedGroups.map((group) => (
                 <AccordionItem key={group.key} value={group.key}>
                   <AccordionTrigger>
-                    <span className="text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{group.label}</span>
-                    <span className="a-count num ml-auto mr-3">{group.units.length}</span>
+                    <span className="text-base font-semibold" style={{ color: "var(--a-ink)" }}>{group.label} <span className="font-normal" style={{ color: "var(--a-ink-2)" }}>— {group.units.length} Unit{group.units.length === 1 ? "" : "s"}</span></span>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="a-table-wrap overflow-x-auto">
+                    <div className="overflow-x-auto">
                       <table className="a-table w-full text-sm">
-                        <thead>
-                          <tr>
-                            {["Plan", "Bedrooms", "Type", "Unit", "Floor", "Area", "Price", ""].map((h) => (
-                              <th key={h} className="px-3 py-2 text-left text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
+                        <thead><tr>{["Plan", "Type", "Area", "Price", ""].map((h) => <th key={h} className="px-3 py-2 text-left text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>{h}</th>)}</tr></thead>
                         <tbody>
                           {group.units.map((unit) => (
-                            <tr key={unit.id} className="border-t border-border" onClick={() => setUnitModal(toRow(unit))}>
-                              <td className="px-3 py-2">
-                                <div className="size-10 overflow-hidden rounded-lg border border-border bg-secondary">
-                                  {project.cover_image_url ? <img src={mediaUrl(project.cover_image_url)} alt="" loading="lazy" className="size-full object-cover" /> : null}
-                                </div>
-                              </td>
-                              <td className="px-3 py-2">{unit.bedrooms != null ? `${unit.bedrooms} BR` : "—"}</td>
-                              <td className="px-3 py-2">{unit.unit_type ?? "—"}</td>
-                              <td className="px-3 py-2">{unit.unit_number ?? "—"}</td>
-                              <td className="px-3 py-2">—</td>
+                            <tr key={unit.id} className="cursor-pointer border-t border-border" onClick={() => setUnitModal(toRow(unit))}>
+                              <td className="px-3 py-2"><div className="size-12 overflow-hidden rounded-lg border border-border bg-secondary"><img src={floorplan} alt="" loading="lazy" className="size-full object-cover" /></div></td>
+                              <td className="px-3 py-2">{unit.unit_type ?? "—"}{unit.unit_number ? <span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{unit.unit_number}</span> : null}</td>
                               <td className="px-3 py-2 num">{unit.size_sqft != null ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}</td>
                               <td className="px-3 py-2 num font-semibold" style={{ color: "var(--a-ink)" }}>{unit.price_aed != null ? aed(unit.price_aed) : "On request"}</td>
-                              <td className="px-3 py-2">
-                                <button type="button" aria-label="View unit" className="a-btn a-btn-line inline-flex size-8 items-center justify-center rounded-lg" onClick={(e) => { e.stopPropagation(); setUnitModal(toRow(unit)); }}>
-                                  <Eye className="size-4" />
-                                </button>
+                              <td className="px-3 py-2 text-right">
+                                <button type="button" aria-label="View unit" className="a-btn a-btn-line inline-flex size-9 items-center justify-center rounded-lg" onClick={(e) => { e.stopPropagation(); setUnitModal(toRow(unit)); }}><Eye className="size-4" /></button>
                               </td>
                             </tr>
                           ))}
@@ -206,64 +249,28 @@ function Page() {
             </Accordion>
           ) : <p className="a-note mt-2">No units are recorded for this project.</p>}
         </div>
-        <div className="od-unit-grid">{data.units.map((unit) => <UnitCard key={unit.id} row={toRow(unit)} onOpen={setSelected} />)}</div>
-        {!data.units.length ? <p className="a-note">No units are recorded for this project.</p> : null}
-        <div className="a-card p-5">
-          <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <p className="eyebrow-a">Features &amp; Amenities</p>
-            {amenities.length > 9 ? (
-              <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => setShowAllAmenities((v) => !v)} aria-expanded={showAllAmenities}>{showAllAmenities ? "Show less" : `Show all ${amenities.length}`}</button>
-            ) : null}
-          </div>
-          {amenities.length ? (
-            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {visibleAmenities.map((item) => {
-                const Icon = amenityIcon(item);
-                return (
-                  <div key={item} className="flex min-w-0 items-center gap-3 rounded-xl border border-border bg-secondary px-3 py-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg" style={{ background: "var(--a-cream)" }}>
-                      <Icon className="size-4" style={{ color: "var(--brand-blue)" }} />
-                    </span>
-                    <span className="min-w-0 text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : <p className="a-note mt-2">Amenities are listed here once the developer pack is indexed.</p>}
-        </div>
-        <div className="a-card p-5">
-          <p className="eyebrow-a">Location Map</p>
-          <div className="mt-3 flex aspect-[21/9] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-secondary">
-            <MapIcon className="size-8" style={{ color: "var(--brand-blue)" }} />
-            <p className="text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{project.district ?? "Location"}</p>
-            <p className="a-note">Map preview coming soon.</p>
-          </div>
-        </div>
-        <div className="a-card p-5">
-          <p className="eyebrow-a">Documents &amp; Links</p>
-          <div className="mt-3 flex flex-wrap gap-3">
-            <DocLink label="Floor Plan" url={floorPlanDoc?.url ?? null} icon={FileText} />
-            <DocLink label="Brochure" url={brochureDoc?.url ?? null} icon={BookOpen} />
-          </div>
-          {!floorPlanDoc || !brochureDoc ? <p className="a-note mt-3">Some documents aren’t attached to this project yet.</p> : null}
-        </div>
       </div>
-      <aside className="a-card space-y-4 self-start p-5 lg:sticky lg:top-24">
-        <div>
-          <p className="eyebrow-a">Project</p>
-          <h2 className="font-display text-xl font-semibold">{project.name}</h2>
-        </div>
-        <div className="space-y-3">
-          {facts.map((fact) => (
-            <div key={fact.label} className="flex items-baseline justify-between gap-3 border-b border-border pb-2 last:border-0 last:pb-0">
-              <span className="text-sm text-muted-foreground">{fact.label}</span>
-              <span className="metric truncate text-right text-sm font-semibold">{fact.value}</span>
+
+      <aside className="lg:col-span-4">
+        <div className="sticky top-8 space-y-6">
+          <div className={`${card} space-y-5`}>
+            <div>
+              <p className="eyebrow-a">Project</p>
+              <h1 className="text-2xl font-semibold" style={{ color: "var(--a-ink)" }}>{project.name}</h1>
+              <p className="mt-1 text-sm" style={{ color: "var(--a-ink-2)" }}>{[project.district, "Dubai, UAE"].filter(Boolean).join(", ")}</p>
             </div>
-          ))}
-        </div>
-        <div className="grid gap-2 pt-1">
-          <Button type="button" className="a-btn a-btn-gold w-full">Generate Sales Offer</Button>
-          <Button type="button" variant="ghost" className="a-btn a-btn-line w-full">Download Assets</Button>
+            <div>
+              <p className="text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>Starting from</p>
+              <p className="num text-4xl font-semibold leading-tight" style={{ color: "var(--a-ink)" }}>{startingPrice != null ? aed(startingPrice) : "On request"}</p>
+            </div>
+            <dl className="space-y-3 text-sm">
+              <div className="flex justify-between gap-3 border-b border-border pb-3"><dt style={{ color: "var(--a-ink-2)" }}>Units in sale</dt><dd className="num font-semibold">{data.available_units.toLocaleString("en-US")}</dd></div>
+              <div className="flex items-center justify-between gap-3 border-b border-border pb-3"><dt style={{ color: "var(--a-ink-2)" }}>Payment plan</dt><dd><span className="a-chip">{data.payment_plan_summary ?? "On request"}</span></dd></div>
+              <div className="flex justify-between gap-3"><dt style={{ color: "var(--a-ink-2)" }}>Developer</dt><dd className="truncate font-semibold">{project.developer_name ?? "—"}</dd></div>
+            </dl>
+          </div>
+          <Button type="button" className="h-14 w-full rounded-xl text-base font-semibold text-primary-foreground shadow-sm" style={{ background: "var(--brand-blue)" }} onClick={() => toast("Sales offer generation is coming soon")}>Generate Sales Offer</Button>
+          <Button type="button" className="h-14 w-full rounded-xl bg-foreground text-base font-semibold text-background shadow-sm hover:bg-foreground/90" onClick={() => toast("Resale publishing is coming soon")}>Publish Resale Unit</Button>
         </div>
       </aside>
     </div>
@@ -304,6 +311,5 @@ function Page() {
         </div> : null}
       </DialogContent>
     </Dialog>
-    <PropertyPackDrawer unit={selected} clientId={null} clientPhone={null} onClose={() => setSelected(null)} />
   </section>;
 }
