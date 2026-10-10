@@ -56,6 +56,13 @@ function Page() {
     { label: "Handover Quarter", value: quarterOf(project.handover_date) || "—" },
     { label: "Furnishing", value: "—" },
   ];
+  const bedGroups = [...data.units.reduce((map, unit) => {
+    const key = unit.bedrooms != null ? `${unit.bedrooms}` : "other";
+    const label = unit.bedrooms != null ? (unit.bedrooms === 0 ? "Studio" : `${unit.bedrooms} Bedroom${unit.bedrooms === 1 ? "" : "s"}`) : "Other";
+    const entry = map.get(key) ?? { key, label, units: [] as typeof data.units };
+    entry.units.push(unit);
+    return map.set(key, entry);
+  }, new Map<string, { key: string; label: string; units: typeof data.units }>()).values()].sort((a, b) => a.key.localeCompare(b.key, undefined, { numeric: true }));
   return <section className="od-live-inventory">
     <div className="a-card-head"><div><p className="eyebrow-a">Project details</p><h1>{project.name}</h1></div><span className="a-count num">{data.units.length} units shown</span></div>
     <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[7fr_3fr]">
