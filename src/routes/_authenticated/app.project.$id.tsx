@@ -14,6 +14,14 @@ import { mediaUrl, projectGalleryImages } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
+const toMedia = (u?: string | null): string | null => {
+  if (!u) return null;
+  try {
+    if (typeof mediaUrl === "function") return mediaUrl(u);
+  } catch {}
+  return u.replace(/https?:\/\/reelly-backend\.s3\.amazonaws\.com\//g, "/media/");
+};
+
 export const Route = createFileRoute("/_authenticated/app/project/$id")({
   loader: async ({ context, params }) => {
     const detail = await context.queryClient.ensureQueryData(projectDetailOptions(Number(params.id)));
@@ -136,9 +144,9 @@ function Page() {
     entry.units.push(unit);
     return map.set(key, entry);
   }, new Map<string, BedGroup>()).values()].sort((a: BedGroup, b: BedGroup) => a.key.localeCompare(b.key, undefined, { numeric: true }));
-  const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null, floor: unit.floor_label ?? null, plan: unit.floor_plan_urls?.[0] ? mediaUrl(unit.floor_plan_urls[0]) : null });
+  const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null, floor: unit.floor_label ?? null, plan: unit.floor_plan_urls?.[0] ? toMedia(unit.floor_plan_urls[0]) : null });
   const card = "rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8";
-  const cover = project.cover_image_url ? mediaUrl(project.cover_image_url) : null;
+  const cover = project.cover_image_url ? toMedia(project.cover_image_url) : null;
   const keyDetails = [
     ...details.filter((d) => d.label !== "Developer").map((d) => d.label === "Handover Quarter" ? { ...d, label: "Handover Date" } : d),
     { label: "Service Charge", value: project.service_charge ?? "—" },
@@ -243,7 +251,7 @@ function Page() {
                         <tbody>
                           {group.units.map((unit) => (
                             <tr key={unit.id} className="cursor-pointer border-t border-border" onClick={() => setUnitModal(toRow(unit))}>
-                               <td className="px-3 py-2"><div className="relative size-12 overflow-hidden rounded-lg border border-border bg-secondary"><ProjectImage src={unit.floor_plan_urls?.[0] ? mediaUrl(unit.floor_plan_urls[0]) : null} alt="Unit floor plan" /></div></td>
+                               <td className="px-3 py-2"><div className="relative size-12 overflow-hidden rounded-lg border border-border bg-secondary"><ProjectImage src={unit.floor_plan_urls?.[0] ? toMedia(unit.floor_plan_urls[0]) : null} alt="Unit floor plan" /></div></td>
                               <td className="px-3 py-2">{unit.unit_type ?? "—"}{unit.unit_number ? <span className="block text-xs" style={{ color: "var(--a-ink-2)" }}>{unit.unit_number}</span> : null}</td>
                               <td className="px-3 py-2 num">{unit.size_sqft != null ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}</td>
                               <td className="px-3 py-2 num font-semibold" style={{ color: "var(--a-ink)" }}>{unit.price_aed != null ? aed(unit.price_aed) : "On request"}</td>

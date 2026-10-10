@@ -13,6 +13,10 @@ export function mediaUrl<T extends string | null | undefined>(u: T): T {
   return u;
 }
 
+if (typeof globalThis !== "undefined") {
+  (globalThis as unknown as Record<string, unknown>).mediaUrl = mediaUrl;
+}
+
 export function absoluteMediaUrl(u: string | null | undefined): string {
   const local = mediaUrl(u);
   if (!local) return "";
@@ -21,6 +25,10 @@ export function absoluteMediaUrl(u: string | null | undefined): string {
     return `${origin}${local}`;
   }
   return local;
+}
+
+if (typeof globalThis !== "undefined") {
+  (globalThis as unknown as Record<string, unknown>).absoluteMediaUrl = absoluteMediaUrl;
 }
 
 export function deepMedia<T>(v: T): T {
@@ -32,6 +40,10 @@ export function deepMedia<T>(v: T): T {
     return o as T;
   }
   return v;
+}
+
+if (typeof globalThis !== "undefined") {
+  (globalThis as unknown as Record<string, unknown>).deepMedia = deepMedia;
 }
 
 export const MEDIA_UPSTREAM = UPSTREAM;
