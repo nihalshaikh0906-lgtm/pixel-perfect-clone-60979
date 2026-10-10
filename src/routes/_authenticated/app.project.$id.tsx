@@ -6,6 +6,8 @@ import galleryB from "@/assets/project-gallery-2.jpg";
 import { UnitCard, type MatchRow } from "@/components/UnitCard";
 import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Eye } from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
@@ -54,6 +56,15 @@ function Page() {
     { label: "Handover Quarter", value: quarterOf(project.handover_date) || "—" },
     { label: "Furnishing", value: "—" },
   ];
+  type ProjectUnit = (typeof data.units)[number];
+  type BedGroup = { key: string; label: string; units: ProjectUnit[] };
+  const bedGroups: BedGroup[] = [...data.units.reduce((map: Map<string, BedGroup>, unit: ProjectUnit) => {
+    const key = unit.bedrooms != null ? `${unit.bedrooms}` : "other";
+    const label = unit.bedrooms != null ? (unit.bedrooms === 0 ? "Studio" : `${unit.bedrooms} Bedroom${unit.bedrooms === 1 ? "" : "s"}`) : "Other";
+    const entry = map.get(key) ?? { key, label, units: [] as ProjectUnit[] };
+    entry.units.push(unit);
+    return map.set(key, entry);
+  }, new Map<string, BedGroup>()).values()].sort((a: BedGroup, b: BedGroup) => a.key.localeCompare(b.key, undefined, { numeric: true }));
   return <section className="od-live-inventory">
     <div className="a-card-head"><div><p className="eyebrow-a">Project details</p><h1>{project.name}</h1></div><span className="a-count num">{data.units.length} units shown</span></div>
     <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[7fr_3fr]">
@@ -80,6 +91,72 @@ function Page() {
               </div>
             ))}
           </div>
+        </div>
+        <div className="a-card p-5">
+          <p className="eyebrow-a">Payment Plan</p>
+          <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full border border-border">
+            <div style={{ width: "20%", background: "var(--brand-blue)" }} />
+            <div style={{ width: "60%", background: "var(--brand-blue)", opacity: 0.55 }} />
+            <div style={{ width: "20%", background: "var(--brand-blue)", opacity: 0.25 }} />
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-3">
+            {[{ label: "On Booking", value: "20%" }, { label: "During Construction", value: "60%" }, { label: "On Handover", value: "20%" }].map((seg) => (
+              <div key={seg.label} className="min-w-0">
+                <p className="metric text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{seg.value}</p>
+                <p className="text-xs" style={{ color: "var(--a-ink-2)" }}>{seg.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="a-card p-5">
+          <p className="eyebrow-a">Available Units</p>
+          {bedGroups.length ? (
+            <Accordion type="multiple" defaultValue={bedGroups.slice(0, 1).map((g) => g.key)} className="mt-2">
+              {bedGroups.map((group) => (
+                <AccordionItem key={group.key} value={group.key}>
+                  <AccordionTrigger>
+                    <span className="text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{group.label}</span>
+                    <span className="a-count num ml-auto mr-3">{group.units.length}</span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="a-table-wrap overflow-x-auto">
+                      <table className="a-table w-full text-sm">
+                        <thead>
+                          <tr>
+                            {["Plan", "Bedrooms", "Type", "Unit", "Floor", "Area", "Price", ""].map((h) => (
+                              <th key={h} className="px-3 py-2 text-left text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {group.units.map((unit) => (
+                            <tr key={unit.id} className="border-t border-border">
+                              <td className="px-3 py-2">
+                                <div className="size-10 overflow-hidden rounded-lg border border-border bg-secondary">
+                                  {project.cover_image_url ? <img src={mediaUrl(project.cover_image_url)} alt="" loading="lazy" className="size-full object-cover" /> : null}
+                                </div>
+                              </td>
+                              <td className="px-3 py-2">{unit.bedrooms != null ? `${unit.bedrooms} BR` : "—"}</td>
+                              <td className="px-3 py-2">{unit.unit_type ?? "—"}</td>
+                              <td className="px-3 py-2">{unit.unit_number ?? "—"}</td>
+                              <td className="px-3 py-2">—</td>
+                              <td className="px-3 py-2 num">{unit.size_sqft != null ? `${unit.size_sqft.toLocaleString("en-US")} sqft` : "—"}</td>
+                              <td className="px-3 py-2 num font-semibold" style={{ color: "var(--a-ink)" }}>{unit.price_aed != null ? aed(unit.price_aed) : "On request"}</td>
+                              <td className="px-3 py-2">
+                                <button type="button" aria-label="View unit" className="a-btn a-btn-line inline-flex size-8 items-center justify-center rounded-lg" onClick={() => setSelected({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null })}>
+                                  <Eye className="size-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          ) : <p className="a-note mt-2">No units are recorded for this project.</p>}
         </div>
         <div className="od-unit-grid">{data.units.map((unit) => {
           const row: MatchRow = { unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null };
