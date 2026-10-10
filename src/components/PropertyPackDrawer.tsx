@@ -1,4 +1,4 @@
-import { deepMedia } from "@/lib/media";
+import { deepMedia, mediaUrl, absoluteMediaUrl } from "@/lib/media";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, MapPin, CarFront, FileText, Receipt, Loader2, MessageCircle, Play, Star } from "lucide-react";
 import { useState } from "react";
@@ -65,8 +65,9 @@ export function PropertyPackDrawer({
   const documents: PackDoc[] = Array.isArray(data?.documents) ? data.documents : [];
   const photos: string[] = Array.isArray(data?.photos) ? data.photos.filter(Boolean) : [];
   const brochure = documents.find((d) => d.type === "brochure");
-  const floorPlan =
-    data?.selected_unit?.floor_plan_urls?.[0] ?? documents.find((d) => d.type === "floor_plan")?.url;
+  const floorPlan = mediaUrl(
+    data?.selected_unit?.floor_plan_urls?.[0] ?? documents.find((d) => d.type === "floor_plan")?.url
+  );
   const tourUrl = findTourUrl(data);
 
   async function copyPitch() {
@@ -82,7 +83,7 @@ export function PropertyPackDrawer({
       `Handover: ${quarterOf(unit?.handover_date)}`,
       plan ? `Payment plan: ${plan.name}` : null,
       ...steps,
-      brochure?.url ? `Brochure: ${brochure.url}` : null,
+      brochure?.url ? `Brochure: ${absoluteMediaUrl(brochure.url)}` : null,
     ]
       .filter(Boolean)
       .join("\n");
@@ -139,7 +140,7 @@ export function PropertyPackDrawer({
           ) : null}
 
           <div className="grid grid-cols-1 gap-2 min-[440px]:grid-cols-2 [&_button]:h-auto [&_button]:min-h-10 [&_button]:whitespace-normal [&_button]:py-2 [&_button]:text-left">
-            <Button onClick={() => brochure?.url && window.open(brochure.url, "_blank", "noopener")} disabled={!brochure?.url}>
+            <Button onClick={() => brochure?.url && window.open(mediaUrl(brochure.url)!, "_blank", "noopener")} disabled={!brochure?.url}>
               <BookOpen className="size-4" /> Open Brochure
             </Button>
             <Button
@@ -224,7 +225,7 @@ export function PropertyPackDrawer({
                 {documents.map((doc, i) => (
                   <li key={`${doc.url}-${i}`}>
                     <a
-                      href={doc.url ?? "#"}
+                      href={doc.url ? mediaUrl(doc.url)! : "#"}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm hover:bg-secondary"

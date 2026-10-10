@@ -2,8 +2,25 @@
 const UPSTREAM = "https://reelly-backend.s3.amazonaws.com/";
 
 export function mediaUrl<T extends string | null | undefined>(u: T): T {
-  if (typeof u === "string" && u.startsWith(UPSTREAM)) return `/media/${u.slice(UPSTREAM.length)}` as T;
+  if (typeof u === "string") {
+    if (u.startsWith(UPSTREAM)) {
+      return `/media/${u.slice(UPSTREAM.length)}` as T;
+    }
+    if (u.includes("reelly-backend.s3.amazonaws.com/")) {
+      return u.replace(/https?:\/\/reelly-backend\.s3\.amazonaws\.com\//g, "/media/") as T;
+    }
+  }
   return u;
+}
+
+export function absoluteMediaUrl(u: string | null | undefined): string {
+  const local = mediaUrl(u);
+  if (!local) return "";
+  if (local.startsWith("/media/")) {
+    const origin = typeof window !== "undefined" && window.location.origin ? window.location.origin : "https://dealos.ae";
+    return `${origin}${local}`;
+  }
+  return local;
 }
 
 export function deepMedia<T>(v: T): T {
