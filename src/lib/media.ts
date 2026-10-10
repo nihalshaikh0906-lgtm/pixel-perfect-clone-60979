@@ -26,12 +26,12 @@ export function projectGalleryImages(media: unknown, cover?: string | null): str
     try { parsed = JSON.parse(parsed); } catch { return []; }
   }
   if (!parsed || typeof parsed !== "object") return [];
-  const images = Array.isArray(parsed) ? parsed : (parsed as Record<string, unknown>).images;
+  const images = Array.isArray(parsed) ? parsed : (parsed as Record<string, unknown>)["images"];
   if (!Array.isArray(images)) return [];
   const urls = images.flatMap((image) => {
     const entry = image && typeof image === "object" ? image as Record<string, unknown> : null;
-    const url = typeof image === "string" ? image : entry?.url;
-    const type = typeof entry?.type === "string" ? entry.type.toLowerCase() : "";
+    const url = typeof image === "string" ? image : entry?.["url"];
+    const type = typeof entry?.["type"] === "string" ? entry["type"].toLowerCase() : "";
     if (typeof url !== "string" || !/^https?:\/\//i.test(url) || /cover|plan|video|tour/.test(type)) return [];
     return url === cover ? [] : [mediaUrl(url)];
   });
