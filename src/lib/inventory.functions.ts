@@ -118,7 +118,7 @@ export const getProjectDetail = createServerFn({ method: "POST" })
   .inputValidator((input: { id: number }) => ({ id: Math.floor(Number(input.id)) }))
   .handler(async ({ data, context }) => {
     const { data: project, error } = await context.supabase.from("projects")
-      .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status")
+      .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status,amenities,latitude,longitude")
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -130,6 +130,12 @@ export const getProjectDetail = createServerFn({ method: "POST" })
       .limit(24);
     if (unitError) throw new Error(unitError.message);
     const rows = units ?? [];
+    const { data: files, error: filesError } = await context.supabase.from("project_files")
+      .select("id,name,type,url")
+      .eq("project_id", data.id)
+      .order("type")
+      .limit(30);
+    if (filesError) throw new Error(filesError.message);
     const countQuery = context.supabase.from("units")
       .select("id", { count: "exact", head: true })
       .eq("project_id", data.id)
@@ -154,7 +160,7 @@ export const getProjectDetail = createServerFn({ method: "POST" })
       if (countResult.error) throw new Error(countResult.error.message);
       available_units = countResult.count ?? 0;
     }
-    return { project, units: rows, available_units, payment_plan_summary };
+    return { project, units: rows, available_units, payment_plan_summary, documents: files ?? [] };
   });
 
 export const inventorySummaryOptions = () => queryOptions({ queryKey: ["live-inventory-summary"], queryFn: () => getInventorySummary(), staleTime: 300_000 });
