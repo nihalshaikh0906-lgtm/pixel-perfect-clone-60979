@@ -1,9 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import galleryA from "@/assets/project-gallery-1.jpg";
-import galleryB from "@/assets/project-gallery-2.jpg";
 import floorplan from "@/assets/floorplan-placeholder.jpg";
 import { UnitCard, type MatchRow } from "@/components/UnitCard";
 import { PropertyPackDrawer } from "@/components/PropertyPackDrawer";
@@ -12,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Baby, BellRing, BookOpen, Building2, Car, Download, Dumbbell, Eye, FileText, Film, Footprints, Map as MapIcon, PawPrint, ShieldCheck, ShoppingBag, Sparkles, Trees, Trophy, Umbrella, Utensils, Waves, Wifi, type LucideIcon } from "lucide-react";
 import { projectDetailOptions } from "@/lib/inventory.functions";
-import { mediaUrl } from "@/lib/media";
+import { mediaUrl, projectGalleryImages } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 
@@ -29,6 +27,12 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
     { name: "description", content: "Project inventory in your DealOS broker workspace." },
     { property: "og:title", content: `${loaderData?.project.name ?? "Project"} — DealOS Workspace` },
     { property: "og:description", content: "Project inventory in your DealOS broker workspace." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+    ...(loaderData?.project.cover_image_url?.startsWith("https://") ? [
+      { property: "og:image", content: loaderData.project.cover_image_url },
+      { name: "twitter:image", content: loaderData.project.cover_image_url },
+    ] : []),
   ] }),
   component: Page,
 });
@@ -70,14 +74,12 @@ function DocLink({ label, url, icon: Icon }: { label: string; url: string | null
     : <button type="button" className={className} disabled title={`${label} is not attached to this project yet`}>{inner}</button>;
 }
 
-const U = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=75`;
-// Illustrative photography (exterior, bedroom, kitchen) — real cover replaces the first when present.
-const PHOTOS = [U("photo-1545324418-cc1a3fa10c00"), U("photo-1616594039964-ae9021a400a0"), U("photo-1556909114-f6e7ad7d3136")];
-const AMENITY_PHOTOS = [
-  U("photo-1576013551627-0cc20b96c2a7"), U("photo-1534438327276-14e5300c3a48"), U("photo-1544161515-4ab6ce6db874"),
-  U("photo-1566073771259-6a8506099945"), U("photo-1555396273-367ea4eb4db5"), U("photo-1441986300917-64674bd600d8"),
-  U("photo-1600607687939-ce8a6c25118c"), U("photo-1519046904884-53103b34b206"), U("photo-1582719478250-c89cae4dc85b"),
-];
+function ProjectImage({ src, alt, lazy = false }: { src: string | null; alt: string; lazy?: boolean }) {
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  return src && failedSrc !== src
+    ? <img src={src} alt={alt} loading={lazy ? "lazy" : "eager"} onError={() => setFailedSrc(src)} className="absolute inset-0 size-full object-cover" />
+    : <div role="img" aria-label={`${alt} — image unavailable`} className="absolute inset-0 flex items-center justify-center bg-secondary text-muted-foreground"><Building2 className="size-10 opacity-40" strokeWidth={1} /></div>;
+}
 
 function DocCard({ label, url, icon: Icon }: { label: string; url: string | null; icon: LucideIcon }) {
   const inner = <>
@@ -92,14 +94,18 @@ function DocCard({ label, url, icon: Icon }: { label: string; url: string | null
 function Page() {
   const { data } = useSuspenseQuery(projectDetailOptions(Number(Route.useParams().id)));
   const [selected, setSelected] = useState<MatchRow | null>(null);
-  const [pickedImage, setPickedImage] = useState<string | null>(null);
   const [unitModal, setUnitModal] = useState<UnitRow | null>(null);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
+  useEffect(() => {
+    if (data?.project) console.log("Fetched Project Data:", data.project);
+  }, [data?.project]);
   if (!data) return null;
   const project = data.project;
   const startingPrice = data.units.find((u) => u.price_aed != null)?.price_aed ?? null;
+  const location = [project.district, project.emirate_or_country].filter(Boolean).join(", ") || "—";
+  const galleryImages = projectGalleryImages(project.media, project.cover_image_url);
   const facts = [
-    { label: "Location", value: project.district ?? "—" },
+    { label: "Location", value: location },
     { label: "Starting Price", value: startingPrice != null ? aed(startingPrice) : "Price on request" },
     { label: "Available Units", value: `${data.available_units.toLocaleString("en-US")}` },
     { label: "Payment Plan", value: data.payment_plan_summary ?? "On request" },
@@ -112,7 +118,6 @@ function Page() {
   const documents = data.documents ?? [];
   const floorPlanDoc = documents.find((d) => (d.type ?? "").includes("floor")) ?? null;
   const brochureDoc = documents.find((d) => (d.type ?? "").includes("brochure")) ?? null;
-  const mainImage = pickedImage ?? (project.cover_image_url ? mediaUrl(project.cover_image_url) : galleryA);
   const details = [
     { label: "Project Name", value: project.name },
     { label: "Developer", value: project.developer_name ?? "—" },
@@ -133,11 +138,11 @@ function Page() {
   }, new Map<string, BedGroup>()).values()].sort((a: BedGroup, b: BedGroup) => a.key.localeCompare(b.key, undefined, { numeric: true }));
   const toRow = (unit: ProjectUnit): UnitRow => ({ unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null, unit_number: unit.unit_number ?? null, floor: unit.floor_label ?? null, plan: unit.floor_plan_urls?.[0] ? mediaUrl(unit.floor_plan_urls[0]) : null });
   const card = "rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8";
-  const cover = project.cover_image_url ? mediaUrl(project.cover_image_url) : PHOTOS[0];
+  const cover = project.cover_image_url ? mediaUrl(project.cover_image_url) : null;
   const keyDetails = [
     ...details.filter((d) => d.label !== "Developer").map((d) => d.label === "Handover Quarter" ? { ...d, label: "Handover Date" } : d),
     { label: "Service Charge", value: project.service_charge ?? "—" },
-    { label: "Location", value: project.district ?? "—" },
+    { label: "Location", value: location },
   ];
   const realPlan = data.payment_plans?.[0] ?? null;
   const planTotal = realPlan ? realPlan.steps.reduce((t, st) => t + st.percent, 0) || 100 : 100;
@@ -149,11 +154,11 @@ function Page() {
       <div className="min-w-0 space-y-8 lg:col-span-8">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:grid-rows-2">
           <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border shadow-sm sm:col-span-2 sm:row-span-2 sm:aspect-auto sm:min-h-[420px]">
-            <img src={cover} alt={project.name} className="absolute inset-0 size-full object-cover" />
+            <ProjectImage src={cover} alt={project.name} />
           </div>
-          {[PHOTOS[1], PHOTOS[2]].map((src, i) => (
-            <div key={src} className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border shadow-sm sm:aspect-auto">
-              <img src={src} alt={`${project.name} interior ${i + 1}`} loading="lazy" className="absolute inset-0 size-full object-cover" />
+          {[0, 1].map((i) => (
+            <div key={i} className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border shadow-sm sm:aspect-auto">
+              <ProjectImage src={galleryImages[i] ?? null} alt={`${project.name} gallery ${i + 1}`} lazy />
             </div>
           ))}
         </div>
@@ -208,13 +213,13 @@ function Page() {
           <p className="eyebrow-a">Features &amp; Amenities</p>
           {amenities.length ? (
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {amenities.slice(0, 9).map((item, i) => (
-                <div key={item} className="relative aspect-square overflow-hidden rounded-xl border border-border shadow-sm">
-                  <img src={AMENITY_PHOTOS[i % AMENITY_PHOTOS.length]} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/10 to-transparent" />
-                  <p className="absolute inset-x-3 bottom-3 line-clamp-2 text-sm font-semibold text-background">{item}</p>
-                </div>
-              ))}
+              {amenities.slice(0, 9).map((item) => {
+                const Icon = amenityIcon(item);
+                return <div key={item} className="flex aspect-square flex-col items-center justify-center gap-3 rounded-xl border border-border bg-secondary p-4 shadow-sm">
+                  <Icon className="size-7" style={{ color: "var(--brand-blue)" }} strokeWidth={1.5} />
+                  <p className="line-clamp-3 text-center text-sm font-semibold" style={{ color: "var(--a-ink)" }}>{item}</p>
+                </div>;
+              })}
             </div>
           ) : <p className="a-note mt-2">Amenities are listed here once the developer pack is indexed.</p>}
           {amenities.length > 9 ? <p className="a-note mt-3">+{amenities.length - 9} more: {amenities.slice(9).join(" · ")}</p> : null}
@@ -262,7 +267,7 @@ function Page() {
             <div>
               <p className="eyebrow-a">Project</p>
               <h1 className="text-2xl font-semibold" style={{ color: "var(--a-ink)" }}>{project.name}</h1>
-              <p className="mt-1 text-sm" style={{ color: "var(--a-ink-2)" }}>{[project.district, "Dubai, UAE"].filter(Boolean).join(", ")}</p>
+              <p className="mt-1 text-sm" style={{ color: "var(--a-ink-2)" }}>{location}</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-wide" style={{ color: "var(--a-ink-2)" }}>Starting from</p>
