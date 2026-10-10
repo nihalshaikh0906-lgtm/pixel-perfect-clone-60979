@@ -9,7 +9,7 @@ export function mediaUrl<T extends string | null | undefined>(u: T): T {
 }
 
 if (typeof globalThis !== "undefined") {
-  (globalThis as unknown as Record<string, unknown>).mediaUrl = mediaUrl;
+  (globalThis as unknown as Record<string, unknown>)["mediaUrl"] = mediaUrl;
 }
 
 export function absoluteMediaUrl(u: string | null | undefined): string {
@@ -19,7 +19,7 @@ export function absoluteMediaUrl(u: string | null | undefined): string {
 }
 
 if (typeof globalThis !== "undefined") {
-  (globalThis as unknown as Record<string, unknown>).absoluteMediaUrl = absoluteMediaUrl;
+  (globalThis as unknown as Record<string, unknown>)["absoluteMediaUrl"] = absoluteMediaUrl;
 }
 
 export function deepMedia<T>(v: T): T {
@@ -34,7 +34,7 @@ export function deepMedia<T>(v: T): T {
 }
 
 if (typeof globalThis !== "undefined") {
-  (globalThis as unknown as Record<string, unknown>).deepMedia = deepMedia;
+  (globalThis as unknown as Record<string, unknown>)["deepMedia"] = deepMedia;
 }
 
 export const MEDIA_UPSTREAM = CLOUDFLARE_R2_CDN;

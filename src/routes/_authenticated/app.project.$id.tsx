@@ -159,9 +159,9 @@ function Page() {
   });
 
   const realPlan = data.payment_plans?.[0] ?? null;
-  const planTotal = realPlan && Array.isArray(realPlan.steps) ? realPlan.steps.reduce((t, st) => t + (st?.percent ?? 0), 0) || 100 : 100;
+  const planTotal = realPlan && Array.isArray(realPlan.steps) ? realPlan.steps.reduce((t: number, st: { percent?: number | null }) => t + (st?.percent ?? 0), 0) || 100 : 100;
   const planSteps = realPlan && Array.isArray(realPlan.steps) && realPlan.steps.length > 0
-    ? realPlan.steps.map((st) => ({ label: st.name, pct: Math.round(((st?.percent ?? 0) / planTotal) * 100) }))
+    ? realPlan.steps.map((st: { name: string; percent?: number | null }) => ({ label: st.name, pct: Math.round(((st?.percent ?? 0) / planTotal) * 100) }))
     : [
         { label: "On Booking Deposit", pct: 10 },
         { label: "During Construction", pct: 20 },
@@ -394,7 +394,7 @@ Are you available for a brief call to reserve this allocation?`;
 
             {/* Visual Milestones */}
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {planSteps.map((step, idx) => (
+              {planSteps.map((step: { label: string; pct: number }, idx: number) => (
                 <div key={idx} className="relative rounded-xl border border-border bg-secondary/50 p-5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Milestone {idx + 1}</span>
@@ -555,7 +555,7 @@ Are you available for a brief call to reserve this allocation?`;
                             onClick={() => setUnitModal(row)}
                             className="relative size-12 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary hover:border-primary transition-all group"
                           >
-                            <ProjectImage src={row.plan} alt="Floor plan" contain />
+                            <ProjectImage src={row.plan ?? null} alt="Floor plan" contain />
                           </button>
                         </td>
                         <td className="py-3">
@@ -670,7 +670,7 @@ Are you available for a brief call to reserve this allocation?`;
 
                 <Button
                   type="button"
-                  onClick={() => setEoiModal(toRow(data.units[0]))}
+                  onClick={() => { const first = data.units[0]; if (first) setEoiModal(toRow(first)); }}
                   className="w-full h-12 rounded-xl text-sm font-bold bg-amber-500 hover:bg-amber-600 text-black gap-2 shadow-sm"
                 >
                   <Receipt className="size-4" />
@@ -709,7 +709,7 @@ Are you available for a brief call to reserve this allocation?`;
             <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-12">
               <div className="md:col-span-7">
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-secondary">
-                  <ProjectImage src={unitModal.plan} alt="Unit floor plan" contain />
+                  <ProjectImage src={unitModal.plan ?? null} alt="Unit floor plan" contain />
                 </div>
               </div>
               <div className="md:col-span-5 flex flex-col justify-between space-y-4">

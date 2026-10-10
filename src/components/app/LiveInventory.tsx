@@ -19,7 +19,7 @@ export function LiveInventory({ title, category, page, q, onSearch }: {
       <input key={q} name="q" className="a-in" defaultValue={q} placeholder="Search projects" aria-label="Search projects" />
       <Button type="submit" variant="ghost" className="a-btn a-btn-line"><Search /> Search</Button>
     </form>
-    <div className="od-unit-grid">{data.rows.map((unit) => {
+    <div className="od-unit-grid">{data.rows.map((unit: { id: number; unit_number: string | null; price_aed: number | null; bedrooms: number | null; size_sqft: number | null; projects: { id: number; name: string; developer_name: string | null; district: string | null; handover_date: string | null; cover_image_url: string | null } }) => {
       const project = unit.projects;
       const row: MatchRow = { unit_id: unit.id, project_id: project.id, project_name: `${project.name}${unit.unit_number ? ` · ${unit.unit_number}` : ""}`, developer: project.developer_name, district: project.district, price_aed: unit.price_aed, bedrooms: unit.bedrooms, size_sqft: unit.size_sqft, handover_date: project.handover_date, cover_image_url: project.cover_image_url, score: null };
       return <UnitCard key={unit.id} row={row} onOpen={setSelected} />;
