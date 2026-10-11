@@ -152,96 +152,101 @@ When are you free today for a quick 2-minute overview?`;
     setLeadPhone("");
   };
 
-  return (
-    <div className="min-h-screen bg-background pb-20 space-y-8">
-      {/* ═══ 1. EXECUTIVE HERO BANNER ═══ */}
-      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card/95 to-secondary/40 p-6 sm:p-8 shadow-sm">
-        {/* Glow ambient background accent */}
-        <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-emerald-500/10 blur-3xl" />
+  const [dashboardTab, setDashboardTab] = useState<"queue" | "inventory" | "targets">("queue");
 
-        <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
-          <div>
+  return (
+    <div className="min-h-screen bg-background pb-20 space-y-6 max-w-7xl mx-auto animate-in fade-in-50 duration-300">
+      {/* ═══ 1. CLEAN EXECUTIVE HERO BANNER ═══ */}
+      <section className="relative overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-6 sm:p-7 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
-                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Dubai Market Live · RERA Verified
               </span>
-              <span className="rounded-full border border-border bg-secondary/70 px-3 py-1 text-xs font-semibold text-muted-foreground">
+              <span className="text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground">
                 Saturday, 10 October 2026
               </span>
             </div>
 
-            <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl text-foreground font-display">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
               Good morning, Broker
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground max-w-xl">
-              You have <span className="font-semibold text-foreground">4 priority client follow-ups</span> and <span className="font-semibold text-foreground">AED 14.8M</span> in active negotiations waiting for allocation.
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
+              You have <span className="font-semibold text-foreground">4 priority client follow-ups</span> and <span className="font-semibold text-foreground">AED 14.8M</span> in active negotiations.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Button
               variant="outline"
+              size="sm"
               asChild
-              className="h-11 rounded-xl text-xs font-bold border-border bg-card/80 hover:bg-secondary gap-2"
+              className="h-9 rounded-xl text-xs font-semibold border-border gap-1.5"
             >
               <Link to="/app/deals">
-                <Banknote className="size-4 text-amber-400" />
-                <span>View Deals Pipeline</span>
+                <Banknote className="size-3.5 text-amber-400" />
+                <span>Deals Pipeline</span>
               </Link>
             </Button>
 
             <Button
               variant="outline"
+              size="sm"
               asChild
-              className="h-11 rounded-xl text-xs font-bold border-border bg-card/80 hover:bg-secondary gap-2"
+              className="h-9 rounded-xl text-xs font-semibold border-border gap-1.5"
             >
               <Link to="/app/offplan">
-                <Compass className="size-4 text-primary" />
-                <span>Off-Plan Inventory</span>
+                <Compass className="size-3.5 text-primary" />
+                <span>Catalog</span>
               </Link>
             </Button>
 
             <Button
+              size="sm"
               onClick={() => setNewLeadOpen(true)}
-              className="h-11 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-sm"
+              className="h-9 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 shadow-sm"
             >
-              <Plus className="size-4" />
+              <Plus className="size-3.5" />
               <span>Log New Buyer</span>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* ═══ 2. TOP 4 HIGH-IMPACT KPI METRIC CARDS ═══ */}
-      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {/* ═══ 2. TOP 3 ESSENTIAL METRICS (MINIMALIST & CRISP) ═══ */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Card 1: Projected Commission */}
-        <div className="group relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-card to-card p-5 shadow-sm hover:border-amber-500/50 transition-all">
+        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-5 shadow-sm hover:border-amber-500/50 hover:-translate-y-0.5 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">Projected Commission</span>
-            <div className="flex size-9 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
-              <Banknote className="size-5" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300">Projected Commission</span>
+            <div className="size-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <Banknote size={16} />
             </div>
           </div>
-          <p className="mt-3 text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
             AED 94.5K
           </p>
           <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Broker 50% split</span>
+            <span className="text-muted-foreground">October Target: 63%</span>
             <span className="font-semibold text-emerald-400">+18% vs last month</span>
+          </div>
+          <div className="mt-2.5 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full" style={{ width: "63%" }} />
           </div>
         </div>
 
         {/* Card 2: Active Pipeline Volume */}
-        <div className="group relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-card to-card p-5 shadow-sm hover:border-cyan-500/50 transition-all">
+        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-5 shadow-sm hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider text-cyan-300">Active Pipeline</span>
-            <div className="flex size-9 items-center justify-center rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
-              <TrendingUp className="size-5" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-300">Active Pipeline</span>
+            <div className="size-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <TrendingUp size={16} />
             </div>
           </div>
-          <p className="mt-3 text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
             AED 14.8M
           </p>
           <div className="mt-2 flex items-center justify-between text-xs">
@@ -251,14 +256,14 @@ When are you free today for a quick 2-minute overview?`;
         </div>
 
         {/* Card 3: Priority Follow-Ups */}
-        <div className="group relative overflow-hidden rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-card to-card p-5 shadow-sm hover:border-rose-500/50 transition-all">
+        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-5 shadow-sm hover:border-rose-500/50 hover:-translate-y-0.5 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider text-rose-300">Due Today</span>
-            <div className="flex size-9 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400">
-              <Flame className="size-5" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-rose-300">Due Today</span>
+            <div className="size-8 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+              <Flame size={16} />
             </div>
           </div>
-          <p className="mt-3 text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
             4 Priority
           </p>
           <div className="mt-2 flex items-center justify-between text-xs">
@@ -266,252 +271,254 @@ When are you free today for a quick 2-minute overview?`;
             <span className="font-semibold text-rose-400">High Conversion</span>
           </div>
         </div>
-
-        {/* Card 4: Closed This Month */}
-        <div className="group relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-card to-card p-5 shadow-sm hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">Won This Month</span>
-            <div className="flex size-9 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-              <CheckCircle2 className="size-5" />
-            </div>
-          </div>
-          <p className="mt-3 text-3xl font-extrabold text-foreground tracking-tight font-display">
-            AED 4.25M
-          </p>
-          <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Title deeds cleared</span>
-            <span className="font-semibold text-emerald-400">100% Collected</span>
-          </div>
-        </div>
       </section>
 
-      {/* ═══ 3. MAIN WORKSPACE (8 COLS LEFT, 4 COLS RIGHT) ═══ */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
-        {/* LEFT COLUMN: 8 COLS (TODAY'S ACTION QUEUE) */}
-        <div className="space-y-6 lg:col-span-8">
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6">
-            {/* Action Queue Header with Tabs */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-5">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-foreground">Priority Action Queue</h2>
-                  <span className="rounded-full bg-primary/10 border border-primary/30 px-2.5 py-0.5 text-xs font-bold text-primary">
-                    {filteredLeads.length} Actionable
+      {/* ═══ 3. CLEAN SEGMENTED NAVIGATION (SIDEBAR-INSPIRED) ═══ */}
+      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary/50 border border-border/60">
+          {[
+            { id: "queue", label: "Priority Action Queue", icon: Zap, badge: `${filteredLeads.length}` },
+            { id: "inventory", label: "Featured Allocations", icon: Compass },
+            { id: "targets", label: "Target & Bonus", icon: Target },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const active = dashboardTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setDashboardTab(tab.id as typeof dashboardTab)}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+                  active
+                    ? "bg-card text-foreground shadow-sm border border-border"
+                    : "text-muted-foreground hover:text-foreground hover:bg-card/40"
+                }`}
+              >
+                <Icon size={14} className={active ? "text-primary" : "text-muted-foreground"} />
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className="rounded-full bg-primary/15 border border-primary/30 px-1.5 py-0.2 text-[10px] text-primary font-mono">
+                    {tab.badge}
                   </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Pre-qualified high net worth investors ready for developer matching and WhatsApp pitch
-                </p>
-              </div>
-
-              {/* Filter Tabs */}
-              <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-secondary/60 p-1">
-                {[
-                  { id: "urgent", label: "🔥 Due Today" },
-                  { id: "hot", label: "⭐️ Score 70+" },
-                  { id: "closing", label: "📝 In Closing" },
-                  { id: "all", label: "All Leads" },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      activeTab === tab.id
-                        ? "bg-card text-foreground shadow-sm border border-border"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* List of High-Value Lead Cards */}
-            <div className="space-y-4">
-              {filteredLeads.map((l) => (
-                <div
-                  key={l.id}
-                  className="group relative rounded-xl border border-border/80 bg-secondary/30 p-5 hover:border-primary/50 hover:bg-secondary/50 transition-all space-y-3"
-                >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    {/* Buyer Identity */}
-                    <div className="flex items-start gap-3.5">
-                      <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-sm font-extrabold text-foreground font-display">
-                        {l.initials}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-sm text-foreground">{l.name}</h3>
-                          <span className="text-xs text-muted-foreground">({l.country})</span>
-                          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                            Score: {l.score}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
-                          <span>{l.beds === 0 ? "Studio" : `${l.beds} BR`} in <strong className="text-foreground">{l.area}</strong></span>
-                          <span>•</span>
-                          <span className="font-mono font-bold text-foreground">{formatAed(l.budget)}</span>
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Stage & Progress Status */}
-                    <div className="flex items-center gap-2 self-start sm:self-auto">
-                      <select
-                        value={l.stage}
-                        onChange={(e) => handleStageChange(l.id, e.target.value as Lead["stage"])}
-                        className="bg-card text-foreground text-xs rounded-lg px-2.5 py-1.5 border border-border focus:outline-none focus:border-primary cursor-pointer font-medium"
-                      >
-                        {["Qualified", "Viewing", "Offer", "EOI / booking", "Won"].map((st) => (
-                          <option key={st} value={st}>
-                            Stage: {st}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Context Note / Last Message */}
-                  <div className="rounded-lg bg-card/60 border border-border/50 p-3 text-xs text-muted-foreground leading-relaxed">
-                    <p className="italic">"{l.message}"</p>
-                  </div>
-
-                  {/* 1-Click Fast Actions */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Clock className="size-3.5 text-amber-400" />
-                      <span>Next action: <strong className="text-foreground">{l.task}</strong></span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`tel:${l.phone.replace(/\s/g, "")}`}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-bold text-foreground hover:bg-secondary transition-colors"
-                      >
-                        <Phone className="size-3.5 text-muted-foreground" />
-                        <span>Call</span>
-                      </a>
-
-                      <button
-                        type="button"
-                        onClick={() => handleWhatsApp(l)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
-                      >
-                        <MessageSquare className="size-3.5" />
-                        <span>1-Click WhatsApp Pitch</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setQuickPitchModal(l)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors"
-                      >
-                        <Sparkles className="size-3.5" />
-                        <span>Match Property</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {filteredLeads.length === 0 && (
-                <div className="py-12 text-center text-sm text-muted-foreground">
-                  No active follow-ups in this queue. Great work!
-                </div>
-              )}
-            </div>
-          </div>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* RIGHT COLUMN: 4 COLS (QUICK MATCH & TARGETS) */}
-        <div className="space-y-6 lg:col-span-4">
-          {/* Monthly Commission Target Progress */}
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">October Target</span>
-              <span className="text-xs font-extrabold text-primary font-mono">63% Achieved</span>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-foreground font-display">
-                AED 94,500 <span className="text-sm font-normal text-muted-foreground">/ 150K</span>
-              </p>
-              <div className="mt-3 h-2.5 w-full rounded-full bg-secondary overflow-hidden border border-border/80">
-                <div className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full" style={{ width: "63%" }} />
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Close <strong>1 more deal</strong> (e.g. 1BR in DLRC) to unlock your Tier-1 <strong>60% commission bonus split</strong>.
-            </p>
+        {dashboardTab === "queue" && (
+          <div className="flex items-center gap-1">
+            {[
+              { id: "urgent", label: "Due Today" },
+              { id: "hot", label: "Hot (70+)" },
+              { id: "closing", label: "Closing" },
+              { id: "all", label: "All" },
+            ].map((st) => (
+              <button
+                key={st.id}
+                onClick={() => setActiveTab(st.id as typeof activeTab)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  activeTab === st.id
+                    ? "bg-secondary text-foreground font-bold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {st.label}
+              </button>
+            ))}
           </div>
+        )}
+      </div>
 
-          {/* Instant Off-Plan Property Matcher */}
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
-            <div className="flex items-center justify-between border-b border-border/80 pb-3">
-              <div>
-                <h3 className="font-bold text-sm text-foreground">Top Trending Allocations</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">High-demand off-plan units to pitch</p>
-              </div>
-              <Compass className="size-4 text-primary" />
-            </div>
-
-            {/* Featured Projects Cards */}
-            <div className="space-y-3.5">
-              {featuredProjects.map((p) => (
-                <div
-                  key={p.id}
-                  className="rounded-xl border border-border bg-secondary/30 p-3.5 hover:border-primary/40 transition-all space-y-2.5"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <Link
-                        to="/app/project/$id"
-                        params={{ id: String(p.id) }}
-                        className="font-bold text-sm text-foreground hover:text-primary transition-colors line-clamp-1"
-                      >
-                        {p.name}
-                      </Link>
-                      <p className="text-xs text-muted-foreground">
-                        {p.district || "Dubai"} · {p.developer_name}
-                      </p>
-                    </div>
-                    <span className="rounded bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground font-mono shrink-0">
-                      {quarterOf(p.handover_date)}
-                    </span>
+      {/* ═══ 4. TAB CONTENT ═══ */}
+      {dashboardTab === "queue" && (
+        <div className="space-y-3.5 animate-in fade-in-50 duration-200">
+          {filteredLeads.map((l) => (
+            <div
+              key={l.id}
+              className="group rounded-2xl border border-border/80 bg-card p-4 sm:p-5 hover:border-primary/50 transition-all duration-200 shadow-sm space-y-3"
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {/* Investor Identity */}
+                <div className="flex items-center gap-3.5">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-secondary font-display font-extrabold text-foreground text-sm">
+                    {l.initials}
                   </div>
-
-                  <div className="flex items-center justify-between pt-1 border-t border-border/50 text-xs">
-                    <span className="font-semibold text-emerald-400">
-                      From AED 684K
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                      className="h-7 text-[11px] font-bold gap-1"
-                    >
-                      <Link to="/app/project/$id" params={{ id: String(p.id) }}>
-                        <span>View Dossier</span>
-                        <ArrowUpRight className="size-3" />
-                      </Link>
-                    </Button>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-sm text-foreground">{l.name}</h3>
+                      <span className="text-xs text-muted-foreground">({l.country})</span>
+                      <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.2 text-[10px] font-bold text-amber-300">
+                        Score {l.score}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      <span>{l.beds === 0 ? "Studio" : `${l.beds} BR`} in <strong className="text-foreground">{l.area}</strong></span>
+                      <span className="mx-1.5">•</span>
+                      <span className="font-mono font-bold text-foreground">{formatAed(l.budget)}</span>
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <Button
-              variant="outline"
-              asChild
-              className="w-full h-10 rounded-xl text-xs font-bold border-border"
-            >
-              <Link to="/app/offplan">
-                <span>Browse All 1,450+ Projects →</span>
-              </Link>
+                {/* Status Dropdown */}
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <select
+                    value={l.stage}
+                    onChange={(e) => handleStageChange(l.id, e.target.value as Lead["stage"])}
+                    className="bg-secondary text-foreground text-xs rounded-lg px-2.5 py-1.5 border border-border focus:outline-none focus:border-primary cursor-pointer font-medium"
+                  >
+                    {["Qualified", "Viewing", "Offer", "EOI / booking", "Won"].map((st) => (
+                      <option key={st} value={st}>
+                        Stage: {st}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Requirement Context Note */}
+              <p className="text-xs text-muted-foreground bg-secondary/30 rounded-xl p-2.5 italic border border-border/40">
+                "{l.message}"
+              </p>
+
+              {/* Action Toolbar */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-border/40">
+                <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Clock size={13} className="text-amber-400" />
+                  <span>Next: <strong className="text-foreground">{l.task}</strong></span>
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`tel:${l.phone.replace(/\s/g, "")}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/60 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <Phone className="size-3 text-muted-foreground" />
+                    <span>Call</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => handleWhatsApp(l)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                  >
+                    <MessageSquare className="size-3" />
+                    <span>WhatsApp Pitch</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setQuickPitchModal(l)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <Sparkles className="size-3" />
+                    <span>Match Property</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {filteredLeads.length === 0 && (
+            <div className="py-12 text-center text-sm text-muted-foreground rounded-2xl border border-dashed border-border bg-card">
+              No pending leads in this filter. All clients contacted!
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ═══ TAB: FEATURED INVENTORY ALLOCATIONS ═══ */}
+      {dashboardTab === "inventory" && (
+        <div className="space-y-4 animate-in fade-in-50 duration-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {featuredProjects.map((p) => (
+              <div
+                key={p.id}
+                className="group rounded-2xl border border-border/80 bg-card p-5 hover:border-primary/50 transition-all duration-200 shadow-sm space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <Link
+                      to="/app/project/$id"
+                      params={{ id: String(p.id) }}
+                      className="font-bold text-sm text-foreground hover:text-primary transition-colors line-clamp-1"
+                    >
+                      {p.name}
+                    </Link>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {p.district || "Dubai"} · {p.developer_name}
+                    </p>
+                  </div>
+                  <span className="rounded bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground font-mono shrink-0">
+                    {quarterOf(p.handover_date)}
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-secondary/30 border border-border/40 text-xs flex justify-between items-center">
+                  <span className="text-muted-foreground">Starting From</span>
+                  <span className="font-bold font-mono text-emerald-400">AED 684,000</span>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="flex-1 h-8 text-xs font-semibold"
+                  >
+                    <Link to="/app/project/$id" params={{ id: String(p.id) }}>
+                      <span>View Dossier</span>
+                      <ArrowUpRight className="size-3 ml-1" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center pt-2">
+            <Button variant="outline" asChild className="h-9 text-xs font-semibold rounded-xl">
+              <Link to="/app/offplan">Browse Complete Catalog (1,450+ Projects) →</Link>
             </Button>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* ═══ TAB: TARGETS & BONUS ═══ */}
+      {dashboardTab === "targets" && (
+        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-sm space-y-6 max-w-2xl mx-auto animate-in fade-in-50 duration-200">
+          <div className="flex items-center justify-between border-b border-border/60 pb-4">
+            <div>
+              <h3 className="text-base font-bold text-foreground">Monthly Commission Target</h3>
+              <p className="text-xs text-muted-foreground">October 2026 quota and Tier-1 accelerator</p>
+            </div>
+            <span className="rounded-full bg-primary/10 border border-primary/30 px-3 py-1 text-xs font-bold text-primary font-mono">
+              63% Achieved
+            </span>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-baseline mb-2">
+              <span className="text-3xl font-extrabold text-foreground font-display">
+                AED 94,500
+              </span>
+              <span className="text-sm text-muted-foreground font-mono">Target: AED 150,000</span>
+            </div>
+            <div className="h-3 w-full rounded-full bg-secondary overflow-hidden border border-border/80">
+              <div className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full" style={{ width: "63%" }} />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border/60 bg-secondary/30 p-4 text-xs space-y-2">
+            <p className="font-bold text-foreground flex items-center gap-1.5">
+              <Sparkles size={14} className="text-amber-400" />
+              <span>Tier-1 Accelerator Qualification:</span>
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              Close just <strong>1 more transaction</strong> (e.g. 1BR in DLRC or JVC) this week to elevate your commission split to <strong>60%</strong> on all subsequent deals closed before month-end.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ═══ MODAL: REGISTER NEW BUYER ═══ */}
       <Dialog open={newLeadOpen} onOpenChange={setNewLeadOpen}>
