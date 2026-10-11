@@ -46,8 +46,6 @@ function SettingsPage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", phone: "" });
   const [origEmail, setOrigEmail] = useState("");
   const [roundRobin, setRoundRobin] = useState(false);
-  const [apiKey, setApiKey] = useState("");
-  const [showKey, setShowKey] = useState(false);
   const [model, setModel] = useState("gpt-4o-mini");
   const [theme, setTheme] = useState("gold");
   const [logoPath, setLogoPath] = useState<string | null>(null);
@@ -267,25 +265,12 @@ function SettingsPage() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             <div className="sm:col-span-2">
-              <span className="flex items-center justify-between gap-2">
-                <span className="eyebrow">OpenAI API Key</span>
-                <button
-                  type="button"
-                  onClick={() => setShowKey((v) => !v)}
-                  className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
-                >
-                  {showKey ? "Hide" : "Show"}
-                </button>
-              </span>
+              <span className="eyebrow">Direct WhatsApp Phone Number</span>
               <Input
-                className="mt-1.5"
-                type={showKey ? "text" : "password"}
-                autoComplete="off"
-                spellCheck={false}
-                maxLength={160}
-                placeholder="sk-…"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                className="mt-1.5 font-mono"
+                type="tel"
+                placeholder="+971 50 123 4567"
+                defaultValue="+971 50 892 4119"
               />
             </div>
             <div>
