@@ -53,7 +53,7 @@ function Inbox() {
   const pages = Math.max(1, Math.ceil(rows.length / PAGE));
   const view = rows.slice(page * PAGE, page * PAGE + PAGE);
   const info = QUEUES.find((x) => x.id === queue);
-  const open = (l: Lead) => void navigate({ search: (s) => ({ ...s, lead: l.id }) });
+  const open = (l: Lead) => void navigate({ to: "/app/leads/$id", params: { id: l.id } });
   const openLead = (l: Lead) => void navigate({ to: "/app/leads/$id", params: { id: l.id } });
   const close360 = () => void navigate({ search: (s) => ({ ...s, lead: undefined }) });
   const toggle = (id: string) => setSel((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
