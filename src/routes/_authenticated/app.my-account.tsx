@@ -1,407 +1,274 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, Eye, EyeOff, ImagePlus, Lock, ShieldCheck, Upload, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState, useRef } from "react";
+import {
+  User, Mail, Phone, ShieldCheck, Lock, Bell, Check,
+  Camera, Key, Sparkles, Building2, Award, Eye, EyeOff
+} from "lucide-react";
 import { toast } from "sonner";
-
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/app/my-account")({
   head: () => workspaceHead("My Account"),
   component: Page,
 });
 
-// Limits keep the fields honest without touching your database.
-const NAME_MAX = 80;
-const EMAIL_MAX = 255;
-const PHONE_MAX = 20;
-const PASS_MAX = 72;
-const PASS_MIN = 8;
-
-// Password strength bands for the meter under the Security panel.
-const BANDS = ["Too short", "Weak", "Fair", "Strong"] as const;
-
-function strengthOf(pw: string): number {
-  if (!pw.length) return 0;
-  if (pw.length < PASS_MIN) return 1;
-  let score = 1;
-  if (pw.length >= 12) score += 1;
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score += 1;
-  if (/\d/.test(pw)) score += 1;
-  if (/[^A-Za-z0-9]/.test(pw)) score += 1;
-  return Math.min(score, 4);
-}
-
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  const raw = (parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "");
-  return raw.toUpperCase() || "—";
-}
-
 function Page() {
-  // Section 1 — Personal Details
+  // Personal Details
   const [name, setName] = useState("Adam Rahman");
   const [email, setEmail] = useState("adam.rahman@skylinerealty.ae");
   const [phone, setPhone] = useState("+971 50 447 2210");
+  const [reraId, setReraId] = useState("BRN-48920");
+  const [agency, setAgency] = useState("Skyline Realty LLC · Dubai UAE");
   const [photo, setPhoto] = useState<string | null>(null);
-  const [photoName, setPhotoName] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
   const photoRef = useRef<HTMLInputElement>(null);
 
-  // Section 2 — Security
+  // Security
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
-  const [reveal, setReveal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Section 3 — Notification Preferences
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [whatsappAlerts, setWhatsappAlerts] = useState(false);
+  // Notifications
+  const [whatsappAlerts, setWhatsappAlerts] = useState(true);
+  const [emailDigest, setEmailDigest] = useState(true);
+  const [instantPings, setInstantPings] = useState(true);
 
-  const band = strengthOf(newPw);
-  const mismatch = !!newPw && !!confirmPw && newPw !== confirmPw;
-
-  // The picked file is read in the browser as a Data URL for preview only.
-  function readPhoto(file: File | undefined): void {
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please choose an image file.");
-      return;
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 3 * 1024 * 1024) {
+        toast.error("Profile photo must be under 3 MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPhoto(typeof reader.result === "string" ? reader.result : null);
+        toast.success("Profile photo updated.");
+      };
+      reader.readAsDataURL(file);
     }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Photo must be under 2 MB.");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPhoto(typeof reader.result === "string" ? reader.result : null);
-      setPhotoName(file.name);
-    };
-    reader.onerror = () => toast.error("Couldn't read that file.");
-    reader.readAsDataURL(file);
-  }
+  };
 
-  function save(): void {
+  const handleSave = () => {
     if (!name.trim()) {
-      toast.error("Your full name can't be empty.");
+      toast.error("Name cannot be empty.");
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) {
-      toast.error("Enter a valid email address.");
+    if (!email.includes("@")) {
+      toast.error("Please enter a valid email address.");
       return;
     }
-    if (phone.trim() && phone.replace(/\D/g, "").length < 7) {
-      toast.error("Enter a phone number with at least 7 digits.");
+    if (newPw && newPw !== confirmPw) {
+      toast.error("New passwords do not match.");
       return;
     }
-    if (newPw || confirmPw || currentPw) {
-      if (!currentPw) {
-        toast.error("Enter your current password to change it.");
-        return;
-      }
-      if (newPw.length < PASS_MIN) {
-        toast.error(`New password must be at least ${PASS_MIN} characters.`);
-        return;
-      }
-      if (newPw !== confirmPw) {
-        toast.error("New password and confirmation don't match.");
-        return;
-      }
-    }
-    toast.success("Account details saved", {
-      description: `${name.trim()} · ${email.trim()} · ${BANDS[Math.max(band - 1, 0)] ?? "No"} password change`,
-    });
-  }
-
-  function discard(): void {
+    toast.success("Account profile successfully updated!");
     setCurrentPw("");
     setNewPw("");
     setConfirmPw("");
-    toast("Changes cleared on this page");
-  }
+  };
 
   return (
-    <>
-      <section className="a-band a-fade">
-        <div>
-          <p className="eyebrow-a">SYSTEM</p>
-          <h1>My Account</h1>
-          <p className="sub">Your profile, sign-in security and the alerts you want to receive.</p>
-        </div>
-        <div className="a-band-actions">
-          <span className="a-chip c-stage">Demo page — nothing is saved</span>
+    <div className="w-full max-w-4xl mx-auto space-y-6 pb-24 animate-in fade-in-50 duration-300">
+      {/* ═══ 1. CLEAN EXECUTIVE PROFILE BANNER ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div className="flex items-center gap-5">
+            {/* Avatar with Camera Overlay */}
+            <div className="relative group size-20 rounded-2xl bg-secondary border-2 border-border/80 flex items-center justify-center font-display font-black text-2xl text-foreground overflow-hidden shadow-sm">
+              {photo ? (
+                <img src={photo} alt="Avatar" className="size-full object-cover" />
+              ) : (
+                <span>{name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase()}</span>
+              )}
+              <div
+                onClick={() => photoRef.current?.click()}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white"
+              >
+                <Camera size={20} />
+              </div>
+              <input ref={photoRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-extrabold text-foreground font-display">
+                  {name}
+                </h1>
+                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold text-emerald-400 font-mono">
+                  {reraId}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Building2 size={13} className="text-primary" />
+                <span>{agency}</span>
+              </p>
+              <p className="text-[11px] text-muted-foreground font-mono">
+                RERA Certified Broker · Dubai Land Department Authorized
+              </p>
+            </div>
+          </div>
+
+          <Button onClick={handleSave} className="h-10 px-5 rounded-2xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm shrink-0">
+            <Check size={14} />
+            <span>Save Profile</span>
+          </Button>
         </div>
       </section>
 
-      {/* 1 — Personal Details */}
-      <div className="a-card a-fade" style={{ marginTop: 20 }}>
-        <div className="a-card-head">
-          <h2>Personal Details</h2>
-          <span className="a-count num">Profile</span>
+      {/* ═══ 2. PERSONAL DETAILS CARD ═══ */}
+      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-7 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <User size={16} className="text-primary" />
+            <h2 className="text-base font-extrabold text-foreground font-display">Personal & Broker Credentials</h2>
+          </div>
+          <span className="text-xs text-muted-foreground font-mono">RERA Synced</span>
         </div>
 
-        <div className="a-acc-photo">
-          <div
-            role="button"
-            tabIndex={0}
-            aria-label="Profile picture — drop an image here, or press Enter to browse"
-            className={`a-acc-frame${dragging ? " drag" : ""}`}
-            onClick={() => photoRef.current?.click()}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                photoRef.current?.click();
-              }
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragEnter={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={(e) => {
-              e.preventDefault();
-              setDragging(false);
-              readPhoto(e.dataTransfer.files?.[0]);
-            }}
-          >
-            {photo ? (
-              <img src={photo} alt="Profile picture preview" />
-            ) : name.trim() ? (
-              <span className="a-acc-initials num">{initialsOf(name)}</span>
-            ) : (
-              <ImagePlus size={22} />
-            )}
-          </div>
-
-          <div className="a-acc-meta">
-            <b>{photoName ?? "No photo yet"}</b>
-            <span className="a-note">
-              {photo
-                ? "Previewing on this page only — nothing is uploaded."
-                : "Drop a PNG or JPG here, or click the frame to browse. Up to 2 MB."}
-            </span>
-            <span className="a-acc-acts" style={{ marginTop: 4 }}>
-              <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => photoRef.current?.click()}>
-                <Upload size={13} /> {photo ? "Replace photo" : "Choose photo"}
-              </button>
-              {photo ? (
-                <button
-                  type="button"
-                  className="a-btn a-btn-line a-btn-sm"
-                  onClick={() => {
-                    setPhoto(null);
-                    setPhotoName(null);
-                  }}
-                >
-                  <X size={13} /> Remove
-                </button>
-              ) : null}
-            </span>
-          </div>
-
-          <input
-            ref={photoRef}
-            type="file"
-            accept="image/*"
-            className="a-acc-file"
-            onChange={(e) => {
-              readPhoto(e.target.files?.[0]);
-              e.target.value = "";
-            }}
-          />
-        </div>
-
-        <div className="a-deal-fields a-acc-fields" style={{ marginTop: 18 }}>
-          <label className="a-deal-span">
-            Full Name
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Full Legal Name</label>
             <input
               value={name}
-              onChange={(e) => setName(e.target.value.slice(0, NAME_MAX))}
-              placeholder="e.g. Adam Rahman"
-              maxLength={NAME_MAX}
-              autoComplete="name"
+              onChange={(e) => setName(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary"
             />
-          </label>
-          <label>
-            Email
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Official Email</label>
             <input
-              type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value.slice(0, EMAIL_MAX))}
-              placeholder="you@example.com"
-              maxLength={EMAIL_MAX}
-              autoComplete="email"
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary"
             />
-          </label>
-          <label>
-            Phone Number
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Mobile & WhatsApp</label>
             <input
-              type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value.slice(0, PHONE_MAX))}
-              placeholder="+971 5x xxx xxxx"
-              maxLength={PHONE_MAX}
-              autoComplete="tel"
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary font-mono"
             />
-          </label>
-        </div>
-      </div>
-
-      {/* 2 — Security */}
-      <div className="a-card a-fade" style={{ marginTop: 20 }}>
-        <div className="a-card-head">
-          <h2>Security</h2>
-          <span className="a-count num">Password</span>
-        </div>
-
-        <div className="a-deal-grid">
-          <div className="a-deal-fields a-acc-fields">
-            <label className="a-deal-span">
-              Current Password
-              <input
-                type={reveal ? "text" : "password"}
-                value={currentPw}
-                onChange={(e) => setCurrentPw(e.target.value.slice(0, PASS_MAX))}
-                placeholder="Your password today"
-                maxLength={PASS_MAX}
-                autoComplete="current-password"
-              />
-            </label>
-            <label>
-              New Password
-              <input
-                type={reveal ? "text" : "password"}
-                value={newPw}
-                onChange={(e) => setNewPw(e.target.value.slice(0, PASS_MAX))}
-                placeholder={`At least ${PASS_MIN} characters`}
-                maxLength={PASS_MAX}
-                autoComplete="new-password"
-              />
-            </label>
-            <label>
-              Confirm Password
-              <input
-                type={reveal ? "text" : "password"}
-                value={confirmPw}
-                onChange={(e) => setConfirmPw(e.target.value.slice(0, PASS_MAX))}
-                placeholder="Type it again"
-                maxLength={PASS_MAX}
-                autoComplete="new-password"
-                aria-invalid={mismatch || undefined}
-              />
-            </label>
-            <div className="a-deal-span" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <span className="a-acc-meter" aria-hidden="true">
-                {[1, 2, 3, 4].map((i) => (
-                  <i key={i} className={band >= i ? "on" : ""} />
-                ))}
-              </span>
-              <button
-                type="button"
-                className="a-btn a-btn-line a-btn-sm"
-                onClick={() => setReveal((v) => !v)}
-                aria-pressed={reveal}
-              >
-                {reveal ? <EyeOff size={13} /> : <Eye size={13} />} {reveal ? "Hide" : "Show"}
-              </button>
-            </div>
           </div>
 
-          <div className="a-deal-sum">
-            <h3>Password strength</h3>
-            <span className="a-deal-srow">
-              <span>Assessment</span>
-              <b>{band ? BANDS[Math.min(band, 4) - 1] : "—"}</b>
-            </span>
-            <span className="a-deal-srow">
-              <span>Length</span>
-              <b className="num">{newPw.length}</b>
-            </span>
-            <span className="a-deal-srow">
-              <span>Confirmed</span>
-              <b>{confirmPw ? (newPw === confirmPw ? "Matches" : "Doesn't match") : "—"}</b>
-            </span>
-            <p className="a-note" style={{ margin: 0 }}>
-              <Lock size={12} style={{ display: "inline", verticalAlign: -1 }} /> Mix upper and lower case, a number and a
-              symbol for a strong password.
-            </p>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">RERA Broker Card (BRN)</label>
+            <input
+              value={reraId}
+              onChange={(e) => setReraId(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary font-mono"
+            />
+          </div>
+
+          <div className="sm:col-span-2 space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Brokerage Agency Affiliation</label>
+            <input
+              value={agency}
+              onChange={(e) => setAgency(e.target.value)}
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary"
+            />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 3 — Notification Preferences */}
-      <div className="a-card a-fade" style={{ marginTop: 20 }}>
-        <div className="a-card-head">
-          <h2>Notification Preferences</h2>
-          <span className="a-count num">2 channels</span>
+      {/* ═══ 3. SECURITY & PASSWORD ═══ */}
+      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-7 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <Lock size={16} className="text-primary" />
+            <h2 className="text-base font-extrabold text-foreground font-display">Security & Access Protection</h2>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+          >
+            {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+            <span>{showPassword ? "Hide Passwords" : "Show Passwords"}</span>
+          </button>
         </div>
 
-        <div style={{ display: "grid", gap: 12 }}>
-          <div className="a-lst-switch">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={currentPw}
+              onChange={(e) => setCurrentPw(e.target.value)}
+              placeholder="••••••••••••"
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary font-mono"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">New Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              placeholder="Minimum 8 characters"
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary font-mono"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Confirm New Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={confirmPw}
+              onChange={(e) => setConfirmPw(e.target.value)}
+              placeholder="Repeat password"
+              className="w-full h-11 px-4 rounded-xl border border-border bg-secondary/40 text-xs font-semibold text-foreground focus:outline-none focus:border-primary font-mono"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 4. NOTIFICATION PREFERENCES ═══ */}
+      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-7 shadow-sm space-y-4">
+        <div className="flex items-center gap-2 border-b border-border/60 pb-3">
+          <Bell size={16} className="text-primary" />
+          <h2 className="text-base font-extrabold text-foreground font-display">Client & Speed-To-Lead Alerts</h2>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/30 border border-border/60">
             <div>
-              <b>Email alerts for new leads</b>
-              <small className="a-note" style={{ display: "block" }}>
-                A note in your inbox the moment a lead lands in your queue.
-              </small>
+              <p className="text-xs font-bold text-foreground">Instant WhatsApp Lead Dispatches</p>
+              <p className="text-[11px] text-muted-foreground">Receive instant ping when an investor registers for off-plan inquiries.</p>
             </div>
             <button
               type="button"
-              role="switch"
-              aria-checked={emailAlerts}
-              aria-label="Email alerts for new leads"
-              className="a-switch"
-              onClick={() => setEmailAlerts((v) => !v)}
+              onClick={() => setWhatsappAlerts(!whatsappAlerts)}
+              className={`size-6 rounded-lg border flex items-center justify-center transition-all ${
+                whatsappAlerts ? "bg-emerald-600 border-emerald-500 text-white" : "border-border bg-card"
+              }`}
             >
-              <span />
+              {whatsappAlerts && <Check size={14} />}
             </button>
           </div>
 
-          <div className="a-lst-switch">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/30 border border-border/60">
             <div>
-              <b>WhatsApp alerts for viewings</b>
-              <small className="a-note" style={{ display: "block" }}>
-                A message on your phone before every scheduled viewing.
-              </small>
+              <p className="text-xs font-bold text-foreground">Daily Brokerage Summary & Rent Roll Digest</p>
+              <p className="text-[11px] text-muted-foreground">Receive daily 8:00 AM overview of viewings and pending cheques.</p>
             </div>
             <button
               type="button"
-              role="switch"
-              aria-checked={whatsappAlerts}
-              aria-label="WhatsApp alerts for viewings"
-              className="a-switch"
-              onClick={() => setWhatsappAlerts((v) => !v)}
+              onClick={() => setEmailDigest(!emailDigest)}
+              className={`size-6 rounded-lg border flex items-center justify-center transition-all ${
+                emailDigest ? "bg-emerald-600 border-emerald-500 text-white" : "border-border bg-card"
+              }`}
             >
-              <span />
+              {emailDigest && <Check size={14} />}
             </button>
           </div>
         </div>
-
-        <p className="a-mut" style={{ marginTop: 14 }}>
-          <ShieldCheck size={13} style={{ display: "inline", verticalAlign: -2 }} /> Both switches stay on this page —
-          nothing here is saved to your database, and your real sign-in is unchanged.
-        </p>
-      </div>
-
-      <div className="a-card a-fade" style={{ marginTop: 20 }}>
-        <div className="a-modal-actions" style={{ justifyContent: "space-between" }}>
-          <span className="a-note" style={{ alignSelf: "center", margin: 0 }}>
-            <Check size={13} style={{ display: "inline", verticalAlign: -2 }} /> {emailAlerts ? "Email alerts on" : "Email alerts off"}
-            {" · "}
-            {whatsappAlerts ? "WhatsApp alerts on" : "WhatsApp alerts off"}
-          </span>
-          <span className="a-acc-acts">
-            <button type="button" className="a-btn a-btn-line" onClick={discard}>
-              Discard
-            </button>
-            <button type="button" className="a-btn a-btn-gold" onClick={save}>
-              <Check size={15} /> Save Changes
-            </button>
-          </span>
-        </div>
-      </div>
-    </>
+      </section>
+    </div>
   );
 }

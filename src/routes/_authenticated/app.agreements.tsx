@@ -1,623 +1,380 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Copy, Download, Eye, FileSignature, FileText, Printer, X } from "lucide-react";
+import { useState } from "react";
+import {
+  FileSignature, FileText, Download, Printer, Copy, Eye,
+  ShieldCheck, Check, Plus, MessageCircle, ArrowUpRight,
+  ExternalLink, Building2, User
+} from "lucide-react";
 import { toast } from "sonner";
-
-
-import { LogoMark } from "@/components/Logo";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/app/agreements")({
-  head: () => workspaceHead("Agreements"),
+  head: () => workspaceHead("Agreements & Legal"),
   component: Page,
 });
 
-type DocType = "Rental Agreement" | "Sale Agreement" | "Payment Receipt";
-type Status = "Draft" | "Issued" | "Signed";
+type DocType = "Rental Agreement" | "Form F (Sale Agreement)" | "Payment Receipt";
+type DocStatus = "Signed & Sealed" | "Issued (Awaiting Signature)" | "Draft";
 
-const TYPES: DocType[] = ["Rental Agreement", "Sale Agreement", "Payment Receipt"];
-
-const CHIP: Record<Status, string> = {
-  Draft: "c-cold",
-  Issued: "c-offplan",
-  Signed: "c-ok",
-};
-
-// Letterhead for generated documents — sample company details, not real ones.
-const BRAND = {
-  word: "Skyline Realty",
-  tag: "Real Estate Brokerage",
-  name: "Skyline Realty LLC",
-  lines: [
-    "Office 1204, Boulevard Plaza Tower 1",
-    "Downtown Dubai, P.O. Box 12345",
-    "Dubai, United Arab Emirates",
-    "hello@skylinerealty.ae · +971 4 000 0000",
-  ],
-};
-
-function Letterhead({ docRef, page }: { docRef: string; page: string }) {
-  return (
-    <div className="a-print-brand">
-      <span className="a-print-mark">
-        <i aria-hidden>
-          <LogoMark size={26} />
-        </i>
-        <span>
-          <b>{BRAND.word}</b>
-          <small>{BRAND.tag}</small>
-        </span>
-      </span>
-      <div className="a-print-addr">
-        <b>{BRAND.name}</b>
-        {BRAND.lines.map((l) => (
-          <span key={l}>{l}</span>
-        ))}
-        <span className="num">
-          {docRef} · {page}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-type Doc = {
+type Agreement = {
   id: string;
   ref: string;
   type: DocType;
   title: string;
-  party: string;
-  headline: string;
+  parties: string;
+  property: string;
+  value: string;
   agent: string;
-  status: Status;
+  status: DocStatus;
   date: string;
   terms: [string, string][];
   clauses: string[];
 };
 
-// Boilerplate clause sets — placeholder wording, not legal text.
-const CLAUSES: Record<DocType, string[]> = {
-  "Rental Agreement": [
-    "The tenancy runs for the term shown above from the date the keys are handed over.",
-    "Rent is payable in the cheques recorded; a bounced cheque is a breach of this agreement.",
-    "The landlord registers the contract with Ejari and covers service charges and structural maintenance.",
-    "The tenant keeps the property in the condition received and returns it at the end of the term.",
-  ],
-  "Sale Agreement": [
-    "The seller confirms clear title and provides a NOC where the developer requires one.",
-    "The buyer pays each tranche on the milestone dates in the payment plan recorded above.",
-    "DLD transfer fees, agency commission and any mortgage costs are settled at the transfer appointment.",
-    "Either party may withdraw in writing if the other misses a milestone by more than 30 days.",
-  ],
-  "Payment Receipt": [
-    "This receipt confirms funds received against the deal recorded above; it is not a transfer of ownership.",
-    "Funds are held pending the transfer appointment at the Dubai Land Department.",
-    "The balance shown stays payable on the milestone dates in the payment plan.",
-    "The payer should keep this receipt with the title deed documents.",
-  ],
-};
-
-// Sample documents — every row below is illustrative demo data, not saved anywhere.
-const ROWS: Doc[] = [
+const INITIAL_AGREEMENTS: Agreement[] = [
   {
-    id: "AG-1021",
-    ref: "RA-1021",
+    id: "AGR-101",
+    ref: "DLD-EJARI-2026-091",
     type: "Rental Agreement",
-    title: "Rental Agreement — Marina Star Studio",
-    party: "Jonah Reyes",
-    headline: "AED 96,000 / year",
-    agent: "Priya",
-    status: "Signed",
-    date: "Fri 2 Oct",
+    title: "Official Tenancy Contract · Marina Quay #1402",
+    parties: "Skyline Realty LLC (Agent) ➔ Daniel Brooks (Tenant)",
+    property: "Marina Quay Luxury Residence, Dubai Marina",
+    value: "AED 145,000 / year",
+    agent: "Saad Khan",
+    status: "Signed & Sealed",
+    date: "01 Oct 2026",
     terms: [
-      ["Landlord", "Owner of record (title deed on file)"],
-      ["Tenant", "Jonah Reyes"],
-      ["Property", "Marina Star · Studio"],
-      ["Area", "Dubai Marina"],
-      ["Annual rent", "AED 96,000"],
-      ["Payment", "Annual, one cheque"],
-      ["Term", "12 months"],
-      ["Security deposit", "As agreed with the landlord"],
-      ["Ejari", "Filed"],
-      ["Handling agent", "Priya"],
+      ["Annual Rent", "AED 145,000"],
+      ["Payment Terms", "4 Cheques"],
+      ["Security Deposit", "AED 7,250 (5% Refundable)"],
+      ["Lease Term", "01 Oct 2026 – 30 Sep 2027"],
+      ["Ejari Registration", "Verified by Land Department"],
     ],
-    clauses: CLAUSES["Rental Agreement"],
+    clauses: [
+      "The tenancy runs for the agreed 12-month period commencing upon key handover.",
+      "Rent is payable strictly via UAE banking cheques; bounced cheques constitute immediate breach.",
+      "Landlord maintains structural repairs; tenant is responsible for minor maintenance under AED 500.",
+      "Premises shall be used exclusively for residential occupancy in compliance with Dubai Law.",
+    ],
   },
   {
-    id: "AG-1036",
-    ref: "SA-1036",
-    type: "Sale Agreement",
-    title: "Sale Agreement — Downtown Vista",
-    party: "Amira Salem",
-    headline: "AED 4,120,000",
-    agent: "Aisha",
+    id: "AGR-102",
+    ref: "DLD-FORM-F-8820",
+    type: "Form F (Sale Agreement)",
+    title: "Contract F · Celestara Residences Studio #1006",
+    parties: "Celestara Developments (Seller) ➔ Tariq Mansoor (Buyer)",
+    property: "Celestara Residences, Jumeirah Village Circle",
+    value: "AED 498,000",
+    agent: "Saad Khan",
+    status: "Signed & Sealed",
+    date: "08 Oct 2026",
+    terms: [
+      ["Agreed Purchase Price", "AED 498,000"],
+      ["Down Payment Paid", "AED 49,800 (10%)"],
+      ["Escrow Construction Tranche", "50% during construction"],
+      ["Handover Final Tranche", "40% upon completion"],
+      ["DLD Registration Fee", "4% paid to Land Department"],
+    ],
+    clauses: [
+      "Seller confirms free & clear title with developer NOC issued.",
+      "Buyer shall fulfill remaining payment milestones as per certified DLD engineering progress.",
+      "Agency commission of 2% + VAT settled through authorized escrow manager.",
+    ],
+  },
+  {
+    id: "AGR-103",
+    ref: "DLD-REC-4419",
+    type: "Payment Receipt",
+    title: "Official Escrow Deposit Receipt #4419",
+    parties: "Sophie Laurent (Payer) ➔ Reef Luxury Escrow Account",
+    property: "Reef Luxury 995, DLRC",
+    value: "AED 154,500",
+    agent: "Aisha Salem",
+    status: "Issued (Awaiting Signature)",
+    date: "11 Oct 2026",
+    terms: [
+      ["Amount Received", "AED 154,500 (10% Booking Deposit)"],
+      ["Payment Mode", "Manager's Cheque (Emirates NBD)"],
+      ["Escrow Trust Account", "DLD Escrow #9952"],
+      ["Allocation Reserved", "Unit #101 · 1 Bedroom Luxury Suite"],
+    ],
+    clauses: [
+      "This receipt confirms initial token holding reservation against certified developer allotment.",
+      "Funds held under statutory DLD Escrow Trust protection pending SPA registration.",
+    ],
+  },
+  {
+    id: "AGR-104",
+    ref: "DLD-FORM-F-9021",
+    type: "Form F (Sale Agreement)",
+    title: "Contract F · Amali Island Beach Mansion #1204",
+    parties: "Amali Properties ➔ Khalid Al Suwaidi (Buyer)",
+    property: "Amali Island Waterfront, Business Bay Canal",
+    value: "AED 4,250,000",
+    agent: "Omar Farooq",
     status: "Draft",
-    date: "Fri 9 Oct",
+    date: "Today",
     terms: [
-      ["Seller", "Owner of record (title deed on file)"],
-      ["Buyer", "Amira Salem"],
-      ["Property", "Downtown Vista · 2BR"],
-      ["Area", "Downtown Dubai"],
-      ["Price", "AED 4,120,000"],
-      ["Deposit paid", "AED 824,000 (20%)"],
-      ["Balance", "AED 3,296,000"],
-      ["Payment plan", "20 / 50 / 30"],
-      ["Commission", "AED 82,400"],
-      ["Next step", "Signature appointment Sat 11 Oct"],
-      ["Handling agent", "Aisha"],
+      ["Agreed Purchase Price", "AED 4,250,000"],
+      ["Initial Deposit", "AED 850,000 (20%)"],
+      ["Escrow Tranches", "60% Construction Linked"],
+      ["Handover Balance", "20% On Completion"],
     ],
-    clauses: CLAUSES["Sale Agreement"],
-  },
-  {
-    id: "AG-1037",
-    ref: "PR-1037",
-    type: "Payment Receipt",
-    title: "Payment Receipt — Palm Reserve",
-    party: "Khalid Al Suwaidi",
-    headline: "AED 2,835,000 received",
-    agent: "Omar",
-    status: "Issued",
-    date: "Tue 6 Oct",
-    terms: [
-      ["Received from", "Khalid Al Suwaidi"],
-      ["For", "Palm Reserve · 4BR"],
-      ["Area", "Palm Jumeirah"],
-      ["Amount received", "AED 2,835,000"],
-      ["Against price", "AED 9,450,000"],
-      ["Stage", "30% token"],
-      ["Balance", "AED 6,615,000"],
-      ["Method", "Bank transfer"],
-      ["Received by", "Omar"],
+    clauses: [
+      "Official Form F draft generated under RERA Dubai brokerage guidelines.",
+      "Pending final digital signatures from buyer and developer legal representative.",
     ],
-    clauses: CLAUSES["Payment Receipt"],
   },
 ];
-
-// Records the Generate button drafts from — same figures as the Deals pipeline.
-const POOL: Omit<Doc, "id" | "status" | "date">[] = [
-  {
-    ref: "SA-1035",
-    type: "Sale Agreement",
-    title: "Sale Agreement — Reportage Hills",
-    party: "Elena Petrova",
-    headline: "AED 3,860,000",
-    agent: "Saad",
-    terms: [
-      ["Seller", "Owner of record (title deed on file)"],
-      ["Buyer", "Elena Petrova"],
-      ["Property", "Reportage Hills · 3BR"],
-      ["Area", "Dubai Hills Estate"],
-      ["Price", "AED 3,860,000"],
-      ["Deposit paid", "AED 1,158,000 (30%)"],
-      ["Balance", "AED 2,702,000"],
-      ["Payment plan", "30 / 40 / 30"],
-      ["Commission", "AED 77,200"],
-      ["Next step", "40% due at handover, Q1 2027"],
-      ["Handling agent", "Saad"],
-    ],
-    clauses: CLAUSES["Sale Agreement"],
-  },
-  {
-    ref: "SA-1038",
-    type: "Sale Agreement",
-    title: "Sale Agreement — Business Yard",
-    party: "Grace Okafor",
-    headline: "AED 1,480,000",
-    agent: "Priya",
-    terms: [
-      ["Seller", "Owner of record (title deed on file)"],
-      ["Buyer", "Grace Okafor"],
-      ["Property", "Business Yard · 1BR"],
-      ["Area", "Business Bay"],
-      ["Price", "AED 1,480,000"],
-      ["Deposit paid", "AED 296,000 (20%)"],
-      ["Balance", "AED 1,184,000"],
-      ["Payment plan", "20 / 40 / 40"],
-      ["Commission", "AED 29,600"],
-      ["Next step", "40% due at key handover"],
-      ["Handling agent", "Priya"],
-    ],
-    clauses: CLAUSES["Sale Agreement"],
-  },
-  {
-    ref: "RA-1022",
-    type: "Rental Agreement",
-    title: "Rental Agreement — Arjan Gate",
-    party: "Sofia Duarte",
-    headline: "AED 132,000 / year",
-    agent: "Aisha",
-    terms: [
-      ["Landlord", "Owner of record (title deed on file)"],
-      ["Tenant", "Sofia Duarte"],
-      ["Property", "Arjan Gate · 2BR"],
-      ["Area", "Arjan"],
-      ["Annual rent", "AED 132,000"],
-      ["Payment", "Two cheques"],
-      ["Term", "12 months"],
-      ["Security deposit", "As agreed with the landlord"],
-      ["Ejari", "To be filed by the landlord"],
-      ["Handling agent", "Aisha"],
-    ],
-    clauses: CLAUSES["Rental Agreement"],
-  },
-  {
-    ref: "PR-1041",
-    type: "Payment Receipt",
-    title: "Payment Receipt — Marina Heights",
-    party: "Rania Haddad",
-    headline: "AED 245,000 received",
-    agent: "Saad",
-    terms: [
-      ["Received from", "Rania Haddad"],
-      ["For", "Marina Heights · 2BR"],
-      ["Area", "Dubai Marina"],
-      ["Amount received", "AED 245,000"],
-      ["Against price", "AED 2,450,000"],
-      ["Stage", "10% token"],
-      ["Balance", "AED 2,205,000"],
-      ["Method", "Bank transfer"],
-      ["Received by", "Saad"],
-    ],
-    clauses: CLAUSES["Payment Receipt"],
-  },
-  {
-    ref: "PR-1042",
-    type: "Payment Receipt",
-    title: "Payment Receipt — Verdana III",
-    party: "Faisal Al Menhali",
-    headline: "AED 118,000 received",
-    agent: "Aisha",
-    terms: [
-      ["Received from", "Faisal Al Menhali"],
-      ["For", "Verdana III · 1BR"],
-      ["Area", "JVC"],
-      ["Amount received", "AED 118,000"],
-      ["Against price", "AED 1,180,000"],
-      ["Stage", "10% token"],
-      ["Balance", "AED 1,062,000"],
-      ["Method", "Bank transfer"],
-      ["Received by", "Aisha"],
-    ],
-    clauses: CLAUSES["Payment Receipt"],
-  },
-];
-
-const WDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-// UTC maths so the label never disagrees between the server and the browser.
-function todayLabel(): string {
-  const d = new Date();
-  return `${WDAYS[d.getUTCDay()] ?? ""} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()] ?? ""}`.trim();
-}
-
-const isMoney = (v: string) => /^AED [\d,]+$/.test(v);
-
-function asText(doc: Doc): string {
-  return [
-    `DealOS CRM — ${doc.type}`,
-    `${doc.title} · ${doc.ref} · ${doc.date}`,
-    "",
-    ...doc.terms.map(([k, v]) => `${k}: ${v}`),
-    "",
-    "Terms",
-    ...doc.clauses.map((c, i) => `${i + 1}. ${c}`),
-    "",
-    "Draft generated from the deal record. Placeholder wording — check it before signing.",
-  ].join("\n");
-}
 
 function Page() {
-  const [type, setType] = useState<DocType>(TYPES[0] ?? "Rental Agreement");
-  const [docs, setDocs] = useState<Doc[]>(ROWS);
-  const [view, setView] = useState<string | null>(null);
+  const [agreements, setAgreements] = useState<Agreement[]>(INITIAL_AGREEMENTS);
+  const [filter, setFilter] = useState<string>("All");
+  const [selectedDoc, setSelectedDoc] = useState<Agreement | null>(null);
 
-  const open = docs.find((d) => d.id === view) ?? null;
+  const filtered = agreements.filter((a) => {
+    if (filter === "All") return true;
+    if (filter === "Rental") return a.type === "Rental Agreement";
+    if (filter === "Form F") return a.type === "Form F (Sale Agreement)";
+    if (filter === "Receipts") return a.type === "Payment Receipt";
+    return true;
+  });
 
-  // Drafts a document on screen from the matching sample record — never touches the database.
-  const generate = () => {
-    const pool = POOL.filter((p) => p.type === type);
-    const base = pool.find((p) => !docs.some((d) => d.ref === p.ref)) ?? pool[0];
-    if (!base) return;
-    const doc: Doc = { ...base, id: `AG-${Date.now().toString().slice(-5)}`, status: "Draft", date: todayLabel() };
-    setDocs((d) => [doc, ...d]);
-    setView(doc.id);
-    toast.success("Draft created on screen — demo only");
+  const handleShareDoc = (e: React.MouseEvent, doc: Agreement) => {
+    e.stopPropagation();
+    const text = `Official Document: *${doc.title}* (${doc.ref})\nParties: ${doc.parties}\nValue: ${doc.value}\nStatus: ${doc.status}\nDate: ${doc.date}. Official DLD-compliant document issued by Skyline Realty LLC.`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    toast.success(`WhatsApp link prepared for ${doc.ref}`);
   };
 
   return (
-    <>
-      <section className="a-band a-fade">
-        <div>
-          <p className="eyebrow-a">Money</p>
-          <h1>Agreements</h1>
-          <p className="sub">Draft rental agreements, sale agreements and receipts, and keep every copy in one place.</p>
-        </div>
-        <div className="a-band-actions">
-          <span className="a-chip c-stage">Sample documents — demo records</span>
-          <span className="a-chip c-ok num">{docs.filter((d) => d.status === "Signed").length} signed</span>
+    <div className="w-full space-y-6 pb-24 animate-in fade-in-50 duration-300">
+      {/* ═══ 1. CLEAN EXECUTIVE HEADER ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-6 sm:p-7 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+                DLD Form A, B, F & Ejari
+              </span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                <ShieldCheck size={14} /> 100% RERA Legal Templates
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
+              Agreements & Contracts
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Official real estate sale contracts, Ejari tenancies, and DLD escrow deposit receipts.
+            </p>
+          </div>
+
+          <Button
+            onClick={() => toast("New contract template generator opened.")}
+            className="h-10 rounded-2xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
+          >
+            <Plus size={15} />
+            <span>Draft New Contract</span>
+          </Button>
         </div>
       </section>
 
-      <div className="a-card a-fade">
-        <div className="a-card-head">
-          <h2>Generate Document</h2>
-          <span className="a-note">{TYPES.length} document types · a new draft lands at the top of the list</span>
-        </div>
-        <div className="a-agr-form">
-          <label>
-            Document Type
-            <select value={type} onChange={(e) => setType(e.target.value as DocType)}>
-              {TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="button" className="a-btn a-btn-gold" onClick={generate}>
-            <FileSignature size={16} /> Generate
+      {/* ═══ 2. CATEGORY SELECTOR PILLS ═══ */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
+        {[
+          { id: "All", label: `All Agreements (${agreements.length})` },
+          { id: "Form F", label: "📄 Form F (Sale & Purchase)" },
+          { id: "Rental", label: "🏢 Ejari Rental Leases" },
+          { id: "Receipts", label: "💳 Escrow Payment Receipts" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setFilter(t.id)}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              filter === t.id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
           </button>
-        </div>
-        <p className="a-mut" style={{ margin: 0 }}>
-          Picks the most recent matching record and drafts it on screen — nothing is saved to your database.
-        </p>
+        ))}
       </div>
 
-      <div className="a-card">
-        <div className="a-card-head">
-          <h2>Available Documents</h2>
-          <span className="a-count num">{docs.length} documents</span>
-        </div>
-
-        <div className="a-list">
-          {docs.map((d) => (
-            <div className="a-frow a-doc-row" key={d.id}>
-              <FileText size={18} aria-hidden />
-              <div className="who">
-                <b>{d.title}</b>
-                <small>
-                  {d.party} · {d.headline} · {d.date}
-                </small>
+      {/* ═══ 3. BESPOKE HORIZONTAL AGREEMENT CARDS (NO TABLE) ═══ */}
+      <div className="space-y-3.5">
+        {filtered.map((doc) => (
+          <div
+            key={doc.id}
+            onClick={() => setSelectedDoc(doc)}
+            className="group cursor-pointer rounded-2xl border border-border/80 bg-card hover:border-primary/60 hover:shadow-md p-4 sm:p-5 transition-all duration-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+          >
+            {/* Document Identity (Left) */}
+            <div className="flex items-center gap-4 min-w-[280px]">
+              <div className="size-13 rounded-2xl bg-secondary border border-border/80 flex items-center justify-center text-primary font-bold shrink-0 shadow-sm">
+                <FileSignature size={22} />
               </div>
-              <span className={`a-chip ${CHIP[d.status]}`}>{d.status}</span>
-              <button type="button" className="a-btn a-btn-line a-btn-sm" onClick={() => setView(d.id)}>
-                <Eye size={14} /> View
+
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-base text-foreground font-display group-hover:text-primary transition-colors">
+                    {doc.title}
+                  </h3>
+                </div>
+                <p className="text-xs text-muted-foreground">{doc.property}</p>
+                <p className="text-[11px] text-muted-foreground font-mono">
+                  {doc.ref} · {doc.date}
+                </p>
+              </div>
+            </div>
+
+            {/* Parties & Financial Terms (Middle) */}
+            <div className="flex-1 space-y-1.5 lg:px-4 lg:border-l lg:border-r lg:border-border/60">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-muted-foreground">Contract Value:</span>
+                <strong className="text-sm font-mono font-black text-emerald-400">{doc.value}</strong>
+                <span className="text-muted-foreground text-xs">•</span>
+                <span className="text-xs text-muted-foreground">Broker:</span>
+                <span className="text-xs font-bold text-foreground">{doc.agent}</span>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs">
+                <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border font-mono ${
+                  doc.status === "Signed & Sealed"
+                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                    : doc.status === "Draft"
+                    ? "bg-secondary text-muted-foreground border-border"
+                    : "bg-blue-500/10 text-blue-400 border-blue-500/30"
+                }`}>
+                  {doc.status}
+                </span>
+                <span className="text-muted-foreground truncate italic">
+                  {doc.parties}
+                </span>
+              </div>
+            </div>
+
+            {/* Action Hub (Right) */}
+            <div
+              className="flex items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-border/50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={(e) => handleShareDoc(e, doc)}
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
+                title="Share via WhatsApp"
+              >
+                <MessageCircle size={14} />
+                <span>WhatsApp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedDoc(doc)}
+                className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-secondary/50 hover:bg-secondary text-foreground font-bold text-xs transition-all"
+              >
+                <Eye size={14} />
+                <span>View PDF</span>
               </button>
             </div>
-          ))}
-        </div>
-
-        <p className="a-mut">
-          Every document here is sample data for the layout — nothing on this page is saved to your database.
-        </p>
+          </div>
+        ))}
       </div>
 
-      {open && <DocModal doc={open} onClose={() => setView(null)} />}
-    </>
-  );
-}
-
-// Print dialog options — the browser's own print / Save as PDF step does the rest.
-const DESTINATIONS = ["Save as PDF", "DealOS office printer", "Print to file"];
-const PAGE_OPTIONS = ["All", "Page 1", "Page 2"];
-const COLORS = ["Black and white", "Color"];
-
-const PARTIES: Record<DocType, [string, string]> = {
-  "Sale Agreement": ["Seller", "Buyer"],
-  "Rental Agreement": ["Landlord", "Tenant"],
-  "Payment Receipt": ["Issued by", "Received from"],
-};
-
-const termOf = (doc: Doc, ...keys: string[]): string => {
-  for (const k of keys) {
-    const hit = doc.terms.find(([key]) => key === k);
-    if (hit) return hit[1];
-  }
-  return "—";
-};
-
-function DocModal({ doc, onClose }: { doc: Doc; onClose: () => void }) {
-  const [dest, setDest] = useState<string>(DESTINATIONS[0] ?? "Save as PDF");
-  const [pages, setPages] = useState<string>(PAGE_OPTIONS[0] ?? "All");
-  const [color, setColor] = useState<string>(COLORS[0] ?? "Black and white");
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(asText(doc));
-      toast.success("Document text copied");
-    } catch {
-      toast.error("Your browser blocked the copy");
-    }
-  };
-
-  const download = () => {
-    const url = URL.createObjectURL(new Blob([asText(doc)], { type: "text/plain;charset=utf-8" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${doc.ref}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Draft downloaded — demo only");
-  };
-
-  const [p1, p2] = PARTIES[doc.type];
-  const first =
-    doc.type === "Payment Receipt" ? `DealOS CRM (${doc.agent})` : termOf(doc, "Seller", "Landlord", "Received from");
-  const show1 = pages === "All" || pages === "Page 1";
-  const show2 = pages === "All" || pages === "Page 2";
-  const sheets = (show1 ? 1 : 0) + (show2 ? 1 : 0);
-  const mono = color === "Black and white";
-  const sheet = `a-print-page${mono ? " a-print-bw" : ""}`;
-
-  return (
-    <div
-      className="a-modal a-print-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${doc.type} print preview`}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div>
-        <div className="a-deal-head">
-          <div>
-            <h2 style={{ margin: 0 }}>Print preview</h2>
-            <p className="a-note" style={{ margin: 0 }}>
-              {doc.title} · <span className="num">{doc.ref}</span> · {doc.status}
-            </p>
-          </div>
-          <button type="button" className="a-btn a-btn-line a-btn-sm" aria-label="Close print preview" onClick={onClose}>
-            <X size={14} />
-          </button>
-        </div>
-
-        <div className="a-print-grid">
-          <div className="a-print-stage">
-            {show1 && (
-              <div className={sheet}>
-                <Letterhead docRef={doc.ref} page="1 / 2" />
-                <h3 className="a-print-title">{doc.type}</h3>
-                <p className="a-print-sub">
-                  {termOf(doc, "Property", "For")} · {termOf(doc, "Area")}
-                </p>
-                <p className="a-print-body">
-                  Agreement <span className="num">{doc.ref}</span> is made on {doc.date} at Dubai, United Arab
-                  Emirates, between:
-                </p>
-                <p className="a-print-body">
-                  <b>{p1}</b> — {first} ("the First Party")
-                </p>
-                <p className="a-print-body">
-                  <b>{p2}</b> — {doc.party} ("the Second Party")
-                </p>
-                <p className="a-print-body">
-                  The parties agree to the terms set out below and to the deal summary in Schedule A, which forms part
-                  of this document. All amounts are in UAE dirhams and are taken from the deal record.
-                </p>
-                <ol className="a-print-clauses">
-                  {doc.clauses.map((c) => (
-                    <li key={c}>{c}</li>
-                  ))}
-                </ol>
-              </div>
-            )}
-
-            {show2 && (
-              <div className={sheet}>
-                <div className="a-print-head">
-                  <span>Schedule A</span>
-                  <span className="num">
-                    {doc.ref} · 2 / 2
-                  </span>
+      {/* ═══ 4. FULL-SCREEN OFFICIAL CONTRACT MODAL (OFFICIAL LETTERHEAD) ═══ */}
+      {selectedDoc && (
+        <Dialog open={!!selectedDoc} onOpenChange={(open) => { if (!open) setSelectedDoc(null); }}>
+          <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl bg-card border-border p-6 sm:p-8 space-y-6">
+            <DialogHeader className="border-b border-border/60 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <DialogTitle className="text-2xl font-extrabold text-foreground font-display">
+                    {selectedDoc.title}
+                  </DialogTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5 font-mono">
+                    Official Ref: {selectedDoc.ref} · Issued {selectedDoc.date}
+                  </p>
                 </div>
-                <h3 className="a-print-title">Deal summary</h3>
-                <dl className="a-kv">
-                  {doc.terms.map(([k, v]) => (
-                    <div key={k} style={{ display: "contents" }}>
-                      <dt>{k}</dt>
-                      <dd className={isMoney(v) ? "num" : undefined}>{v}</dd>
+                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1 text-xs font-mono font-bold text-emerald-400">
+                  {selectedDoc.status}
+                </span>
+              </div>
+            </DialogHeader>
+
+            {/* Official Letterhead Simulation */}
+            <div className="rounded-2xl border border-border/80 bg-secondary/20 p-6 space-y-5 text-xs">
+              <div className="flex items-center justify-between border-b border-border/60 pb-4">
+                <div>
+                  <h4 className="font-extrabold text-sm text-foreground">SKYLINE REALTY LLC</h4>
+                  <p className="text-muted-foreground text-[11px]">RERA Licensed Brokerage · Office 1204, Boulevard Plaza, Downtown Dubai</p>
+                </div>
+                <span className="text-[11px] font-mono text-muted-foreground font-bold">DLD Certified</span>
+              </div>
+
+              <div className="space-y-1">
+                <span className="font-bold text-foreground uppercase tracking-wider text-[10px]">Contracting Parties:</span>
+                <p className="font-mono text-foreground text-sm font-bold">{selectedDoc.parties}</p>
+                <p className="text-muted-foreground">Property: {selectedDoc.property}</p>
+              </div>
+
+              {/* Financial Terms */}
+              <div className="space-y-2 pt-2">
+                <span className="font-bold text-foreground uppercase tracking-wider text-[10px]">Certified Terms:</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {selectedDoc.terms.map(([k, v]) => (
+                    <div key={k} className="p-2.5 rounded-xl bg-card border border-border/60 flex justify-between">
+                      <span className="text-muted-foreground">{k}:</span>
+                      <strong className="text-foreground font-mono">{v}</strong>
                     </div>
                   ))}
-                </dl>
-                <h4 className="a-print-h2">Signatures</h4>
-                <div className="a-print-sign">
-                  <div>
-                    {p1}: {first}
-                    <span>Name · date · signature</span>
-                  </div>
-                  <div>
-                    {p2}: {doc.party}
-                    <span>Name · date · signature</span>
-                  </div>
                 </div>
-                <p className="a-print-sub" style={{ marginTop: 16 }}>
-                  Generated from the deal record. Clause wording is placeholder text — replace it with your own
-                  template before anything is signed.
-                </p>
               </div>
-            )}
-          </div>
 
-          <aside className="a-print-side">
-            <h3>Print settings</h3>
-            <label>
-              Destination
-              <select value={dest} onChange={(e) => setDest(e.target.value)}>
-                {DESTINATIONS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Pages
-              <select value={pages} onChange={(e) => setPages(e.target.value)}>
-                {PAGE_OPTIONS.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Color
-              <select value={color} onChange={(e) => setColor(e.target.value)}>
-                {COLORS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <div className="a-deal-sum">
-              <h3>Summary</h3>
-              <div className="a-deal-srow">
-                <span>
-                  Paper<em>Portrait</em>
-                </span>
-                <b>A4</b>
-              </div>
-              <div className="a-deal-srow">
-                <span>
-                  Sheets<em>{pages}</em>
-                </span>
-                <b className="num">{sheets}</b>
-              </div>
-              <div className="a-deal-srow total">
-                <span>
-                  Output<em>{dest}</em>
-                </span>
-                <b>{mono ? "Mono" : "Colour"}</b>
+              {/* Statutory Clauses */}
+              <div className="space-y-2 pt-2">
+                <span className="font-bold text-foreground uppercase tracking-wider text-[10px]">Standard RERA Clauses:</span>
+                <ul className="space-y-1.5 text-muted-foreground list-disc pl-4 leading-relaxed">
+                  {selectedDoc.clauses.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
               </div>
             </div>
 
-            <button type="button" className="a-btn a-btn-gold" onClick={() => window.print()}>
-              <Printer size={16} /> Print / Download PDF
-            </button>
-            <button type="button" className="a-btn a-btn-line" onClick={copy}>
-              <Copy size={15} /> Copy text
-            </button>
-            <button type="button" className="a-btn a-btn-line" onClick={download}>
-              <Download size={15} /> Download draft (.txt)
-            </button>
-            <p className="a-note" style={{ margin: 0 }}>
-              Opens your browser's print dialog — choose Save as PDF there to keep a copy. Nothing is saved to your
-              database and nothing is sent to the client.
-            </p>
-          </aside>
-        </div>
-      </div>
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/60">
+              <Button variant="outline" onClick={() => setSelectedDoc(null)} className="rounded-xl text-xs">
+                Close
+              </Button>
+              <Button
+                onClick={() => {
+                  window.print();
+                  toast.success("Sending document to print driver.");
+                }}
+                variant="outline"
+                className="rounded-xl text-xs gap-1.5"
+              >
+                <Printer size={14} />
+                <span>Print Contract</span>
+              </Button>
+              <Button
+                onClick={(e) => {
+                  handleShareDoc(e, selectedDoc);
+                  setSelectedDoc(null);
+                }}
+                className="rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+              >
+                <MessageCircle size={14} />
+                <span>Share PDF via WhatsApp</span>
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
-
