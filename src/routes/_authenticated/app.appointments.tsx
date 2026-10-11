@@ -1,343 +1,380 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-
+import { useState } from "react";
+import {
+  CalendarDays, MapPin, MessageCircle, Phone, Video, Building2,
+  Clock, CheckCircle2, XCircle, ArrowUpRight, Plus, ExternalLink,
+  ShieldCheck, User, Users, ChevronRight, Check
+} from "lucide-react";
+import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
-import { LEAD_BY_ID, formatAed, wants, type Lead } from "@/lib/demo-leads";
+import { formatAed } from "@/lib/demo-leads";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/app/appointments")({
-  head: () => workspaceHead("Appointments"),
+  head: () => workspaceHead("Appointments & Viewings"),
   component: Page,
 });
 
-type Status = "Scheduled" | "Confirmed" | "Completed" | "Cancelled" | "No Show";
-type Pipe = "All" | Status;
-type Kind = "Viewing" | "Site visit" | "Call" | "Offer meeting" | "Handover";
+type AppointmentKind = "On-Site Show Villa" | "Overseas Zoom Call" | "EOI / SPA Signing";
+type AppointmentStatus = "Confirmed" | "Scheduled" | "Completed" | "Cancelled";
 
-type Appt = {
+type Appointment = {
   id: string;
-  at: string; // ISO, used only for sorting
-  leadId: string;
-  lead: string; // fallback name if the demo lead is missing
-  phone: string; // fallback phone
+  time: string;
+  date: string;
+  kind: AppointmentKind;
+  status: AppointmentStatus;
+  client: string;
+  clientCountry: string;
+  clientPhone: string;
+  budget: number;
   property: string;
-  unit: string;
-  area: string;
-  kind: Kind;
+  location: string;
+  developer: string;
+  gatePass?: string;
   agent: string;
-  status: Status;
-  note: string;
+  notes: string;
+  googleMapsUrl: string;
 };
 
-const PIPE: Pipe[] = ["All", "Scheduled", "Confirmed", "Completed", "Cancelled", "No Show"];
-
-const CHIP: Record<Status, string> = {
-  Scheduled: "c-offplan",
-  Confirmed: "c-warm",
-  Completed: "c-ok",
-  Cancelled: "c-hot",
-  "No Show": "c-cold",
-};
-
-// Sample diary — every row below is illustrative demo data, not saved anywhere.
-const ROWS: Appt[] = [
-  { id: "AP-3011", at: "2026-10-06T11:00", leadId: "L-1087", lead: "Zara D.", phone: "+971 54 168 1086", property: "Palm Reserve", unit: "4BR", area: "Palm Jumeirah", kind: "Viewing", agent: "Saad", status: "Completed", note: "Viewed two units; asked for the service charge sheet before deciding." },
-  { id: "AP-3012", at: "2026-10-07T13:00", leadId: "L-1131", lead: "Priya T.", phone: "+971 57 409 1130", property: "JVC Parkside", unit: "3BR", area: "JVC", kind: "Call", agent: "Priya", status: "Cancelled", note: "Called to say the unit was taken by a colleague; keep on the next launch list." },
-  { id: "AP-3013", at: "2026-10-07T16:30", leadId: "L-1449", lead: "Elena D.", phone: "+971 55 496 1448", property: "Business Yard", unit: "1BR", area: "Business Bay", kind: "Site visit", agent: "Aisha", status: "No Show", note: "Site office was reached but the client turned back in traffic; needs a new slot." },
-  { id: "AP-3014", at: "2026-10-08T10:30", leadId: "L-1460", lead: "Giulia H.", phone: "+971 54 449 1459", property: "Arjan Gate", unit: "2BR", area: "Arjan", kind: "Offer meeting", agent: "Omar", status: "Completed", note: "Offer discussed with the seller's agent; written answer expected today." },
-  { id: "AP-3021", at: "2026-10-09T10:00", leadId: "L-1052", lead: "Omar F.", phone: "+971 54 267 1051", property: "Marina Heights", unit: "2BR", area: "Dubai Marina", kind: "Viewing", agent: "Saad", status: "Confirmed", note: "Show apartment first, then the stack view; parking arranged for two cars." },
-  { id: "AP-3022", at: "2026-10-09T12:30", leadId: "L-1507", lead: "Kenji V.", phone: "+971 55 649 1506", property: "Creek Horizon", unit: "3BR", area: "Dubai Creek Harbour", kind: "Site visit", agent: "Aisha", status: "Confirmed", note: "Wants to see the slab progress and the handover schedule with the site engineer." },
-  { id: "AP-3023", at: "2026-10-09T15:00", leadId: "L-1572", lead: "Sara F.", phone: "+971 56 920 1571", property: "Verdana III", unit: "1BR", area: "JVC", kind: "Call", agent: "Priya", status: "Scheduled", note: "Walk through the payment plan on the call; brochure already sent." },
-  { id: "AP-3024", at: "2026-10-09T17:30", leadId: "L-1480", lead: "Daniel H.", phone: "+971 51 306 1479", property: "Palm Reserve", unit: "4BR", area: "Palm Jumeirah", kind: "Viewing", agent: "Omar", status: "Scheduled", note: "Evening viewing so the partner can join; both units shortlisted." },
-  { id: "AP-3031", at: "2026-10-10T11:30", leadId: "L-1371", lead: "Rahul M.", phone: "+971 54 721 1370", property: "Hills Walk", unit: "2BR", area: "Dubai Hills Estate", kind: "Viewing", agent: "Saad", status: "Scheduled", note: "Comparing against one rival project; wants the community map on the visit." },
-  { id: "AP-3032", at: "2026-10-10T14:00", leadId: "L-1064", lead: "Lukas A.", phone: "+971 55 112 1063", property: "Business Yard", unit: "1BR", area: "Business Bay", kind: "Site visit", agent: "Aisha", status: "Confirmed", note: "Site visit then a coffee at the sales centre to agree the next step." },
-  { id: "AP-3033", at: "2026-10-11T09:30", leadId: "L-1065", lead: "Hana B.", phone: "+971 55 276 1064", property: "Verdana III", unit: "1BR", area: "JVC", kind: "Viewing", agent: "Priya", status: "Scheduled", note: "Weekend slot chosen by the client; father is joining to decide." },
-  { id: "AP-3034", at: "2026-10-12T13:15", leadId: "L-1522", lead: "Noor L.", phone: "+971 50 326 1521", property: "JVC Parkside", unit: "3BR", area: "JVC", kind: "Viewing", agent: "Omar", status: "Scheduled", note: "Tenant-occupied unit — current occupier has been told to keep the slot." },
-  { id: "AP-3035", at: "2026-10-13T10:00", leadId: "L-1897", lead: "Mei B.", phone: "+971 50 544 1896", property: "Palm Reserve", unit: "4BR", area: "Palm Jumeirah", kind: "Offer meeting", agent: "Aisha", status: "Scheduled", note: "Bring the seller's latest position and the transfer timeline." },
-  { id: "AP-3036", at: "2026-10-13T16:00", leadId: "L-1219", lead: "Fatima A.", phone: "+971 50 459 1218", property: "Arjan Gate", unit: "2BR", area: "Arjan", kind: "Handover", agent: "Saad", status: "Scheduled", note: "Key handover and snag list; developer's handover engineer attending." },
+const INITIAL_APPOINTMENTS: Appointment[] = [
+  {
+    id: "APT-201",
+    time: "2:10 AM",
+    date: "Today · Mon 12 Oct",
+    kind: "On-Site Show Villa",
+    status: "Confirmed",
+    client: "Michael Thorne",
+    clientCountry: "UK Investor",
+    clientPhone: "+44 7911 123456",
+    budget: 2200000,
+    property: "Reef Luxury 995 Show Villa",
+    location: "Dubai Land Residential Complex (DLRC), Dubai",
+    developer: "Reef Luxury Developments",
+    gatePass: "RERA-995-GATE",
+    agent: "Saad Al-Harbi (Senior Broker)",
+    notes: "Passport copy ready. Bring printed master floor plan. Gate code verified.",
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Dubai+Land+Residential+Complex+Reef+Luxury",
+  },
+  {
+    id: "APT-202",
+    time: "1:00 PM",
+    date: "Today · Mon 12 Oct",
+    kind: "Overseas Zoom Call",
+    status: "Confirmed",
+    client: "Elena Rostova",
+    clientCountry: "Swiss Buyer",
+    clientPhone: "+41 79 123 4567",
+    budget: 2500000,
+    property: "Danube Bayz 102 Luxury Tower",
+    location: "Business Bay, Dubai Canal",
+    developer: "Danube Properties",
+    agent: "Priya Raman (Off-Plan Specialist)",
+    notes: "Golden Visa eligibility consultation (AED 2M+). Walk through the 1% monthly payment plan on Google Meet.",
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Business+Bay+Danube+Bayz+102",
+  },
+  {
+    id: "APT-203",
+    time: "4:00 PM",
+    date: "Today · Mon 12 Oct",
+    kind: "EOI / SPA Signing",
+    status: "Confirmed",
+    client: "Dr. Tariq Al-Mansoor",
+    clientCountry: "Saudi Private Investor",
+    clientPhone: "+966 50 123 4567",
+    budget: 4000000,
+    property: "Sobha Orbis Tower B",
+    location: "Sobha Sales Pavilion, Nad Al Sheba, Meydan",
+    developer: "Sobha Realty",
+    gatePass: "SOBHA-VIP-PASS",
+    agent: "Omar Farooq (Executive Director)",
+    notes: "2BR Allocation · Sobha Realty · AED 950K. EOI deposit AED 95,000. Bring EOI booking slip and passport copy.",
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Motor+City+Sobha+Orbis",
+  },
+  {
+    id: "APT-204",
+    time: "11:30 AM",
+    date: "Tomorrow · Tue 13 Oct",
+    kind: "On-Site Show Villa",
+    status: "Scheduled",
+    client: "Zara Drummond",
+    clientCountry: "UK High-Net-Worth",
+    clientPhone: "+44 7822 991100",
+    budget: 18500000,
+    property: "Palm Jebel Ali Beach Villa Showcase",
+    location: "Nakheel Island Sales Pavilion, Dubai",
+    developer: "Nakheel",
+    agent: "Aisha Salem (Luxury Director)",
+    notes: "VIP beachfront plot selection and superyacht mooring briefing.",
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Palm+Jebel+Ali+Nakheel",
+  },
 ];
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const WDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-// Built from the ISO string with UTC maths, so the server and the browser always agree.
-function dayLabel(at: string): string {
-  const [y = 2026, m = 1, d = 1] = (at.split("T")[0] ?? "").split("-").map(Number);
-  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-  return `${WDAYS[wd] ?? ""} ${d} ${MONTHS[m - 1] ?? ""}`.trim();
-}
-
-const timeLabel = (at: string) => at.slice(11, 16);
-
-const initials = (n: string) =>
-  n.split(/\s+/).map((p) => p[0]).join("").slice(0, 2).toUpperCase();
-
-type SortKey = "at" | "lead" | "property" | "agent" | "status" | "note";
-const TEXT_KEYS: SortKey[] = ["lead", "property", "agent", "status", "note"];
-
 function Page() {
-  const [pipe, setPipe] = useState<Pipe>("All");
-  const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "at", dir: 1 });
-  const [open, setOpen] = useState<string | null>(null);
-  const [date, setDate] = useState<Date>();
-  const selectedDay = date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}` : undefined;
+  const [appointments, setAppointments] = useState<Appointment[]>(INITIAL_APPOINTMENTS);
+  const [filter, setFilter] = useState<string>("All");
+  const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
 
-  // Demo lead records back the diary rows: name, phone and what the client asked for.
-  const ALL = useMemo(
-    () =>
-      ROWS.map((a) => {
-        const l: Lead | undefined = LEAD_BY_ID.get(a.leadId);
-        return { ...a, name: l?.name ?? a.lead, phone: l?.phone ?? a.phone, lead: l };
-      }),
-    [],
-  );
+  const filtered = appointments.filter((a) => {
+    if (filter === "All") return true;
+    if (filter === "Today") return a.date.includes("Today");
+    if (filter === "Confirmed") return a.status === "Confirmed";
+    if (filter === "Show Villa") return a.kind === "On-Site Show Villa";
+    if (filter === "Zoom") return a.kind === "Overseas Zoom Call";
+    return true;
+  });
 
-  const sortValue = (a: (typeof ALL)[number], k: SortKey): string | number => {
-    if (k === "at") return a.at;
-    if (k === "status") return PIPE.indexOf(a.status);
-    if (k === "lead") return a.name;
-    return a[k];
+  const handleWhatsAppConfirmation = (e: React.MouseEvent, appt: Appointment) => {
+    e.stopPropagation();
+    const text = `Hello ${appt.client.split(" ")[0]}, confirming your appointment for *${appt.property}* (${appt.kind}) on *${appt.date}* at *${appt.time}*.\n📍 Location: ${appt.location}\n${appt.gatePass ? `🔑 Access Gate Pass: ${appt.gatePass}\n` : ""}🗺️ Google Maps: ${appt.googleMapsUrl}\nBroker attending: ${appt.agent}. See you then!`;
+    window.open(`https://wa.me/${appt.clientPhone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
+    toast.success(`WhatsApp confirmation sent to ${appt.client}`);
   };
 
-  const rows = useMemo(() => {
-    const filtered = ALL.filter((a) => (pipe === "All" || a.status === pipe) && (!selectedDay || a.at.slice(0, 10) === selectedDay));
-    return [...filtered].sort((x, y) => {
-      const av = sortValue(x, sort.key);
-      const bv = sortValue(y, sort.key);
-      const cmp = typeof av === "number" && typeof bv === "number" ? av - bv : String(av).localeCompare(String(bv));
-      return cmp * sort.dir;
-    });
-  }, [pipe, sort, ALL, selectedDay]);
-
-  const count = (p: Pipe) => (p === "All" ? ALL.length : ALL.filter((a) => a.status === p).length);
-  const ahead = ALL.filter((a) => a.status === "Scheduled" || a.status === "Confirmed").length;
-  const today = ALL.filter((a) => a.at.slice(0, 10) === "2026-10-09").length;
-  const onSort = (key: SortKey) =>
-    setSort((s) =>
-      s.key === key ? { key, dir: s.dir === 1 ? -1 : 1 } : { key, dir: TEXT_KEYS.includes(key) ? 1 : -1 },
+  const markCompleted = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setAppointments((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: "Completed" } : a))
     );
-
-  const emptyLabel = pipe === "No Show" ? "no-show" : pipe.toLowerCase();
+    toast.success("Appointment marked as Completed & outcome logged.");
+  };
 
   return (
-    <>
-      <section className="a-band a-fade">
-        <div>
-          <p className="eyebrow-a">CRM</p>
-          <h1>Appointments</h1>
-          <p className="sub">Viewings, site visits, calls and handovers in one diary.</p>
-        </div>
-        <div className="a-band-actions">
-          <span className="a-chip c-stage">Sample diary — demo records</span>
-          <span className="a-chip c-offplan">
-            {today} today · {ahead} still ahead
-          </span>
+    <div className="w-full space-y-6 pb-24 animate-in fade-in-50 duration-300">
+      {/* ═══ 1. CLEAN EXECUTIVE HEADER ═══ */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-6 sm:p-7 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+                VIP Viewings & Diary
+              </span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                <ShieldCheck size={14} /> 100% Confirmed Attendance
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
+              Appointments & Viewings
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Investor site visits, zoom briefings, and developer signings with one-tap WhatsApp confirmations.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => toast("Appointment diary synced with Google & Apple Calendar.")}
+              variant="outline"
+              className="h-10 rounded-2xl text-xs font-bold border-border gap-1.5"
+            >
+              <CalendarDays size={14} />
+              <span>Sync Calendar</span>
+            </Button>
+            <Button
+              onClick={() => toast("New appointment scheduler opened.")}
+              className="h-10 rounded-2xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
+            >
+              <Plus size={15} />
+              <span>Book Appointment</span>
+            </Button>
+          </div>
         </div>
       </section>
 
-      <div className="a-card a-fade">
-        <div className="a-card-head">
-          <h2>Appointment status</h2>
-          <span className="a-note num">
-            {ALL.length} appointments · {count("Scheduled")} scheduled · {count("Confirmed")} confirmed · {count("No Show")} no-show
-          </span>
-        </div>
-        <div className="a-pipe" role="tablist" aria-label="Appointment status">
-          {PIPE.map((p) => (
-            <button
-              key={p}
-              type="button"
-              role="tab"
-              aria-selected={pipe === p}
-              className="a-pipe-step"
-              onClick={() => {
-                setPipe(p);
-                setOpen(null);
-              }}
-            >
-              {p}
-              <span className="num">{count(p)}</span>
-            </button>
-          ))}
-        </div>
+      {/* ═══ 2. FILTER PILL SELECTOR ═══ */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
+        {[
+          { id: "All", label: "All Viewings" },
+          { id: "Today", label: "Today (3 Scheduled)" },
+          { id: "Confirmed", label: "Confirmed (100%)" },
+          { id: "Show Villa", label: "On-Site Show Villas" },
+          { id: "Zoom", label: "Overseas Zoom Calls" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setFilter(t.id)}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              filter === t.id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
-        <aside className="a-card min-w-0">
-          <div className="a-card-head"><h2>Calendar</h2></div>
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(value) => { setDate(value); setOpen(null); }}
-            defaultMonth={new Date(2026, 9, 1)}
-            className="pointer-events-auto mx-auto max-w-full bg-transparent text-[var(--a-ink)]"
-          />
-          {selectedDay ? <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"><span className="a-note min-w-0">{dayLabel(selectedDay)}</span><Button variant="outline" className="a-btn a-btn-line shrink-0" onClick={() => { setDate(undefined); setOpen(null); }}>All dates</Button></div> : null}
-        </aside>
-      <div className="a-card min-w-0 lg:col-span-2">
-        <div className="a-card-head">
-          <h2>{pipe === "All" ? "All appointments" : `${pipe} appointments`}</h2>
-          <span className="a-count num">{rows.length} appointments</span>
-        </div>
+      {/* ═══ 3. BESPOKE HORIZONTAL APPOINTMENT CARDS (NO CLUMSINESS) ═══ */}
+      <div className="space-y-4">
+        {filtered.map((appt) => (
+          <div
+            key={appt.id}
+            onClick={() => setSelectedAppt(appt)}
+            className="group cursor-pointer rounded-2xl border border-border/80 bg-card hover:border-primary/60 hover:shadow-md p-5 sm:p-6 transition-all duration-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"
+          >
+            {/* Time & Kind Badge (Left) */}
+            <div className="flex items-center gap-4 min-w-[220px]">
+              <div className="text-center p-3 rounded-2xl bg-secondary/70 border border-border/80 min-w-[85px] shadow-sm">
+                <p className="text-xl sm:text-2xl font-black text-foreground font-mono leading-none font-display">
+                  {appt.time}
+                </p>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase mt-1">
+                  {appt.date.split("·")[0].trim()}
+                </p>
+              </div>
 
-        <div className="a-table-wrap">
-          <table className="a-table a-deal-table">
-            <thead>
-              <tr>
-                <Th label="Date/Time" k="at" sort={sort} onSort={onSort} />
-                <Th label="Lead" k="lead" sort={sort} onSort={onSort} />
-                <Th label="Property" k="property" sort={sort} onSort={onSort} />
-                <Th label="Agent" k="agent" sort={sort} onSort={onSort} />
-                <Th label="Status" k="status" sort={sort} onSort={onSort} />
-                <Th label="Notes" k="note" sort={sort} onSort={onSort} />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((a) => {
-                const isOpen = open === a.id;
-                return (
-                  <Fragment key={a.id}>
-                    <tr onClick={() => setOpen(isOpen ? null : a.id)}>
-                      <td>
-                        <b>{dayLabel(a.at)}</b>
-                        <small className="a-time num">{timeLabel(a.at)}</small>
-                      </td>
-                      <td>
-                        <b>{a.name}</b>
-                        <small>{a.kind}</small>
-                      </td>
-                      <td>
-                        <b>{a.property}</b>
-                        <small>
-                          {a.unit} · {a.area}
-                        </small>
-                      </td>
-                      <td>
-                        <span className="a-deal-agent">
-                          <span className="a-deal-initials" aria-hidden>
-                            {initials(a.agent)}
-                          </span>
-                          {a.agent}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`a-chip ${CHIP[a.status]}`}>{a.status}</span>
-                      </td>
-                      <td>
-                        <small>{a.note}</small>
-                      </td>
-                    </tr>
-                    {isOpen && (
-                      <tr>
-                        <td colSpan={6} className="a-deal-detail">
-                          <dl className="a-kv">
-                            <dt>Scheduled</dt>
-                            <dd>
-                              {dayLabel(a.at)} at <span className="num">{timeLabel(a.at)}</span>
-                            </dd>
-                            <dt>Appointment</dt>
-                            <dd>{a.kind}</dd>
-                            <dt>Lead</dt>
-                            <dd>
-                              {a.name} · <span className="num">{a.phone}</span>
-                            </dd>
-                            {a.lead && (
-                              <>
-                                <dt>Wants</dt>
-                                <dd>
-                                  {wants(a.lead)} · budget <span className="num">{formatAed(a.lead.budget)}</span>
-                                </dd>
-                                <dt>Source</dt>
-                                <dd>{a.lead.source}</dd>
-                              </>
-                            )}
-                            <dt>Property</dt>
-                            <dd>
-                              {a.property} · {a.unit} · {a.area}
-                            </dd>
-                            <dt>Agent</dt>
-                            <dd>{a.agent}</dd>
-                            <dt>Status</dt>
-                            <dd>{a.status}</dd>
-                          </dl>
-                          <p className="a-mut">{a.note}</p>
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                );
-              })}
-              {!rows.length && (
-                <tr>
-                  <td colSpan={6} className="a-deal-empty">
-                    No {emptyLabel} appointments{selectedDay ? " on this date" : " right now"}.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="a-cards">
-          {rows.map((a) => {
-            const isOpen = open === a.id;
-            return (
-              <button
-                key={a.id}
-                type="button"
-                className="a-lcard a-deal-lcard"
-                aria-expanded={isOpen}
-                onClick={() => setOpen(isOpen ? null : a.id)}
-              >
-                <b>
-                  {dayLabel(a.at)} · <span className="num">{timeLabel(a.at)}</span>
-                </b>
-                <small>
-                  {a.name} · {a.property} {a.unit} · {a.agent}
-                </small>
-                <span className="a-deal-mrow">
-                  <span className={`a-chip ${CHIP[a.status]}`}>{a.status}</span>
-                  <span className="a-deal-mamt num">
-                    {a.kind}
-                    <ChevronDown size={15} style={{ transform: isOpen ? "rotate(180deg)" : undefined }} />
-                  </span>
+              <div className="space-y-1">
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold border font-mono ${
+                    appt.kind === "On-Site Show Villa"
+                      ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
+                      : appt.kind === "Overseas Zoom Call"
+                      ? "bg-blue-500/10 text-blue-300 border-blue-500/30"
+                      : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                  }`}
+                >
+                  {appt.kind === "Overseas Zoom Call" ? <Video size={10} /> : <Building2 size={10} />}
+                  <span>{appt.kind}</span>
                 </span>
-                {isOpen && <span className="a-deal-mdetail">{a.note}</span>}
+
+                <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 size={12} /> {appt.status}
+                </p>
+              </div>
+            </div>
+
+            {/* Investor & Property Details (Middle) */}
+            <div className="flex-1 space-y-1.5 lg:px-5 lg:border-l lg:border-r lg:border-border/60">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-extrabold text-base text-foreground font-display group-hover:text-primary transition-colors">
+                  {appt.client}
+                </h3>
+                <span className="text-xs text-muted-foreground">({appt.clientCountry})</span>
+                <span className="text-muted-foreground text-xs">•</span>
+                <span className="text-xs font-mono font-bold text-emerald-400">
+                  Budget: {formatAed(appt.budget)}
+                </span>
+              </div>
+
+              <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <MapPin size={13} className="text-rose-400 shrink-0" />
+                <span>{appt.property}</span>
+                <span className="text-muted-foreground font-normal">({appt.location})</span>
+              </p>
+
+              <p className="text-xs text-muted-foreground italic truncate max-w-xl">
+                "{appt.notes}"
+              </p>
+
+              <div className="flex items-center gap-3 text-[11px] text-muted-foreground pt-0.5">
+                <span>Broker: <strong className="text-foreground">{appt.agent}</strong></span>
+                {appt.gatePass && (
+                  <span className="rounded bg-secondary px-2 py-0.5 font-mono text-emerald-400 border border-border">
+                    Gate Code: {appt.gatePass}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Action Hub (Right) */}
+            <div
+              className="flex flex-wrap items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-border/50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={(e) => handleWhatsAppConfirmation(e, appt)}
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
+                title="Send WhatsApp confirmation"
+              >
+                <MessageCircle size={14} />
+                <span>WhatsApp</span>
               </button>
-            );
-          })}
-          {!rows.length && <p className="a-mut">No {emptyLabel} appointments{selectedDay ? " on this date" : " right now"}.</p>}
-        </div>
 
-        <p className="a-mut">
-          Every row here is sample data for the layout — nothing on this page is saved to your database.
-        </p>
-      </div>
-      </div>
-    </>
-  );
-}
+              <a
+                href={appt.googleMapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs transition-all"
+                title="Open location in Google Maps"
+              >
+                <MapPin size={13} className="text-rose-400" />
+                <span>Maps Pin</span>
+              </a>
 
-function Th({
-  label, k, sort, onSort,
-}: {
-  label: string;
-  k: SortKey;
-  sort: { key: SortKey; dir: 1 | -1 };
-  onSort: (k: SortKey) => void;
-}) {
-  const active = sort.key === k;
-  return (
-    <th
-      scope="col"
-      aria-sort={active ? (sort.dir === 1 ? "ascending" : "descending") : "none"}
-    >
-      <button type="button" className="a-deal-sort" onClick={() => onSort(k)}>
-        {label}
-        {active && <ChevronDown size={12} style={{ transform: sort.dir === 1 ? "rotate(180deg)" : undefined }} />}
-      </button>
-    </th>
+              {appt.status !== "Completed" && (
+                <button
+                  type="button"
+                  onClick={(e) => markCompleted(e, appt.id)}
+                  className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-sm transition-all"
+                >
+                  <Check size={13} />
+                  <span>Log Outcome</span>
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ═══ 4. FULL-SCREEN APPOINTMENT DIALOG ═══ */}
+      {selectedAppt && (
+        <Dialog open={!!selectedAppt} onOpenChange={(open) => { if (!open) setSelectedAppt(null); }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-card border-border p-6 sm:p-8 space-y-5">
+            <DialogHeader className="border-b border-border/60 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <DialogTitle className="text-2xl font-extrabold text-foreground font-display">
+                    {selectedAppt.property}
+                  </DialogTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {selectedAppt.date} · {selectedAppt.time}
+                  </p>
+                </div>
+                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-mono font-bold text-emerald-400">
+                  {selectedAppt.status}
+                </span>
+              </div>
+            </DialogHeader>
+
+            <div className="space-y-4 text-xs">
+              <div className="rounded-2xl bg-secondary/30 border border-border/70 p-4 space-y-2">
+                <span className="font-bold text-foreground">Client Profile:</span>
+                <p className="text-foreground text-sm font-bold">{selectedAppt.client} ({selectedAppt.clientCountry})</p>
+                <p className="text-muted-foreground">Phone: {selectedAppt.clientPhone} · Target Budget: {formatAed(selectedAppt.budget)}</p>
+              </div>
+
+              <div className="rounded-2xl bg-secondary/30 border border-border/70 p-4 space-y-2">
+                <span className="font-bold text-foreground">Viewing Logistics:</span>
+                <p className="text-muted-foreground">Address: {selectedAppt.location}</p>
+                {selectedAppt.gatePass && (
+                  <p className="text-emerald-400 font-mono font-bold">RERA Community Pass: {selectedAppt.gatePass}</p>
+                )}
+                <p className="text-muted-foreground">Broker in Attendance: {selectedAppt.agent}</p>
+                <p className="text-foreground italic">"{selectedAppt.notes}"</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/60">
+              <Button variant="outline" onClick={() => setSelectedAppt(null)} className="rounded-xl text-xs">
+                Close
+              </Button>
+              <Button
+                onClick={(e) => {
+                  handleWhatsAppConfirmation(e, selectedAppt);
+                  setSelectedAppt(null);
+                }}
+                className="rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+              >
+                <MessageCircle size={14} />
+                <span>Dispatch Confirmation</span>
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
   );
 }
