@@ -47,12 +47,6 @@ const SAMPLE_AGENTS: AttachedItem[] = [
   { id: "agent-2", type: "agent", label: "Saad Malik", sub: "Action Needed · 5 Deals · Avg speed: 18.2 min" },
 ];
 
-const STARTER_PROMPTS = [
-  { text: "Analyze our AED 5.8M stalled deals & suggest closers", icon: Flame, tag: "Deals" },
-  { text: "Draft a VIP WhatsApp pitch for Bayz 102 with 1% monthly plan", icon: Zap, tag: "Pitch" },
-  { text: "Compare Sobha Orbis vs Reef 995 for UK investor", icon: Building2, tag: "Comparison" },
-  { text: "Speed-to-lead audit: review broker response bottlenecks", icon: Users, tag: "Audit" },
-];
 
 export function GeminiAssistantPage() {
   const profile = useBrokerProfile();
@@ -437,23 +431,6 @@ I've processed your query: **"${prompt}"**
                   <ArrowRight size={15} />
                 </button>
               </div>
-            </div>
-
-            {/* Quick Starter Pills (Clean and Clickable) */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
-              {STARTER_PROMPTS.map((p) => {
-                const Icon = p.icon;
-                return (
-                  <button
-                    key={p.text}
-                    onClick={() => handleSend(p.text)}
-                    className="group rounded-full border border-border/80 bg-card/60 backdrop-blur-sm px-3.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all flex items-center gap-1.5"
-                  >
-                    <Icon size={12} className="text-primary group-hover:scale-110 transition-transform" />
-                    <span>{p.text}</span>
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>
