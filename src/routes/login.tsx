@@ -111,16 +111,26 @@ function LoginPage() {
 
   return (
     <AuthShell leaving={leaving} sections={false}>
-      <Logo size={40} />
-      <h1>Login to your workspace</h1>
-      <p className="au-sub">{role === "company" ? "Manage your team, assign leads and see everything." : "Your leads, follow-ups and clients."}</p>
+      <div className="flex items-center gap-3 mb-6">
+        <Logo size={42} />
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-foreground m-0">Sign In to DealOS</h1>
+          <p className="text-xs text-muted-foreground m-0">Institutional Real Estate Platform</p>
+        </div>
+      </div>
+
       <div className="au-roles" role="radiogroup" aria-label="Login type">
-        {([["company", "🏢 Company login", "Manage your team, assign leads, see everything"], ["agent", "👤 Broker / Agent login", "Your leads, follow-ups and clients"]] as const).map(([k, t, d]) => (
+        {([
+          ["company", "🏢 Company Owner / Director", "Agency cockpit, broker oversight & escrow payouts"],
+          ["agent", "👤 Licensed Broker / Agent", "Inbound leads, client dossiers & unit matching"]
+        ] as const).map(([k, t, d]) => (
           <button key={k} type="button" role="radio" aria-checked={role === k} className={`au-role ${role === k ? "on" : ""}`} onClick={() => { setRole(k); setMismatch(null); }}>
-            <b>{t}</b><small>{d}</small>
+            <b>{t}</b>
+            <small>{d}</small>
           </button>
         ))}
       </div>
+
       {mismatch ? (
         <div className="au-msg bad" role="alert">
           This account is {mismatch === "agent" ? "an agent" : "a company"} account — switch to {mismatch === "agent" ? "Broker" : "Company"} login?{" "}
@@ -137,7 +147,7 @@ function LoginPage() {
 
       <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
         <Field
-          id="email" label="Email" type="email" autoComplete="email" placeholder="you@agency.ae"
+          id="email" label="Work Email Address" type="email" autoComplete="email" placeholder="director@agency.ae"
           value={email} onChange={(v) => { setEmail(v); setError(null); }} disabled={busy}
           onBlur={() => setTouched((t) => ({ ...t, email: true }))}
           ok={touched.email && emailOk}
@@ -150,7 +160,7 @@ function LoginPage() {
           error={touched.password && password && !pwOk ? "Password must be at least 8 characters." : null}
         />
         <div className="au-row">
-          <CheckBox id="remember" checked={remember} onChange={setRem}>Remember me</CheckBox>
+          <CheckBox id="remember" checked={remember} onChange={setRem}>Remember this browser</CheckBox>
           <button type="button" className="au-link" aria-expanded={forgot} onClick={() => { setForgot((v) => !v); setResetEmail((r) => r || email); }}>Forgot password?</button>
         </div>
 
@@ -162,7 +172,7 @@ function LoginPage() {
               ) : (
                 <>
                   <b>Reset your password</b>
-                  <Field id="reset-email" label="Email" type="email" autoComplete="email" placeholder="you@agency.ae" value={resetEmail} onChange={setResetEmail} error={resetErr} disabled={!forgot} />
+                  <Field id="reset-email" label="Email" type="email" autoComplete="email" placeholder="director@agency.ae" value={resetEmail} onChange={setResetEmail} error={resetErr} disabled={!forgot} />
                   <button type="button" className="au-btn au-btn-line" onClick={() => void sendReset()} disabled={!forgot || resetState === "loading"}>
                     {resetState === "loading" ? <Loader2 size={18} className="au-spin" /> : null} Send reset link
                   </button>
@@ -173,23 +183,57 @@ function LoginPage() {
         </div>
 
         <button type="submit" className={`au-btn au-btn-ink ${state === "success" ? "success" : ""}`} disabled={!emailOk || !pwOk || busy}>
-          {state === "loading" ? <><Loader2 size={18} className="au-spin" /> Logging in…</> : state === "success" ? <><Check size={18} /> Welcome back</> : "Log in"}
+          {state === "loading" ? <><Loader2 size={18} className="au-spin" /> Authenticating…</> : state === "success" ? <><Check size={18} /> Welcome back</> : `Sign In as ${role === "company" ? "Company Owner" : "Broker Agent"}`}
         </button>
         {error ? <p className="au-msg bad" role="alert" style={{ margin: 0 }}>{error}</p> : null}
         {magic === "sent" ? <p className="au-msg good" role="status" style={{ margin: 0 }}>Check your inbox — we sent a login link to {email.trim()}.</p> : null}
       </form>
 
-      <div className="au-demo">
-        <span>Try the demo</span>
-        <button type="button" className="au-btn au-btn-line" disabled={busy} onClick={() => { setRole("company"); void doSignIn("demo-company@dealos.ae", "Demo1234!", "company"); }}>Demo as Company</button>
-        <button type="button" className="au-btn au-btn-line" disabled={busy} onClick={() => { setRole("agent"); void doSignIn("demo-agent@dealos.ae", "Demo1234!", "agent"); }}>Demo as Agent</button>
+      {/* 1-Tap Demo Access */}
+      <div className="au-demo-card">
+        <div className="au-demo-header">
+          <span className="au-demo-label">⚡ Instant 1-Tap Demo Access</span>
+          <span className="au-demo-sub">Explore full software capabilities without typing credentials:</span>
+        </div>
+        <div className="au-demo-actions">
+          <button
+            type="button"
+            className="au-demo-btn"
+            disabled={busy}
+            onClick={() => {
+              setEmail("demo-company@dealos.ae");
+              setPassword("Demo1234!");
+              setRole("company");
+              void doSignIn("demo-company@dealos.ae", "Demo1234!", "company");
+            }}
+          >
+            <span>🏢</span> Demo as Company
+          </button>
+          <button
+            type="button"
+            className="au-demo-btn"
+            disabled={busy}
+            onClick={() => {
+              setEmail("demo-agent@dealos.ae");
+              setPassword("Demo1234!");
+              setRole("agent");
+              void doSignIn("demo-agent@dealos.ae", "Demo1234!", "agent");
+            }}
+          >
+            <span>👤</span> Demo as Agent
+          </button>
+        </div>
       </div>
 
       <div className="au-alt">
-        <span>New to DealOS? <Link to="/signup" className="au-link">Create an account</Link></span>
+        <span>New agency? <Link to="/signup" className="au-link">Register new agency account</Link></span>
         <button type="button" className="au-link" onClick={() => void sendMagic()} disabled={magic === "loading"}>
-          {magic === "loading" ? "Sending…" : "Send me a magic link instead"}
+          {magic === "loading" ? "Sending OTP…" : "Send me a magic login link"}
         </button>
+      </div>
+
+      <div className="text-center text-[11px] text-muted-foreground/80 mt-6 pt-4 border-t border-border/50">
+        Protected by Dubai Land Department (DLD) &amp; RERA Broker Compliance Protocol
       </div>
     </AuthShell>
   );

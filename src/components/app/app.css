@@ -255,12 +255,17 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .a-content{padding-bottom:104px}
 @media (max-width:640px){.dapp .a-top .a-ask-label{display:none!important}}
 .dapp .a-user-wrap{position:relative}
-.dapp button.a-user{width:100%;text-align:left;background:transparent;cursor:pointer}
-.dapp button.a-user:hover{background:var(--a-cream)}
-.dapp .a-user-menu{position:absolute;left:12px;right:12px;bottom:calc(100% + 6px);background:var(--a-card);border:1px solid var(--a-line);border-radius:14px;box-shadow:0 12px 32px -12px rgb(0 0 0 / .25);padding:6px;z-index:30}
-.dapp .a-user-menu a,.dapp .a-user-menu button{display:flex;align-items:center;gap:10px;width:100%;height:40px;padding:0 12px;border-radius:10px;font-size:14px;color:var(--a-ink);background:transparent;text-align:left}
-.dapp .a-user-menu a:hover,.dapp .a-user-menu button:hover{background:var(--a-cream)}
-.dapp .a-side.collapsed .a-user-menu{left:8px;right:auto;width:180px}
+.dapp button.a-user{width:100%;text-align:left;background:transparent;cursor:pointer;border-radius:12px;padding:6px;transition:background .15s}
+.dapp button.a-user:hover,.dapp button.a-user.active{background:var(--a-cream)}
+.dapp .a-user-menu{position:absolute;left:8px;right:8px;bottom:calc(100% + 8px);background:var(--a-card);border:1px solid var(--a-line);border-radius:16px;box-shadow:0 16px 40px -10px rgba(0,0,0,.35);padding:6px;z-index:60;display:flex;flex-direction:column;gap:2px;min-width:230px}
+.dapp .a-side.collapsed .a-user-menu{left:68px;bottom:4px;right:auto;width:240px}
+.dapp .a-user-menu-head{display:flex;align-items:center;gap:10px;padding:8px 10px 10px}
+.dapp .a-avatar.sm{width:28px;height:28px;font-size:11px}
+.dapp .a-user-menu-divider{height:1px;background:var(--a-line);margin:3px 0}
+.dapp .a-user-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;color:var(--a-ink);background:transparent;text-align:left;text-decoration:none;font-size:13px;transition:background .15s;cursor:pointer;border:none}
+.dapp .a-user-menu-item:hover{background:var(--a-cream)}
+.dapp .a-user-menu-logout{color:#ef4444!important}
+.dapp .a-user-menu-logout:hover{background:rgba(239,68,68,.1)!important}
 
 /* Attention popover uses the existing workspace surfaces and alert treatments. */
 .dapp .a-pop.a-attention{position:relative;top:auto;right:auto;width:min(360px,calc(100vw - 24px));min-width:0;padding:16px}

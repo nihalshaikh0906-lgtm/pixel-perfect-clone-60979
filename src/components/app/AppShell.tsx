@@ -45,7 +45,22 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   const [userMenu, setUserMenu] = useState(false);
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenu(false);
+      }
+    };
+    if (userMenu) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [userMenu]);
 
   const signOut = async () => {
     await queryClient.cancelQueries();
@@ -81,11 +96,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     ] },
     { title: "SYSTEM", items: [
       { label: "Users Management", desc: "Broker Accounts & Team Access", to: "/app/users", icon: Users, adminOnly: true },
-      { label: "Settings", desc: "WhatsApp API & Agency Configuration", to: "/app/settings", icon: Settings },
       { label: "Activity Logs", desc: "Audit Trail & Compliance History", to: "/app/activity-logs", icon: Activity, adminOnly: true },
       { label: "Trash", desc: "Archived Leads & Deleted Records", to: "/app/trash", icon: Trash2, adminOnly: true },
       { label: "Roles & Permissions", desc: "Security Scopes & Commission Splits", to: "/app/roles-permissions", icon: ShieldCheck, adminOnly: true },
-      { label: "My Account", desc: "Personal Profile & Broker Credentials", to: "/app/my-account", icon: User },
       { label: "About App", desc: "Platform Architecture & DLD Version", to: "/app/about", icon: Info },
     ] },
   ];
@@ -204,29 +217,58 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             ))}
           </nav>
 
-          {/* Bottom Controls (Settings & User Profile) */}
+          {/* User Profile & Account Menu */}
           <div className="a-side-footer">
-            <Link
-              to="/app/settings"
-              className={`a-link ${pathname.startsWith("/app/settings") ? "active" : ""}`}
-              onMouseEnter={(e) => handleMouseEnter(e, { label: "Settings", desc: "WhatsApp API, Webhooks & Preferences" })}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Settings size={19} className="shrink-0" />
-              {!collapsed && <span>Settings</span>}
-            </Link>
-
-            <div className="a-user-wrap">
+            <div className="a-user-wrap" ref={userMenuRef}>
               {userMenu ? (
-                <div className="a-user-menu" role="menu">
-                  <Link to="/app/my-account" role="menuitem" onClick={() => setUserMenu(false)}><User size={16} /> My Account</Link>
-                  <Link to="/app/settings" role="menuitem" onClick={() => setUserMenu(false)}><Settings size={16} /> Settings</Link>
-                  <button type="button" role="menuitem" onClick={() => void signOut()}><LogOut size={16} /> Log out</button>
+                <div className="a-user-menu animate-in fade-in-50 zoom-in-95 duration-150" role="menu">
+                  <div className="a-user-menu-head">
+                    <span className="a-avatar sm">{initials}</span>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs truncate text-foreground">{userName}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{role === "company_admin" ? "Company Owner" : "Licensed Broker"} · {agency}</p>
+                    </div>
+                  </div>
+                  <div className="a-user-menu-divider" />
+                  <Link
+                    to="/app/my-account"
+                    role="menuitem"
+                    className="a-user-menu-item"
+                    onClick={() => setUserMenu(false)}
+                  >
+                    <User size={15} className="shrink-0 text-muted-foreground" />
+                    <div className="flex flex-col text-left min-w-0">
+                      <span className="font-semibold text-xs text-foreground">My Account</span>
+                      <span className="text-[10px] text-muted-foreground truncate">Broker Profile & RERA BRN</span>
+                    </div>
+                  </Link>
+                  <Link
+                    to="/app/settings"
+                    role="menuitem"
+                    className="a-user-menu-item"
+                    onClick={() => setUserMenu(false)}
+                  >
+                    <Settings size={15} className="shrink-0 text-muted-foreground" />
+                    <div className="flex flex-col text-left min-w-0">
+                      <span className="font-semibold text-xs text-foreground">Settings</span>
+                      <span className="text-[10px] text-muted-foreground truncate">WhatsApp API, Agency & Keys</span>
+                    </div>
+                  </Link>
+                  <div className="a-user-menu-divider" />
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="a-user-menu-item a-user-menu-logout"
+                    onClick={() => void signOut()}
+                  >
+                    <LogOut size={15} className="shrink-0" />
+                    <span className="font-semibold text-xs">Log out</span>
+                  </button>
                 </div>
               ) : null}
               <button
                 type="button"
-                className="a-user"
+                className={`a-user ${userMenu ? "active" : ""}`}
                 aria-haspopup="menu"
                 aria-expanded={userMenu}
                 aria-label="Account menu"

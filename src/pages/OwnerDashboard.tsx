@@ -3,7 +3,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Building2, Construction, Key, ArrowRight, ShieldCheck, TrendingUp,
   DollarSign, Clock, AlertTriangle, Send, CheckCircle2, Sparkles,
-  Layers, ArrowUpRight, MessageCircle, ChevronRight, Target
+  Layers, ArrowUpRight, MessageCircle, ChevronRight, Target,
+  Inbox, CalendarDays, Handshake, FileSignature, KeyRound
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -88,7 +89,14 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <Button variant="outline" asChild className="h-10 rounded-2xl text-xs font-bold gap-1.5 border-border">
+              <Link to="/app/leads">
+                <Inbox size={15} className="text-blue-400" />
+                <span>Leads Dossier</span>
+              </Link>
+            </Button>
+
             <Button variant="outline" asChild className="h-10 rounded-2xl text-xs font-bold gap-1.5 border-border">
               <Link to="/app/ai-assistant">
                 <Sparkles size={15} className="text-primary" />
@@ -345,55 +353,136 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
         </div>
       </section>
 
-      {/* ═══ 5. 1-CLICK CATALOG JUMP BAR ═══ */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Link
-          to="/app/offplan"
-          className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-primary/50 transition-all shadow-sm"
-        >
-          <div className="flex items-center justify-between text-muted-foreground mb-2">
-            <span className="text-xs font-bold text-primary flex items-center gap-1.5">
-              <Construction size={14} /> Famous Off-Plan Showcase
-            </span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+      {/* ═══ 5. 1-CLICK OPERATIONAL SUITES (ALL NEW SOFTWARE MODULES) ═══ */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-extrabold text-foreground font-display flex items-center gap-2">
+              <Layers size={18} className="text-primary" />
+              <span>Workspace Software Suites</span>
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Direct access to live inventories, investor dossiers, deals pipeline, and DLD compliance centers.
+            </p>
           </div>
-          <p className="text-2xl font-extrabold text-foreground font-display">
-            {count(data.categories.offplan.units)} Units
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">7 Iconic Dubai Developments</p>
-        </Link>
+          <span className="text-xs font-mono text-muted-foreground">6 Dedicated Suites</span>
+        </div>
 
-        <Link
-          to="/app/rentals"
-          className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-primary/50 transition-all shadow-sm"
-        >
-          <div className="flex items-center justify-between text-muted-foreground mb-2">
-            <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-              <Key size={14} /> Rental Suites & Ejari
-            </span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </div>
-          <p className="text-2xl font-extrabold text-foreground font-display">
-            {count(data.categories.rental.units)} Units
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">Synced with Live Demo Tenant Leads</p>
-        </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* 1. Famous Off-Plan */}
+          <Link
+            to="/app/offplan"
+            className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-primary/50 hover:bg-secondary/20 transition-all shadow-sm flex flex-col justify-between space-y-3"
+          >
+            <div>
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
+                <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                  <Construction size={14} /> Famous Off-Plan Showcase
+                </span>
+                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+              <p className="text-2xl font-black text-foreground font-display font-mono">
+                {count(data.categories.offplan.units)} Units
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">7 Iconic Developments · Sobha, Danube, Palm Jebel Ali</p>
+          </Link>
 
-        <Link
-          to="/app/listings"
-          className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-primary/50 transition-all shadow-sm"
-        >
-          <div className="flex items-center justify-between text-muted-foreground mb-2">
-            <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-              <Building2 size={14} /> Ready Secondary Resales
-            </span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </div>
-          <p className="text-2xl font-extrabold text-foreground font-display">
-            {count(data.categories.ready.units)} Units
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">{aed(data.categories.ready.value)} Handed-over Units</p>
-        </Link>
+          {/* 2. Ready Resale */}
+          <Link
+            to="/app/listings"
+            className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-emerald-500/50 hover:bg-secondary/20 transition-all shadow-sm flex flex-col justify-between space-y-3"
+          >
+            <div>
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
+                <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                  <Building2 size={14} /> Ready Secondary Resales
+                </span>
+                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+              <p className="text-2xl font-black text-foreground font-display font-mono">
+                {count(data.categories.ready.units)} Units
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">{aed(data.categories.ready.value)} Handed-over Luxury Suites</p>
+          </Link>
+
+          {/* 3. Rental Suites */}
+          <Link
+            to="/app/rentals"
+            className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-amber-500/50 hover:bg-secondary/20 transition-all shadow-sm flex flex-col justify-between space-y-3"
+          >
+            <div>
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
+                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                  <Key size={14} /> Rental Suites &amp; Ejari
+                </span>
+                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+              <p className="text-2xl font-black text-foreground font-display font-mono">
+                {count(data.categories.rental.units)} Units
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">Synced with Live Demo Tenant Leads</p>
+          </Link>
+
+          {/* 4. Deals & Pipeline */}
+          <Link
+            to="/app/deals"
+            className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-blue-500/50 hover:bg-secondary/20 transition-all shadow-sm flex flex-col justify-between space-y-3"
+          >
+            <div>
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
+                <span className="text-xs font-bold text-blue-400 flex items-center gap-1.5">
+                  <Handshake size={14} /> Deals &amp; Commissions
+                </span>
+                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+              <p className="text-2xl font-black text-foreground font-display font-mono">
+                AED 9.8M Volume
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">4 Deals in Signing · 5 Commission Vouchers</p>
+          </Link>
+
+          {/* 5. Viewings & Appointments */}
+          <Link
+            to="/app/appointments"
+            className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-purple-500/50 hover:bg-secondary/20 transition-all shadow-sm flex flex-col justify-between space-y-3"
+          >
+            <div>
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
+                <span className="text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                  <CalendarDays size={14} /> Viewings &amp; Calendar
+                </span>
+                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+              <p className="text-2xl font-black text-foreground font-display font-mono">
+                8 Scheduled
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">4 Today · Gate Passes &amp; Location Dispatch</p>
+          </Link>
+
+          {/* 6. Legal Agreements & Tenancies */}
+          <Link
+            to="/app/agreements"
+            className="group rounded-3xl border border-border/80 bg-card p-5 hover:border-rose-500/50 hover:bg-secondary/20 transition-all shadow-sm flex flex-col justify-between space-y-3"
+          >
+            <div>
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
+                <span className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                  <FileSignature size={14} /> Agreements &amp; DLD Contracts
+                </span>
+                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+              <p className="text-2xl font-black text-foreground font-display font-mono">
+                Unified Forms A, B, F
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">Official RERA &amp; Ejari Digital Tenancy Contracts</p>
+          </Link>
+        </div>
       </section>
     </div>
   );

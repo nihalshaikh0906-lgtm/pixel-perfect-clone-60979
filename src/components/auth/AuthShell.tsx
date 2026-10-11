@@ -41,9 +41,7 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
 }
 
 export function AuthShell({ children, leaving = false, sections = false }: { children: ReactNode; leaving?: boolean; sections?: boolean }) {
-  const boost = useRef(0);
   const [head, setHead] = useState("form");
-  const [tick, setTick] = useState(0);
   const [faq, setFaq] = useState<number | null>(null);
 
   useEffect(() => {
@@ -52,21 +50,9 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
       for (const e of entries) if (e.isIntersecting) setHead(e.target.getAttribute("data-head") ?? "form");
     }, { rootMargin: "-45% 0px -45% 0px" });
     els.forEach((el) => io.observe(el));
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      boost.current = max > 0 ? Math.min(1, window.scrollY / max) : 0;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { io.disconnect(); window.removeEventListener("scroll", onScroll); };
+    return () => io.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = setInterval(() => { if (!document.hidden) setTick((v) => (v + 1) % TICKER.length); }, 4000);
-    return () => clearInterval(t);
-  }, [tick]);
-
-  const [l1, l2, gold] = HEADLINES[head] ?? HEADLINES["form"]!;
   const faqs = [
     ["How do I get access?", "Create an account with your work email. Your workspace is ready as soon as you confirm your email address."],
     ["I forgot my password", "Use “Forgot password?” on the login form. We will email you a secure link to set a new one."],
@@ -76,22 +62,64 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
   return (
     <div className={`dauth ${leaving ? "is-leaving" : ""}`}>
       <div className="au-grid">
-        <aside className="au-panel" aria-label="DealOS">
-          <DotSkyline boost={boost} />
-          <div className="au-glow" aria-hidden />
-          <Link to="/welcome" className="au-panel-logo" aria-label="DealOS home"><LogoMark size={88} variant="dark" /></Link>
-          <div className="au-float au-f1" aria-hidden><small>Pipeline</small><b className="num">AED 48.2M</b></div>
-          <div className="au-float au-f2" aria-hidden><span className="au-dot" />Hot · 87</div>
-          <div className="au-float au-f3" aria-hidden>3BR · DIP · AED 1.33M</div>
-          <div className="au-panel-copy">
-            <h2 key={head} className="au-headline">{l1}<br />{l2} <em>{gold}</em></h2>
-            <div className="au-ticker" aria-live="polite">
-              <p key={tick}>{TICKER[tick]}</p>
-              <div className="au-ticker-dots">
-                {TICKER.map((t, i) => (
-                  <button key={t} type="button" aria-label={`Show update ${i + 1}`} aria-pressed={i === tick} onClick={() => setTick(i)} />
-                ))}
+        <aside className="au-panel au-panel-executive" aria-label="DealOS Platform">
+          <div className="au-panel-top">
+            <Link to="/welcome" className="au-panel-brand" aria-label="DealOS home">
+              <LogoMark size={64} variant="dark" />
+              <div>
+                <span className="au-brand-title">DealOS</span>
+                <span className="au-brand-tag">Dubai Real Estate Operating System</span>
               </div>
+            </Link>
+          </div>
+
+          <div className="au-panel-body">
+            <h2 className="au-exec-headline">
+              The operating system for <span className="au-exec-gold">Dubai real estate</span>.
+            </h2>
+            <p className="au-exec-desc">
+              Unifying 1,450+ off-plan developments, DLD escrow registries, investor dossiers, and automated unified contracts.
+            </p>
+
+            <div className="au-exec-features">
+              <div className="au-exec-feat">
+                <span className="au-feat-icon">🏛️</span>
+                <div>
+                  <b>1,450+ Verified Off-Plan Projects</b>
+                  <p>Direct DLD escrow status, live unit tiers, and official brochure specs.</p>
+                </div>
+              </div>
+
+              <div className="au-exec-feat">
+                <span className="au-feat-icon">🎯</span>
+                <div>
+                  <b>AI Lead Dossier &amp; Matching</b>
+                  <p>Full-screen investor profiles with direct unit matching and WhatsApp copilot.</p>
+                </div>
+              </div>
+
+              <div className="au-exec-feat">
+                <span className="au-feat-icon">📜</span>
+                <div>
+                  <b>DLD Unified Form A / B / F &amp; Ejari</b>
+                  <p>Compliant digital contracts and automated legal tenancy generation.</p>
+                </div>
+              </div>
+
+              <div className="au-exec-feat">
+                <span className="au-feat-icon">💼</span>
+                <div>
+                  <b>Developer Commission Drawdown</b>
+                  <p>Real-time voucher milestone tracking and institutional payout audit.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="au-panel-foot">
+            <div className="au-compliance-pill">
+              <ShieldCheck size={15} className="text-emerald-400" />
+              <span>DLD Registered · RERA Trakheesi Verified Gateway</span>
             </div>
           </div>
         </aside>
