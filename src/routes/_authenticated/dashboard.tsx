@@ -2,6 +2,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   beforeLoad: () => {
-    throw redirect({ to: "/app/crm", replace: true });
+    throw redirect({ to: "/app/ai-assistant", replace: true });
   },
 });

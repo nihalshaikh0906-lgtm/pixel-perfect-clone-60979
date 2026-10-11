@@ -23,7 +23,7 @@ export const Route = createFileRoute("/login")({
   beforeLoad: async ({ search }) => {
     if (search.mode === "signup") throw redirect({ to: "/signup", replace: true });
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/app/crm", replace: true });
+    if (data.session) throw redirect({ to: "/app/ai-assistant", replace: true });
   },
   component: LoginPage,
 });
@@ -84,7 +84,7 @@ function LoginPage() {
     setLeaving(true);
     await new Promise((r) => setTimeout(r, 400));
     await router.invalidate();
-    void router.navigate({ to: "/app/crm", replace: true });
+    void router.navigate({ to: "/app/ai-assistant", replace: true });
   }
 
   async function sendReset() {

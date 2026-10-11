@@ -55,9 +55,10 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   };
 
   const groups: { title: string; items: Item[] }[] = [
-    { title: "GENERAL", items: [
-      { label: "Dashboard", desc: "Executive Cockpit & Agency Oversight", to: "/owner-dashboard", icon: Home, exact: true },
-      { label: "AI Assistant", desc: "Strategic CEO Mastermind & Copilot", to: "/app/ai-assistant", icon: Sparkles },
+    { title: "CORE", items: [
+      { label: "AI Assistant", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
+      { label: "Leads", desc: "Investor Inbox & Priority Action Queue", to: "/app/leads", icon: Inbox },
+      { label: "Dashboard", desc: "Executive Cockpit & Portfolio Oversight", to: "/owner-dashboard", icon: Home, exact: true },
     ] },
     { title: "INVENTORY", items: [
       { label: "Offplan", desc: "1,450+ Verified Dubai Developments & Escrow", to: "/app/offplan", icon: Construction },
@@ -65,7 +66,6 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "Rentals", desc: "Ejari Tenancies & Leasehold Listings", to: "/app/rentals", icon: Key },
     ] },
     { title: "CRM", items: [
-      { label: "Leads", desc: "Investor Inbox & Speed-to-Lead Follow-ups", to: "/app/leads", icon: Inbox },
       { label: "Follow-Ups", desc: "Scheduled Reminders & Client Outreach", to: "/app/follow-ups", icon: CalendarClock },
       { label: "Appointments", desc: "Calendar Viewings & Investor Meetings", to: "/app/appointments", icon: CalendarDays },
     ] },
@@ -77,7 +77,6 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     ] },
     { title: "CATALOG", items: [
       { label: "Owners", desc: "Landlords & Master Developer Directory", to: "/app/owners", icon: Users },
-      { label: "Locations", desc: "Dubai Master Communities & Map Registry", to: "/app/locations", icon: MapPinned },
       { label: "Amenities", desc: "Tower Features & Luxury Specifications", to: "/app/amenities", icon: Trees },
     ] },
     { title: "SYSTEM", items: [
