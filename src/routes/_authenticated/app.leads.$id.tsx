@@ -138,6 +138,7 @@ const VERIFIED_MATCHES: ProjectDetail[] = [
 
 function LeadPage() {
   const { id } = Route.useParams();
+  const { clientMode } = useShell();
   const lead = LEAD_BY_ID.get(id);
 
   if (!lead) {
@@ -152,10 +153,10 @@ function LeadPage() {
     );
   }
 
-  return <BespokeLeadDossier lead={lead} />;
+  return <BespokeLeadDossier lead={lead} clientMode={clientMode} />;
 }
 
-function BespokeLeadDossier({ lead }: { lead: Lead }) {
+function BespokeLeadDossier({ lead, clientMode }: { lead: Lead; clientMode?: boolean }) {
   const [stage, setStage] = useState<Stage>(lead.stage);
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [inspectProject, setInspectProject] = useState<ProjectDetail | null>(null);
@@ -253,6 +254,11 @@ This client matches **${heroProject.name}** with a **${heroProject.matchScore}% 
                 <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold text-emerald-400 font-mono">
                   Score {lead.score} · {p}
                 </span>
+                {clientMode && (
+                  <span className="rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 px-2.5 py-0.5 text-[11px] font-bold font-mono">
+                    💎 Client Presentation Deck Active
+                  </span>
+                )}
               </div>
               <p className="text-xs text-muted-foreground">
                 Inbound inquiry received {ago(lead.receivedHoursAgo)} via <strong className="text-foreground">{lead.source}</strong> · Verified Lead

@@ -11,6 +11,7 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { AiChat } from "./AiChat";
 import { AddMenu, Notifications, ThemeToggle, useTheme } from "./ShellExtras";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 type ShellCtx = { clientMode: boolean; openAi: () => void };
 const Ctx = createContext<ShellCtx>({ clientMode: false, openAi: () => {} });
@@ -347,12 +348,24 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             <div className="a-top-actions">
               <button
                 type="button"
-                className="a-btn a-btn-line a-hide-sm"
+                className={`a-btn a-btn-line a-hide-sm transition-all ${
+                  clientMode ? "bg-amber-500/15 border-amber-500/50 text-amber-300 font-bold shadow-sm" : ""
+                }`}
                 aria-pressed={clientMode}
-                onClick={() => setClientMode((v) => !v)}
-                title="Hides commission and internal notes"
+                onClick={() => {
+                  setClientMode((v) => {
+                    const next = !v;
+                    if (next) {
+                      toast.success("Client Presentation Mode ON: Internal commissions, broker splits, and notes masked.");
+                    } else {
+                      toast.info("Broker Internal Mode: Full agency commission and internal data visible.");
+                    }
+                    return next;
+                  });
+                }}
+                title="Hides commission and internal notes for client viewing"
               >
-                Client mode: {clientMode ? "on" : "off"}
+                {clientMode ? "💎 Client Mode: ON" : "Client mode: off"}
               </button>
               <AddMenu />
               <Notifications />
@@ -361,7 +374,29 @@ export function AppShell({ children, userName, initials, agency }: { children: R
           </header>
 
           {/* Full Screen Main Content */}
-          <main className="a-content">{children}</main>
+          <main className="a-content">
+            {clientMode && (
+              <div className="mb-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/15 to-amber-500/5 border border-amber-500/40 px-4 py-2.5 flex items-center justify-between text-xs text-amber-300 shadow-sm animate-in fade-in duration-200">
+                <div className="flex items-center gap-2.5">
+                  <span className="size-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                  <span className="font-extrabold uppercase tracking-wider text-[11px]">💎 Client Presentation Mode Active</span>
+                  <span className="text-amber-300/80 hidden sm:inline">•</span>
+                  <span className="text-amber-300/80 hidden sm:inline">Internal commissions, broker fee splits, and private notes are safely masked for client screen-sharing.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setClientMode(false);
+                    toast.info("Exited Client Presentation Mode.");
+                  }}
+                  className="text-[11px] font-bold text-amber-200 hover:text-white underline cursor-pointer shrink-0 ml-2"
+                >
+                  Exit Client Mode
+                </button>
+              </div>
+            )}
+            {children}
+          </main>
         </div>
 
         {ai ? (

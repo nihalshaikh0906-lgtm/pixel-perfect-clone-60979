@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LEADS, formatAed, type Lead } from "@/lib/demo-leads";
 import { toast } from "sonner";
+import { useShell } from "./AppShell";
 
 export type ReadyProperty = {
   id: string;
@@ -218,6 +219,7 @@ export function ReadyInventory({
   q?: string;
   onSearch?: (search: { page: number; q: string }) => void;
 }) {
+  const { clientMode } = useShell();
   const [filter, setFilter] = useState<"all" | "vacant" | "tenanted" | "golden_visa">("all");
   const [selectedProperty, setSelectedProperty] = useState<ReadyProperty | null>(null);
   const [activeModalTab, setActiveModalTab] = useState<"gallery" | "floorplan" | "deed" | "map">("gallery");
@@ -273,6 +275,11 @@ export function ReadyInventory({
               <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
                 <ShieldCheck size={14} /> Synced with {readyLeads.length} Demo Ready Buyers
               </span>
+              {clientMode && (
+                <span className="rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 px-2.5 py-0.5 text-[11px] font-bold font-mono">
+                  💎 Client Presentation Deck Active
+                </span>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
               Ready Dubai Properties (Secondary Resales)
