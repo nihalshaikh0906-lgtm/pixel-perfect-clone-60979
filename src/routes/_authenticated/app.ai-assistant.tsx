@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AiChat } from "@/components/app/AiChat";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { useBrokerProfile } from "@/lib/broker";
+import { Sparkles, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/ai-assistant")({
   head: () => workspaceHead("AI Assistant"),
@@ -10,26 +11,36 @@ export const Route = createFileRoute("/_authenticated/app/ai-assistant")({
 
 function Page() {
   const profile = useBrokerProfile();
-  const title = `${profile?.company || "Agency"} AI Assistant`;
+  const title = `${profile?.company || "Agency"} Strategic Mastermind`;
 
   return (
-    <div className="flex min-w-0 flex-col gap-6">
-      <section className="a-band a-fade">
-        <div className="min-w-0">
-          <p className="eyebrow-a">GENERAL</p>
-          <h1 className="break-words">{title}</h1>
+    <div className="flex flex-col flex-1 h-[calc(100vh-110px)] w-full gap-3 animate-in fade-in-50 duration-200">
+      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="size-8 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+            <Sparkles size={16} />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-foreground leading-tight">{title}</h1>
+            <p className="text-xs text-muted-foreground">Full-Screen Strategic Real Estate & Portfolio Copilot</p>
+          </div>
         </div>
-      </section>
-      <section className="a-card flex h-[calc(100svh-280px)] min-h-[420px] min-w-0 flex-col overflow-hidden" aria-label={title}>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400">
+          <ShieldCheck size={13} /> DLD Verified AI Intelligence
+        </span>
+      </div>
+
+      <div className="flex-1 min-h-0 w-full rounded-2xl border border-border/80 bg-card overflow-hidden shadow-sm flex flex-col" aria-label={title}>
         <AiChat
           title={title}
           suggestions={[
-            "Help me prioritize today's follow-ups.",
-            "Draft a WhatsApp opener for a new enquiry.",
-            "What should I confirm before a property viewing?",
+            "Analyze our top 3 stalled buyer deals and suggest closing strategies",
+            "Draft a high-converting WhatsApp VIP pitch for Reef 995 DLRC",
+            "What are the best off-plan opportunities for a European investor with 1.5M AED?",
+            "Review our speed-to-lead bottlenecks across active brokers",
           ]}
         />
-      </section>
+      </div>
     </div>
   );
 }
