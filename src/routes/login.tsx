@@ -110,7 +110,7 @@ function LoginPage() {
   }
 
   return (
-    <AuthShell leaving={leaving}>
+    <AuthShell leaving={leaving} sections={false}>
       <Logo size={40} />
       <h1>Login to your workspace</h1>
       <p className="au-sub">{role === "company" ? "Manage your team, assign leads and see everything." : "Your leads, follow-ups and clients."}</p>

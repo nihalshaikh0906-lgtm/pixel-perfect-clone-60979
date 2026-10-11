@@ -40,7 +40,7 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
   return <div ref={ref} className={`au-reveal ${shown ? "in" : ""} ${className}`} style={{ transitionDelay: `${delay}s` }}>{children}</div>;
 }
 
-export function AuthShell({ children, leaving = false, sections = true }: { children: ReactNode; leaving?: boolean; sections?: boolean }) {
+export function AuthShell({ children, leaving = false, sections = false }: { children: ReactNode; leaving?: boolean; sections?: boolean }) {
   const boost = useRef(0);
   const [head, setHead] = useState("form");
   const [tick, setTick] = useState(0);

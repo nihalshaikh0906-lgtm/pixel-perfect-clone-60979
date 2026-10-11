@@ -85,11 +85,11 @@ function SignupPage() {
     setLeaving(true);
     await new Promise((r) => setTimeout(r, 400));
     await router.invalidate();
-    void router.navigate({ to: "/app", replace: true });
+    void router.navigate({ to: "/app/ai-assistant", replace: true });
   }
 
   return (
-    <AuthShell leaving={leaving}>
+    <AuthShell leaving={leaving} sections={false}>
       <Logo size={40} />
       <h1>Create your workspace</h1>
       <p className="au-sub">Set up your broker account in under a minute.</p>
