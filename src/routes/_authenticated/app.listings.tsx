@@ -7,6 +7,7 @@ import { RotateCcw, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
 import { LiveInventory } from "@/components/app/LiveInventory";
+import { ReadyInventory } from "@/components/app/ReadyInventory";
 import { inventoryPageOptions } from "@/lib/inventory.functions";
 import { inventorySearch } from "@/lib/inventory-category";
 import { Property360Modal } from "@/components/app/Property360Modal";
@@ -122,7 +123,7 @@ function ListingsPage() {
     toast.success("Listing saved as draft"); refresh(); reset(); close();
   };
 
-  const liveInventory = <LiveInventory title="Ready Property" category="ready" page={page} q={searchQuery} onSearch={(next) => void navigate({ search: (prev) => ({ ...prev, ...next }) })} />;
+  const liveInventory = <ReadyInventory q={searchQuery} onSearch={(next) => void navigate({ search: (prev) => ({ ...prev, ...next }) })} />;
   if (org.isLoading || !org.data) return liveInventory;
   // Ready Property shows ready stock only — rent/rental and off-plan rows stay out.
   const rows = (q.data ?? []).filter((l) => (bin ? l.deleted_at : !l.deleted_at) && l.type === "ready");
