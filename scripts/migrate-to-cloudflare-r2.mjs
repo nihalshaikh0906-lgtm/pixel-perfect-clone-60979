@@ -8,7 +8,7 @@ const PUBLIC_R2_URL = "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev";
 const R2_HOST = `${ACCOUNT_ID}.r2.cloudflarestorage.com`;
 
 const SUPABASE_URL = "https://bkobicnsvyijpdhymngb.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrb2JpY25zdnlpanBkaHltbmdiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDcwNDU5MywiZXhwIjoyMTA2MjgwNTkzfQ.AxXdLT47GDPxqzBJJ_rroIEMtp_deuY8H6luSmY2vc8";
+const SUPABASE_KEY = "<YOUR_SUPABASE_SERVICE_ROLE_KEY>";
 const UPSTREAM_S3 = "https://reelly-backend.s3.amazonaws.com/";
 
 const dbHeaders = {

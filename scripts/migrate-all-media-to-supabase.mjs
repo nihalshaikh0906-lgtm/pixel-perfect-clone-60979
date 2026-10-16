@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://bkobicnsvyijpdhymngb.supabase.co";
-const SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrb2JpY25zdnlpanBkaHltbmdiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDcwNDU5MywiZXhwIjoyMTA2MjgwNTkzfQ.AxXdLT47GDPxqzBJJ_rroIEMtp_deuY8H6luSmY2vc8";
+const SERVICE_KEY = "<YOUR_SUPABASE_SERVICE_ROLE_KEY>";
 const BUCKET = "dealos-vault";
 const UPSTREAM_S3 = "https://reelly-backend.s3.amazonaws.com/";
 

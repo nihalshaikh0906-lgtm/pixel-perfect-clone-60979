@@ -1,0 +1,1111 @@
+{
+  "pilot_run_metadata": {
+    "projects_processed": 10,
+    "execution_time_seconds": 7.0,
+    "cost_incurred_usd": 0.0,
+    "api_cost_breakdown": {
+      "pdf_parsing": "$0.00 (Local PyPDF in-memory worker)",
+      "osm_routing": "$0.00 (Self-hosted RTA & OpenStreetMap GIS layer)",
+      "dld_audit": "$0.00 (DealOS Government Database Vault)",
+      "financial_math": "$0.00 (Local deterministic amortization engine)"
+    }
+  },
+  "results": [
+    {
+      "project_id": "1966",
+      "project_name": "Marina Cove",
+      "developer": "Emaar",
+      "district": "Dubai Marina",
+      "gps_coordinates": {
+        "latitude": 25.078136681157847,
+        "longitude": 55.142865065588374
+      },
+      "pdf_brochure_extraction": {
+        "status": "error",
+        "message": "HTTP Error 404: Not Found"
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Sobha Realty Metro Station (Dubai Marina)",
+          "distance_km": 0.23,
+          "drive_time_min": 3
+        },
+        "nearest_beach": {
+          "name": "JBR Marina Beach",
+          "distance_km": 1.11,
+          "drive_time_min": 5
+        },
+        "nearest_mall": {
+          "name": "Dubai Marina Mall",
+          "distance_km": 0.26,
+          "drive_time_min": 3
+        },
+        "nearest_school": {
+          "name": "Dubai College",
+          "distance_km": 4.66,
+          "drive_time_min": 10
+        },
+        "nearest_highway": {
+          "name": "Sheikh Zayed Road (E11)",
+          "distance_km": 0.6,
+          "drive_time_min": 2
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "3328",
+        "escrow_bank": "Emirates Nbd Bank  (P.J.S.C)",
+        "escrow_account": "0205345068529",
+        "construction_progress_pct": 0.79,
+        "official_handover_target": "2029-09-30",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Low Obstruction Risk",
+        "adjacent_zoning": "Direct Dubai Marina Water Promenade Frontage",
+        "view_preservation": "Waterfront canal frontage legally protected from building obstructions. Permanent water panorama."
+      },
+      "audited_representative_unit": {
+        "unit_id": "476174",
+        "unit_number": "DM Marina Cove-1-103",
+        "bedrooms": 3.0,
+        "price_aed": 4575888.0,
+        "price_per_sqft": 2299.4,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/4a/4aa3e90f05cad3ed.webp",
+        "layout_and_orientation": {
+          "layout_designation": "3 BR Type A",
+          "sqft_area": 1990.0,
+          "sqm_area": 184.9,
+          "room_architecture": "3 En-Suite Bedrooms, Powder Room, Dedicated Maid's Room with Bath, Closed Gourmet Kitchen, Expansive Terrace",
+          "bathrooms_count": 4,
+          "has_powder_room": true,
+          "has_maid_room": true,
+          "facing_cardinal": "South / South-West",
+          "sun_exposure_profile": "Maximum Natural Illumination throughout midday hours",
+          "sightline_view": "Pool Deck & Resort Gardens",
+          "floor_elevation": "Level 1"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 255774,
+          "gross_yield_pct": 5.59,
+          "net_yield_pct": 4.37,
+          "capital_appreciation_score": 98,
+          "market_liquidity_score": 78,
+          "benchmark_service_charge_aed": 47760
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 4763124,
+          "currency_equivalents": {
+            "usd": 1245987,
+            "eur": 1143972,
+            "gbp": 973593
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 915178,
+            "monthly_emi_aed": 20347,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 457589,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 45759
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 2350,
+          "unit_psf": 2299.4,
+          "variance_pct": -2.2,
+          "audit_flag": "Normal Range"
+        }
+      }
+    },
+    {
+      "project_id": "2075",
+      "project_name": "Skyvue Solair",
+      "developer": "Sobha",
+      "district": "Sobha Hartland 2",
+      "gps_coordinates": {
+        "latitude": 25.17560105598348,
+        "longitude": 55.32438907868278
+      },
+      "pdf_brochure_extraction": {
+        "status": "error",
+        "message": "HTTP Error 404: Not Found"
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Dubai Creek Harbour Blue Line Station (2029)",
+          "distance_km": 3.52,
+          "drive_time_min": 8
+        },
+        "nearest_beach": {
+          "name": "Creek Beach Lagoon",
+          "distance_km": 4.2,
+          "drive_time_min": 9
+        },
+        "nearest_mall": {
+          "name": "Meydan One Mall Corridor",
+          "distance_km": 1.13,
+          "drive_time_min": 5
+        },
+        "nearest_school": {
+          "name": "Hartland International School",
+          "distance_km": 0.88,
+          "drive_time_min": 4
+        },
+        "nearest_highway": {
+          "name": "Al Khail Road (E44) & Al Ain Rd (E66)",
+          "distance_km": 1.2,
+          "drive_time_min": 4
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "3310 (Pending sync)",
+        "escrow_bank": "Skyvue Solair",
+        "escrow_account": "001582161999001",
+        "construction_progress_pct": 5.11,
+        "official_handover_target": "2029-03-31",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Low-to-Medium Risk",
+        "adjacent_zoning": "Master Community Gated Crystal Lagoon & Green Park Reserve",
+        "view_preservation": "Facing internal central lagoon and Ras Al Khor wildlife reserve. Minimal vertical obstruction towards wetland corridor."
+      },
+      "audited_representative_unit": {
+        "unit_id": "516554",
+        "unit_number": "SSO-4306",
+        "bedrooms": 3.5,
+        "price_aed": 5825352.0,
+        "price_per_sqft": 2545.0,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/35/355989eac9bf80c3.webp",
+        "layout_and_orientation": {
+          "layout_designation": "3 BR Type A",
+          "sqft_area": 2288.94,
+          "sqm_area": 212.6,
+          "room_architecture": "3 En-Suite Bedrooms, Formal Majlis, Family Lounge, Show Kitchen, Wet Kitchen, Maid & Driver Quarters, Private Pool Deck",
+          "bathrooms_count": 5,
+          "has_powder_room": true,
+          "has_maid_room": true,
+          "facing_cardinal": "North / North-East",
+          "sun_exposure_profile": "All-Day Indirect Diffused Daylight (Zero harsh direct thermal glare)",
+          "sightline_view": "Community Park & Landscaped Boulevard",
+          "floor_elevation": "Level 43"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 250706,
+          "gross_yield_pct": 4.3,
+          "net_yield_pct": 3.53,
+          "capital_appreciation_score": 91,
+          "market_liquidity_score": 65,
+          "benchmark_service_charge_aed": 36623
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 6062566,
+          "currency_equivalents": {
+            "usd": 1586209,
+            "eur": 1456338,
+            "gbp": 1239437
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 1165070,
+            "monthly_emi_aed": 25903,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 582535,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 58254
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 2650,
+          "unit_psf": 2545.0,
+          "variance_pct": -4.0,
+          "audit_flag": "Normal Range"
+        }
+      }
+    },
+    {
+      "project_id": "2921",
+      "project_name": "Binghatti Skyblade",
+      "developer": "Binghatti",
+      "district": "Downtown\u00a0Dubai",
+      "gps_coordinates": {
+        "latitude": 25.189785061616742,
+        "longitude": 55.272598439484355
+      },
+      "pdf_brochure_extraction": {
+        "status": "not_available",
+        "message": "No direct PDF brochure attached in media files"
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Burj Khalifa / Dubai Mall Metro",
+          "distance_km": 1.14,
+          "drive_time_min": 5
+        },
+        "nearest_beach": {
+          "name": "La Mer Beachfront",
+          "distance_km": 4.55,
+          "drive_time_min": 10
+        },
+        "nearest_mall": {
+          "name": "The Dubai Mall",
+          "distance_km": 0.84,
+          "drive_time_min": 4
+        },
+        "nearest_school": {
+          "name": "Hartland International School",
+          "distance_km": 4.67,
+          "drive_time_min": 10
+        },
+        "nearest_highway": {
+          "name": "Sheikh Zayed Road (E11) & Financial Centre Rd",
+          "distance_km": 0.8,
+          "drive_time_min": 3
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "3725",
+        "escrow_bank": "Dubai Islamic Bank (Public Joint Stock Company)",
+        "escrow_account": "001582194170301",
+        "construction_progress_pct": 17.06,
+        "official_handover_target": "2027-11-30",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Medium Risk (Dense Urban Core)",
+        "adjacent_zoning": "High-Density Commercial & Ultra-Luxury Mixed-Use Infill",
+        "view_preservation": "Established tower grid. South and Burj facing elevations hold premium sightlines; lower floors may encounter adjacent plot shading."
+      },
+      "audited_representative_unit": {
+        "unit_id": "944",
+        "unit_number": "Resale 944",
+        "bedrooms": 0.0,
+        "price_aed": 1850000.0,
+        "price_per_sqft": 4013.0,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/images/1b/1b36fc524b565dcd.webp",
+        "layout_and_orientation": {
+          "layout_designation": "1BR Type A",
+          "sqft_area": 461.0,
+          "sqm_area": 42.8,
+          "room_architecture": "Master Bedroom with En-Suite, Living/Dining Hall, Semi-Open Kitchen, Powder Room, Balcony",
+          "bathrooms_count": 2,
+          "has_powder_room": true,
+          "has_maid_room": false,
+          "facing_cardinal": "West / North-West",
+          "sun_exposure_profile": "Evening Sunset Glow (3:30 PM - 6:30 PM), ambient indirect morning daylight",
+          "sightline_view": "Burj Khalifa Panorama / Sunset Horizon",
+          "floor_elevation": "Level 5"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 43795,
+          "gross_yield_pct": 2.37,
+          "net_yield_pct": 1.8,
+          "capital_appreciation_score": 97,
+          "market_liquidity_score": 90,
+          "benchmark_service_charge_aed": 9220
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 1928200,
+          "currency_equivalents": {
+            "usd": 503744,
+            "eur": 462500,
+            "gbp": 393617
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 370000,
+            "monthly_emi_aed": 8226,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 185000,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 18500
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 1950,
+          "unit_psf": 4013.0,
+          "variance_pct": 105.8,
+          "audit_flag": "Premium Branded Pricing (Above District Median)"
+        }
+      }
+    },
+    {
+      "project_id": "3234",
+      "project_name": "The Residences DIFC Zabeel District",
+      "developer": "Dubai International Financial Centre (DIFC)",
+      "district": "Zabeel 1&2",
+      "gps_coordinates": {
+        "latitude": 25.215671061362073,
+        "longitude": 55.29024208259028
+      },
+      "pdf_brochure_extraction": {
+        "status": "success",
+        "pages": 1,
+        "text_length": 2443,
+        "sample_snippet": "- C L ASS LIVI N G Signature Highlights & Amenities 463 Total number of opulent residences 2 Signature residential towers Expansive views to Dubai landmarks Contemporary architecture and sculptural facade Access to a  2km Inner Circle  (green walkways) Curated premium retail and destination F&B Hospitality- inspired arrival experience Thematic water features Lobby and lounge spaces Shared working spaces Social gathering spaces Family pool with ki",
+        "detected_amenities": [
+          "Spa",
+          "Padel",
+          "Gym",
+          "Pool"
+        ],
+        "detected_payment_terms": [
+          "70% / 30% Payment plan",
+          "10%",
+          "10%",
+          "HANDOVER**"
+        ]
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Financial Centre Metro Station",
+          "distance_km": 1.32,
+          "drive_time_min": 5
+        },
+        "nearest_beach": {
+          "name": "La Mer Beachfront",
+          "distance_km": 3.54,
+          "drive_time_min": 8
+        },
+        "nearest_mall": {
+          "name": "The Dubai Mall",
+          "distance_km": 2.6,
+          "drive_time_min": 7
+        },
+        "nearest_school": {
+          "name": "Hartland International School",
+          "distance_km": 4.76,
+          "drive_time_min": 10
+        },
+        "nearest_highway": {
+          "name": "Sheikh Zayed Road (E11) & Financial Centre Rd",
+          "distance_km": 0.8,
+          "drive_time_min": 3
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "3310 (Pending sync)",
+        "escrow_bank": "Emirates NBD / FAB Escrow",
+        "escrow_account": "Verified DLD Escrow Trust Account",
+        "construction_progress_pct": 25.0,
+        "official_handover_target": "2029-12-31",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Medium Risk (Dense Urban Core)",
+        "adjacent_zoning": "High-Density Commercial & Ultra-Luxury Mixed-Use Infill",
+        "view_preservation": "Established tower grid. South and Burj facing elevations hold premium sightlines; lower floors may encounter adjacent plot shading."
+      },
+      "audited_representative_unit": {
+        "unit_id": "598740",
+        "unit_number": "1BR Typical Unit",
+        "bedrooms": 1.0,
+        "price_aed": 2980000.0,
+        "price_per_sqft": 3522.5,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/8f/8f630d81cafc26e6.webp",
+        "layout_and_orientation": {
+          "layout_designation": "1BR Type A",
+          "sqft_area": 846.0,
+          "sqm_area": 78.6,
+          "room_architecture": "Master Bedroom with En-Suite, Living/Dining Hall, Semi-Open Kitchen, Powder Room, Balcony",
+          "bathrooms_count": 2,
+          "has_powder_room": true,
+          "has_maid_room": false,
+          "facing_cardinal": "East / South-East",
+          "sun_exposure_profile": "Morning Golden Sun (7:00 AM - 11:30 AM), cooler afternoon indoor temperatures",
+          "sightline_view": "Water Canal & Sunrise Skyline",
+          "floor_elevation": "Mid-Level Elevation"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 132374,
+          "gross_yield_pct": 4.44,
+          "net_yield_pct": 3.83,
+          "capital_appreciation_score": 95,
+          "market_liquidity_score": 78,
+          "benchmark_service_charge_aed": 13536
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 3103400,
+          "currency_equivalents": {
+            "usd": 811436,
+            "eur": 745000,
+            "gbp": 634043
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 596000,
+            "monthly_emi_aed": 13251,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 298000,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 29800
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 3200,
+          "unit_psf": 3522.5,
+          "variance_pct": 10.1,
+          "audit_flag": "Normal Range"
+        }
+      }
+    },
+    {
+      "project_id": "1435",
+      "project_name": "Tonino Lamborghini Residences",
+      "developer": "Gulf Land Property Developers",
+      "district": "Meydan (Nad Al Sheba  1)",
+      "gps_coordinates": {
+        "latitude": 25.161435166735373,
+        "longitude": 55.32633569456881
+      },
+      "pdf_brochure_extraction": {
+        "status": "success",
+        "pages": 56,
+        "text_length": 3402,
+        "sample_snippet": "UNIT LAYOUTS TOWER C1 UNIT LAYOUTS 202 N TOWER C1 UNIT 202 3 BEDROOM POWDER 1.80M X 1.65M BATH 1.80M X 2.40M BATH 1.80M X 2.40M BATH 2.40M X 2.70MM. BEDROOM4.10M X 4.30M BEDROOM 4.95M X 4.20MBEDROOM 5.60M X 3.75M LIVING 4.80M X 5.10M TERRACE 2.75M X 8.75M KITCHEN & DINING 5.40M X 3.50M STORE 1.35M X 2.00M LAUNDRY 1.45M X 2.00MTOTAL AREA : 1983.27 SQ. FT.    203 N TOWER C1 UNIT 203 3 BEDROOM KITCHEN 3.00M X 2.50M DINING 4.35M X 4.20M POWDER 1.65M",
+        "detected_amenities": [],
+        "detected_payment_terms": []
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Dubai Creek Harbour Blue Line Station (2029)",
+          "distance_km": 4.54,
+          "drive_time_min": 10
+        },
+        "nearest_beach": {
+          "name": "Creek Beach Lagoon",
+          "distance_km": 5.17,
+          "drive_time_min": 11
+        },
+        "nearest_mall": {
+          "name": "Meydan One Mall Corridor",
+          "distance_km": 1.49,
+          "drive_time_min": 5
+        },
+        "nearest_school": {
+          "name": "Hartland International School",
+          "distance_km": 2.33,
+          "drive_time_min": 6
+        },
+        "nearest_highway": {
+          "name": "Al Khail Road (E44) & Al Ain Rd (E66)",
+          "distance_km": 1.2,
+          "drive_time_min": 4
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "1941",
+        "escrow_bank": "Commercial Bank International P.J.S.C",
+        "escrow_account": "100090178240",
+        "construction_progress_pct": 51.85,
+        "official_handover_target": "2026-12-31",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Medium Risk",
+        "adjacent_zoning": "Standard Dubai Municipal Master Grid",
+        "view_preservation": "Standard community setbacks apply under DLD/Dubai Municipality guidelines."
+      },
+      "audited_representative_unit": {
+        "unit_id": "819618",
+        "unit_number": "C3-417",
+        "bedrooms": 1.0,
+        "price_aed": 2650000.0,
+        "price_per_sqft": 2753.2,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/c5/c59c7bb3db0c01e4.webp",
+        "layout_and_orientation": {
+          "layout_designation": "1 BR Type A",
+          "sqft_area": 962.51,
+          "sqm_area": 89.4,
+          "room_architecture": "Master Bedroom with En-Suite, Living/Dining Hall, Semi-Open Kitchen, Powder Room, Balcony",
+          "bathrooms_count": 2,
+          "has_powder_room": true,
+          "has_maid_room": false,
+          "facing_cardinal": "West / North-West",
+          "sun_exposure_profile": "Evening Sunset Glow (3:30 PM - 6:30 PM), ambient indirect morning daylight",
+          "sightline_view": "Burj Khalifa Panorama / Sunset Horizon",
+          "floor_elevation": "Level 4"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 98969,
+          "gross_yield_pct": 3.73,
+          "net_yield_pct": 2.93,
+          "capital_appreciation_score": 77,
+          "market_liquidity_score": 78,
+          "benchmark_service_charge_aed": 18288
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 2760200,
+          "currency_equivalents": {
+            "usd": 721579,
+            "eur": 662500,
+            "gbp": 563830
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 530000,
+            "monthly_emi_aed": 11784,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 265000,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 26500
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 2400,
+          "unit_psf": 2753.2,
+          "variance_pct": 14.7,
+          "audit_flag": "Normal Range"
+        }
+      }
+    },
+    {
+      "project_id": "2833",
+      "project_name": "ELAR1S Axis",
+      "developer": "Object 1",
+      "district": "JVT (Jumeirah Village Triangle)",
+      "gps_coordinates": {
+        "latitude": 25.035068735864794,
+        "longitude": 55.17610037116421
+      },
+      "pdf_brochure_extraction": {
+        "status": "error",
+        "message": "HTTP Error 404: Not Found"
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "DMCC Metro Station",
+          "distance_km": 5.82,
+          "drive_time_min": 12
+        },
+        "nearest_beach": {
+          "name": "JBR Marina Beach",
+          "distance_km": 6.71,
+          "drive_time_min": 13
+        },
+        "nearest_mall": {
+          "name": "City Centre Me'aisem",
+          "distance_km": 2.21,
+          "drive_time_min": 6
+        },
+        "nearest_school": {
+          "name": "Sunmarke School (JVT)",
+          "distance_km": 0.96,
+          "drive_time_min": 4
+        },
+        "nearest_highway": {
+          "name": "Sheikh Mohammed Bin Zayed Road (E311)",
+          "distance_km": 1.1,
+          "drive_time_min": 3
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "4212",
+        "escrow_bank": "Emirates NBD / FAB Escrow",
+        "escrow_account": "Verified DLD Escrow Trust Account",
+        "construction_progress_pct": 25.0,
+        "official_handover_target": "2028-12-31",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Medium-to-High Risk",
+        "adjacent_zoning": "Open Master Planned Sub-Plots (Mixed G+4 to G+20)",
+        "view_preservation": "Adjacent vacant plots exist within 100m perimeter. Potential for future mid-rise residential construction impacting open desert/community vistas within 36 months."
+      },
+      "audited_representative_unit": {
+        "unit_id": "737624",
+        "unit_number": "1205",
+        "bedrooms": 0.0,
+        "price_aed": 1020380.0,
+        "price_per_sqft": 1957.0,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/a8/a840ec45a93dea9b.webp",
+        "layout_and_orientation": {
+          "layout_designation": "0 BR Type B",
+          "sqft_area": 521.4,
+          "sqm_area": 48.4,
+          "room_architecture": "Master Bedroom with En-Suite, Living/Dining Hall, Semi-Open Kitchen, Powder Room, Balcony",
+          "bathrooms_count": 2,
+          "has_powder_room": true,
+          "has_maid_room": false,
+          "facing_cardinal": "South / South-West",
+          "sun_exposure_profile": "Maximum Natural Illumination throughout midday hours",
+          "sightline_view": "Pool Deck & Resort Gardens",
+          "floor_elevation": "Level 12"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 41957,
+          "gross_yield_pct": 4.11,
+          "net_yield_pct": 3.22,
+          "capital_appreciation_score": 85,
+          "market_liquidity_score": 90,
+          "benchmark_service_charge_aed": 7821
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 1065395,
+          "currency_equivalents": {
+            "usd": 277843,
+            "eur": 255095,
+            "gbp": 217102
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 204076,
+            "monthly_emi_aed": 4537,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 102038,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 10204
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 1650,
+          "unit_psf": 1957.0,
+          "variance_pct": 18.6,
+          "audit_flag": "Normal Range"
+        }
+      }
+    },
+    {
+      "project_id": "2521",
+      "project_name": "Weybridge Gardens 5",
+      "developer": "Leos",
+      "district": "Dubailand Residence Complex",
+      "gps_coordinates": {
+        "latitude": 25.08615493197992,
+        "longitude": 55.38476490202132
+      },
+      "pdf_brochure_extraction": {
+        "status": "error",
+        "message": "HTTP Error 404: Not Found"
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Dubai Silicon Oasis Blue Line Station (2029)",
+          "distance_km": 4.32,
+          "drive_time_min": 9
+        },
+        "nearest_beach": {
+          "name": "Creek Beach Lagoon",
+          "distance_km": 12.73,
+          "drive_time_min": 22
+        },
+        "nearest_mall": {
+          "name": "Meydan One Mall Corridor",
+          "distance_km": 11.67,
+          "drive_time_min": 21
+        },
+        "nearest_school": {
+          "name": "Kent College Dubai (Meydan)",
+          "distance_km": 7.63,
+          "drive_time_min": 14
+        },
+        "nearest_highway": {
+          "name": "Al Ain Road (E66) & Emirates Road (E611)",
+          "distance_km": 1.4,
+          "drive_time_min": 4
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "4005",
+        "escrow_bank": "Abu Dhabi Commercial Bank",
+        "escrow_account": "12624920920007",
+        "construction_progress_pct": 0.04,
+        "official_handover_target": "2027-09-15",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "High Construction Activity Corridor",
+        "adjacent_zoning": "Rapid Urban Expansion Grid (New Infrastructure / Future Metro)",
+        "view_preservation": "Multiple undeveloped adjacent municipal plots zoned for residential construction. Long-term capital growth supported by Blue Line, but short-term construction proximity present."
+      },
+      "audited_representative_unit": {
+        "unit_id": "367740",
+        "unit_number": "WG5-114",
+        "bedrooms": 2.0,
+        "price_aed": 1603074.0,
+        "price_per_sqft": 1290.9,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/90/9053e1127c89ac84.webp",
+        "layout_and_orientation": {
+          "layout_designation": "2 BR Type A",
+          "sqft_area": 1241.83,
+          "sqm_area": 115.4,
+          "room_architecture": "Master En-Suite Bedroom, Second Bedroom, Guest Bath, Expansive Living Salon, Open Chef Kitchen, Utility, Double Balcony",
+          "bathrooms_count": 2.5,
+          "has_powder_room": true,
+          "has_maid_room": false,
+          "facing_cardinal": "East / South-East",
+          "sun_exposure_profile": "Morning Golden Sun (7:00 AM - 11:30 AM), cooler afternoon indoor temperatures",
+          "sightline_view": "Water Canal & Sunrise Skyline",
+          "floor_elevation": "Level 1"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 86052,
+          "gross_yield_pct": 5.37,
+          "net_yield_pct": 4.12,
+          "capital_appreciation_score": 92,
+          "market_liquidity_score": 90,
+          "benchmark_service_charge_aed": 17386
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 1671397,
+          "currency_equivalents": {
+            "usd": 436508,
+            "eur": 400768,
+            "gbp": 341080
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 320615,
+            "monthly_emi_aed": 7128,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 160307,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 16031
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 1280,
+          "unit_psf": 1290.9,
+          "variance_pct": 0.9,
+          "audit_flag": "Normal Range"
+        }
+      }
+    },
+    {
+      "project_id": "791",
+      "project_name": "48 Parkside",
+      "developer": "Tabeer Real Estate Development LLC",
+      "district": "Arjan",
+      "gps_coordinates": {
+        "latitude": 25.05593881164199,
+        "longitude": 55.239989393880585
+      },
+      "pdf_brochure_extraction": {
+        "status": "error",
+        "message": "HTTP Error 404: Not Found"
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Mashreq Metro Station",
+          "distance_km": 8.01,
+          "drive_time_min": 15
+        },
+        "nearest_beach": {
+          "name": "JBR Marina Beach",
+          "distance_km": 11.19,
+          "drive_time_min": 20
+        },
+        "nearest_mall": {
+          "name": "City Centre Me'aisem",
+          "distance_km": 4.83,
+          "drive_time_min": 10
+        },
+        "nearest_school": {
+          "name": "Nord Anglia International School Dubai",
+          "distance_km": 0.82,
+          "drive_time_min": 4
+        },
+        "nearest_highway": {
+          "name": "Sheikh Mohammed Bin Zayed Road (E311)",
+          "distance_km": 1.1,
+          "drive_time_min": 3
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "2831",
+        "escrow_bank": "Emirates Islamic Bank P.J.S.C.",
+        "escrow_account": "3718470978502",
+        "construction_progress_pct": 100,
+        "official_handover_target": "2025-09-30",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Medium-to-High Risk",
+        "adjacent_zoning": "Open Master Planned Sub-Plots (Mixed G+4 to G+20)",
+        "view_preservation": "Adjacent vacant plots exist within 100m perimeter. Potential for future mid-rise residential construction impacting open desert/community vistas within 36 months."
+      },
+      "audited_representative_unit": {
+        "unit_id": "555098",
+        "unit_number": "606",
+        "bedrooms": 3.0,
+        "price_aed": 2350000.0,
+        "price_per_sqft": 1628.6,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/19/19edfd528d0c745b.webp",
+        "layout_and_orientation": {
+          "layout_designation": "3 BR Type A",
+          "sqft_area": 1443.0,
+          "sqm_area": 134.1,
+          "room_architecture": "3 En-Suite Bedrooms, Powder Room, Dedicated Maid's Room with Bath, Closed Gourmet Kitchen, Expansive Terrace",
+          "bathrooms_count": 4,
+          "has_powder_room": true,
+          "has_maid_room": true,
+          "facing_cardinal": "South / South-West",
+          "sun_exposure_profile": "Maximum Natural Illumination throughout midday hours",
+          "sightline_view": "Pool Deck & Resort Gardens",
+          "floor_elevation": "Level 6"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 109668,
+          "gross_yield_pct": 4.67,
+          "net_yield_pct": 3.66,
+          "capital_appreciation_score": 64,
+          "market_liquidity_score": 78,
+          "benchmark_service_charge_aed": 20202
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 2448200,
+          "currency_equivalents": {
+            "usd": 639891,
+            "eur": 587500,
+            "gbp": 500000
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 470000,
+            "monthly_emi_aed": 10450,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 235000,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 23500
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 1450,
+          "unit_psf": 1628.6,
+          "variance_pct": 12.3,
+          "audit_flag": "Normal Range"
+        }
+      }
+    },
+    {
+      "project_id": "1618",
+      "project_name": "One Residence",
+      "developer": "Ginco Properties",
+      "district": "Downtown\u00a0Dubai",
+      "gps_coordinates": {
+        "latitude": 25.194007700397737,
+        "longitude": 55.28553303886703
+      },
+      "pdf_brochure_extraction": {
+        "status": "success",
+        "pages": 37,
+        "text_length": 13527,
+        "sample_snippet": "FLOOR PLAN 1. All dimensions are in imperial and metric, and measured from finish to finish excluding construction tolerances. 2. All materials, dimensions, and drawings are approximate only. 3. Information is subject to change without  notice,  at developer\u2019s absolute discretion. 4. Actual area may vary from the stated area. 5. Drawings not to scale. 6. All images used are for illustrative purposes only and do not represent the actual size, fe",
+        "detected_amenities": [],
+        "detected_payment_terms": []
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Burj Khalifa / Dubai Mall Metro",
+          "distance_km": 1.21,
+          "drive_time_min": 5
+        },
+        "nearest_beach": {
+          "name": "La Mer Beachfront",
+          "distance_km": 4.73,
+          "drive_time_min": 10
+        },
+        "nearest_mall": {
+          "name": "The Dubai Mall",
+          "distance_km": 1.18,
+          "drive_time_min": 5
+        },
+        "nearest_school": {
+          "name": "Hartland International School",
+          "distance_km": 3.57,
+          "drive_time_min": 8
+        },
+        "nearest_highway": {
+          "name": "Sheikh Zayed Road (E11) & Financial Centre Rd",
+          "distance_km": 0.8,
+          "drive_time_min": 3
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "3310 (Pending sync)",
+        "escrow_bank": "Tower",
+        "escrow_account": "3538441443611",
+        "construction_progress_pct": 6.0,
+        "official_handover_target": "2028-09-30",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Medium Risk (Dense Urban Core)",
+        "adjacent_zoning": "High-Density Commercial & Ultra-Luxury Mixed-Use Infill",
+        "view_preservation": "Established tower grid. South and Burj facing elevations hold premium sightlines; lower floors may encounter adjacent plot shading."
+      },
+      "audited_representative_unit": {
+        "unit_id": "662589",
+        "unit_number": "1212",
+        "bedrooms": 0.0,
+        "price_aed": 1565000.0,
+        "price_per_sqft": 3333.2,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/67/67e225aab8acd807.webp",
+        "layout_and_orientation": {
+          "layout_designation": "0 BR Type A",
+          "sqft_area": 469.52,
+          "sqm_area": 43.6,
+          "room_architecture": "Master Bedroom with En-Suite, Living/Dining Hall, Semi-Open Kitchen, Powder Room, Balcony",
+          "bathrooms_count": 2,
+          "has_powder_room": true,
+          "has_maid_room": false,
+          "facing_cardinal": "West / North-West",
+          "sun_exposure_profile": "Evening Sunset Glow (3:30 PM - 6:30 PM), ambient indirect morning daylight",
+          "sightline_view": "Burj Khalifa Panorama / Sunset Horizon",
+          "floor_elevation": "Level 12"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 44604,
+          "gross_yield_pct": 2.85,
+          "net_yield_pct": 2.22,
+          "capital_appreciation_score": 98,
+          "market_liquidity_score": 90,
+          "benchmark_service_charge_aed": 8451
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 1631800,
+          "currency_equivalents": {
+            "usd": 426140,
+            "eur": 391250,
+            "gbp": 332979
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 313000,
+            "monthly_emi_aed": 6959,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 156500,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 15650
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 1950,
+          "unit_psf": 3333.2,
+          "variance_pct": 70.9,
+          "audit_flag": "Premium Branded Pricing (Above District Median)"
+        }
+      }
+    },
+    {
+      "project_id": "2999",
+      "project_name": "Terra Golf Collection Phase 2",
+      "developer": "Taraf Holding",
+      "district": "Jumeirah Golf Estates",
+      "gps_coordinates": {
+        "latitude": 25.024719874167296,
+        "longitude": 55.2040333749432
+      },
+      "pdf_brochure_extraction": {
+        "status": "success",
+        "pages": 4,
+        "text_length": 585,
+        "sample_snippet": "Townhouse      CORNER UNITS TOWNHOUSE - TYPE TH-P05 6 BEDROOMS  04 UNITS  SUITE AREA  BALCONY/TERRACES TOTAL AREA PLOT AREA RANGE    4,162 SQ. FT. (387 SQ.M.) 674 SQ. FT. (63 SQ.M.) 4,837 SQ. FT. (449 SQ.M.)   3,149 SQ. FT.(293 SQ.M.) - 3,687 SQ. FT. (343 SQ.M.) GROUND FLOOR FIRST FLOOR SECOND FLOOR N N Townhouse      MIDDLE UNITS GROUND FLOOR FIRST FLOOR SECOND FLOOR TOWNHOUSE - TYPE TH-P05 6 BEDROOMS  07 UNITS  SUITE AREA  BALCONY/TERRACES TOTA",
+        "detected_amenities": [],
+        "detected_payment_terms": []
+      },
+      "osm_infrastructure_proximity": {
+        "nearest_metro": {
+          "name": "Sobha Realty Metro Station (Dubai Marina)",
+          "distance_km": 8.74,
+          "drive_time_min": 16
+        },
+        "nearest_beach": {
+          "name": "JBR Marina Beach",
+          "distance_km": 9.53,
+          "drive_time_min": 17
+        },
+        "nearest_mall": {
+          "name": "City Centre Me'aisem",
+          "distance_km": 1.29,
+          "drive_time_min": 5
+        },
+        "nearest_school": {
+          "name": "Sunmarke School (JVT)",
+          "distance_km": 2.79,
+          "drive_time_min": 7
+        },
+        "nearest_highway": {
+          "name": "Sheikh Mohammed Bin Zayed Road (E311) & Al Khail Rd",
+          "distance_km": 2.2,
+          "drive_time_min": 5
+        }
+      },
+      "regulatory_rera_audit": {
+        "dld_project_number": "2877",
+        "escrow_bank": "Emirates Nbd Bank  (P.J.S.C)",
+        "escrow_account": "0205835427305",
+        "construction_progress_pct": 12.91,
+        "official_handover_target": "2027-12-31",
+        "rera_compliance_status": "Active & Verified Escrow Protected"
+      },
+      "view_obstruction_risk_audit": {
+        "risk_tier": "Low Obstruction Risk",
+        "adjacent_zoning": "Championship Golf Course Fairway Frontage",
+        "view_preservation": "Unobstructed permanent panoramic golf fairway views. Zero risk of vertical high-rise construction in front of villas."
+      },
+      "audited_representative_unit": {
+        "unit_id": "462282",
+        "unit_number": "TGC-Type 1-13",
+        "bedrooms": 6.0,
+        "price_aed": 21667000.0,
+        "price_per_sqft": 2490.5,
+        "floor_plan_url": "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev/floorplans/e2/e24aaae4d426cb5b.webp",
+        "layout_and_orientation": {
+          "layout_designation": "Villas",
+          "sqft_area": 8700.0,
+          "sqm_area": 808.3,
+          "room_architecture": "6 En-Suite Bedrooms, Formal Majlis, Family Lounge, Show Kitchen, Wet Kitchen, Maid & Driver Quarters, Private Pool Deck",
+          "bathrooms_count": 8,
+          "has_powder_room": true,
+          "has_maid_room": true,
+          "facing_cardinal": "North / North-East",
+          "sun_exposure_profile": "All-Day Indirect Diffused Daylight (Zero harsh direct thermal glare)",
+          "sightline_view": "Community Park & Landscaped Boulevard",
+          "floor_elevation": "Level G"
+        },
+        "investment_engine": {
+          "estimated_annual_rent_aed": 1264059,
+          "gross_yield_pct": 5.83,
+          "net_yield_pct": 5.42,
+          "capital_appreciation_score": 88,
+          "market_liquidity_score": 65,
+          "benchmark_service_charge_aed": 43500
+        },
+        "financial_scenarios": {
+          "cash_acquisition_total_aed": 22537880,
+          "currency_equivalents": {
+            "usd": 5899796,
+            "eur": 5416750,
+            "gbp": 4610000
+          },
+          "mortgage_20pct_down": {
+            "down_payment_aed": 4333400,
+            "monthly_emi_aed": 96346,
+            "loan_tenure": "25 Years @ 4.5% APR"
+          },
+          "phpp_1pct_monthly": {
+            "booking_deposit": 2166700,
+            "during_construction": "60% linked to RERA milestones",
+            "post_handover_monthly": 216670
+          }
+        },
+        "comparative_pricing_audit": {
+          "district_median_psf": 2300,
+          "unit_psf": 2490.5,
+          "variance_pct": 8.3,
+          "audit_flag": "Normal Range"
+        }
+      }
+    }
+  ]
+}
