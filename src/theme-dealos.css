@@ -206,4 +206,36 @@
 @media (max-width:640px){.owner-dash .od-donut-row{flex-direction:column;align-items:center}.owner-dash .od-legend{width:100%}}
 @media (max-width:640px){.owner-dash .od-span2{grid-column:auto}}
 
+/* ---------- Executive Sans-Serif Typography Unification ---------- */
+/* Replace narrow/cramped monospace digits with clean, legible executive Manrope sans-serif */
+.calc, .calc *, .panel, .panel *, .big, .num, code, pre, .font-mono, [class*="mono"], .calc .big, .calc .row span {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-feature-settings: "tnum" 1, "cv01" 1;
+  letter-spacing: -0.01em !important;
+}
+
+.calc .big {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  color: var(--text, #141A33) !important;
+  letter-spacing: -0.03em !important;
+}
+
+.calc label, .panel label {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: var(--text-muted, #8A90A8) !important;
+}
+
+.calc .row, .calc .row span {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--text, #141A33) !important;
+}
+
+
 
