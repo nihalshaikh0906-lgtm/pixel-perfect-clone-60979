@@ -8,9 +8,19 @@ import { CATEGORY_TYPES, inventoryCategory, INVENTORY_PAGE_SIZE } from "./invent
 /* Client & Universal Direct Fetchers (Direct to Supabase SDK)               */
 /* -------------------------------------------------------------------------- */
 
+export const UAE_EMIRATES = [
+  "Dubai",
+  "Abu Dhabi",
+  "Ras Al Khaimah",
+  "Sharjah",
+  "Ajman",
+  "Umm Al Quwain",
+  "Fujairah",
+];
+
 export async function fetchInventorySummary() {
   const [projectResult, unitCount] = await Promise.all([
-    supabase.from("projects").select("id", { count: "exact", head: true }),
+    supabase.from("projects").select("id", { count: "exact", head: true }).in("emirate_or_country", UAE_EMIRATES),
     supabase.from("units").select("id", { count: "exact", head: true }),
   ]);
   if (projectResult.error) throw new Error(projectResult.error.message);
@@ -48,8 +58,9 @@ export async function fetchInventorySummary() {
 
 export async function fetchInventoryPage({ category, page, q }: { category: "offplan" | "ready" | "rental"; page: number; q: string }) {
   let query = (supabase as any).from("units")
-    .select("id,project_id,unit_number,bedrooms,size_sqft,price_aed,status,unit_type,projects!inner(id,name,developer_name,district,handover_date,cover_image_url)", { count: "exact" })
-    .in("listing_type", CATEGORY_TYPES[category]);
+    .select("id,project_id,unit_number,bedrooms,size_sqft,price_aed,status,unit_type,projects!inner(id,name,developer_name,district,emirate_or_country,handover_date,cover_image_url)", { count: "exact" })
+    .in("listing_type", CATEGORY_TYPES[category])
+    .in("projects.emirate_or_country", UAE_EMIRATES);
   if (q && q.trim()) query = query.ilike("projects.name", `%${q.replace(/[%_]/g, "").trim()}%`);
   const { data: rows, count, error } = await query.order("id").range((page - 1) * INVENTORY_PAGE_SIZE, page * INVENTORY_PAGE_SIZE - 1);
   if (error) throw new Error(error.message);
@@ -59,6 +70,7 @@ export async function fetchInventoryPage({ category, page, q }: { category: "off
 export async function fetchProjectPage({ page }: { page: number }) {
   const { data: rows, count, error } = await supabase.from("projects")
     .select("id,name,developer_name,district,handover_date,sale_status", { count: "exact" })
+    .in("emirate_or_country", UAE_EMIRATES)
     .order("name").order("id").range((page - 1) * INVENTORY_PAGE_SIZE, page * INVENTORY_PAGE_SIZE - 1);
   if (error) throw new Error(error.message);
   return { rows: rows ?? [], count: count ?? 0 };
@@ -66,7 +78,8 @@ export async function fetchProjectPage({ page }: { page: number }) {
 
 export async function fetchOffplanProjects({ page, q }: { page: number; q: string }) {
   let query = supabase.from("projects")
-    .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status", { count: "exact" });
+    .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status", { count: "exact" })
+    .in("emirate_or_country", UAE_EMIRATES);
   if (q && q.trim()) query = query.ilike("name", `%${q.replace(/[%_]/g, "").trim()}%`);
   const { data: rows, count, error } = await query
     .order("name")
