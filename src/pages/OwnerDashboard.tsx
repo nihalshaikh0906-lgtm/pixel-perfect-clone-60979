@@ -824,12 +824,17 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
-              Good morning, Managing Director
-            </h1>
+            <div className="flex items-center gap-2.5">
+              <span className="p-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                <Crown size={18} />
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
+                Marhaban, Director Adam — Brokerage Floor is Live & Synchronized
+              </h1>
+            </div>
 
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
-              Your brokerage has closed <strong className="text-foreground font-mono">AED 48.65M YTD</strong>. Today you have <strong className="text-foreground">38 active buyer leads</strong> across your team, and <strong className="text-foreground font-mono">AED 1.04M</strong> in developer commission vouchers awaiting drawdown.
+              Your brokerage has closed <strong className="text-foreground font-mono">AED 48.65M YTD</strong>. Today you have <strong className="text-foreground">38 active buyer leads</strong> across your 12 licensed brokers, and <strong className="text-foreground font-mono">AED 1.04M</strong> in developer commission vouchers awaiting drawdown.
             </p>
           </div>
 

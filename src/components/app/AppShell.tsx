@@ -254,7 +254,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2 text-xs flex items-center justify-between shadow-xs">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Crown size={14} className="text-amber-400 shrink-0" />
-                    <span className="font-extrabold text-[11px] text-amber-300 truncate">Company Owner</span>
+                    <span className="font-extrabold text-[11px] text-amber-300 truncate">Director Cockpit</span>
                   </div>
                   <button
                     type="button"
@@ -354,7 +354,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     <span className="a-avatar sm">{initials}</span>
                     <div className="min-w-0">
                       <p className="font-bold text-xs truncate text-foreground">{userName}</p>
-                      <p className="text-[11px] text-muted-foreground truncate">{role === "company_admin" ? "Company Owner" : "Licensed Broker"} · {agency}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{role === "company_admin" ? "Director & Principal" : "Licensed Broker"} · {agency}</p>
                     </div>
                   </div>
                   <div className="a-user-menu-divider" />
@@ -369,7 +369,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                       >
                         <Crown size={15} className="shrink-0 text-amber-400" />
                         <div className="flex flex-col text-left min-w-0">
-                          <span className="font-semibold text-xs text-foreground">Owner Account</span>
+                          <span className="font-semibold text-xs text-foreground">Director Account</span>
                           <span className="text-[10px] text-muted-foreground truncate">ORN-28941 & DLD Credentials</span>
                         </div>
                       </Link>
