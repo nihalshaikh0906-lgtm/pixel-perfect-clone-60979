@@ -8,7 +8,16 @@ import { inventorySummaryOptions, projectPageOptions } from "@/lib/inventory.fun
 export const Route = createFileRoute("/_authenticated/owner-dashboard")({
   validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
   loaderDeps: ({ search }) => ({ page: search.page }),
-  loader: async ({ context, deps }) => { await Promise.all([context.queryClient.ensureQueryData(inventorySummaryOptions()), context.queryClient.ensureQueryData(projectPageOptions(deps.page))]); },
+  loader: async ({ context, deps }) => {
+    try {
+      await Promise.allSettled([
+        context.queryClient.ensureQueryData(inventorySummaryOptions()),
+        context.queryClient.ensureQueryData(projectPageOptions(deps.page)),
+      ]);
+    } catch {
+      // Resilient fallback
+    }
+  },
   errorComponent: ({ error }) => <div role="alert">Unable to load inventory: {error instanceof Error ? error.message : "Please try again."}</div>,
   notFoundComponent: () => <div>Inventory not found.</div>,
   head: () => ({

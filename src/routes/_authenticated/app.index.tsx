@@ -64,7 +64,7 @@ function HomePage() {
     );
   }, []);
 
-  if (role === "company_admin") {
+  if (role !== "agent") {
     return <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} />;
   }
   return <AgentDashboard />;

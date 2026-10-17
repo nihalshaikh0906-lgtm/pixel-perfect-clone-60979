@@ -325,10 +325,11 @@ function Inbox() {
                 <button
                   type="button"
                   onClick={() => openLead(l)}
-                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-secondary/50 hover:bg-secondary text-foreground font-bold text-xs transition-all"
+                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold text-xs shadow-md shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  title="Open full investor lead dossier"
                 >
-                  <span>Open Dossier</span>
-                  <ArrowUpRight size={13} className="text-primary" />
+                  <Eye size={14} className="text-white" />
+                  <span>Open Lead ↗</span>
                 </button>
               </div>
             </div>

@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Building2, Construction, Key, ArrowRight, ShieldCheck, TrendingUp,
   Clock, AlertTriangle, Send, CheckCircle2, Sparkles,
@@ -9,12 +8,11 @@ import {
   Flame, CheckCheck, Megaphone, X, Bell, Volume2, VolumeX,
   UserCheck, AlertCircle, Building, Wallet, RefreshCw,
   Crown, ExternalLink, Download, Copy, FileText, Check, Briefcase,
-  Compass, PieChart, ShieldAlert, ArrowRightLeft
+  Compass, PieChart, ShieldAlert, ArrowRightLeft, Phone, Mail
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { inventorySummaryOptions } from "@/lib/inventory.functions";
 import { aed } from "@/lib/format";
 import { toast } from "sonner";
 
@@ -465,8 +463,55 @@ export const EXECUTIVE_PROJECTS_BRIEF: ExecutiveProjectBrief[] = [
   },
 ];
 
+// ═══ DYNAMIC TIMEFRAME METRICS ENGINE ═══
+export const TIMEFRAME_METRICS = {
+  today: {
+    gmv: "AED 4.20M",
+    closedCount: 4,
+    offplan: "AED 3.10M",
+    secondary: "AED 1.10M",
+    growth: "+14.8% vs yesterday",
+    activePipeline: "AED 61.8M",
+    leadsCount: 6,
+    speedToLead: "3.1 Mins",
+    summary: "Today your brokerage closed 4 deals totaling AED 4.20M. 6 incoming leads assigned with 3.1m average response time.",
+  },
+  week: {
+    gmv: "AED 14.80M",
+    closedCount: 12,
+    offplan: "AED 11.20M",
+    secondary: "AED 3.60M",
+    growth: "+19.4% vs last week",
+    activePipeline: "AED 61.8M",
+    leadsCount: 22,
+    speedToLead: "3.2 Mins",
+    summary: "This week your brokerage closed 12 deals totaling AED 14.80M across 12 licensed brokers.",
+  },
+  month: {
+    gmv: "AED 48.65M",
+    closedCount: 41,
+    offplan: "AED 36.40M",
+    secondary: "AED 12.25M",
+    growth: "+24.2% YoY",
+    activePipeline: "AED 61.8M",
+    leadsCount: 38,
+    speedToLead: "3.4 Mins",
+    summary: "Your brokerage has closed AED 48.65M in October with 38 active buyer leads and AED 1.04M in developer vouchers.",
+  },
+  ytd: {
+    gmv: "AED 148.20M",
+    closedCount: 124,
+    offplan: "AED 112.50M",
+    secondary: "AED 35.70M",
+    growth: "+38.5% YoY",
+    activePipeline: "AED 84.5M",
+    leadsCount: 186,
+    speedToLead: "3.5 Mins",
+    summary: "2026 YTD volume reached AED 148.20M across 124 transactions, ranking #14 overall among Dubai brokerages.",
+  },
+};
+
 export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (page: number) => void }) {
-  const { data } = useSuspenseQuery(inventorySummaryOptions());
   const [timeframe, setTimeframe] = useState<"today" | "week" | "month" | "ytd">("month");
   const [brokerFilter, setBrokerFilter] = useState<"all" | "top" | "fast" | "coaching">("all");
   const [broadcastOpen, setBroadcastOpen] = useState(false);
@@ -493,6 +538,8 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
   // Executive Leads & Projects Brief Modals State
   const [selectedLeadForBrief, setSelectedLeadForBrief] = useState<ExecutiveLead | null>(null);
   const [leadBriefModalOpen, setLeadBriefModalOpen] = useState(false);
+  const [selectedLeadForDossier, setSelectedLeadForDossier] = useState<ExecutiveLead | null>(null);
+  const [leadDossierModalOpen, setLeadDossierModalOpen] = useState(false);
   const [selectedProjectForBrief, setSelectedProjectForBrief] = useState<ExecutiveProjectBrief | null>(null);
   const [projectBriefModalOpen, setProjectBriefModalOpen] = useState(false);
 
@@ -834,7 +881,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             </div>
 
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
-              Your brokerage has closed <strong className="text-foreground font-mono">AED 48.65M YTD</strong>. Today you have <strong className="text-foreground">38 active buyer leads</strong> across your 12 licensed brokers, and <strong className="text-foreground font-mono">AED 1.04M</strong> in developer commission vouchers awaiting drawdown.
+              {TIMEFRAME_METRICS[timeframe].summary}
             </p>
           </div>
 
@@ -1030,30 +1077,30 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         <div className="rounded-3xl border border-border/80 bg-card p-6 shadow-sm flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between border-b border-border/50 pb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <TrendingUp size={14} className="text-emerald-400" /> Closed GMV (YTD)
+              <TrendingUp size={14} className="text-emerald-400" /> Closed GMV ({timeframe.toUpperCase()})
             </span>
             <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400 font-mono">
-              +24.2% YoY
+              {TIMEFRAME_METRICS[timeframe].growth}
             </span>
           </div>
 
           <div className="space-y-1">
             <p className="text-3xl font-black text-foreground font-mono font-display">
-              AED 48.65M
+              {TIMEFRAME_METRICS[timeframe].gmv}
             </p>
             <p className="text-xs text-muted-foreground">
-              41 Transactions closed across off-plan &amp; secondary.
+              {TIMEFRAME_METRICS[timeframe].closedCount} Transactions closed across off-plan &amp; secondary.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-xs pt-1">
             <div className="p-2 rounded-xl bg-secondary/40 border border-border/60">
               <span className="text-[10px] uppercase font-bold text-muted-foreground">Off-Plan</span>
-              <p className="font-mono font-bold text-foreground">AED 36.4M</p>
+              <p className="font-mono font-bold text-foreground">{TIMEFRAME_METRICS[timeframe].offplan}</p>
             </div>
             <div className="p-2 rounded-xl bg-secondary/40 border border-border/60">
               <span className="text-[10px] uppercase font-bold text-muted-foreground">Secondary</span>
-              <p className="font-mono font-bold text-foreground">AED 12.2M</p>
+              <p className="font-mono font-bold text-foreground">{TIMEFRAME_METRICS[timeframe].secondary}</p>
             </div>
           </div>
         </div>
@@ -1065,14 +1112,14 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               <Briefcase size={14} className="text-primary" /> Active Pipeline Volume
             </span>
             <span className="rounded-full bg-primary/10 border border-primary/30 px-2 py-0.5 text-[10px] font-bold text-primary font-mono">
-              38 Active Deals
+              {TIMEFRAME_METRICS[timeframe].leadsCount} Active Deals
             </span>
           </div>
 
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="text-3xl font-black text-foreground font-mono font-display">
-                AED 61.8M
+                {TIMEFRAME_METRICS[timeframe].activePipeline}
               </p>
               <p className="text-xs text-muted-foreground">
                 In-flight investor opportunities across team.
@@ -1137,7 +1184,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
 
           <div className="space-y-1">
             <p className="text-3xl font-black text-foreground font-mono font-display">
-              3.4 Mins
+              {TIMEFRAME_METRICS[timeframe].speedToLead}
             </p>
             <p className="text-xs text-muted-foreground">
               Median time from inquiry arrival to first WhatsApp outreach.
@@ -1252,16 +1299,50 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   </div>
                 </div>
 
-                {/* Actions: Executive Brief & Quick Reassign */}
-                <div className="flex items-center gap-2 shrink-0">
+                {/* Actions: Distinct-Themed Open Lead Button + Director Brief + Quick Reassign */}
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  {/* Distinct-Themed High-Contrast Button to Open Lead */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedLeadForDossier(lead);
+                      setLeadDossierModalOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-extrabold text-xs shadow-md shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    title="Open full investor lead dossier"
+                  >
+                    <Eye size={13} className="text-white" />
+                    <span>Open Lead ↗</span>
+                  </button>
+
                   <Button
                     size="sm"
+                    variant="outline"
                     onClick={() => handleOpenLeadBrief(lead)}
-                    className="h-9 px-3.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
+                    className="h-9 px-3 rounded-xl text-xs font-bold border-border hover:bg-secondary gap-1"
+                    title="Open Director commercial brief"
                   >
-                    <Eye size={13} />
-                    <span>Executive Brief ↗</span>
+                    <FileText size={12} className="text-primary" />
+                    <span>Director Brief</span>
                   </Button>
+
+                  {/* 1-Click Quick Move to another agent's leadbox */}
+                  <div className="hidden sm:flex items-center gap-1 pl-1">
+                    <span className="text-[10px] text-muted-foreground font-mono">Move:</span>
+                    {AGENCY_BROKERS.filter((b) => b.id !== lead.assignedBrokerId)
+                      .slice(0, 2)
+                      .map((b) => (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => handleReassignLeadToAgent(lead.id, b.id)}
+                          className="px-2 py-1 rounded-lg border border-border/80 bg-card hover:bg-primary/10 hover:border-primary/40 text-[10px] font-bold text-foreground transition-all"
+                          title={`Instantly reassign to ${b.name}'s leadbox`}
+                        >
+                          → {b.name.split(" ")[0]}
+                        </button>
+                      ))}
+                  </div>
                 </div>
               </div>
             ))
@@ -2412,6 +2493,156 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             <div className="flex justify-end pt-2">
               <Button onClick={() => setProjectBriefModalOpen(false)} className="rounded-xl text-xs font-bold">
                 Close Project Brief
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* ═══ FULL INVESTOR LEAD DOSSIER MODAL (OPENED VIA DISTINCT THEMED BUTTON) ═══ */}
+      {leadDossierModalOpen && selectedLeadForDossier && (
+        <Dialog open={leadDossierModalOpen} onOpenChange={setLeadDossierModalOpen}>
+          <DialogContent className="max-w-2xl rounded-3xl bg-card border-border p-6 sm:p-8 space-y-5">
+            <DialogHeader className="border-b border-border/60 pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="size-11 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-sm shadow-md shadow-indigo-500/20">
+                    {selectedLeadForDossier.clientName.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <DialogTitle className="text-lg font-black text-foreground font-display">
+                      {selectedLeadForDossier.clientName}
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {selectedLeadForDossier.nationality} · Assigned to {selectedLeadForDossier.assignedBrokerName}
+                    </p>
+                  </div>
+                </div>
+
+                <span className={`px-2.5 py-1 rounded-full text-xs font-bold border font-mono ${selectedLeadForDossier.stageColor}`}>
+                  {selectedLeadForDossier.stage}
+                </span>
+              </div>
+            </DialogHeader>
+
+            {/* Quick Metrics Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="p-3 rounded-2xl bg-secondary/40 border border-border/70">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Verified Budget</span>
+                <p className="text-base font-extrabold font-mono text-foreground mt-0.5">{selectedLeadForDossier.budgetFormatted}</p>
+                <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">{selectedLeadForDossier.liquidityTier}</span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-secondary/40 border border-border/70">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Target Development</span>
+                <p className="text-xs font-bold text-foreground mt-0.5 truncate">{selectedLeadForDossier.projectInterest}</p>
+                <span className="text-[10px] text-muted-foreground block mt-0.5">Off-Plan Allocation</span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-secondary/40 border border-border/70">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Deal Probability</span>
+                <p className="text-base font-extrabold font-mono text-emerald-400 mt-0.5">{selectedLeadForDossier.probability}</p>
+                <span className="text-[10px] text-muted-foreground block mt-0.5">High Closing Intent</span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-secondary/40 border border-border/70">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Speed to Lead</span>
+                <p className={`text-base font-extrabold font-mono mt-0.5 ${selectedLeadForDossier.speedToLeadMins > 10 ? "text-rose-400" : "text-emerald-400"}`}>
+                  {selectedLeadForDossier.speedToLeadMins} mins
+                </p>
+                <span className="text-[10px] text-muted-foreground block mt-0.5">{selectedLeadForDossier.lastContactAgo}</span>
+              </div>
+            </div>
+
+            {/* Executive Notes & Briefing */}
+            <div className="rounded-2xl border border-border/80 bg-secondary/30 p-4 space-y-1.5">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-primary block">
+                Director Commercial Intelligence
+              </span>
+              <p className="text-xs text-foreground leading-relaxed">
+                {selectedLeadForDossier.executiveBrief}
+              </p>
+            </div>
+
+            {/* Transfer Agent Leadbox Selector */}
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <ArrowRightLeft size={14} className="text-primary" />
+                  <span>Transfer Lead to Agent Leadbox:</span>
+                </span>
+                <span className="text-[10px] text-muted-foreground">Removes from former agent automatically</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {AGENCY_BROKERS.map((broker) => {
+                  const isCurrent = broker.id === selectedLeadForDossier.assignedBrokerId;
+                  return (
+                    <button
+                      key={broker.id}
+                      disabled={isCurrent}
+                      onClick={() => {
+                        handleReassignLeadToAgent(selectedLeadForDossier.id, broker.id);
+                        setSelectedLeadForDossier((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                assignedBrokerId: broker.id,
+                                assignedBrokerName: broker.name,
+                                assignedBrokerAvatar: broker.avatar,
+                                brokerPhone: broker.phone,
+                              }
+                            : null
+                        );
+                      }}
+                      className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-left ${
+                        isCurrent
+                          ? "bg-secondary/40 border-border/50 text-muted-foreground cursor-not-allowed opacity-60"
+                          : "bg-card border-border hover:border-primary hover:bg-secondary text-foreground shadow-xs"
+                      }`}
+                    >
+                      <p className="font-extrabold text-[11px] truncate">{broker.name}</p>
+                      <span className="text-[9px] text-muted-foreground font-mono block">
+                        {isCurrent ? "✓ Active Box" : "Transfer ↗"}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Communication & Workspace Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <a
+                  href={`https://wa.me/${selectedLeadForDossier.brokerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(
+                    `Hi ${selectedLeadForDossier.assignedBrokerName.split(" ")[0]}, Director Adam here. How is ${selectedLeadForDossier.clientName} progressing on ${selectedLeadForDossier.projectInterest}? Let's schedule the viewing today.`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all w-full sm:w-auto"
+                >
+                  <MessageCircle size={14} />
+                  <span>Message Broker</span>
+                </a>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-10 px-4 rounded-xl text-xs font-bold border-border hover:bg-secondary w-full sm:w-auto"
+                >
+                  <Link to="/app/leads" search={{ queue: "all" }}>
+                    <span>Open in Leads Queue</span>
+                    <ArrowUpRight size={13} className="ml-1" />
+                  </Link>
+                </Button>
+              </div>
+
+              <Button
+                onClick={() => setLeadDossierModalOpen(false)}
+                className="h-10 px-5 rounded-xl text-xs font-bold w-full sm:w-auto"
+              >
+                Close Dossier
               </Button>
             </div>
           </DialogContent>
