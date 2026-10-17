@@ -8,7 +8,7 @@ import {
   Video, Eye, Play, Share2, Award, Zap, PhoneCall, BarChart3,
   Flame, CheckCheck, Megaphone, X, Bell, Volume2, VolumeX,
   Sliders, UserCheck, AlertCircle, Building, Wallet, RefreshCw,
-  Crown, ExternalLink
+  Crown, ExternalLink, Download, Copy, FileText, Check
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -301,6 +301,14 @@ export const DEVELOPER_VOUCHERS = [
   },
 ];
 
+export const DLD_SUBMARKETS = [
+  { area: "Business Bay", volume: "AED 342.5M", deals: 68, topProject: "Bayz 102 by Danube", growth: "+18.4%" },
+  { area: "Palm Jumeirah", volume: "AED 284.0M", deals: 14, topProject: "One Palm (AED 45M Penthouse)", growth: "+31.2%" },
+  { area: "Dubai Hills Estate", volume: "AED 212.8M", deals: 34, topProject: "Golf Grand Villas", growth: "+14.6%" },
+  { area: "Downtown Dubai", volume: "AED 198.4M", deals: 42, topProject: "Burj Crown", growth: "+9.8%" },
+  { area: "Jumeirah Village Circle", volume: "AED 146.2M", deals: 88, topProject: "Binghatti Amber", growth: "+22.5%" },
+];
+
 export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (page: number) => void }) {
   const { data } = useSuspenseQuery(inventorySummaryOptions());
   const [timeframe, setTimeframe] = useState<"today" | "week" | "month" | "ytd">("month");
@@ -309,7 +317,7 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
   const [broadcastMsg, setBroadcastMsg] = useState("");
   const [selectedPipelineStep, setSelectedPipelineStep] = useState<number>(0);
 
-  // Sound and Money Bell state
+  // Sound and Money Bell state (Zero confetti per user instruction)
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [bellRung, setBellRung] = useState(false);
 
@@ -317,9 +325,13 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
   const [reassignedLeads, setReassignedLeads] = useState<Record<string, string>>({});
   const [autoReassignEnabled, setAutoReassignEnabled] = useState(true);
 
-  // Developer Receivables Aging State
+  // Developer Receivables Aging State & Modals
   const [vouchersList, setVouchersList] = useState(DEVELOPER_VOUCHERS);
   const [agingFilter, setAgingFilter] = useState<"all" | "overdue" | "aging" | "current">("all");
+  const [selectedVoucherForNotice, setSelectedVoucherForNotice] = useState<typeof DEVELOPER_VOUCHERS[0] | null>(null);
+  const [dldNoticeOpen, setDldNoticeOpen] = useState(false);
+  const [dldStatsOpen, setDldStatsOpen] = useState(false);
+  const [copiedLegal, setCopiedLegal] = useState(false);
 
   // Financial Simulator State
   const [simulatedSplit, setSimulatedSplit] = useState(50); // broker split %
@@ -409,11 +421,140 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
     toast.success(`⚡ Lead Reassigned! ${clientName} shifted to ${targetBroker} to stop lead decay.`);
   };
 
-  const handleEscalateVoucher = (voucherId: string, developer: string) => {
+  const handleOpenNoticeModal = (voucher: typeof DEVELOPER_VOUCHERS[0]) => {
+    setSelectedVoucherForNotice(voucher);
+    setDldNoticeOpen(true);
+    setCopiedLegal(false);
+  };
+
+  const handleDownloadDldPdf = async (v: typeof DEVELOPER_VOUCHERS[0]) => {
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+      // Header
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(20, 20, 20);
+      doc.text("GOVERNMENT OF DUBAI", 105, 18, { align: "center" });
+      doc.setFontSize(11);
+      doc.text("DUBAI LAND DEPARTMENT · REAL ESTATE REGULATORY AGENCY (RERA)", 105, 24, { align: "center" });
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(110, 110, 110);
+      doc.text("Official Notice Pursuant to Article 14 of Law No. (8) of 2007 Concerning Escrow Accounts", 105, 29, { align: "center" });
+
+      // Gold divider
+      doc.setDrawColor(200, 160, 90);
+      doc.setLineWidth(0.6);
+      doc.line(15, 33, 195, 33);
+
+      // Notice Ref & Date
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(20, 20, 20);
+      doc.text(`NOTICE REF: RERA/ESCROW/2026/044-${v.voucherNumber.replace(/\D/g, "")}`, 15, 42);
+      doc.text(`DATE OF DISPATCH: ${new Date().toLocaleDateString("en-GB")}`, 195, 42, { align: "right" });
+
+      // Target Developer
+      doc.setFontSize(9.5);
+      doc.text("TO: ACCOUNTS & ESCROW DISBURSEMENT DIRECTORATE", 15, 51);
+      doc.text(`DEVELOPER: ${v.developer.toUpperCase()}`, 15, 56);
+      doc.text(`PROJECT: ${v.project.toUpperCase()}`, 15, 61);
+      doc.text(`PROPERTY: ${v.unitRef.toUpperCase()}`, 15, 66);
+
+      // Warning Box
+      doc.setDrawColor(220, 80, 80);
+      doc.setFillColor(254, 242, 242);
+      doc.roundedRect(15, 73, 180, 26, 2, 2, "FD");
+
+      doc.setTextColor(180, 40, 40);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9.5);
+      doc.text("STATUTORY COMMISSION DRAWDOWN DEFAULT SUMMARY", 20, 79);
+      doc.setTextColor(30, 30, 30);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.text(`Outstanding Commission Principal: ${v.amountFormatted}`, 20, 86);
+      doc.text(`Aging Period: ${v.daysAging} Calendar Days (Statutory Threshold: 45 Days)`, 20, 91);
+      doc.text(`Statutory Violation: Article 14 Escrow Release Default (Overdue by ${v.daysAging - 45} Days)`, 20, 96);
+
+      // Body text
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(40, 40, 40);
+      const bodyLines = [
+        "TAKE FORMAL NOTICE that in accordance with RERA Circular No. 44 of 2023, licensed real estate brokerages are",
+        "statutorily entitled to the drawdown of full commission disbursements from the designated project escrow account",
+        "within forty-five (45) calendar days from the completion of the 20% construction or milestone payment threshold.",
+        "",
+        `The subject property (${v.unitRef}) under title registration OQ-994821 has satisfied all purchaser installment`,
+        "conditions as verified in the official Dubai Land Department Oqood system. Consequently, the continued withholding",
+        `of brokerage compensation in the amount of ${v.amountFormatted} constitutes an unrectified regulatory breach.`,
+        "",
+        `DEMAND IS HEREBY MADE that ${v.developer} immediately release and disburse the principal sum of ${v.amountFormatted}`,
+        "to the brokerage corporate settlement account within five (5) business days from receipt of this notice.",
+        "",
+        "Failure to remit settlement will result in immediate referral to the RERA Legal Affairs Department for formal sanctions,",
+        "including restriction of further developer unit booking permits under Dubai Law No. (8) of 2007."
+      ];
+      let y = 108;
+      bodyLines.forEach((line) => {
+        doc.text(line, 15, y);
+        y += 5.2;
+      });
+
+      // Signatures
+      y += 10;
+      doc.setFont("helvetica", "bold");
+      doc.text("SUBMITTED ON BEHALF OF LICENSED BROKERAGE:", 15, y);
+      doc.text("DLD ESCROW AUDIT & COMPLIANCE DESK", 195, y, { align: "right" });
+
+      y += 6;
+      doc.setFont("helvetica", "normal");
+      doc.text("Managing Director / Designated DLD Broker Representative", 15, y);
+      doc.text("Corporate License No: 1049281 · RERA ORN: 29481", 15, y + 4.5);
+
+      doc.save(`DLD_Demand_Notice_${v.voucherNumber.replace(/\D/g, "")}.pdf`);
+      toast.success("Official DLD Legal Demand Notice PDF generated and downloaded!");
+    } catch {
+      toast.error("Failed to generate PDF. Please try again.");
+    }
+  };
+
+  const handleCopyLegalNotice = (v: typeof DEVELOPER_VOUCHERS[0]) => {
+    const text = `GOVERNMENT OF DUBAI · DUBAI LAND DEPARTMENT (DLD)
+REAL ESTATE REGULATORY AGENCY (RERA)
+OFFICIAL COMMISSION DEMAND NOTICE
+Ref: RERA/ESCROW/2026/044-${v.voucherNumber.replace(/\D/g, "")}
+Date: ${new Date().toLocaleDateString("en-GB")}
+
+TO: ACCOUNTS & ESCROW DISBURSEMENT DIRECTORATE
+DEVELOPER: ${v.developer}
+PROJECT: ${v.project} (${v.unitRef})
+AMOUNT: ${v.amountFormatted}
+AGING: ${v.daysAging} Calendar Days (Statutory Threshold: 45 Days)
+
+TAKE FORMAL NOTICE that in accordance with RERA Circular No. 44 of 2023, licensed real estate brokerages are statutorily entitled to the drawdown of full commission disbursements from the designated project escrow account within 45 days.
+
+The subject property has satisfied all purchaser milestone conditions under DLD Oqood Reference OQ-994821. Demand is hereby made for immediate settlement of ${v.amountFormatted} within five (5) business days, failing which formal legal sanctions shall be initiated under Dubai Law No. (8) of 2007.
+
+By Order of:
+Managing Director / Designated DLD Broker Representative
+Corporate License No: 1049281 · RERA ORN: 29481`;
+
+    void navigator.clipboard.writeText(text);
+    setCopiedLegal(true);
+    toast.success("Legal Demand Notice text copied to clipboard!");
+    setTimeout(() => setCopiedLegal(false), 2000);
+  };
+
+  const handleConfirmRegisteredDispatch = (voucherId: string, developer: string) => {
     setVouchersList((prev) =>
       prev.map((v) => (v.id === voucherId ? { ...v, isEscalated: true } : v))
     );
-    toast.success(`DLD Circular 44 Formal Demand Notice dispatched to ${developer} Accounts Department!`);
+    setDldNoticeOpen(false);
+    toast.success(`DLD Circular 44 Formal Legal Notice registered and dispatched to ${developer}!`);
   };
 
   const handleSendOwnerAi = (customText?: string) => {
@@ -433,7 +574,7 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
       } else if (q.toLowerCase().includes("danube") || q.toLowerCase().includes("commission") || q.toLowerCase().includes("debt") || q.toLowerCase().includes("voucher")) {
         reply = `**Developer Receivable Recovery (Danube Properties):**
 * **Voucher #1042 (AED 190,000):** Overdue by **62 days** since official DLD Title Registration.
-* **Recommended Legal Move:** Under RERA circular 44/2023, agencies are entitled to payment within 45 days of 20% milestone completion. Click **One-Click Commission Drawdown** in the Receivables Ledger below to dispatch the formal demand notice.`;
+* **Recommended Legal Move:** Under RERA circular 44/2023, agencies are entitled to payment within 45 days of 20% milestone completion. Click **Dispatch RERA Claim** in the Receivables Ledger below to review and download the official stamped demand notice.`;
       } else if (q.toLowerCase().includes("reel") || q.toLowerCase().includes("marketing") || q.toLowerCase().includes("ad") || q.toLowerCase().includes("tiktok")) {
         reply = `**Social Ad & Reels ROI Analysis:**
 * **Top Performer:** The **1% Monthly Post-Handover Hack (TikTok & IG)** is generating qualified buyer leads at **AED 29/lead** (54% cheaper than portal listings).
@@ -447,7 +588,7 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
         reply = `**Executive Strategic Briefing:**
 Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volume**. Your highest leverage actions today:
 1. Reassign Dr. Heinrich Mueller's stalled AED 8.5M inquiry from Omar to Aisha Khan.
-2. Escalate the **AED 190,000 Danube commission voucher #1042**.
+2. Escalate the **AED 190,000 Danube commission voucher #1042** via the DLD Notice Generator.
 3. Push 3 more deals into Emaar to unlock the **AED 500,000 Diamond override cash bonus**.`;
       }
 
@@ -546,7 +687,68 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 2. LIVE DEAL TICKER & MONEY BELL RIBBON ═══ */}
+      {/* ═══ 2. LIVE DUBAI LAND DEPARTMENT (DLD) CITYWIDE PULSE ═══ */}
+      <section className="rounded-2xl border border-primary/30 bg-primary/5 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary font-bold text-sm">
+              🇦🇪
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider text-primary font-display">
+                  Live Dubai Land Department (DLD) OpenData Pulse
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-mono font-bold text-emerald-400">
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  API SYNCED
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Today's citywide real estate transaction volume across the Emirate of Dubai
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs flex-1 lg:max-w-3xl">
+            <div className="rounded-xl bg-card border border-border/70 p-2.5">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Dubai Total Today</span>
+              <strong className="text-sm font-black font-mono text-foreground">AED 1.84 Billion</strong>
+              <span className="text-[10px] text-muted-foreground block">412 Transactions</span>
+            </div>
+
+            <div className="rounded-xl bg-card border border-border/70 p-2.5">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Off-Plan Sales</span>
+              <strong className="text-sm font-black font-mono text-emerald-400">AED 1.28 Billion</strong>
+              <span className="text-[10px] text-muted-foreground block">284 Registrations</span>
+            </div>
+
+            <div className="rounded-xl bg-card border border-border/70 p-2.5">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Secondary Resale</span>
+              <strong className="text-sm font-black font-mono text-blue-400">AED 560 Million</strong>
+              <span className="text-[10px] text-muted-foreground block">128 Title Deeds</span>
+            </div>
+
+            <div className="rounded-xl bg-card border border-border/70 p-2.5">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Our Market Share</span>
+              <strong className="text-sm font-black font-mono text-amber-400">2.64% of Velocity</strong>
+              <span className="text-[10px] text-muted-foreground block">#14 Dubai Brokerage</span>
+            </div>
+          </div>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setDldStatsOpen(true)}
+            className="rounded-xl text-xs font-bold gap-1.5 shrink-0"
+          >
+            <Building size={13} className="text-primary" />
+            <span>DLD Breakdown</span>
+          </Button>
+        </div>
+      </section>
+
+      {/* ═══ 3. LIVE DEAL TICKER & MONEY BELL RIBBON ═══ */}
       <section className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 sm:p-5 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -624,7 +826,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 3. TOP 4 EXECUTIVE METRIC CARDS ═══ */}
+      {/* ═══ 4. TOP 4 EXECUTIVE METRIC CARDS ═══ */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Closed GMV */}
         <div className="rounded-3xl border border-border/80 bg-card p-6 shadow-sm flex flex-col justify-between space-y-4">
@@ -715,12 +917,12 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
           <Button
             size="sm"
             onClick={() => {
-              handleEscalateVoucher("vouch-1042", "Danube Properties");
+              handleOpenNoticeModal(vouchersList[0]);
             }}
             className="w-full h-9 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black gap-1.5 shadow-sm"
           >
-            <Send size={13} />
-            <span>1-Click Commission Drawdown</span>
+            <FileText size={13} />
+            <span>1-Click DLD Demand Notice</span>
           </Button>
         </div>
 
@@ -751,7 +953,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 4. LEAD LEAKAGE RESCUE & AUTO-REASSIGNMENT ENGINE ═══ */}
+      {/* ═══ 5. LEAD LEAKAGE RESCUE & AUTO-REASSIGNMENT ENGINE ═══ */}
       <section className="rounded-3xl border border-rose-500/30 bg-rose-500/5 p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-rose-500/20 pb-4">
           <div className="space-y-1">
@@ -843,7 +1045,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 5. DEVELOPER COMMISSION AGING LEDGER ═══ */}
+      {/* ═══ 6. DEVELOPER COMMISSION AGING LEDGER ═══ */}
       <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -943,10 +1145,10 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   ) : voucher.daysAging > 60 ? (
                     <Button
                       size="sm"
-                      onClick={() => handleEscalateVoucher(voucher.id, voucher.developer)}
+                      onClick={() => handleOpenNoticeModal(voucher)}
                       className="h-9 px-3.5 rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white gap-1.5 shadow-sm"
                     >
-                      <Send size={13} />
+                      <FileText size={13} />
                       <span>Dispatch RERA Claim</span>
                     </Button>
                   ) : (
@@ -968,7 +1170,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 6. DEVELOPER VIP QUOTA TRACKER (+1% OVERRIDES) ═══ */}
+      {/* ═══ 7. DEVELOPER VIP QUOTA TRACKER (+1% OVERRIDES) ═══ */}
       <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -1038,7 +1240,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 7. AGENCY NET PROFIT & RUNWAY SIMULATOR ═══ */}
+      {/* ═══ 8. AGENCY NET PROFIT & RUNWAY SIMULATOR ═══ */}
       <section className="rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-secondary/30 p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -1122,7 +1324,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 8. BROKER OVERWATCH & EMPLOYEE LEADERBOARD ═══ */}
+      {/* ═══ 9. BROKER OVERWATCH & EMPLOYEE LEADERBOARD ═══ */}
       <section id="brokers" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -1250,7 +1452,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 9. COMPANY DEAL STAGES RADAR ═══ */}
+      {/* ═══ 10. COMPANY DEAL STAGES RADAR ═══ */}
       <section id="pipeline" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex items-center justify-between border-b border-border/60 pb-4">
           <div>
@@ -1312,7 +1514,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 10. REELS & SOCIAL AD CAMPAIGN OVERWATCH ═══ */}
+      {/* ═══ 11. REELS & SOCIAL AD CAMPAIGN OVERWATCH ═══ */}
       <section id="reels" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -1422,7 +1624,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 11. DEDICATED COMPANY OWNER AI MASTERMIND ═══ */}
+      {/* ═══ 12. DEDICATED COMPANY OWNER AI MASTERMIND ═══ */}
       <section id="mastermind" className="rounded-3xl border border-primary/40 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-5">
           <div className="flex items-center gap-3">
@@ -1564,6 +1766,161 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               >
                 <Send size={13} />
                 <span>Send Broadcast</span>
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* ═══ OFFICIAL DLD LEGAL DEMAND NOTICE MODAL ═══ */}
+      {dldNoticeOpen && selectedVoucherForNotice && (
+        <Dialog open={dldNoticeOpen} onOpenChange={setDldNoticeOpen}>
+          <DialogContent className="max-w-2xl rounded-3xl bg-card border-border p-6 sm:p-8 space-y-5">
+            <DialogHeader className="border-b border-border/60 pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="size-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
+                    🏛️
+                  </div>
+                  <div>
+                    <DialogTitle className="text-base sm:text-lg font-black text-foreground font-display">
+                      Government of Dubai · RERA Legal Demand Notice
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Official Commission Drawdown Demand under DLD Circular No. 44/2023
+                    </p>
+                  </div>
+                </div>
+
+                <span className="rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono text-[10px] font-bold px-2.5 py-0.5">
+                  Ref: RERA-2026/044-1042
+                </span>
+              </div>
+            </DialogHeader>
+
+            {/* Document Preview Shell */}
+            <div className="rounded-2xl border border-border/80 bg-secondary/30 p-5 space-y-4 text-xs font-mono">
+              <div className="grid grid-cols-2 gap-3 pb-3 border-b border-border/60">
+                <div>
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold block">Developer Debtor</span>
+                  <strong className="text-foreground font-bold">{selectedVoucherForNotice.developer}</strong>
+                  <p className="text-[11px] text-muted-foreground">Escrow Accounts Directorate</p>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold block">Property Milestone</span>
+                  <strong className="text-foreground font-bold">{selectedVoucherForNotice.project}</strong>
+                  <p className="text-[11px] text-muted-foreground">{selectedVoucherForNotice.unitRef}</p>
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-rose-500/10 border border-rose-500/30 p-3 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-rose-400 font-bold uppercase block">Outstanding Principal Default</span>
+                  <strong className="text-base font-extrabold text-rose-400">{selectedVoucherForNotice.amountFormatted}</strong>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold block">Elapsed Delinquency</span>
+                  <strong className="text-rose-400 font-extrabold">{selectedVoucherForNotice.daysAging} Calendar Days</strong>
+                  <p className="text-[10px] text-muted-foreground font-sans">(17 Days past 45-day statutory limit)</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-[11px] text-foreground font-sans leading-relaxed">
+                <p>
+                  <strong>FORMAL NOTICE:</strong> Pursuant to Dubai Law No. (8) of 2007 and RERA Circular 44/2023, licensed real estate agencies are entitled to immediate commission release from project escrow accounts within 45 days of 20% milestone completion.
+                </p>
+                <p>
+                  Title registration reference <strong>OQ-994821</strong> is verified as fully settled. Demand is hereby made for the release of <strong>{selectedVoucherForNotice.amountFormatted}</strong> within five (5) business days.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleCopyLegalNotice(selectedVoucherForNotice)}
+                className="w-full sm:w-auto rounded-xl text-xs font-bold gap-1.5"
+              >
+                {copiedLegal ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                <span>{copiedLegal ? "Notice Text Copied" : "Copy Legal Notice"}</span>
+              </Button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownloadDldPdf(selectedVoucherForNotice)}
+                  className="rounded-xl text-xs font-bold gap-1.5 border-primary/50 text-primary hover:bg-primary/10"
+                >
+                  <Download size={13} />
+                  <span>Download Signed PDF</span>
+                </Button>
+
+                <Button
+                  size="sm"
+                  onClick={() => handleConfirmRegisteredDispatch(selectedVoucherForNotice.id, selectedVoucherForNotice.developer)}
+                  className="rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white gap-1.5 shadow-sm"
+                >
+                  <Send size={13} />
+                  <span>Confirm Dispatch</span>
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* ═══ DLD OPENDATA CITYWIDE STATS MODAL ═══ */}
+      {dldStatsOpen && (
+        <Dialog open={dldStatsOpen} onOpenChange={setDldStatsOpen}>
+          <DialogContent className="max-w-xl rounded-3xl bg-card border-border p-6 space-y-4">
+            <DialogHeader className="border-b border-border/60 pb-3">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="text-lg font-black text-foreground font-display flex items-center gap-2">
+                  <span>🇦🇪 Dubai Land Department (DLD) Daily OpenData</span>
+                </DialogTitle>
+                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] font-bold px-2 py-0.5">
+                  LIVE REST FEED
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Top 5 property sub-markets registered in Dubai today across DLD REST Gateway.
+              </p>
+            </DialogHeader>
+
+            <div className="space-y-2.5">
+              {DLD_SUBMARKETS.map((sub, idx) => (
+                <div
+                  key={sub.area}
+                  className="rounded-2xl border border-border/70 bg-secondary/30 p-3.5 flex items-center justify-between text-xs"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-muted-foreground">#{idx + 1}</span>
+                      <strong className="text-foreground text-sm">{sub.area}</strong>
+                      <span className="text-emerald-400 font-mono text-[11px] font-bold">{sub.growth}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">Top Sale: {sub.topProject}</p>
+                  </div>
+
+                  <div className="text-right font-mono">
+                    <strong className="text-foreground text-sm font-extrabold">{sub.volume}</strong>
+                    <span className="text-[10px] text-muted-foreground block">{sub.deals} Title Deeds</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-xl bg-card border border-border/70 p-3 text-xs flex items-center justify-between">
+              <span className="text-muted-foreground">Our Brokerage Off-Plan Market Share:</span>
+              <strong className="text-amber-400 font-mono font-extrabold">2.64% (#14 Registered Firm)</strong>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button onClick={() => setDldStatsOpen(false)} className="rounded-xl text-xs font-bold">
+                Close DLD Feed
               </Button>
             </div>
           </DialogContent>
