@@ -135,6 +135,21 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
   const [ownerAiChat, setOwnerAiChat] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [ownerAiLoading, setOwnerAiLoading] = useState(false);
 
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const el = document.querySelector(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
   const PIPELINE_FLOW = [
     {
       step: "01",
@@ -371,7 +386,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
 
         {/* Card 3: Developer Debt / Receivables Ledger */}
-        <div className="rounded-3xl border border-amber-500/30 bg-amber-500/5 p-6 shadow-sm flex flex-col justify-between space-y-4">
+        <div id="vouchers" className="rounded-3xl border border-amber-500/30 bg-amber-500/5 p-6 shadow-sm flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
               <Clock size={14} className="text-amber-400" /> Developer Receivables
@@ -431,7 +446,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
       </section>
 
       {/* ═══ 3. BROKER OVERWATCH & EMPLOYEE LEADERBOARD ═══ */}
-      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
+      <section id="brokers" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <div className="flex items-center gap-2">
@@ -559,7 +574,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
       </section>
 
       {/* ═══ 4. COMPANY DEAL STAGES RADAR ═══ */}
-      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
+      <section id="pipeline" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex items-center justify-between border-b border-border/60 pb-4">
           <div>
             <h2 className="text-lg font-extrabold text-foreground font-display flex items-center gap-2">
@@ -621,7 +636,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
       </section>
 
       {/* ═══ 5. REELS & SOCIAL AD CAMPAIGN OVERWATCH ═══ */}
-      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
+      <section id="reels" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <div className="flex items-center gap-2">
@@ -731,7 +746,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
       </section>
 
       {/* ═══ 6. DEDICATED COMPANY OWNER AI MASTERMIND ═══ */}
-      <section className="rounded-3xl border border-primary/40 bg-card p-6 sm:p-8 shadow-sm space-y-6">
+      <section id="mastermind" className="rounded-3xl border border-primary/40 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-5">
           <div className="flex items-center gap-3">
             <div className="size-11 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">

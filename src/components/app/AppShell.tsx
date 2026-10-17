@@ -5,6 +5,7 @@ import {
   Building2, CalendarClock, ChevronsLeft, ChevronsRight, Construction, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
+  Video, DollarSign, Layers, Crown, Megaphone,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -70,39 +71,92 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     void navigate({ to: "/login", search: { mode: undefined }, replace: true });
   };
 
-  const groups: { title: string; items: Item[] }[] = [
-    { title: "CORE", items: [
-      { label: "Dashboard", desc: "Executive Cockpit & Portfolio Oversight", to: "/owner-dashboard", icon: Home, exact: true },
-      { label: "Leads", desc: "Investor Inbox & Priority Action Queue", to: "/app/leads", icon: Inbox },
-      { label: "AI Assistant", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
-    ] },
-    { title: "INVENTORY", items: [
-      { label: "Offplan", desc: "1,355+ Verified UAE Developments & Escrow", to: "/app/offplan", icon: Construction },
-      { label: "Ready Property", desc: "Secondary Resales & Handed-over Units", to: "/app/listings", icon: Building2 },
-      { label: "Rentals", desc: "Ejari Tenancies & Leasehold Listings", to: "/app/rentals", icon: Key },
-    ] },
-    { title: "CRM", items: [
-      { label: "Follow-Ups", desc: "Scheduled Reminders & Client Outreach", to: "/app/follow-ups", icon: CalendarClock },
-      { label: "Appointments", desc: "Calendar Viewings & Investor Meetings", to: "/app/appointments", icon: CalendarDays },
-    ] },
-    { title: "MONEY", items: [
-      { label: "Deals", desc: "Closed Sales Pipeline & Buyer Milestones", to: "/app/deals", icon: Handshake },
-      { label: "Tenancies", desc: "Active Lease Contracts & Ejari Renewals", to: "/app/tenancies", icon: KeyRound },
-      { label: "Agreements", desc: "DLD Form A/B/F & Official PDF Contracts", to: "/app/agreements", icon: FileSignature },
-      { label: "Reports", desc: "Q4 Financial GMV & Broker Performance", to: "/app/reports", icon: LineChart },
-    ] },
-    { title: "CATALOG", items: [
-      { label: "Owners", desc: "Landlords & Master Developer Directory", to: "/app/owners", icon: Users },
-      { label: "Amenities", desc: "Tower Features & Luxury Specifications", to: "/app/amenities", icon: Trees },
-    ] },
-    { title: "SYSTEM", items: [
-      { label: "Users Management", desc: "Broker Accounts & Team Access", to: "/app/users", icon: Users, adminOnly: true },
-      { label: "Activity Logs", desc: "Audit Trail & Compliance History", to: "/app/activity-logs", icon: Activity, adminOnly: true },
-      { label: "Trash", desc: "Archived Leads & Deleted Records", to: "/app/trash", icon: Trash2, adminOnly: true },
-      { label: "Roles & Permissions", desc: "Security Scopes & Commission Splits", to: "/app/roles-permissions", icon: ShieldCheck, adminOnly: true },
-      { label: "About App", desc: "Platform Architecture & DLD Version", to: "/app/about", icon: Info },
-    ] },
+  const [role, setRole] = useState<string | null>(null);
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) =>
+      (supabase as unknown as { from: (t: string) => any })
+        .from("org_members")
+        .select("role")
+        .eq("user_id", data.user?.id ?? "")
+        .maybeSingle()
+        .then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))
+    );
+  }, []);
+
+  const isOwnerRoute = pathname === "/owner-dashboard" || pathname.startsWith("/owner-dashboard");
+  const [executiveMode, setExecutiveMode] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (isOwnerRoute) {
+      setExecutiveMode(true);
+    } else if (role === "agent") {
+      setExecutiveMode(false);
+    }
+  }, [isOwnerRoute, role]);
+
+  const ownerGroups: { title: string; items: Item[] }[] = [
+    {
+      title: "COMPANY OVERWATCH",
+      items: [
+        { label: "Executive Cockpit", desc: "Agency Overwatch, GMV & Speed to Lead", to: "/owner-dashboard", icon: Home, exact: true },
+        { label: "Broker Leaderboard", desc: "12 Licensed Agents, Response Times & Quotas", to: "/owner-dashboard#brokers", icon: Users },
+        { label: "Deals Stages Radar", desc: "Inbound Leads, Viewings, Form F & Vouchers", to: "/owner-dashboard#pipeline", icon: Layers },
+        { label: "Reels & Marketing ROI", desc: "Viral Video Lead Gen & 36.8x ROAS Attribution", to: "/owner-dashboard#reels", icon: Video },
+      ],
+    },
+    {
+      title: "CAPITAL & MASTERMIND",
+      items: [
+        { label: "Developer Debt", desc: "Danube & Emaar Overdue Commission Ledger", to: "/owner-dashboard#vouchers", icon: DollarSign },
+        { label: "Owner AI Mastermind", desc: "Executive Decisions & Cashflow Recovery", to: "/owner-dashboard#mastermind", icon: Sparkles },
+        { label: "Financial P&L & Splits", desc: "Agency Net Commission Splits & Forecasts", to: "/app/reports", icon: LineChart },
+      ],
+    },
+    {
+      title: "GOVERNANCE",
+      items: [
+        { label: "Broker Accounts", desc: "Agent Roster, RERA Cards & Access", to: "/app/users", icon: ShieldCheck, adminOnly: true },
+        { label: "Agency Audit Trail", desc: "Real-time Compliance & Audit Trail", to: "/app/activity-logs", icon: Activity, adminOnly: true },
+        { label: "About Platform", desc: "Platform Architecture & DLD Version", to: "/app/about", icon: Info },
+      ],
+    },
   ];
+
+  const brokerGroups: { title: string; items: Item[] }[] = [
+    {
+      title: "BROKER DESK",
+      items: [
+        { label: "Leads Inbox", desc: "Investor Inbox & Priority Action Queue", to: "/app/leads", icon: Inbox },
+        { label: "Broker AI Copilot", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
+      ],
+    },
+    {
+      title: "INVENTORY",
+      items: [
+        { label: "Offplan", desc: "1,355+ Verified UAE Developments & Escrow", to: "/app/offplan", icon: Construction },
+        { label: "Ready Property", desc: "Secondary Resales & Handed-over Units", to: "/app/listings", icon: Building2 },
+        { label: "Rentals", desc: "Ejari Tenancies & Leasehold Listings", to: "/app/rentals", icon: Key },
+      ],
+    },
+    {
+      title: "CRM",
+      items: [
+        { label: "Follow-Ups", desc: "Scheduled Reminders & Client Outreach", to: "/app/follow-ups", icon: CalendarClock },
+        { label: "Appointments", desc: "Calendar Viewings & Investor Meetings", to: "/app/appointments", icon: CalendarDays },
+      ],
+    },
+    {
+      title: "TRANSACTIONS",
+      items: [
+        { label: "Deals", desc: "Closed Sales Pipeline & Buyer Milestones", to: "/app/deals", icon: Handshake },
+        { label: "Tenancies", desc: "Active Lease Contracts & Ejari Renewals", to: "/app/tenancies", icon: KeyRound },
+        { label: "Agreements", desc: "DLD Form A/B/F & Official PDF Contracts", to: "/app/agreements", icon: FileSignature },
+        { label: "Reports", desc: "Q4 Financial GMV & Broker Performance", to: "/app/reports", icon: LineChart },
+      ],
+    },
+  ];
+
+  const activeGroups = executiveMode ? ownerGroups : brokerGroups;
 
   useEffect(() => { setDrawer(false); }, [pathname]);
   useEffect(() => {
@@ -120,21 +174,18 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   }, []);
 
   const theme = useTheme();
-  const [role, setRole] = useState<string | null>(null);
-  useEffect(() => {
-    void supabase.auth.getUser().then(({ data }) =>
-      (supabase as unknown as { from: (t: string) => any })
-        .from("org_members")
-        .select("role")
-        .eq("user_id", data.user?.id ?? "")
-        .maybeSingle()
-        .then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))
-    );
-  }, []);
 
-  const active = (it: Item) => (it.exact ? pathname === it.to || pathname === `${it.to}/` : pathname.startsWith(it.to));
-  const isAdmin = role === "company_admin";
-  const visibleGroups = groups
+  const active = (it: Item) => {
+    if (it.to.includes("#")) {
+      const [path, hash] = it.to.split("#");
+      const currentHash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
+      return pathname === path && currentHash === hash;
+    }
+    return it.exact ? pathname === it.to || pathname === `${it.to}/` : pathname.startsWith(it.to);
+  };
+
+  const isAdmin = role === "company_admin" || !role;
+  const visibleGroups = activeGroups
     .map((g) => ({ ...g, items: isAdmin ? g.items : g.items.filter((it) => !it.adminOnly) }))
     .filter((g) => g.items.length > 0);
 
@@ -194,6 +245,81 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               </button>
             )}
           </div>
+
+          {/* Persona Switcher Pill */}
+          {!collapsed && (
+            <div className="px-3 py-2 border-b border-border/50">
+              {executiveMode ? (
+                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2 text-xs flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Crown size={14} className="text-amber-400 shrink-0" />
+                    <span className="font-extrabold text-[11px] text-amber-300 truncate">Company Owner</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExecutiveMode(false);
+                      void navigate({ to: "/app/leads" });
+                    }}
+                    className="text-[10px] text-muted-foreground hover:text-foreground font-bold hover:underline shrink-0"
+                    title="Switch to Licensed Broker Leads & Units Desk"
+                  >
+                    Broker Desk ↗
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-xl bg-primary/10 border border-primary/30 p-2 text-xs flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <User size={14} className="text-primary shrink-0" />
+                    <span className="font-extrabold text-[11px] text-primary truncate">Broker Desk</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExecutiveMode(true);
+                      void navigate({ to: "/owner-dashboard" });
+                    }}
+                    className="text-[10px] text-muted-foreground hover:text-foreground font-bold hover:underline shrink-0"
+                    title="Switch to Executive Agency Overwatch Cockpit"
+                  >
+                    Owner Cockpit ↗
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {collapsed && (
+            <div className="flex justify-center py-2 border-b border-border/40">
+              <button
+                type="button"
+                onClick={() => {
+                  if (executiveMode) {
+                    setExecutiveMode(false);
+                    void navigate({ to: "/app/leads" });
+                  } else {
+                    setExecutiveMode(true);
+                    void navigate({ to: "/owner-dashboard" });
+                  }
+                }}
+                className={`size-8 rounded-xl flex items-center justify-center transition-all ${
+                  executiveMode
+                    ? "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30"
+                    : "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30"
+                }`}
+                title={executiveMode ? "Company Owner Mode · Click to switch to Broker Desk" : "Broker Desk Mode · Click to switch to Owner Cockpit"}
+                onMouseEnter={(e) =>
+                  handleMouseEnter(e, {
+                    label: executiveMode ? "Company Owner Mode" : "Broker Desk Mode",
+                    desc: executiveMode ? "Click to toggle Broker Leads & Inventory" : "Click to toggle Company Owner Overwatch",
+                  })
+                }
+                onMouseLeave={handleMouseLeave}
+              >
+                {executiveMode ? <Crown size={15} /> : <User size={15} />}
+              </button>
+            </div>
+          )}
 
           {/* Navigation Items */}
           <nav className="a-nav">
