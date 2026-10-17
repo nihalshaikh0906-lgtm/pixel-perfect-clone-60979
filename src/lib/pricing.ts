@@ -18,10 +18,10 @@ export type Plan = {
 };
 
 export const PLANS: Plan[] = [
-  { id: "monthly", label: "Monthly", period: "/month", buttonLabel: "monthly", months: 1, originalPrice: 238, price: 119, perMonth: 119, savingLabel: "50% off launch price", stripePriceId: "price_PLACEHOLDER_monthly", highlighted: false },
-  { id: "quarterly", label: "3 months", period: "/3 months", buttonLabel: "3 months", months: 3, originalPrice: 714, price: 339, perMonth: 113, savingLabel: "Save AED 18", toggleBadge: "−5%", stripePriceId: "price_PLACEHOLDER_quarterly", highlighted: false },
-  { id: "semiannual", label: "6 months", period: "/6 months", buttonLabel: "6 months", months: 6, originalPrice: 1428, price: 660, perMonth: 110, savingLabel: "Save AED 54", toggleBadge: "−7.5%", stripePriceId: "price_PLACEHOLDER_semiannual", highlighted: false },
-  { id: "annual", label: "Annual", period: "/year", buttonLabel: "annual", months: 12, originalPrice: 2856, price: 1309, perMonth: 109, perMonthNote: "pay 11 months, get 12", savingLabel: "1 month free", toggleBadge: "1 month free", stripePriceId: "price_PLACEHOLDER_annual", highlighted: true },
+  { id: "monthly", label: "1 Month", period: "/month", buttonLabel: "1 month", months: 1, originalPrice: 199, price: 129, perMonth: 129, savingLabel: "Launch discount · 35% off", toggleBadge: "Launch offer", stripePriceId: "price_monthly_129", highlighted: false },
+  { id: "quarterly", label: "3 Months", period: "/3 months", buttonLabel: "3 months", months: 3, originalPrice: 597, price: 349, perMonth: 116, savingLabel: "Save AED 248 (AED 116/mo)", toggleBadge: "−42%", stripePriceId: "price_quarterly_349", highlighted: false },
+  { id: "semiannual", label: "6 Months", period: "/6 months", buttonLabel: "6 months", months: 6, originalPrice: 1194, price: 629, perMonth: 105, savingLabel: "Save AED 565 (AED 105/mo)", toggleBadge: "−47%", stripePriceId: "price_semiannual_629", highlighted: false },
+  { id: "annual", label: "1 Year", period: "/year", buttonLabel: "1 year", months: 12, originalPrice: 2388, price: 1099, perMonth: 91, perMonthNote: "Only AED 91 / month", savingLabel: "Best Value · Save 54%", toggleBadge: "★ Best Deal", stripePriceId: "price_annual_1099", highlighted: true },
 ];
 
 export const DEFAULT_PLAN: PlanId = "annual";
