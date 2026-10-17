@@ -84,7 +84,11 @@ function LoginPage() {
     setLeaving(true);
     await new Promise((r) => setTimeout(r, 400));
     await router.invalidate();
-    void router.navigate({ to: "/app/ai-assistant", replace: true });
+    if (role === "company") {
+      void router.navigate({ to: "/owner-dashboard", replace: true });
+    } else {
+      void router.navigate({ to: "/app/leads", replace: true });
+    }
   }
 
   async function sendReset() {
