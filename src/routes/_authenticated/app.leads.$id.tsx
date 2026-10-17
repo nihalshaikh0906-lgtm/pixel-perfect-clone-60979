@@ -161,12 +161,24 @@ function BespokeLeadDossier({ lead, clientMode }: { lead: Lead; clientMode?: boo
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [inspectProject, setInspectProject] = useState<ProjectDetail | null>(null);
   const [activeModalTab, setActiveModalTab] = useState<"gallery" | "map" | "floorplan" | "plan">("gallery");
+  const [projectMediaTab, setProjectMediaTab] = useState<"gallery" | "floorplan" | "plan" | "map">("gallery");
 
-  // AI State
+  // Script switcher tabs
+  const [scriptTab, setScriptTab] = useState<"opener" | "escrow" | "roi" | "urgency">("opener");
+
+  // Interactive KYC Checklist State
+  const [checklist, setChecklist] = useState({
+    passport: false,
+    funds: true,
+    eoi: false,
+    contract: false,
+  });
+
+  // AI Chat State
   const [aiQuestion, setAiQuestion] = useState("");
   const [aiChatHistory, setAiChatHistory] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [aiTyping, setAiTyping] = useState(false);
-  const [copiedPitch, setCopiedPitch] = useState(false);
+  const [copiedScript, setCopiedScript] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -175,14 +187,47 @@ function BespokeLeadDossier({ lead, clientMode }: { lead: Lead; clientMode?: boo
   const p = priorityOf(lead);
   const cleanPhone = lead.phone.replace(/\D/g, "");
   const heroProject = VERIFIED_MATCHES[activeProjectIndex];
+  const firstName = lead.name.split(" ")[0];
 
-  const defaultPitch = `Hi ${lead.name.split(" ")[0]}, following up on your search for ${wants(lead)} (Budget: ${formatAed(lead.budget)}). We just received direct developer allocations for ${heroProject.name} (${heroProject.paymentPlan}) with verified DLD escrow. When are you free today for a quick 2-minute overview?`;
+  // Dynamic high-converting tailored WhatsApp scripts
+  const SCRIPTS: Record<"opener" | "escrow" | "roi" | "urgency", { label: string; text: string; badge: string }> = {
+    opener: {
+      label: "⚡ 10s Fast Opener",
+      badge: "Speed to Lead",
+      text: `Hi ${firstName}, hope you're having a productive week! Following up on your requirement for ${wants(lead)} in ${lead.area} (Budget: ${formatAed(lead.budget)}). We just received direct developer allocations for ${heroProject.name} (${heroProject.price}) with ${heroProject.paymentPlan} and verified DLD escrow. When are you free today for a quick 2-minute overview?`,
+    },
+    escrow: {
+      label: "🛡️ DLD Escrow Proof",
+      badge: "Overcomes Hesitation",
+      text: `Hi ${firstName}, regarding safety and construction guarantees: ${heroProject.name} is 100% registered with the Dubai Land Department Escrow system. Your payments are legally held in the designated escrow account and released only upon certified construction milestones. Would you like me to send you the official DLD registration certificate and trust details?`,
+    },
+    roi: {
+      label: "📈 1% Monthly ROI",
+      badge: "Cashflow Pitch",
+      text: `Hi ${firstName}, looking at ${heroProject.name} from an investment angle: with projected ${heroProject.roi} and the developer's 1% monthly payment plan, this asset delivers maximum liquidity. Plus, developer policy allows capital gain resale after completing only 30% of milestones. Would you like me to share the ROI cash-flow sheet?`,
+    },
+    urgency: {
+      label: "🔥 Price Hike Alert",
+      badge: "Closes EOI Today",
+      text: `Hi ${firstName}, quick urgent update: ${heroProject.name} is closing this phase ahead of an announced 4% developer price revision this Sunday. I have a high-floor ${heroProject.bedrooms} unit on temporary hold. Can I lock your holding slip with an EOI reservation before the price increases?`,
+    },
+  };
 
-  const copyToClipboard = (text: string) => {
+  const currentScript = SCRIPTS[scriptTab].text;
+
+  const copyScript = (text: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedPitch(true);
-    toast.success("WhatsApp pitch copied to clipboard!");
-    setTimeout(() => setCopiedPitch(false), 2000);
+    setCopiedScript(true);
+    toast.success("Tailored WhatsApp script copied to clipboard!");
+    setTimeout(() => setCopiedScript(false), 2000);
+  };
+
+  const toggleChecklist = (key: keyof typeof checklist) => {
+    setChecklist((prev) => {
+      const next = !prev[key];
+      toast.success(next ? "Checklist item marked complete!" : "Checklist item updated.");
+      return { ...prev, [key]: next };
+    });
   };
 
   const handleSendAi = (customText?: string) => {
@@ -195,27 +240,29 @@ function BespokeLeadDossier({ lead, clientMode }: { lead: Lead; clientMode?: boo
 
     setTimeout(() => {
       let reply = "";
-      if (q.toLowerCase().includes("pitch") || q.toLowerCase().includes("whatsapp")) {
-        reply = `Here is a high-converting WhatsApp message tailored for **${lead.name.split(" ")[0]}**:
-
-> *"Hi ${lead.name.split(" ")[0]}, hope you're having a great week! Following up on your requirement for a ${lead.beds} BR in ${lead.area} (Budget: ${formatAed(lead.budget)}). I reserved a high-floor unit at **${heroProject.name}** with ${heroProject.paymentPlan} and projected **${heroProject.roi}**. Would you like me to send the official PDF brochure and payment breakdown today?"*`;
-      } else if (q.toLowerCase().includes("objection") || q.toLowerCase().includes("hesitant")) {
-        reply = `**Objection Handling Guide for ${lead.name}:**
-* **If hesitant on completion:** Reassure them that **${heroProject.name}** has an approved Dubai Land Department Escrow account where buyer funds are legally linked to verified construction milestones.
-* **If asking about resale flexibility:** Highlight that developer policy allows resale after completing only 30-40% of payments, offering strong early capital appreciation exits.`;
+      if (q.toLowerCase().includes("discount") || q.toLowerCase().includes("cheaper")) {
+        reply = `**Counter-Negotiation Strategy for ${firstName}:**
+Developer prices for **${heroProject.name}** are fixed by the master developer, but we can negotiate:
+1. **DLD Fee Waiver**: Request developer absorption of the 4% Land Department fee (~AED ${(heroProject.priceNum * 0.04).toLocaleString("en-US")}).
+2. **Post-Handover Extension**: Structure an extra 6 months into the 1% monthly installments.`;
+      } else if (q.toLowerCase().includes("delay") || q.toLowerCase().includes("late")) {
+        reply = `**Dubai Escrow Law Protection:**
+Under UAE Law No. 8, developer funds are locked in Escrow. The developer cannot withdraw buyer capital until RERA inspectors certify structural progress. Reassure ${firstName} by sending the DLD Trust Certificate.`;
       } else {
-        reply = `**Strategic Overview for ${lead.name}:**
-This client matches **${heroProject.name}** with a **${heroProject.matchScore}% affinity score**. Their target budget of **${formatAed(lead.budget)}** comfortably accommodates this development. Recommend locking an EOI reservation deposit before the developer's upcoming phase price revision.`;
+        reply = `**Instant Closing Recommendation for ${lead.name}:**
+${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${heroProject.name} at **${heroProject.price}**. Send the **1% Monthly ROI** script via WhatsApp now to schedule an executive video call today.`;
       }
 
       setAiChatHistory((prev) => [...prev, { role: "assistant", text: reply }]);
       setAiTyping(false);
-    }, 750);
+    }, 600);
   };
 
+  const checklistCount = Object.values(checklist).filter(Boolean).length;
+
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6 pb-20 animate-in fade-in-50 duration-200">
-      {/* ═══ TOP BREADCRUMB ═══ */}
+    <div className="w-full max-w-7xl mx-auto space-y-6 pb-28 animate-in fade-in-50 duration-200">
+      {/* ═══ TOP BREADCRUMB & CONTEXT HEADER ═══ */}
       <div className="flex items-center justify-between">
         <Link
           to="/app/leads"
@@ -225,489 +272,440 @@ This client matches **${heroProject.name}** with a **${heroProject.matchScore}% 
           <ArrowLeft size={14} />
           <span>Back to Leads Inbox</span>
         </Link>
-        <span className="text-xs text-muted-foreground font-mono">Dossier #{lead.id} · Dubai Market Live</span>
+        <div className="flex items-center gap-2">
+          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-xs text-muted-foreground font-mono">
+            Dossier #{lead.id} · Priority {p} · Dubai DLD Synced
+          </span>
+        </div>
       </div>
 
-      {/* ═══ 1. BESPOKE INVESTOR CANOPY (NON-COLUMN, HORIZONTAL FLUID RIBBON) ═══ */}
-      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card/95 to-secondary/30 p-6 sm:p-8 shadow-sm">
-        {/* Subtle Ambient Accent */}
-        <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-primary/10 blur-3xl" />
-
-        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          {/* Identity & Ring */}
-          <div className="flex items-center gap-5">
-            <div className="relative flex size-16 shrink-0 items-center justify-center rounded-2xl bg-secondary border border-border/80 font-display font-black text-2xl text-foreground shadow-sm">
-              {lead.initials}
-              <span className={`absolute -bottom-1 -right-1 size-5 rounded-full border-2 border-card flex items-center justify-center text-[10px] font-bold text-white ${
-                p === "Hot" ? "bg-rose-500" : p === "Warm" ? "bg-amber-500" : "bg-blue-500"
-              }`}>
-                ★
-              </span>
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
-                  {lead.name}
-                </h1>
-                <span className="text-xs font-semibold text-muted-foreground">({lead.country})</span>
-                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold text-emerald-400 font-mono">
-                  Score {lead.score} · {p}
-                </span>
-                {clientMode && (
-                  <span className="rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 px-2.5 py-0.5 text-[11px] font-bold font-mono">
-                    💎 Client Presentation Deck Active
+      {/* ═══ 10/10 EXECUTIVE SPLIT COCKPIT GRID ═══ */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* ════════════════════════════════════════════════════════════
+            LEFT COLUMN (7 COLS / ~60%): INVESTOR CANOPY & PROPERTY MATCHES
+            ════════════════════════════════════════════════════════════ */}
+        <div className="lg:col-span-7 xl:col-span-7 space-y-6">
+          {/* ═══ 1. INVESTOR EXECUTIVE CANOPY ═══ */}
+          <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card/95 to-secondary/30 p-6 sm:p-7 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+              <div className="flex items-center gap-4">
+                <div className="relative flex size-15 shrink-0 items-center justify-center rounded-2xl bg-secondary border border-border/80 font-display font-black text-2xl text-foreground shadow-sm">
+                  {lead.initials}
+                  <span className={`absolute -bottom-1 -right-1 size-5 rounded-full border-2 border-card flex items-center justify-center text-[10px] font-bold text-white ${
+                    p === "Hot" ? "bg-rose-500" : p === "Warm" ? "bg-amber-500" : "bg-blue-500"
+                  }`}>
+                    ★
                   </span>
-                )}
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="text-2xl font-extrabold tracking-tight text-foreground font-display">
+                      {lead.name}
+                    </h1>
+                    <span className="text-xs font-semibold text-muted-foreground">({lead.country})</span>
+                    <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 font-mono">
+                      Score {lead.score}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <span>Received {ago(lead.receivedHoursAgo)} via <strong className="text-foreground">{lead.source}</strong></span>
+                    <span>•</span>
+                    <span className="text-rose-400 font-bold">⚡ Reply Priority Active</span>
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Inbound inquiry received {ago(lead.receivedHoursAgo)} via <strong className="text-foreground">{lead.source}</strong> · Verified Lead
-              </p>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 shrink-0">
+                <a
+                  href={`tel:${lead.phone.replace(/\s/g, "")}`}
+                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs transition-all shadow-sm"
+                  title="Direct phone call"
+                >
+                  <Phone size={14} className="text-muted-foreground" />
+                  <span>Call</span>
+                </a>
+
+                <select
+                  value={stage}
+                  onChange={(e) => {
+                    setStage(e.target.value as Stage);
+                    toast.success(`Pipeline moved to ${e.target.value}`);
+                  }}
+                  className="h-9 px-3 rounded-xl border border-border bg-card text-foreground font-bold text-xs cursor-pointer focus:outline-none focus:border-primary shadow-sm"
+                >
+                  {[...OPEN_STAGES, "Won", "Lost"].map((st) => (
+                    <option key={st} value={st}>
+                      Stage: {st}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
 
-          {/* Action Hub */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* ═══ PROMINENT CLEAR AI SUGGESTION BUTTON ═══ */}
-            <button
-              type="button"
-              onClick={() => {
-                const el = document.getElementById("ai-insights-panel");
-                if (el) el.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-primary to-indigo-600 hover:brightness-110 text-white font-extrabold text-xs shadow-md transition-all ring-2 ring-primary/25 cursor-pointer"
-            >
-              <Sparkles size={15} />
-              <span>✨ Get AI Suggestion</span>
-            </button>
+            {/* Investor Flow Ribbon */}
+            <div className="pt-4 border-t border-border/60 flex flex-wrap items-center gap-2.5 text-xs">
+              <div className="inline-flex items-center gap-2 rounded-xl bg-secondary/60 border border-border/80 px-3 py-1.5">
+                <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">Budget</span>
+                <span className="font-mono font-extrabold text-emerald-400 text-xs sm:text-sm">{formatAed(lead.budget)}</span>
+              </div>
 
-            <a
-              href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(defaultPitch)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
-            >
-              <MessageCircle size={15} />
-              <span>WhatsApp Client</span>
-            </a>
+              <span className="text-muted-foreground/60 hidden sm:inline">➔</span>
 
-            <a
-              href={`tel:${lead.phone.replace(/\s/g, "")}`}
-              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs transition-all"
-            >
-              <Phone size={15} className="text-muted-foreground" />
-              <span>Call ({lead.phone})</span>
-            </a>
+              <div className="inline-flex items-center gap-2 rounded-xl bg-secondary/60 border border-border/80 px-3 py-1.5">
+                <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">Target</span>
+                <span className="font-bold text-foreground text-xs sm:text-sm">{wants(lead)} in {lead.area}</span>
+              </div>
 
-            <select
-              value={stage}
-              onChange={(e) => {
-                setStage(e.target.value as Stage);
-                toast.success(`Stage moved to ${e.target.value}`);
-              }}
-              className="h-10 px-3 rounded-xl border border-border bg-card text-foreground font-bold text-xs cursor-pointer focus:outline-none focus:border-primary"
-            >
-              {[...OPEN_STAGES, "Won", "Lost"].map((st) => (
-                <option key={st} value={st}>
-                  Stage: {st}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+              <span className="text-muted-foreground/60 hidden sm:inline">➔</span>
 
-        {/* ═══ UNIQUE INVESTOR FLOW RIBBON (NOT BASIC SEPARATE SQUARES) ═══ */}
-        <div className="mt-6 pt-5 border-t border-border/60 flex flex-wrap items-center gap-3 text-xs">
-          <div className="inline-flex items-center gap-2 rounded-xl bg-secondary/60 border border-border/80 px-3.5 py-2">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">Budget</span>
-            <span className="font-mono font-extrabold text-foreground text-sm">{formatAed(lead.budget)}</span>
-          </div>
-
-          <span className="text-muted-foreground/60 hidden sm:inline">➔</span>
-
-          <div className="inline-flex items-center gap-2 rounded-xl bg-secondary/60 border border-border/80 px-3.5 py-2">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">Wishlist</span>
-            <span className="font-bold text-foreground text-sm">{wants(lead)} in {lead.area}</span>
-          </div>
-
-          <span className="text-muted-foreground/60 hidden sm:inline">➔</span>
-
-          <div className="inline-flex items-center gap-2 rounded-xl bg-secondary/60 border border-border/80 px-3.5 py-2">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">Payment Mode</span>
-            <span className="font-bold text-foreground text-sm">{lead.payment}</span>
-          </div>
-
-          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground bg-card/60 px-3 py-1.5 rounded-xl border border-border/60">
-            <FileText size={13} className="text-primary" />
-            <span className="italic truncate max-w-xs">"{lead.message}"</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 2. EASY-TO-UNDERSTAND AI DEAL PLAYBOOK (CLEAR PILLARS & INSTANT ACTIONS) ═══ */}
-      <section id="ai-insights-panel" className="relative overflow-hidden rounded-3xl border border-primary/40 bg-card/95 backdrop-blur-xl p-6 sm:p-7 shadow-lg space-y-5 animate-in fade-in-50 duration-200">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shadow-sm">
-              <Sparkles size={18} />
+              <div className="inline-flex items-center gap-2 rounded-xl bg-secondary/60 border border-border/80 px-3 py-1.5">
+                <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">Terms</span>
+                <span className="font-bold text-foreground text-xs sm:text-sm">{lead.payment}</span>
+              </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-black text-foreground font-display">
-                  AI Lead Strategy & Action Playbook
+
+            {/* Inbound message quote */}
+            <div className="rounded-xl bg-secondary/40 border border-border/60 p-3 text-xs text-foreground italic flex items-center gap-2">
+              <FileText size={14} className="text-primary shrink-0" />
+              <span>"{lead.message}"</span>
+            </div>
+          </section>
+
+          {/* ═══ 2. CURATED DUBAI PROPERTY ALLOCATIONS (INTERACTIVE HUD) ═══ */}
+          <section className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-extrabold text-foreground font-display flex items-center gap-2">
+                  <Award className="size-5 text-amber-400" />
+                  <span>Curated Allocations for {firstName}</span>
                 </h2>
-                <span className="rounded-full bg-primary/10 border border-primary/30 px-2.5 py-0.5 text-[10px] font-bold text-primary font-mono">
-                  Real-Time UAE Model
+                <p className="text-xs text-muted-foreground">
+                  Switch matched developments to update instant WhatsApp pitches & ROI.
+                </p>
+              </div>
+
+              {/* Match Switcher Tabs */}
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary/70 border border-border/60 text-xs font-bold">
+                {VERIFIED_MATCHES.map((m, idx) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setActiveProjectIndex(idx)}
+                    className={`px-3 py-1 rounded-lg transition-all ${
+                      activeProjectIndex === idx
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    #{idx + 1} {m.name.split(" ")[0]} ({m.matchScore}%)
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ═══ HERO PROJECT SPOTLIGHT CARD ═══ */}
+            <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card shadow-md space-y-4 p-5 sm:p-6">
+              {/* Cover & Overlay Header */}
+              <div className="relative h-64 sm:h-72 rounded-2xl overflow-hidden bg-secondary">
+                <img
+                  src={heroProject.coverImage}
+                  alt={heroProject.name}
+                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+
+                <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
+                  <span className="rounded-full bg-emerald-500/90 text-white px-3 py-1 text-xs font-bold backdrop-blur-md">
+                    ★ {heroProject.matchScore}% Lead Match
+                  </span>
+                  <span className="rounded-full bg-black/60 text-white px-3 py-1 text-xs font-mono font-bold backdrop-blur-md">
+                    {heroProject.roi}
+                  </span>
+                </div>
+
+                <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white flex items-end justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary-foreground/80">{heroProject.developer}</span>
+                    <h3 className="text-2xl font-black font-display leading-tight">{heroProject.name}</h3>
+                    <p className="text-xs text-zinc-300 flex items-center gap-1">
+                      <MapPin size={13} className="text-rose-400" /> {heroProject.district}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="text-[10px] font-bold text-zinc-300 uppercase">Starting From</span>
+                    <p className="text-xl sm:text-2xl font-black font-mono text-emerald-400">{heroProject.price}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Embedded Project Inspection Tabs */}
+              <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
+                {[
+                  { id: "gallery", label: "📸 4K Gallery" },
+                  { id: "floorplan", label: "📐 Floor Plan" },
+                  { id: "plan", label: "💳 Payment Plan" },
+                  { id: "map", label: "🗺️ Location & Maps" },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setProjectMediaTab(t.id as typeof projectMediaTab)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                      projectMediaTab === t.id
+                        ? "bg-secondary text-foreground border border-border shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInspectProject(heroProject);
+                    setActiveModalTab(projectMediaTab);
+                  }}
+                  className="ml-auto inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                >
+                  <span>Full Screen Renders</span>
+                  <ArrowUpRight size={13} />
+                </button>
+              </div>
+
+              {/* Tab Display Area */}
+              {projectMediaTab === "gallery" && (
+                <div className="grid grid-cols-3 gap-2.5 animate-in fade-in duration-200">
+                  {heroProject.gallery.slice(0, 3).map((img, i) => (
+                    <div key={i} className="h-28 rounded-xl overflow-hidden border border-border/60 bg-secondary">
+                      <img src={img} alt="Render" className="h-full w-full object-cover hover:scale-105 transition-transform" />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {projectMediaTab === "floorplan" && (
+                <div className="p-4 rounded-2xl bg-secondary/30 border border-border/60 flex items-center justify-between gap-4 animate-in fade-in duration-200">
+                  <div className="h-28 w-44 rounded-xl overflow-hidden bg-background border border-border flex items-center justify-center p-1 shrink-0">
+                    <img src={heroProject.floorPlanUrl} alt="Floor plan" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <p className="font-extrabold text-foreground text-sm">{heroProject.bedrooms}</p>
+                    <p className="text-muted-foreground font-mono">Total Area: {heroProject.size}</p>
+                    <p className="text-emerald-400 font-bold">DLD Approved Architecture</p>
+                  </div>
+                </div>
+              )}
+
+              {projectMediaTab === "plan" && (
+                <div className="space-y-2 animate-in fade-in duration-200">
+                  <div className="grid grid-cols-3 gap-2">
+                    {heroProject.planBreakdown.map((s, idx) => (
+                      <div key={idx} className="p-3 rounded-xl bg-secondary/50 border border-border/60 text-xs text-center space-y-1">
+                        <span className="font-bold font-mono text-emerald-400 text-sm">{s.percent}</span>
+                        <p className="text-[11px] text-muted-foreground truncate">{s.milestone}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground text-center pt-1 font-mono">
+                    Handover Scheduled: <strong>{heroProject.handover}</strong> · DLD Escrow Synced
+                  </p>
+                </div>
+              )}
+
+              {projectMediaTab === "map" && (
+                <div className="p-3.5 rounded-2xl bg-secondary/30 border border-border/60 flex items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
+                  <div className="flex items-center gap-2">
+                    <MapPin size={16} className="text-rose-400 shrink-0" />
+                    <div>
+                      <p className="font-bold text-foreground">{heroProject.district}</p>
+                      <p className="text-muted-foreground text-[11px]">Direct corridor to Downtown Dubai and Canal</p>
+                    </div>
+                  </div>
+                  <a
+                    href={heroProject.googleMapsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="h-8 px-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs inline-flex items-center gap-1 shadow-sm shrink-0"
+                  >
+                    <span>View Map ↗</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+
+        {/* ════════════════════════════════════════════════════════════
+            RIGHT COLUMN (5 COLS / ~40%): STICKY AI DECISION RAIL & ACTION COCKPIT
+            ════════════════════════════════════════════════════════════ */}
+        <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-4 space-y-5">
+          {/* ═══ 1. LIVE AI COPILOT & SCRIPT LAUNCHPAD ═══ */}
+          <div className="rounded-3xl border border-primary/40 bg-card/95 backdrop-blur-xl p-5 sm:p-6 shadow-xl space-y-5">
+            {/* Playbook Header */}
+            <div className="flex items-center justify-between border-b border-border/60 pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="size-9 rounded-xl bg-gradient-to-br from-violet-600 to-primary flex items-center justify-center text-white shadow-md">
+                  <Sparkles size={16} />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-foreground flex items-center gap-1.5">
+                    <span>AI Deal Intelligence</span>
+                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground">Dedicated to closing {firstName}</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => toast.success("AI model refreshed against live Dubai Land Department records.")}
+                className="text-[11px] font-bold text-primary hover:underline"
+              >
+                Refresh
+              </button>
+            </div>
+
+            {/* ═══ 1-CLICK TAILORED WHATSAPP SCRIPT SWITCHER ═══ */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Select WhatsApp Angle:
+                </span>
+                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                  {SCRIPTS[scriptTab].badge}
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Synthesized from lead profile, budget, and live Dubai off-plan inventory.
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                toast.success("AI Strategy refreshed with latest DLD milestones.");
-              }}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border/80 bg-secondary/60 hover:bg-secondary text-[11px] font-bold text-foreground transition-all cursor-pointer"
-            >
-              <Sparkles size={12} className="text-primary" />
-              <span>Refresh Insights</span>
-            </button>
-          </div>
-        </div>
+              {/* Script Tabs */}
+              <div className="grid grid-cols-2 gap-1.5 text-xs font-bold">
+                {(["opener", "escrow", "roi", "urgency"] as const).map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => setScriptTab(key)}
+                    className={`py-2 px-2.5 rounded-xl transition-all text-left truncate ${
+                      scriptTab === key
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary border border-border/50"
+                    }`}
+                  >
+                    {SCRIPTS[key].label}
+                  </button>
+                ))}
+              </div>
 
-        {/* 3 Digestible Pillars (Easy to Comprehend) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          {/* Card 1: Investment Profile & Buying Power */}
-          <div className="rounded-2xl border border-border/80 bg-secondary/30 p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <span>🎯</span> Profile & Buying Power
-              </span>
-              <span className="rounded-full bg-blue-500/10 border border-blue-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-blue-400">
-                High Net Worth
-              </span>
-            </div>
-            <p className="text-sm font-extrabold text-foreground">
-              {formatAed(lead.budget)} Budget ({lead.payment})
-            </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Seeking <strong>{wants(lead)}</strong> in <strong>{lead.area}</strong>. Ample headroom for {heroProject.name} (priced at {heroProject.price}).
-            </p>
-          </div>
-
-          {/* Card 2: DLD Escrow & KYC Readiness */}
-          <div className="rounded-2xl border border-border/80 bg-secondary/30 p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <span>🛡️</span> DLD Escrow & KYC Status
-              </span>
-              <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-400">
-                Request Passport Copy
-              </span>
-            </div>
-            <p className="text-sm font-extrabold text-foreground">
-              Escrow Verified · KYC Pending
-            </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              DLD Escrow approved on matched project. Request passport & Emirates ID copy before issuing developer reservation holding slip.
-            </p>
-          </div>
-
-          {/* Card 3: Recommended Next Move */}
-          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                <span>⚡</span> Recommended Next Move
-              </span>
-              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
-                Speed to Lead
-              </span>
-            </div>
-            <p className="text-sm font-extrabold text-foreground">
-              Call & Send 10-Sec WhatsApp
-            </p>
-            <p className="text-xs text-foreground/80 leading-relaxed">
-              Inbound inquiry received {ago(lead.receivedHoursAgo)}. Call immediately, then send the pre-written holding breakdown below.
-            </p>
-          </div>
-        </div>
-
-        {/* 1-Click Actionable WhatsApp Script */}
-        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="space-y-1">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-500">
-              💬 Pre-Drafted 1-Click WhatsApp Opener
-            </span>
-            <p className="text-xs text-foreground font-medium italic">
-              "{defaultPitch}"
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => copyToClipboard(defaultPitch)}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border bg-card hover:bg-secondary text-xs font-bold text-foreground transition-all shadow-sm cursor-pointer"
-            >
-              {copiedPitch ? <CheckCheck size={13} className="text-emerald-400" /> : <Copy size={13} />}
-              <span>{copiedPitch ? "Copied" : "Copy"}</span>
-            </button>
-            <a
-              href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(defaultPitch)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm"
-            >
-              <MessageCircle size={13} />
-              <span>Send ↗</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 2. NON-COLUMN EDITORIAL SPOTLIGHT & CURATED DECK ═══ */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-extrabold text-foreground font-display flex items-center gap-2">
-              <Award className="size-5 text-amber-400" />
-              <span>Curated Dubai Allocations for {lead.name.split(" ")[0]}</span>
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Select any project to explore full architectural renders, Google Maps satellite coordinates, floor plans, and escrow plans.
-            </p>
-          </div>
-
-          {/* Quick Selector Tabs between matches */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary/70 border border-border/60 text-xs font-bold">
-            {VERIFIED_MATCHES.map((m, idx) => (
-              <button
-                key={m.id}
-                onClick={() => setActiveProjectIndex(idx)}
-                className={`px-3 py-1 rounded-lg transition-all ${
-                  activeProjectIndex === idx
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Match #{idx + 1} ({m.matchScore}%)
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ═══ HERO EDITORIAL SPOTLIGHT CARD (CINEMATIC PANORAMA) ═══ */}
-        <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card shadow-lg flex flex-col lg:flex-row">
-          {/* Panoramic Visual (Left / Top) */}
-          <div className="relative lg:w-7/12 h-72 sm:h-96 overflow-hidden bg-secondary">
-            <img
-              src={heroProject.coverImage}
-              alt={heroProject.name}
-              className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-
-            <div className="absolute top-4 left-4 flex items-center gap-2">
-              <span className="rounded-full bg-emerald-500/90 text-white px-3 py-1 text-xs font-bold backdrop-blur-md">
-                ★ {heroProject.matchScore}% Investor Match
-              </span>
-              <span className="rounded-full bg-black/60 text-white px-3 py-1 text-xs font-mono backdrop-blur-md">
-                {heroProject.roi}
-              </span>
-            </div>
-
-            <div className="absolute bottom-4 left-4 right-4 text-white space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-primary-foreground/80">{heroProject.developer}</span>
-              <h3 className="text-2xl sm:text-3xl font-extrabold font-display leading-tight">{heroProject.name}</h3>
-              <p className="text-xs text-zinc-300 flex items-center gap-1">
-                <MapPin size={13} className="text-rose-400" /> {heroProject.district}
-              </p>
-            </div>
-          </div>
-
-          {/* Details & Actions HUD (Right / Bottom) */}
-          <div className="lg:w-5/12 p-6 sm:p-8 flex flex-col justify-between bg-card space-y-5">
-            <div className="space-y-4">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Direct Developer Pricing</span>
-                <p className="text-2xl sm:text-3xl font-extrabold text-foreground font-mono font-display text-emerald-400 mt-0.5">
-                  {heroProject.price}
+              {/* Script Preview Box */}
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-3.5 space-y-2">
+                <p className="text-xs text-foreground font-medium leading-relaxed italic">
+                  "{currentScript}"
                 </p>
-                <p className="text-xs text-muted-foreground mt-0.5">{heroProject.bedrooms} · {heroProject.size}</p>
               </div>
 
-              <div className="rounded-2xl bg-secondary/50 border border-border/60 p-4 space-y-2 text-xs">
-                <div className="flex items-center justify-between font-semibold text-foreground">
-                  <span>Payment Schedule:</span>
-                  <span className="font-mono text-emerald-400">Handover {heroProject.handover}</span>
-                </div>
-                <p className="text-muted-foreground leading-relaxed">{heroProject.paymentPlan}</p>
-              </div>
+              {/* High-Impact Action Triggers */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => copyScript(currentScript)}
+                  className="h-10 rounded-xl border border-border bg-card hover:bg-secondary text-foreground text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                >
+                  {copiedScript ? <CheckCheck size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                  <span>{copiedScript ? "Script Copied!" : "Copy Script"}</span>
+                </button>
 
-              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                {heroProject.description}
-              </p>
+                <a
+                  href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(currentScript)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 transition-all shadow-md"
+                >
+                  <MessageCircle size={15} />
+                  <span>Send on WhatsApp ↗</span>
+                </a>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-2.5 pt-3 border-t border-border/50">
-              <Button
-                onClick={() => {
-                  setInspectProject(heroProject);
-                  setActiveModalTab("gallery");
-                }}
-                className="w-full h-11 rounded-2xl text-xs font-bold bg-primary text-primary-foreground gap-2 shadow-sm"
-              >
-                <Eye size={15} />
-                <span>Open All Details (Images, Maps, Floor Plans)</span>
-                <ArrowUpRight size={14} />
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => {
-                  const text = `Hi ${lead.name.split(" ")[0]}! I matched your criteria with *${heroProject.name}* in ${heroProject.district}.\nStarting Price: ${heroProject.price}\nPayment Plan: ${heroProject.paymentPlan}\nHandover: ${heroProject.handover}\nLocation on Maps: ${heroProject.googleMapsUrl}`;
-                  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, "_blank");
-                }}
-                className="w-full h-10 rounded-2xl text-xs font-bold border-border gap-2 text-foreground hover:bg-secondary"
-              >
-                <MessageCircle size={15} className="text-emerald-500" />
-                <span>Share Complete Developer Dossier to WhatsApp</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Floating Mini Cards for Other Matches */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-          {VERIFIED_MATCHES.filter((_, idx) => idx !== activeProjectIndex).map((alt) => (
-            <div
-              key={alt.id}
-              onClick={() => setActiveProjectIndex(VERIFIED_MATCHES.findIndex((m) => m.id === alt.id))}
-              className="group cursor-pointer rounded-2xl border border-border/70 bg-card/70 hover:border-primary/50 hover:bg-card p-4 transition-all duration-200 flex items-center justify-between gap-4 shadow-sm"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <img src={alt.coverImage} alt={alt.name} className="size-12 rounded-xl object-cover shrink-0" />
-                <div className="min-w-0">
-                  <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">
-                    {alt.name}
-                  </h4>
-                  <p className="text-xs text-muted-foreground truncate">{alt.district} · {alt.price}</p>
-                </div>
+            {/* ═══ 2. INTERACTIVE KYC & DLD TRANSACTION CHECKLIST ═══ */}
+            <div className="pt-4 border-t border-border/60 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                  DLD KYC & Transaction Checklist
+                </span>
+                <span className="text-[11px] font-mono font-bold text-primary">
+                  {checklistCount} / 4 Complete
+                </span>
               </div>
-              <span className="text-xs font-bold text-primary shrink-0 flex items-center gap-1">
-                <span>Switch to Spotlight</span>
-                <ArrowRight size={13} />
+
+              <div className="space-y-2 text-xs">
+                {[
+                  { key: "passport", label: "Passport / Emirates ID Copy", detail: "Required for reservation holding slip" },
+                  { key: "funds", label: "Proof of Funds / Cash Readiness", detail: "AED 3.5M budget validated" },
+                  { key: "eoi", label: "EOI Deposit (AED 20,000)", detail: "Secures unit allocation before price hike" },
+                  { key: "contract", label: "DLD Form F / MOU Contract", detail: "Official Land Department sales contract" },
+                ].map((item) => {
+                  const done = checklist[item.key as keyof typeof checklist];
+                  return (
+                    <div
+                      key={item.key}
+                      onClick={() => toggleChecklist(item.key as keyof typeof checklist)}
+                      className={`cursor-pointer rounded-xl p-2.5 border transition-all flex items-start gap-3 ${
+                        done
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-foreground"
+                          : "bg-secondary/40 border-border/60 hover:bg-secondary/70 text-muted-foreground"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={done}
+                        readOnly
+                        className="mt-0.5 size-4 rounded text-emerald-600 focus:ring-0 cursor-pointer pointer-events-none"
+                      />
+                      <div className="min-w-0 space-y-0.5">
+                        <p className={`font-bold text-xs ${done ? "text-emerald-400 line-through" : "text-foreground"}`}>
+                          {item.label}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">{item.detail}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ═══ 3. STRATEGIC OVERVIEW & NEXT MOVE ═══ */}
+            <div className="pt-4 border-t border-border/60 space-y-2 text-xs">
+              <span className="text-[11px] font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                <span>⚡</span> AI Closing Recommendation:
               </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══ 3. DEDICATED AI STRATEGY TERMINAL (UNDERNEATH) ═══ */}
-      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-5">
-          <div className="flex items-center gap-3">
-            <div className="size-11 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
-              <Sparkles size={20} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-foreground">
-                DealOS AI Copilot · Dedicated to {lead.name}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Strategic advice, objection handlers, and custom closing pitches for this specific client.
+              <p className="text-foreground leading-relaxed text-xs">
+                {firstName} has substantial headroom (**{formatAed(lead.budget)}**) vs {heroProject.name} (**{heroProject.price}**). Call now and send the **{SCRIPTS[scriptTab].label}** to secure an EOI deposit before phase sell-out.
               </p>
             </div>
           </div>
-
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => copyToClipboard(defaultPitch)}
-            className="rounded-xl text-xs font-semibold gap-1.5 border-border"
-          >
-            {copiedPitch ? <CheckCheck size={14} className="text-emerald-400" /> : <Copy size={14} />}
-            <span>{copiedPitch ? "Pitch Copied" : "Copy WhatsApp Pitch"}</span>
-          </Button>
         </div>
+      </div>
 
-        {/* Interactive Quick Prompts */}
-        <div className="flex flex-wrap gap-2">
-          {[
-            "💬 Draft 10-Second WhatsApp Opener",
-            "🛡️ Address Handover Delay Objection",
-            `📊 Compare ${heroProject.name} vs Alternative`,
-            "💰 Calculate Mortgage & Cash-flow Milestones",
-          ].map((promptText) => (
-            <button
-              key={promptText}
-              onClick={() => handleSendAi(promptText)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all"
-            >
-              {promptText}
-            </button>
-          ))}
-        </div>
+      {/* ═══ MOBILE FLOATING STICKY ACTION DOCK ═══ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t border-border/80 z-40 flex items-center gap-2 shadow-2xl">
+        <a
+          href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(currentScript)}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1 h-11 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs inline-flex items-center justify-center gap-2 shadow-lg"
+        >
+          <MessageCircle size={16} />
+          <span>WhatsApp {firstName} ↗</span>
+        </a>
 
-        {/* AI Stream */}
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-secondary/30 border border-border/60 p-5 text-sm space-y-2.5 leading-relaxed">
-            <div className="flex items-center gap-2 text-xs font-bold text-primary">
-              <Sparkles size={14} />
-              <span>Lead Strategic Summary:</span>
-            </div>
-            <p className="text-foreground">
-              <strong>{lead.name}</strong> is seeking a <strong>{wants(lead)}</strong> with a maximum budget of <strong>{formatAed(lead.budget)}</strong>. With <strong>{heroProject.name}</strong> priced at <strong>{heroProject.price}</strong>, they retain substantial financial headroom. We recommend emphasizing the <strong>{heroProject.paymentPlan}</strong> to secure an EOI reservation holding slip today.
-            </p>
-          </div>
+        <a
+          href={`tel:${lead.phone.replace(/\s/g, "")}`}
+          className="size-11 rounded-2xl border border-border bg-card flex items-center justify-center text-foreground shrink-0 shadow-sm"
+        >
+          <Phone size={16} />
+        </a>
+      </div>
 
-          {aiChatHistory.map((item, idx) => (
-            <div
-              key={idx}
-              className={`rounded-2xl p-4 text-sm leading-relaxed ${
-                item.role === "user"
-                  ? "bg-primary text-primary-foreground font-semibold ml-auto max-w-xl text-right"
-                  : "bg-secondary/40 border border-border/70 text-foreground max-w-2xl"
-              }`}
-            >
-              <div className="whitespace-pre-wrap">{item.text}</div>
-            </div>
-          ))}
-
-          {aiTyping && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground p-3">
-              <Sparkles size={14} className="text-primary animate-spin" />
-              <span>DealOS AI is drafting strategy...</span>
-            </div>
-          )}
-        </div>
-
-        {/* Prompt Input */}
-        <div className="flex gap-2">
-          <input
-            value={aiQuestion}
-            onChange={(e) => setAiQuestion(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") handleSendAi(); }}
-            placeholder={`Ask DealOS AI anything about ${lead.name.split(" ")[0]}...`}
-            className="flex-1 h-11 rounded-2xl border border-border bg-secondary/40 px-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
-          />
-          <Button
-            onClick={() => handleSendAi()}
-            disabled={!aiQuestion.trim()}
-            className="h-11 px-5 rounded-2xl bg-primary text-primary-foreground text-xs font-bold gap-2"
-          >
-            <span>Send</span>
-            <Send size={14} />
-          </Button>
-        </div>
-      </section>
-
-      {/* ═══ 4. COMPLETE PROJECT IMMERSION MODAL (GALLERY, MAP, FLOOR PLAN, PLAN) ═══ */}
+      {/* ═══ FULL PROJECT IMMERSION DIALOG ═══ */}
       {inspectProject && (
         <Dialog open={!!inspectProject} onOpenChange={(open) => { if (!open) setInspectProject(null); }}>
           <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl bg-card border-border p-6 sm:p-8 space-y-6">
@@ -725,127 +723,28 @@ This client matches **${heroProject.name}** with a **${heroProject.matchScore}% 
                   {inspectProject.price}
                 </span>
               </div>
-
-              {/* Modal Tabs */}
-              <div className="flex items-center gap-2 pt-3">
-                {[
-                  { id: "gallery", label: "📸 4K Gallery", icon: ImageIcon },
-                  { id: "floorplan", label: "📐 Floor Plan", icon: Layers },
-                  { id: "map", label: "🗺️ Location & Maps", icon: MapPin },
-                  { id: "plan", label: "💳 Payment Schedule", icon: Calendar },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => setActiveModalTab(t.id as typeof activeModalTab)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      activeModalTab === t.id
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "bg-secondary/70 text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
             </DialogHeader>
 
-            {/* TAB 1: GALLERY */}
-            {activeModalTab === "gallery" && (
-              <div className="space-y-3 animate-in fade-in-50 duration-200">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {inspectProject.gallery.map((img, i) => (
-                    <div key={i} className="h-56 rounded-2xl overflow-hidden border border-border/60 bg-secondary">
-                      <img src={img} alt="Render" className="h-full w-full object-cover hover:scale-105 transition-transform duration-300" />
-                    </div>
-                  ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {inspectProject.gallery.map((img, i) => (
+                <div key={i} className="h-56 rounded-2xl overflow-hidden border border-border/60 bg-secondary">
+                  <img src={img} alt="Render" className="h-full w-full object-cover hover:scale-105 transition-transform duration-300" />
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
 
-            {/* TAB 2: FLOOR PLAN */}
-            {activeModalTab === "floorplan" && (
-              <div className="space-y-3 animate-in fade-in-50 duration-200">
-                <div className="h-80 rounded-2xl border border-border/60 overflow-hidden bg-secondary/30 p-2 flex items-center justify-center">
-                  <img
-                    src={inspectProject.floorPlanUrl}
-                    alt="Floor Plan"
-                    className="max-h-full max-w-full object-contain rounded-xl"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-                  <span>Configuration: <strong>{inspectProject.bedrooms}</strong></span>
-                  <span>Total Area: <strong>{inspectProject.size}</strong></span>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: LOCATION & MAP */}
-            {activeModalTab === "map" && (
-              <div className="space-y-4 animate-in fade-in-50 duration-200">
-                <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <MapPin size={15} className="text-rose-400" /> {inspectProject.district}
-                    </span>
-                    <a
-                      href={inspectProject.googleMapsUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                    >
-                      <span>Open Satellite Coordinates</span>
-                      <ExternalLink size={12} />
-                    </a>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {inspectProject.description}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <span className="text-xs font-bold text-foreground">Luxury Amenities:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {inspectProject.amenities.map((a) => (
-                      <span key={a} className="rounded-full bg-secondary border border-border px-2.5 py-0.5 text-[11px] font-medium text-foreground">
-                        ✓ {a}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 4: PAYMENT PLAN */}
-            {activeModalTab === "plan" && (
-              <div className="space-y-4 animate-in fade-in-50 duration-200">
-                <div className="space-y-2">
-                  {inspectProject.planBreakdown.map((s, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/40 border border-border/50 text-xs">
-                      <span className="font-semibold text-foreground">{s.milestone}</span>
-                      <span className="font-mono font-extrabold text-emerald-400">{s.percent}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground text-center">
-                  DLD Escrow Account Registered · Handover Targeted {inspectProject.handover}
-                </p>
-              </div>
-            )}
-
-            {/* Modal Footer */}
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/60">
               <Button variant="outline" onClick={() => setInspectProject(null)} className="rounded-xl text-xs">
                 Close
               </Button>
               <Button
                 onClick={() => {
-                  const text = `Hi ${lead.name.split(" ")[0]}! Here is the complete developer dossier for *${inspectProject.name}* in ${inspectProject.district}:\n\nPrice: ${inspectProject.price}\nPayment Plan: ${inspectProject.paymentPlan}\nHandover: ${inspectProject.handover}\nLocation on Maps: ${inspectProject.googleMapsUrl}`;
-                  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, "_blank");
+                  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(currentScript)}`, "_blank");
                 }}
                 className="rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
               >
                 <MessageCircle size={14} />
-                <span>Share Complete Dossier to {lead.name.split(" ")[0]}</span>
+                <span>Send Script on WhatsApp</span>
               </Button>
             </div>
           </DialogContent>
