@@ -105,19 +105,20 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       ],
     },
     {
-      title: "CAPITAL & MASTERMIND",
+      title: "TEAM & GOVERNANCE",
       items: [
+        { label: "Manage Users & Team", desc: "12 Licensed Agents, RERA BRN & Access", to: "/app/users", icon: Users, badge: 12 },
         { label: "Developer Debt", desc: "Danube & Emaar Overdue Commission Ledger", to: "/owner-dashboard#vouchers", icon: DollarSign },
         { label: "Owner AI Mastermind", desc: "Executive Decisions & Cashflow Recovery", to: "/owner-dashboard#mastermind", icon: Sparkles },
-        { label: "Financial P&L & Splits", desc: "Agency Net Commission Splits & Forecasts", to: "/app/reports", icon: LineChart },
+        { label: "Agency Audit Trail", desc: "Real-time Compliance & Audit Trail", to: "/app/activity-logs", icon: Activity, adminOnly: true },
       ],
     },
     {
-      title: "GOVERNANCE",
+      title: "OWNER EXECUTIVE PORTAL",
       items: [
-        { label: "Broker Accounts", desc: "Agent Roster, RERA Cards & Access", to: "/app/users", icon: ShieldCheck, adminOnly: true },
-        { label: "Agency Audit Trail", desc: "Real-time Compliance & Audit Trail", to: "/app/activity-logs", icon: Activity, adminOnly: true },
-        { label: "About Platform", desc: "Platform Architecture & DLD Version", to: "/app/about", icon: Info },
+        { label: "Owner Account", desc: "ORN-28941, DLD License & Agency Stamp", to: "/app/my-account?role=owner", icon: Crown },
+        { label: "Agency Settings", desc: "DLD Trakheesi, SLA Routing & Security", to: "/app/settings?role=owner", icon: Settings },
+        { label: "Platform Overview", desc: "Platform Architecture & DLD Version", to: "/app/about", icon: Info },
       ],
     },
   ];
@@ -357,30 +358,77 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     </div>
                   </div>
                   <div className="a-user-menu-divider" />
-                  <Link
-                    to="/app/my-account"
-                    role="menuitem"
-                    className="a-user-menu-item"
-                    onClick={() => setUserMenu(false)}
-                  >
-                    <User size={15} className="shrink-0 text-muted-foreground" />
-                    <div className="flex flex-col text-left min-w-0">
-                      <span className="font-semibold text-xs text-foreground">My Account</span>
-                      <span className="text-[10px] text-muted-foreground truncate">Broker Profile & RERA BRN</span>
-                    </div>
-                  </Link>
-                  <Link
-                    to="/app/settings"
-                    role="menuitem"
-                    className="a-user-menu-item"
-                    onClick={() => setUserMenu(false)}
-                  >
-                    <Settings size={15} className="shrink-0 text-muted-foreground" />
-                    <div className="flex flex-col text-left min-w-0">
-                      <span className="font-semibold text-xs text-foreground">Settings</span>
-                      <span className="text-[10px] text-muted-foreground truncate">WhatsApp API, Agency & Keys</span>
-                    </div>
-                  </Link>
+                  {executiveMode ? (
+                    <>
+                      <Link
+                        to="/app/my-account"
+                        search={{ role: "owner" }}
+                        role="menuitem"
+                        className="a-user-menu-item"
+                        onClick={() => setUserMenu(false)}
+                      >
+                        <Crown size={15} className="shrink-0 text-amber-400" />
+                        <div className="flex flex-col text-left min-w-0">
+                          <span className="font-semibold text-xs text-foreground">Owner Account</span>
+                          <span className="text-[10px] text-muted-foreground truncate">ORN-28941 & DLD Credentials</span>
+                        </div>
+                      </Link>
+                      <Link
+                        to="/app/settings"
+                        search={{ role: "owner" }}
+                        role="menuitem"
+                        className="a-user-menu-item"
+                        onClick={() => setUserMenu(false)}
+                      >
+                        <Settings size={15} className="shrink-0 text-amber-400" />
+                        <div className="flex flex-col text-left min-w-0">
+                          <span className="font-semibold text-xs text-foreground">Agency Settings</span>
+                          <span className="text-[10px] text-muted-foreground truncate">DLD Trakheesi, SLA & Security</span>
+                        </div>
+                      </Link>
+                      <Link
+                        to="/app/users"
+                        role="menuitem"
+                        className="a-user-menu-item"
+                        onClick={() => setUserMenu(false)}
+                      >
+                        <Users size={15} className="shrink-0 text-emerald-400" />
+                        <div className="flex flex-col text-left min-w-0">
+                          <span className="font-semibold text-xs text-foreground">Manage Users & Team</span>
+                          <span className="text-[10px] text-muted-foreground truncate">12 Licensed Agents & RERA BRN</span>
+                        </div>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/app/my-account"
+                        search={{ role: undefined }}
+                        role="menuitem"
+                        className="a-user-menu-item"
+                        onClick={() => setUserMenu(false)}
+                      >
+                        <User size={15} className="shrink-0 text-muted-foreground" />
+                        <div className="flex flex-col text-left min-w-0">
+                          <span className="font-semibold text-xs text-foreground">My Account</span>
+                          <span className="text-[10px] text-muted-foreground truncate">Broker Profile & RERA BRN</span>
+                        </div>
+                      </Link>
+                      <Link
+                        to="/app/settings"
+                        search={{ role: undefined }}
+                        role="menuitem"
+                        className="a-user-menu-item"
+                        onClick={() => setUserMenu(false)}
+                      >
+                        <Settings size={15} className="shrink-0 text-muted-foreground" />
+                        <div className="flex flex-col text-left min-w-0">
+                          <span className="font-semibold text-xs text-foreground">Broker Settings</span>
+                          <span className="text-[10px] text-muted-foreground truncate">WhatsApp API, Goals & Keys</span>
+                        </div>
+                      </Link>
+                    </>
+                  )}
                   <div className="a-user-menu-divider" />
                   <button
                     type="button"
