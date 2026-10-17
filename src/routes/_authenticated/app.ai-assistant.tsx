@@ -157,7 +157,7 @@ export function GeminiAssistantPage() {
 
 I've processed your query: **"${prompt}"**
 
-* **Market Overview:** Dubai real estate market continues strong momentum with 1,450+ active developments and high capital growth.
+* **Market Overview:** UAE real estate market continues strong momentum with 1,355+ verified developments across 6 Emirates and high capital growth.
 * **Recommended Next Step:** Click the **+** button to attach an investor lead or project document from your Leads directory to tailor the exact strategy.`;
       }
 

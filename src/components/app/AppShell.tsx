@@ -77,7 +77,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       { label: "AI Assistant", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
     ] },
     { title: "INVENTORY", items: [
-      { label: "Offplan", desc: "1,450+ Verified Dubai Developments & Escrow", to: "/app/offplan", icon: Construction },
+      { label: "Offplan", desc: "1,355+ Verified UAE Developments & Escrow", to: "/app/offplan", icon: Construction },
       { label: "Ready Property", desc: "Secondary Resales & Handed-over Units", to: "/app/listings", icon: Building2 },
       { label: "Rentals", desc: "Ejari Tenancies & Leasehold Listings", to: "/app/rentals", icon: Key },
     ] },

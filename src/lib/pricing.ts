@@ -28,8 +28,8 @@ export const DEFAULT_PLAN: PlanId = "annual";
 
 export const PLAN_FEATURES = [
   "Leads inbox with priority queues (Respond now, Hot, Follow-ups, Nurture)",
-  "70,000+ units & 1,800+ projects with payment plans and floor plans",
-  "DLD sales, rents and yields by area",
+  "34,850+ verified UAE units & 1,355+ off-plan projects with payment plans and floor plans",
+  "DLD sales, rents and yields by district across 6 Emirates",
   "AI assistant on every page + saved AI lead summaries",
   "1-click client presentations & payment-plan calculators",
   "WhatsApp templates, follow-up reminders and pipeline board",

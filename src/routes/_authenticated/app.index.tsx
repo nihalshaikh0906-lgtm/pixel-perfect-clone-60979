@@ -477,7 +477,7 @@ When are you free today for a quick 2-minute overview?`;
 
           <div className="text-center pt-2">
             <Button variant="outline" asChild className="h-9 text-xs font-semibold rounded-xl">
-              <Link to="/app/offplan">Browse Complete Catalog (1,450+ Projects) →</Link>
+              <Link to="/app/offplan">Browse Complete Catalog (1,355+ Verified UAE Projects) →</Link>
             </Button>
           </div>
         </div>

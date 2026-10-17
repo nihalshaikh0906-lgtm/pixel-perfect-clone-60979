@@ -17,7 +17,7 @@ const TICKER = [
   "✦ 12 new off-plan launches this week",
   "↗ Reportage Hills +8.4% YoY",
   "◎ 74 leads waiting for a first reply",
-  "▣ 70,000+ units searchable",
+  "▣ 34,850+ UAE units searchable",
 ];
 
 export function Logo({ size = 40 }: { size?: number }) {
@@ -78,14 +78,14 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
               The operating system for <span className="au-exec-gold">Dubai real estate</span>.
             </h2>
             <p className="au-exec-desc">
-              Unifying 1,450+ off-plan developments, DLD escrow registries, investor dossiers, and automated unified contracts.
+              Unifying 1,355+ off-plan developments, DLD escrow registries, investor dossiers, and automated unified contracts.
             </p>
 
             <div className="au-exec-features">
               <div className="au-exec-feat">
                 <span className="au-feat-icon">🏛️</span>
                 <div>
-                  <b>1,450+ Verified Off-Plan Projects</b>
+                  <b>1,355+ Verified UAE Off-Plan Projects</b>
                   <p>Direct DLD escrow status, live unit tiers, and official brochure specs.</p>
                 </div>
               </div>
@@ -137,7 +137,7 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
                 <div className="au-cards">
                   {[
                     ["Leads inbox", "Every portal, ad and WhatsApp lead sorted by priority."],
-                    ["Unit & project data", "70,000+ units with payment plans and floor plans."],
+                    ["Unit & project data", "34,850+ units with payment plans and floor plans."],
                     ["Market intelligence", "DLD sales, rents and yields by area."],
                   ].map(([t, d], i) => (
                     <Reveal key={t} delay={i * 0.1} className="au-card"><b>{t}</b><p>{d}</p></Reveal>
