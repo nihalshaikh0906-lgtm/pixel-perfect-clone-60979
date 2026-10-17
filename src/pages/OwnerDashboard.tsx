@@ -2,14 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Building2, Construction, Key, ArrowRight, ShieldCheck, TrendingUp,
-  DollarSign, Clock, AlertTriangle, Send, CheckCircle2, Sparkles,
+  Clock, AlertTriangle, Send, CheckCircle2, Sparkles,
   Layers, ArrowUpRight, MessageCircle, ChevronRight, Target,
   Inbox, CalendarDays, Handshake, FileSignature, KeyRound, Users,
   Video, Eye, Play, Share2, Award, Zap, PhoneCall, BarChart3,
   Flame, CheckCheck, Megaphone, X, Bell, Volume2, VolumeX,
-  Sliders, UserCheck, AlertCircle, Building, Wallet, RefreshCw,
+  UserCheck, AlertCircle, Building, Wallet, RefreshCw,
   Crown, ExternalLink, Download, Copy, FileText, Check, Briefcase,
-  Compass, PieChart, ShieldAlert, Sparkle
+  Compass, PieChart, ShieldAlert, ArrowRightLeft
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -58,8 +58,6 @@ export type BrokerStats = {
   closedVolumeFormatted: string;
   speedToLeadMins: number;
   activeDealsCount: number;
-  agencyNetRevenueAed: number;
-  agencyNetRevenueFormatted: string;
   tier: "Top Producer" | "Speed Demon" | "Rising Star" | "Needs Coaching";
   tierColor: string;
   phone: string;
@@ -77,8 +75,6 @@ export const AGENCY_BROKERS: BrokerStats[] = [
     closedVolumeFormatted: "AED 18.4M",
     speedToLeadMins: 1.8,
     activeDealsCount: 7,
-    agencyNetRevenueAed: 368000,
-    agencyNetRevenueFormatted: "AED 368,000",
     tier: "Top Producer",
     tierColor: "bg-amber-500/10 text-amber-300 border-amber-500/30",
     phone: "+971501234567",
@@ -94,8 +90,6 @@ export const AGENCY_BROKERS: BrokerStats[] = [
     closedVolumeFormatted: "AED 14.2M",
     speedToLeadMins: 2.4,
     activeDealsCount: 5,
-    agencyNetRevenueAed: 284000,
-    agencyNetRevenueFormatted: "AED 284,000",
     tier: "Top Producer",
     tierColor: "bg-amber-500/10 text-amber-300 border-amber-500/30",
     phone: "+971509876543",
@@ -111,8 +105,6 @@ export const AGENCY_BROKERS: BrokerStats[] = [
     closedVolumeFormatted: "AED 8.9M",
     speedToLeadMins: 2.1,
     activeDealsCount: 6,
-    agencyNetRevenueAed: 178000,
-    agencyNetRevenueFormatted: "AED 178,000",
     tier: "Speed Demon",
     tierColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
     phone: "+971523456789",
@@ -128,8 +120,6 @@ export const AGENCY_BROKERS: BrokerStats[] = [
     closedVolumeFormatted: "AED 4.8M",
     speedToLeadMins: 4.2,
     activeDealsCount: 4,
-    agencyNetRevenueAed: 96000,
-    agencyNetRevenueFormatted: "AED 96,000",
     tier: "Rising Star",
     tierColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
     phone: "+971556789012",
@@ -145,8 +135,6 @@ export const AGENCY_BROKERS: BrokerStats[] = [
     closedVolumeFormatted: "AED 2.35M",
     speedToLeadMins: 24.5,
     activeDealsCount: 3,
-    agencyNetRevenueAed: 47000,
-    agencyNetRevenueFormatted: "AED 47,000",
     tier: "Needs Coaching",
     tierColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
     phone: "+971567890123",
@@ -160,8 +148,7 @@ export const LIVE_CLOSED_DEALS = [
     brokerAvatar: "AK",
     action: "Token Deposit Secured",
     project: "Sobha Orbis #1402 · Motor City",
-    tokenAed: "AED 150,000 Deposit",
-    netAgencyCut: "AED 75,000",
+    dealVolume: "AED 150,000 Booking Deposit",
     timeAgo: "12m ago",
     badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
   },
@@ -171,8 +158,7 @@ export const LIVE_CLOSED_DEALS = [
     brokerAvatar: "TM",
     action: "SPA Title Registered",
     project: "Palm Jebel Ali 5BR Villa",
-    tokenAed: "AED 4,200,000 Volume",
-    netAgencyCut: "AED 84,000",
+    dealVolume: "AED 4,200,000 Sale Volume",
     timeAgo: "1h ago",
     badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
   },
@@ -182,8 +168,7 @@ export const LIVE_CLOSED_DEALS = [
     brokerAvatar: "ZB",
     action: "DLD Form F Signed",
     project: "Downtown Studio · Burj Views",
-    tokenAed: "AED 1,100,000 Volume",
-    netAgencyCut: "AED 27,500",
+    dealVolume: "AED 1,100,000 Sale Volume",
     timeAgo: "3h ago",
     badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
   },
@@ -193,37 +178,9 @@ export const LIVE_CLOSED_DEALS = [
     brokerAvatar: "KN",
     action: "Booking Voucher Approved",
     project: "Bayz 102 by Danube",
-    tokenAed: "AED 90,000 Voucher",
-    netAgencyCut: "AED 45,000",
+    dealVolume: "AED 90,000 Voucher Released",
     timeAgo: "5h ago",
     badgeColor: "bg-amber-500/10 text-amber-300 border-amber-500/30",
-  },
-];
-
-export const AT_RISK_LEADS = [
-  {
-    id: "risk-1",
-    clientName: "Dr. Heinrich Mueller",
-    clientOrigin: "Frankfurt, Germany",
-    budget: "AED 8.5M",
-    projectInterest: "Palm Jebel Ali Beachfront Villa",
-    assignedTo: "Omar Farooq",
-    stalledMins: 26,
-    recommendedBroker: "Aisha Khan",
-    recommendedBrokerId: "broker-aisha",
-    source: "Instagram Helipad Penthouse Reel",
-  },
-  {
-    id: "risk-2",
-    clientName: "Elena Rostova",
-    clientOrigin: "Monaco / Palm Jumeirah",
-    budget: "AED 3.2M",
-    projectInterest: "Sobha Orbis 2BR Pool View",
-    assignedTo: "Omar Farooq",
-    stalledMins: 19,
-    recommendedBroker: "Tariq Mansoor",
-    recommendedBrokerId: "broker-tariq",
-    source: "TikTok 1% Monthly Plan Hack",
   },
 ];
 
@@ -236,7 +193,7 @@ export const DEVELOPER_VIP_TIERS = [
     percentage: 76.4,
     remainingFormatted: "AED 11.8M",
     unitsEstimate: "~3 Luxury Units",
-    rewardText: "+1.0% Agency Commission Override (AED 500,000 Cash Bonus)",
+    rewardText: "Top Tier Agency Status & Priority Diamond Escrow Allocation",
     badgeColor: "bg-amber-500/10 text-amber-300 border-amber-500/30",
   },
   {
@@ -258,7 +215,7 @@ export const DEVELOPER_VIP_TIERS = [
     percentage: 80.6,
     remainingFormatted: "AED 2.9M",
     unitsEstimate: "~2 Townhouses",
-    rewardText: "+0.75% Direct Developer Rebate & Supercar Incentive Pool",
+    rewardText: "Tier 1 Developer Preference & International Supercar Incentive Pool",
     badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
   },
 ];
@@ -310,13 +267,14 @@ export const DLD_SUBMARKETS = [
   { area: "Jumeirah Village Circle", volume: "AED 146.2M", deals: 88, topProject: "Binghatti Amber", growth: "+22.5%" },
 ];
 
-// ═══ EXECUTIVE LEADS OVERWATCH DATA (ACROSS ALL BROKERS) ═══
+// ═══ EXECUTIVE LEADS OVERWATCH DATA (DYNAMIC LEADBOX MODEL) ═══
 export type ExecutiveLead = {
   id: string;
   clientName: string;
   nationality: string;
   budgetFormatted: string;
   projectInterest: string;
+  assignedBrokerId: string;
   assignedBrokerName: string;
   assignedBrokerAvatar: string;
   stage: "Deposit Staged" | "Viewing Confirmed" | "Form F in Review" | "Token Transferred" | "Negotiation";
@@ -326,17 +284,17 @@ export type ExecutiveLead = {
   lastContactAgo: string;
   liquidityTier: "Tier 1 Ultra-HNWI (Cash)" | "Tier 2 Institutional" | "Tier 3 Mortgage Pre-Approved";
   executiveBrief: string;
-  expectedNetAgencyCut: string;
   brokerPhone: string;
 };
 
-export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
+export const INITIAL_LEADS: ExecutiveLead[] = [
   {
     id: "lead-ex-1",
     clientName: "Rashid Al-Maktoum Family Office",
     nationality: "UAE / GCC Family Office",
     budgetFormatted: "AED 28.0M",
     projectInterest: "Palm Jebel Ali Waterfront Penthouse",
+    assignedBrokerId: "broker-tariq",
     assignedBrokerName: "Tariq Mansoor",
     assignedBrokerAvatar: "TM",
     stage: "Form F in Review",
@@ -346,7 +304,6 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     lastContactAgo: "22m ago",
     liquidityTier: "Tier 1 Ultra-HNWI (Cash)",
     executiveBrief: "Full cash buyer looking for private beach access. Buyer agreed to 80/20 payment schedule. Awaiting final DLD digital signature.",
-    expectedNetAgencyCut: "AED 280,000",
     brokerPhone: "+971509876543",
   },
   {
@@ -355,17 +312,17 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     nationality: "Frankfurt, Germany",
     budgetFormatted: "AED 8.5M",
     projectInterest: "Palm Jebel Ali Beachfront Frond M",
-    assignedBrokerName: "Aisha Khan",
-    assignedBrokerAvatar: "AK",
+    assignedBrokerId: "broker-omar",
+    assignedBrokerName: "Omar Farooq",
+    assignedBrokerAvatar: "OF",
     stage: "Viewing Confirmed",
     stageColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
     probability: "75%",
-    speedToLeadMins: 1.8,
-    lastContactAgo: "1h ago",
+    speedToLeadMins: 24.5,
+    lastContactAgo: "26m ago (Stalled)",
     liquidityTier: "Tier 1 Ultra-HNWI (Cash)",
-    executiveBrief: "German vascular surgeon relocating capital to Dubai. Requires Golden Visa certification with title deed. Aisha scheduled private yacht viewing.",
-    expectedNetAgencyCut: "AED 170,000",
-    brokerPhone: "+971501234567",
+    executiveBrief: "German vascular surgeon relocating capital to Dubai. Requires Golden Visa certification with title deed. Currently stalled under Omar.",
+    brokerPhone: "+971567890123",
   },
   {
     id: "lead-ex-3",
@@ -373,6 +330,7 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     nationality: "London, UK",
     budgetFormatted: "AED 14.2M",
     projectInterest: "Dubai Hills Estate Golf Mansion",
+    assignedBrokerId: "broker-aisha",
     assignedBrokerName: "Aisha Khan",
     assignedBrokerAvatar: "AK",
     stage: "Token Transferred",
@@ -382,7 +340,6 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     lastContactAgo: "3h ago",
     liquidityTier: "Tier 1 Ultra-HNWI (Cash)",
     executiveBrief: "UK private equity principal. AED 200,000 booking token deposit already secured in agency escrow. SPA drafting in progress.",
-    expectedNetAgencyCut: "AED 284,000",
     brokerPhone: "+971501234567",
   },
   {
@@ -391,17 +348,17 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     nationality: "Monaco / Palm Jumeirah",
     budgetFormatted: "AED 3.2M",
     projectInterest: "Sobha Orbis 2BR Pool View",
-    assignedBrokerName: "Tariq Mansoor",
-    assignedBrokerAvatar: "TM",
+    assignedBrokerId: "broker-omar",
+    assignedBrokerName: "Omar Farooq",
+    assignedBrokerAvatar: "OF",
     stage: "Deposit Staged",
     stageColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
     probability: "80%",
-    speedToLeadMins: 2.4,
-    lastContactAgo: "4h ago",
+    speedToLeadMins: 19.0,
+    lastContactAgo: "19m ago (Stalled)",
     liquidityTier: "Tier 3 Mortgage Pre-Approved",
     executiveBrief: "Investor seeking 8.4% net rental yield with 1% monthly post-handover plan. Pre-approved with Emirates NBD mortgage desk.",
-    expectedNetAgencyCut: "AED 64,000",
-    brokerPhone: "+971509876543",
+    brokerPhone: "+971567890123",
   },
   {
     id: "lead-ex-5",
@@ -409,6 +366,7 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     nationality: "Mumbai / Downtown Dubai",
     budgetFormatted: "AED 5.8M",
     projectInterest: "Bayz 102 by Danube · Canal View",
+    assignedBrokerId: "broker-zainab",
     assignedBrokerName: "Zainab Al-Balooshi",
     assignedBrokerAvatar: "ZB",
     stage: "Negotiation",
@@ -418,7 +376,6 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     lastContactAgo: "5h ago",
     liquidityTier: "Tier 2 Institutional",
     executiveBrief: "Tech founder looking to park corporate reserves in Dubai freehold. Requesting developer waiver on 4% DLD fee.",
-    expectedNetAgencyCut: "AED 116,000",
     brokerPhone: "+971523456789",
   },
   {
@@ -427,6 +384,7 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     nationality: "Milan, Italy",
     budgetFormatted: "AED 2.1M",
     projectInterest: "Binghatti Amber · JVC",
+    assignedBrokerId: "broker-khalid",
     assignedBrokerName: "Khalid Al-Nuaimi",
     assignedBrokerAvatar: "KN",
     stage: "Viewing Confirmed",
@@ -436,7 +394,6 @@ export const AGENCY_ALL_LEADS_OVERWATCH: ExecutiveLead[] = [
     lastContactAgo: "6h ago",
     liquidityTier: "Tier 1 Ultra-HNWI (Cash)",
     executiveBrief: "Italian crypto investor looking for rapid off-plan capital appreciation. 20% down payment ready in UAE Dirhams.",
-    expectedNetAgencyCut: "AED 42,000",
     brokerPhone: "+971556789012",
   },
 ];
@@ -452,7 +409,6 @@ export type ExecutiveProjectBrief = {
   agencyAllocation: string;
   agencySoldVelocity: string;
   percentSold: number;
-  agencyCommissionTerms: string;
   aspFormatted: string; // Average Selling Price
   totalAgencyPipelineAed: string;
   topBrokerProducer: string;
@@ -471,7 +427,6 @@ export const EXECUTIVE_PROJECTS_BRIEF: ExecutiveProjectBrief[] = [
     agencyAllocation: "30 Exclusive Units",
     agencySoldVelocity: "18 Units Sold",
     percentSold: 60,
-    agencyCommissionTerms: "5.0% Standard + 1.0% Chairman's Override",
     aspFormatted: "AED 1.58M",
     totalAgencyPipelineAed: "AED 28.5M",
     topBrokerProducer: "Aisha Khan (8 Closed)",
@@ -487,7 +442,6 @@ export const EXECUTIVE_PROJECTS_BRIEF: ExecutiveProjectBrief[] = [
     agencyAllocation: "15 Tower Units",
     agencySoldVelocity: "12 Units Sold",
     percentSold: 80,
-    agencyCommissionTerms: "4.5% Standard Milestone Release",
     aspFormatted: "AED 1.25M",
     totalAgencyPipelineAed: "AED 14.8M",
     topBrokerProducer: "Zainab Al-Balooshi (5 Closed)",
@@ -504,11 +458,10 @@ export const EXECUTIVE_PROJECTS_BRIEF: ExecutiveProjectBrief[] = [
     agencyAllocation: "6 Ultra-Luxury Frond Villas",
     agencySoldVelocity: "4 Villas Closed",
     percentSold: 66,
-    agencyCommissionTerms: "2.0% Direct High-Ticket Payout",
     aspFormatted: "AED 22.4M",
     totalAgencyPipelineAed: "AED 89.6M",
     topBrokerProducer: "Tariq Mansoor (3 Closed)",
-    executiveBrief: "Highest ticket pipeline in the brokerage. Average commission per closed transaction is AED 448,000. Nakheel pays within 30 days of Oqood title registration.",
+    executiveBrief: "Highest ticket pipeline in the brokerage. Average price per closed transaction is AED 22.4M. Nakheel releases milestone completions within 30 days of Oqood title registration.",
   },
 ];
 
@@ -524,8 +477,9 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [bellRung, setBellRung] = useState(false);
 
-  // Lead Leakage Reassignment State
-  const [reassignedLeads, setReassignedLeads] = useState<Record<string, string>>({});
+  // Dynamic Lead Box State across Agents
+  const [agencyLeads, setAgencyLeads] = useState<ExecutiveLead[]>(INITIAL_LEADS);
+  const [leadFilterBroker, setLeadFilterBroker] = useState<string>("all");
   const [autoReassignEnabled, setAutoReassignEnabled] = useState(true);
 
   // Developer Receivables Aging State & Modals
@@ -536,11 +490,7 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
   const [dldStatsOpen, setDldStatsOpen] = useState(false);
   const [copiedLegal, setCopiedLegal] = useState(false);
 
-  // Financial Simulator State
-  const [simulatedSplit, setSimulatedSplit] = useState(50); // broker split %
-
   // Executive Leads & Projects Brief Modals State
-  const [leadFilterBroker, setLeadFilterBroker] = useState<string>("all");
   const [selectedLeadForBrief, setSelectedLeadForBrief] = useState<ExecutiveLead | null>(null);
   const [leadBriefModalOpen, setLeadBriefModalOpen] = useState(false);
   const [selectedProjectForBrief, setSelectedProjectForBrief] = useState<ExecutiveProjectBrief | null>(null);
@@ -592,7 +542,7 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
       title: "Contracts & Form F",
       count: "6 In Drafting",
       metric: "AED 18.4M Volume",
-      detail: "6 unified DLD Form F agreements awaiting electronic buyer signature. Expected revenue closing: AED 368,000 this week.",
+      detail: "6 unified DLD Form F agreements awaiting electronic buyer signature. Pacing across 3 high-probability off-plan deals this week.",
       actionLabel: "Review Contracts",
       actionLink: "/app/deals",
       tagColor: "border-amber-500/40 text-amber-400 bg-amber-500/10",
@@ -616,9 +566,10 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
     return true;
   });
 
-  const filteredAgencyLeads = AGENCY_ALL_LEADS_OVERWATCH.filter((lead) => {
+  // Filter leads dynamically: if a lead is reassigned, it disappears from old agent leadbox and appears under new agent!
+  const filteredAgencyLeads = agencyLeads.filter((lead) => {
     if (leadFilterBroker === "all") return true;
-    return lead.assignedBrokerName.toLowerCase().includes(leadFilterBroker.toLowerCase());
+    return lead.assignedBrokerId === leadFilterBroker;
   });
 
   const handleRingMoneyBell = () => {
@@ -630,10 +581,35 @@ export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (
     setTimeout(() => setBellRung(false), 1200);
   };
 
-  const handleReassignLead = (leadId: string, targetBroker: string, clientName: string) => {
-    setReassignedLeads((prev) => ({ ...prev, [leadId]: targetBroker }));
+  // Reassignment function that removes lead from previous agent leadbox and moves to new agent
+  const handleReassignLeadToAgent = (leadId: string, newBrokerId: string) => {
+    const targetBroker = AGENCY_BROKERS.find((b) => b.id === newBrokerId);
+    if (!targetBroker) return;
+
+    let leadName = "";
+    let prevBrokerName = "";
+
+    setAgencyLeads((prev) =>
+      prev.map((l) => {
+        if (l.id === leadId) {
+          leadName = l.clientName;
+          prevBrokerName = l.assignedBrokerName;
+          return {
+            ...l,
+            assignedBrokerId: targetBroker.id,
+            assignedBrokerName: targetBroker.name,
+            assignedBrokerAvatar: targetBroker.avatar,
+            brokerPhone: targetBroker.phone,
+            lastContactAgo: "Just reassigned by Director",
+          };
+        }
+        return l;
+      })
+    );
+
     if (soundEnabled) playMoneyBellChime();
-    toast.success(`⚡ Lead Reassigned! ${clientName} shifted to ${targetBroker} to stop lead decay.`);
+    toast.success(`⚡ Reassigned! ${leadName} moved from ${prevBrokerName}'s box to ${targetBroker.name}'s leadbox.`);
+    setLeadBriefModalOpen(false);
   };
 
   const handleOpenNoticeModal = (voucher: typeof DEVELOPER_VOUCHERS[0]) => {
@@ -794,9 +770,9 @@ Corporate License No: 1049281 · RERA ORN: 29481`;
       let reply = "";
       if (q.toLowerCase().includes("coach") || q.toLowerCase().includes("omar") || q.toLowerCase().includes("slow")) {
         reply = `**Executive Coaching Plan for Agent Omar Farooq:**
-* **Diagnosis:** Omar's average response time on 4 Instagram leads today slipped to **24.5 minutes** (agency benchmark is < 5 mins). In Dubai, conversion drops by 68% after 15 minutes.
-* **Immediate Action:** We have prepared a 1-click WhatsApp speed-to-lead template for Omar. Click "WhatsApp Coach" in the broker table below to push this instruction directly to his phone.`;
-      } else if (q.toLowerCase().includes("danube") || q.toLowerCase().includes("commission") || q.toLowerCase().includes("debt") || q.toLowerCase().includes("voucher")) {
+* **Diagnosis:** Omar's average response time on leads today slipped to **24.5 minutes** (agency benchmark is < 5 mins). In Dubai, conversion drops by 68% after 15 minutes.
+* **Immediate Action:** We have prepared a 1-click WhatsApp speed-to-lead template for Omar. Or, use the Executive Lead Overwatch below to reassign Dr. Heinrich Mueller directly to Aisha Khan.`;
+      } else if (q.toLowerCase().includes("danube") || q.toLowerCase().includes("voucher") || q.toLowerCase().includes("debt")) {
         reply = `**Developer Receivable Recovery (Danube Properties):**
 * **Voucher #1042 (AED 190,000):** Overdue by **62 days** since official DLD Title Registration.
 * **Recommended Legal Move:** Under RERA circular 44/2023, agencies are entitled to payment within 45 days of 20% milestone completion. Click **Dispatch RERA Claim** in the Receivables Ledger below to review and download the official stamped demand notice.`;
@@ -804,17 +780,17 @@ Corporate License No: 1049281 · RERA ORN: 29481`;
         reply = `**Social Ad & Reels ROI Analysis:**
 * **Top Performer:** The **1% Monthly Post-Handover Hack (TikTok & IG)** is generating qualified buyer leads at **AED 29/lead** (54% cheaper than portal listings).
 * **Strategic Reallocation:** Shift AED 4,500 from low-performing Facebook ads into the TikTok 1% campaign to generate an estimated 150+ additional off-plan leads this month.`;
-      } else if (q.toLowerCase().includes("emaar") || q.toLowerCase().includes("quota") || q.toLowerCase().includes("override")) {
+      } else if (q.toLowerCase().includes("emaar") || q.toLowerCase().includes("quota") || q.toLowerCase().includes("tier")) {
         reply = `**Emaar Diamond Partner Status Strategy:**
 * **Current Volume:** AED 38.2M closed out of the AED 50.0M threshold (76.4%).
-* **Gap:** AED 11.8M remaining.
-* **Cash Prize:** Hitting AED 50M unlocks a **+1.0% retroactive commission override**, injecting **AED 500,000 pure cash bonus** straight to company profit. Direct Aisha Khan and Tariq Mansoor to prioritize closing 3 more The Oasis villas before month-end.`;
+* **Gap:** AED 11.8M remaining (~3 luxury villas).
+* **Strategic Move:** Direct Aisha Khan and Tariq Mansoor to prioritize closing 3 more The Oasis villas before month-end to secure top-tier Diamond priority.`;
       } else {
         reply = `**Executive Strategic Briefing:**
 Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volume**. Your highest leverage actions today:
 1. Reassign Dr. Heinrich Mueller's stalled AED 8.5M inquiry from Omar to Aisha Khan.
 2. Escalate the **AED 190,000 Danube commission voucher #1042** via the DLD Notice Generator.
-3. Push 3 more deals into Emaar to unlock the **AED 500,000 Diamond override cash bonus**.`;
+3. Push 3 more deals into Emaar to unlock the Diamond partner threshold.`;
       }
 
       setOwnerAiChat((prev) => [...prev, { role: "assistant", text: reply }]);
@@ -828,14 +804,6 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
     setBroadcastMsg("");
     setBroadcastOpen(false);
   };
-
-  // Financial calculations for simulator
-  const grossInvoicedAed = 3880000;
-  const simulatedBrokerPayoutAed = grossInvoicedAed * (simulatedSplit / 100);
-  const fixedOverheadAed = 442000; // office lease + bayut/propertyfinder + licensing
-  const simulatedNetEbitdaAed = grossInvoicedAed - simulatedBrokerPayoutAed - fixedOverheadAed;
-  const simulatedNetMargin = ((simulatedNetEbitdaAed / grossInvoicedAed) * 100).toFixed(1);
-  const simulatedRunwayMonths = (simulatedNetEbitdaAed / (fixedOverheadAed / 12)).toFixed(1);
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-24 animate-in fade-in-50 duration-300">
@@ -1019,7 +987,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px]">
                     <span className="text-muted-foreground truncate">{deal.project}</span>
-                    <span className="text-emerald-400 font-bold font-mono">+{deal.netAgencyCut}</span>
+                    <span className="text-emerald-400 font-bold font-mono">({deal.dealVolume})</span>
                   </div>
                 </div>
               </div>
@@ -1085,37 +1053,37 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
           </div>
         </div>
 
-        {/* Card 2: Net Agency Commission (With Radial Dial) */}
+        {/* Card 2: Active Pipeline Volume */}
         <div className="rounded-3xl border border-border/80 bg-card p-6 shadow-sm flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between border-b border-border/50 pb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <DollarSign size={14} className="text-primary" /> Net Agency Revenue
+              <Briefcase size={14} className="text-primary" /> Active Pipeline Volume
             </span>
             <span className="rounded-full bg-primary/10 border border-primary/30 px-2 py-0.5 text-[10px] font-bold text-primary font-mono">
-              84% of Q4 Goal
+              38 Active Deals
             </span>
           </div>
 
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="text-3xl font-black text-foreground font-mono font-display">
-                AED 1.94M
+                AED 61.8M
               </p>
               <p className="text-xs text-muted-foreground">
-                Company share after 50/50 broker commission splits.
+                In-flight investor opportunities across team.
               </p>
             </div>
 
-            {/* Visual Ring Representation */}
+            {/* Radial velocity dial */}
             <div className="relative size-16 shrink-0 rounded-full border-4 border-secondary flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent -rotate-45" />
-              <span className="text-xs font-black font-mono text-foreground">84%</span>
+              <span className="text-xs font-black font-mono text-foreground">94%</span>
             </div>
           </div>
 
           <div className="rounded-xl bg-secondary/40 border border-border/60 p-2.5 text-xs text-muted-foreground flex items-center justify-between">
-            <span>Quarterly Target:</span>
-            <strong className="text-foreground font-mono">AED 2.30M</strong>
+            <span>High Conviction Deals:</span>
+            <strong className="text-emerald-400 font-mono">24 of 38 (63%)</strong>
           </div>
         </div>
 
@@ -1178,110 +1146,125 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 5. EXECUTIVE ALL LEADS OVERWATCH (BRIEF MODE FOR OWNER) ═══ */}
+      {/* ═══ 5. EXECUTIVE ALL LEADS OVERWATCH (DYNAMIC AGENT LEADBOX MODEL) ═══ */}
       <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-black text-foreground font-display flex items-center gap-2">
                 <Briefcase size={18} className="text-primary" />
-                <span>Executive Leads Overwatch</span>
+                <span>Executive Leads Overwatch &amp; Agent Leadboxes</span>
               </h2>
               <span className="rounded-full bg-primary/10 border border-primary/30 px-2.5 py-0.5 text-[10px] font-mono font-bold text-primary">
-                {AGENCY_ALL_LEADS_OVERWATCH.length} Priority In-Flight Dossiers
+                {filteredAgencyLeads.length} Leads in Active Queue
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              High-level brief of all active investor leads across your brokers. Click any lead for the executive brief (no micro-detail clutter).
+              Monitor investor leads by broker. Reassigning any lead immediately removes it from the former agent's box and delivers it to the new agent's leadbox.
             </p>
           </div>
 
-          {/* Broker Filter Pills */}
+          {/* Broker Filter Tabs (Shows leads per broker leadbox) */}
           <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary/70 border border-border/60 text-xs font-bold overflow-x-auto">
-            {[
-              { id: "all", label: "All Brokers (6)" },
-              { id: "aisha", label: "Aisha (2)" },
-              { id: "tariq", label: "Tariq (2)" },
-              { id: "zainab", label: "Zainab (1)" },
-              { id: "khalid", label: "Khalid (1)" },
-            ].map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setLeadFilterBroker(f.id)}
-                className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
-                  leadFilterBroker === f.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+            <button
+              onClick={() => setLeadFilterBroker("all")}
+              className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
+                leadFilterBroker === "all"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              }`}
+            >
+              All Leads ({agencyLeads.length})
+            </button>
+            {AGENCY_BROKERS.map((broker) => {
+              const count = agencyLeads.filter((l) => l.assignedBrokerId === broker.id).length;
+              return (
+                <button
+                  key={broker.id}
+                  onClick={() => setLeadFilterBroker(broker.id)}
+                  className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
+                    leadFilterBroker === broker.id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  }`}
+                >
+                  {broker.name.split(" ")[0]} ({count})
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Leads Table in Brief */}
         <div className="space-y-3">
-          {filteredAgencyLeads.map((lead) => (
-            <div
-              key={lead.id}
-              className="rounded-2xl border border-border/80 bg-secondary/30 hover:bg-secondary/50 p-4 transition-all flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-xs"
-            >
-              <div className="space-y-1 min-w-[240px]">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-extrabold text-sm text-foreground">{lead.clientName}</h4>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border font-mono ${lead.stageColor}`}>
-                    {lead.stage}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">{lead.projectInterest} · <span className="font-mono">{lead.nationality}</span></p>
-              </div>
-
-              {/* High-level stats cluster */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs flex-1 lg:px-6 lg:border-l lg:border-r lg:border-border/60">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Investor Budget</span>
-                  <p className="font-extrabold font-mono text-sm text-foreground">{lead.budgetFormatted}</p>
-                </div>
-
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Assigned Broker</span>
-                  <p className="font-bold text-foreground flex items-center gap-1.5">
-                    <span className="size-5 rounded-full bg-secondary border border-border flex items-center justify-center text-[10px] font-bold">
-                      {lead.assignedBrokerAvatar}
-                    </span>
-                    <span>{lead.assignedBrokerName}</span>
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Deal Probability</span>
-                  <p className="font-extrabold font-mono text-sm text-emerald-400">{lead.probability}</p>
-                </div>
-
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Agency Net Cut</span>
-                  <p className="font-extrabold font-mono text-sm text-primary">{lead.expectedNetAgencyCut}</p>
-                </div>
-              </div>
-
-              {/* 1-Click Executive Brief Modal Trigger */}
-              <div className="flex items-center gap-2 shrink-0">
-                <Button
-                  size="sm"
-                  onClick={() => handleOpenLeadBrief(lead)}
-                  className="h-9 px-3.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
-                >
-                  <Eye size={13} />
-                  <span>Executive Brief ↗</span>
-                </Button>
-              </div>
+          {filteredAgencyLeads.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border/80 p-8 text-center text-xs text-muted-foreground">
+              No active leads currently in this agent's leadbox. Leads reassigned to other brokers will appear in their respective queues.
             </div>
-          ))}
+          ) : (
+            filteredAgencyLeads.map((lead) => (
+              <div
+                key={lead.id}
+                className="rounded-2xl border border-border/80 bg-secondary/30 hover:bg-secondary/50 p-4 transition-all flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-xs"
+              >
+                <div className="space-y-1 min-w-[240px]">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-sm text-foreground">{lead.clientName}</h4>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border font-mono ${lead.stageColor}`}>
+                      {lead.stage}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{lead.projectInterest} · <span className="font-mono">{lead.nationality}</span></p>
+                </div>
+
+                {/* High-level stats cluster (No financial cut) */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs flex-1 lg:px-6 lg:border-l lg:border-r lg:border-border/60">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Investor Budget</span>
+                    <p className="font-extrabold font-mono text-sm text-foreground">{lead.budgetFormatted}</p>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Assigned Broker</span>
+                    <p className="font-bold text-foreground flex items-center gap-1.5">
+                      <span className="size-5 rounded-full bg-secondary border border-border flex items-center justify-center text-[10px] font-bold">
+                        {lead.assignedBrokerAvatar}
+                      </span>
+                      <span>{lead.assignedBrokerName}</span>
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Deal Probability</span>
+                    <p className="font-extrabold font-mono text-sm text-emerald-400">{lead.probability}</p>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Speed to Lead</span>
+                    <p className={`font-extrabold font-mono text-sm ${lead.speedToLeadMins > 10 ? "text-rose-400" : "text-emerald-400"}`}>
+                      {lead.speedToLeadMins} mins
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions: Executive Brief & Quick Reassign */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button
+                    size="sm"
+                    onClick={() => handleOpenLeadBrief(lead)}
+                    className="h-9 px-3.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
+                  >
+                    <Eye size={13} />
+                    <span>Executive Brief ↗</span>
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
-      {/* ═══ 6. EXECUTIVE PROJECTS & UNITS BRIEFING (HIGH-LEVEL FOR OWNER) ═══ */}
+      {/* ═══ 6. EXECUTIVE PROJECTS & UNITS BRIEFING (COMMERCIAL BRIEF FOR OWNER) ═══ */}
       <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -1295,7 +1278,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              High-level brief on developer escrow health, inventory sell-through, and commission override terms (no raw technical floorplans).
+              High-level brief on developer escrow health, inventory sell-through, and pipeline volume (no raw technical floorplans).
             </p>
           </div>
 
@@ -1338,15 +1321,15 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
 
                 <div className="space-y-1 text-xs pt-2">
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Commission Structure:</span>
-                    <strong className="text-foreground">{proj.agencyCommissionTerms}</strong>
+                    <span>Average Selling Price (ASP):</span>
+                    <strong className="text-foreground font-mono">{proj.aspFormatted}</strong>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
                     <span>Agency Pipeline:</span>
                     <strong className="text-emerald-400 font-mono">{proj.totalAgencyPipelineAed}</strong>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Top Broker Producer:</span>
+                    <span>Top Closer:</span>
                     <strong className="text-primary">{proj.topBrokerProducer}</strong>
                   </div>
                 </div>
@@ -1373,14 +1356,14 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-black text-foreground font-display flex items-center gap-2">
                 <AlertCircle size={18} className="text-rose-400" />
-                <span>Lead Leakage Rescue &amp; Auto-Reassignment Engine</span>
+                <span>Lead Leakage Rescue &amp; 1-Click Reassignment</span>
               </h2>
               <span className="rounded-full bg-rose-500/20 border border-rose-500/40 px-2.5 py-0.5 text-[10px] font-mono font-bold text-rose-300">
-                2 Stalled Inquiries
+                Live Response Monitor
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Leads unattended past 15 minutes drop conversion probability by 72%. Reassign instantly to top producers.
+              Leads unattended past 15 minutes drop conversion probability by 72%. Reassigning moves the lead immediately into the top producer's leadbox.
             </p>
           </div>
 
@@ -1403,9 +1386,9 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
 
         {/* At-risk leads list */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {AT_RISK_LEADS.map((lead) => {
-            const isReassigned = reassignedLeads[lead.id];
-            return (
+          {agencyLeads
+            .filter((l) => l.speedToLeadMins > 15)
+            .map((lead) => (
               <div
                 key={lead.id}
                 className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-xs"
@@ -1414,47 +1397,48 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="font-extrabold text-sm text-foreground">{lead.clientName}</h4>
-                      <span className="text-[10px] text-muted-foreground font-mono">({lead.clientOrigin})</span>
+                      <span className="text-[10px] text-muted-foreground font-mono">({lead.nationality})</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">{lead.projectInterest}</p>
                   </div>
 
                   <span className="rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono font-extrabold text-xs px-2.5 py-0.5 shrink-0">
-                    Stalled {lead.stalledMins}m
+                    Stalled {lead.speedToLeadMins}m
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs py-1">
                   <div className="p-2 rounded-xl bg-secondary/40 border border-border/60">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground">Investor Budget</span>
-                    <p className="font-mono font-extrabold text-foreground">{lead.budget}</p>
+                    <p className="font-mono font-extrabold text-foreground">{lead.budgetFormatted}</p>
                   </div>
                   <div className="p-2 rounded-xl bg-secondary/40 border border-border/60">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Assigned Broker</span>
-                    <p className="font-bold text-rose-400">{lead.assignedTo}</p>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Current Agent Box</span>
+                    <p className="font-bold text-rose-400">{lead.assignedBrokerName}</p>
                   </div>
                 </div>
 
-                {isReassigned ? (
-                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-2.5 text-xs text-emerald-400 font-bold flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <CheckCheck size={14} /> Reassigned to {isReassigned}
-                    </span>
-                    <span className="text-[10px] font-mono text-muted-foreground">WhatsApp pinged</span>
-                  </div>
-                ) : (
+                <div className="flex items-center gap-2 pt-1">
                   <Button
                     size="sm"
-                    onClick={() => handleReassignLead(lead.id, lead.recommendedBroker, lead.clientName)}
-                    className="w-full h-9 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
+                    onClick={() => handleReassignLeadToAgent(lead.id, "broker-aisha")}
+                    className="flex-1 h-9 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm"
                   >
                     <UserCheck size={13} />
-                    <span>Reassign to {lead.recommendedBroker} (Top Closer)</span>
+                    <span>Transfer to Aisha Khan</span>
                   </Button>
-                )}
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleReassignLeadToAgent(lead.id, "broker-tariq")}
+                    className="h-9 px-3 rounded-xl text-xs font-bold border-border hover:bg-secondary gap-1"
+                  >
+                    <span>To Tariq</span>
+                  </Button>
+                </div>
               </div>
-            );
-          })}
+            ))}
         </div>
       </section>
 
@@ -1538,7 +1522,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
 
                 <div className="flex items-center gap-6 text-xs font-mono">
                   <div>
-                    <span className="text-[10px] text-muted-foreground block uppercase font-bold">Commission</span>
+                    <span className="text-[10px] text-muted-foreground block uppercase font-bold">Voucher Principal</span>
                     <strong className="text-foreground text-sm font-extrabold">{voucher.amountFormatted}</strong>
                   </div>
 
@@ -1583,21 +1567,21 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 9. DEVELOPER VIP QUOTA TRACKER (+1% OVERRIDES) ═══ */}
+      {/* ═══ 9. DEVELOPER VIP QUOTA TRACKER ═══ */}
       <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-black text-foreground font-display flex items-center gap-2">
                 <Crown size={18} className="text-amber-400" />
-                <span>Developer VIP Quota Tracker &amp; Bonus Overrides</span>
+                <span>Developer VIP Quota Tracker</span>
               </h2>
               <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 text-[10px] font-mono font-bold text-amber-300">
-                +1.0% Agency Override Pool
+                Annual Agency Threshold Pacing
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Unlock retroactive cash overrides by hitting Master Developer annual volume thresholds.
+              Track firm velocity toward Master Developer partner tier milestones.
             </p>
           </div>
 
@@ -1637,7 +1621,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
 
               <div className="rounded-xl bg-card border border-border/70 p-3 space-y-1 text-xs">
                 <div className="flex justify-between text-muted-foreground">
-                  <span>To Unlock Override:</span>
+                  <span>To Unlock Tier:</span>
                   <strong className="text-foreground font-mono">{tier.remainingFormatted}</strong>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
@@ -1653,91 +1637,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 10. AGENCY NET PROFIT & RUNWAY SIMULATOR ═══ */}
-      <section className="rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-secondary/30 p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-black text-foreground font-display flex items-center gap-2">
-                <Sliders size={18} className="text-primary" />
-                <span>Agency Net Profit &amp; Cash Runway Simulator</span>
-              </h2>
-              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
-                Live Financial Model
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Adjust broker commission splits and portal overheads to simulate company net EBITDA and runway.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs font-mono">
-            <span className="text-muted-foreground">Gross Invoiced: <strong className="text-foreground">AED 3.88M</strong></span>
-          </div>
-        </div>
-
-        {/* The Interactive Split Slider */}
-        <div className="rounded-2xl bg-secondary/30 border border-border/70 p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Broker Commission Split:
-              </span>
-              <p className="text-2xl font-black font-mono text-foreground">{simulatedSplit}% Broker / {100 - simulatedSplit}% Agency</p>
-            </div>
-
-            <span className="text-xs text-muted-foreground max-w-xs sm:text-right">
-              Drag slider to test impact of moving from a 50/50 model to high-performance tier (e.g. 60/40 or 70/30).
-            </span>
-          </div>
-
-          <input
-            type="range"
-            min={40}
-            max={75}
-            step={5}
-            value={simulatedSplit}
-            onChange={(e) => setSimulatedSplit(Number(e.target.value))}
-            className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
-          />
-
-          <div className="flex justify-between text-[11px] font-mono text-muted-foreground">
-            <span>40% (Conservative)</span>
-            <span>50% (Dubai Standard)</span>
-            <span>60% (Senior Tier)</span>
-            <span>75% (Super-Producer)</span>
-          </div>
-        </div>
-
-        {/* Simulated Metrics Cluster */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="rounded-2xl border border-border/70 bg-card p-4 space-y-1 shadow-xs">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground">Broker Split Payout</span>
-            <p className="text-xl font-black font-mono text-foreground">AED {(simulatedBrokerPayoutAed / 1000000).toFixed(2)}M</p>
-            <span className="text-[10px] text-muted-foreground">Paid to 12 licensed brokers</span>
-          </div>
-
-          <div className="rounded-2xl border border-border/70 bg-card p-4 space-y-1 shadow-xs">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground">Fixed Agency Overhead</span>
-            <p className="text-xl font-black font-mono text-foreground">AED 442,000</p>
-            <span className="text-[10px] text-muted-foreground">Portals + Business Bay office</span>
-          </div>
-
-          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-1 shadow-xs">
-            <span className="text-[10px] uppercase font-bold text-primary">Simulated Net EBITDA</span>
-            <p className="text-xl font-black font-mono text-primary">AED {(simulatedNetEbitdaAed / 1000000).toFixed(2)}M</p>
-            <span className="text-[10px] text-emerald-400 font-bold font-mono">{simulatedNetMargin}% Net Margin</span>
-          </div>
-
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1 shadow-xs">
-            <span className="text-[10px] uppercase font-bold text-emerald-400">Cash Runway</span>
-            <p className="text-xl font-black font-mono text-emerald-400">{simulatedRunwayMonths} Months</p>
-            <span className="text-[10px] text-muted-foreground">Zero deal buffer</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 11. BROKER OVERWATCH & EMPLOYEE LEADERBOARD ═══ */}
+      {/* ═══ 10. BROKER OVERWATCH & EMPLOYEE LEADERBOARD ═══ */}
       <section id="brokers" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -1751,7 +1651,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Monitor individual revenue contribution, closing rates, response speeds, and coach underperforming agents in 1 click.
+              Monitor individual sales velocity, closing rates, response speeds, and coach underperforming agents in 1 click.
             </p>
           </div>
 
@@ -1807,8 +1707,8 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 </div>
               </div>
 
-              {/* Performance Metrics Cluster */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs flex-1 lg:px-6 lg:border-l lg:border-r lg:border-border/60">
+              {/* Performance Metrics Cluster (No Financial cut) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs flex-1 lg:px-6 lg:border-l lg:border-r lg:border-border/60">
                 <div>
                   <span className="text-[10px] uppercase font-bold text-muted-foreground">Closed Volume</span>
                   <p className="text-sm font-extrabold font-mono text-foreground">{broker.closedVolumeFormatted}</p>
@@ -1828,12 +1728,6 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   <p className="text-sm font-extrabold font-mono text-foreground">{broker.activeDealsCount} in flight</p>
                   <span className="text-[10px] text-muted-foreground">DLD Form F/Viewings</span>
                 </div>
-
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Agency Net</span>
-                  <p className="text-sm font-extrabold font-mono text-primary">{broker.agencyNetRevenueFormatted}</p>
-                  <span className="text-[10px] text-muted-foreground">Company share</span>
-                </div>
               </div>
 
               {/* 1-Click Management Triggers */}
@@ -1842,7 +1736,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   href={`https://wa.me/${broker.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
                     broker.tier === "Needs Coaching"
                       ? `Hi ${broker.name.split(" ")[0]}, noticed your average lead response time slipped to ${broker.speedToLeadMins} mins today. Let's make sure we hit inquiries within 5 minutes to keep conversion high!`
-                      : `Great work ${broker.name.split(" ")[0]}! You've brought in ${broker.agencyNetRevenueFormatted} net for the agency this month. Keep up the great velocity!`
+                      : `Great work ${broker.name.split(" ")[0]}! You've closed ${broker.closedVolumeFormatted} across ${broker.dealsClosed} deals this month. Keep up the great velocity!`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
@@ -1865,7 +1759,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 12. COMPANY DEAL STAGES RADAR ═══ */}
+      {/* ═══ 11. COMPANY DEAL STAGES RADAR ═══ */}
       <section id="pipeline" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex items-center justify-between border-b border-border/60 pb-4">
           <div>
@@ -1927,7 +1821,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 13. REELS & SOCIAL AD CAMPAIGN OVERWATCH ═══ */}
+      {/* ═══ 12. REELS & SOCIAL AD CAMPAIGN OVERWATCH ═══ */}
       <section id="reels" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
@@ -2037,7 +1931,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </div>
       </section>
 
-      {/* ═══ 14. DEDICATED COMPANY OWNER AI MASTERMIND ═══ */}
+      {/* ═══ 13. DEDICATED COMPANY OWNER AI MASTERMIND ═══ */}
       <section id="mastermind" className="rounded-3xl border border-primary/40 bg-card p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-5">
           <div className="flex items-center gap-3">
@@ -2132,7 +2026,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             value={ownerAiQuestion}
             onChange={(e) => setOwnerAiQuestion(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleSendOwnerAi(); }}
-            placeholder="Ask Owner AI anything (e.g., 'What is our expected profit next month?', 'Which developer owes us money?')..."
+            placeholder="Ask Owner AI anything (e.g., 'What is our expected closing volume next month?', 'Which developer owes us vouchers?')..."
             className="flex-1 h-11 rounded-2xl border border-border bg-secondary/40 px-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-sm"
           />
           <Button
@@ -2340,7 +2234,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </Dialog>
       )}
 
-      {/* ═══ EXECUTIVE LEAD BRIEF MODAL (FOR OWNER) ═══ */}
+      {/* ═══ EXECUTIVE LEAD BRIEF MODAL (WITH INTERACTIVE REASSIGNMENT) ═══ */}
       {leadBriefModalOpen && selectedLeadForBrief && (
         <Dialog open={leadBriefModalOpen} onOpenChange={setLeadBriefModalOpen}>
           <DialogContent className="max-w-xl rounded-3xl bg-card border-border p-6 sm:p-8 space-y-5">
@@ -2352,7 +2246,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                     <span>Executive Lead Dossier: {selectedLeadForBrief.clientName}</span>
                   </DialogTitle>
                   <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-                    {selectedLeadForBrief.nationality} · Assigned to {selectedLeadForBrief.assignedBrokerName}
+                    {selectedLeadForBrief.nationality} · Currently in {selectedLeadForBrief.assignedBrokerName}'s Leadbox
                   </p>
                 </div>
 
@@ -2376,10 +2270,10 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   <span className="text-[10px] text-muted-foreground block mt-0.5">High Conviction</span>
                 </div>
 
-                <div className="rounded-xl bg-primary/10 border border-primary/30 p-3">
-                  <span className="text-[10px] text-primary uppercase font-bold block">Agency Net Cut</span>
-                  <strong className="text-base font-extrabold font-mono text-primary">{selectedLeadForBrief.expectedNetAgencyCut}</strong>
-                  <span className="text-[10px] text-muted-foreground block mt-0.5">50% Company Split</span>
+                <div className="rounded-xl bg-secondary/40 border border-border/70 p-3">
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold block">Target Property</span>
+                  <strong className="text-sm font-bold text-foreground truncate block">{selectedLeadForBrief.projectInterest}</strong>
+                  <span className="text-[10px] text-muted-foreground block mt-0.5">Prime Asset</span>
                 </div>
               </div>
 
@@ -2392,9 +2286,38 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 </p>
               </div>
 
-              <div className="rounded-xl bg-card border border-border/70 p-3 text-xs flex items-center justify-between text-muted-foreground">
-                <span>Speed to First Contact: <strong className="text-foreground font-mono">{selectedLeadForBrief.speedToLeadMins} mins</strong></span>
-                <span>Last Broker Activity: <strong className="text-foreground font-mono">{selectedLeadForBrief.lastContactAgo}</strong></span>
+              {/* Dynamic Reassignment Box */}
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <ArrowRightLeft size={14} className="text-primary" />
+                    <span>Transfer Lead to Another Agent's Leadbox:</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">Instant Transfer</span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {AGENCY_BROKERS.map((broker) => {
+                    const isCurrent = broker.id === selectedLeadForBrief.assignedBrokerId;
+                    return (
+                      <button
+                        key={broker.id}
+                        disabled={isCurrent}
+                        onClick={() => handleReassignLeadToAgent(selectedLeadForBrief.id, broker.id)}
+                        className={`p-2 rounded-xl border text-xs font-bold transition-all text-left ${
+                          isCurrent
+                            ? "bg-secondary/40 border-border/50 text-muted-foreground cursor-not-allowed opacity-60"
+                            : "bg-card border-border hover:border-primary hover:bg-secondary text-foreground"
+                        }`}
+                      >
+                        <p className="font-extrabold text-[11px] truncate">{broker.name.split(" ")[0]}</p>
+                        <span className="text-[9px] text-muted-foreground font-mono block">
+                          {isCurrent ? "Current Box" : "Transfer ↗"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -2475,8 +2398,8 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   {selectedProjectForBrief.executiveBrief}
                 </p>
                 <div className="pt-2 border-t border-border/50 text-[11px] text-muted-foreground flex justify-between">
-                  <span>Commission Terms: <strong className="text-foreground">{selectedProjectForBrief.agencyCommissionTerms}</strong></span>
                   <span>Top Closer: <strong className="text-primary">{selectedProjectForBrief.topBrokerProducer}</strong></span>
+                  <span>Escrow Solvency: <strong className="text-emerald-400">Verified A+</strong></span>
                 </div>
               </div>
             </div>
