@@ -59,7 +59,9 @@ export const Route = createFileRoute("/_authenticated/app/project/$id")({
 
 type UnitRow = MatchRow & { unit_number: string | null; floor?: string | null; plan?: string | null };
 
-const AMENITY_ICONS: Array<{ keys: string[]; icon: LucideIcon }> = [
+type IconComponent = React.ComponentType<{ size?: number | string; className?: string }>;
+
+const AMENITY_ICONS: Array<{ keys: string[]; icon: IconComponent }> = [
   { keys: ["pool", "jacuzzi", "lagoon", "aqua", "splash", "water"], icon: Waves },
   { keys: ["gym", "fitness", "crossfit", "strength", "pilates", "yoga", "training"], icon: Dumbbell },
   { keys: ["spa", "sauna", "steam", "massage", "therapy", "wellness", "cryo", "hyperbaric", "salon"], icon: Sparkles },
@@ -80,7 +82,7 @@ const AMENITY_ICONS: Array<{ keys: string[]; icon: LucideIcon }> = [
   { keys: ["bbq", "dining", "restaurant", "cafe", "lounge", "bar", "kitchen"], icon: Utensils },
 ];
 
-const amenityIcon = (name: string): LucideIcon => {
+const amenityIcon = (name: string): IconComponent => {
   const text = name.toLowerCase();
   return AMENITY_ICONS.find((rule) => rule.keys.some((key) => text.includes(key)))?.icon ?? Sparkles;
 };

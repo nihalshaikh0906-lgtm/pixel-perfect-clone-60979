@@ -56,7 +56,7 @@ function Page() {
                   <CartesianGrid stroke="var(--a-line)" strokeDasharray="3 5" vertical={false} />
                   <XAxis dataKey="m" tick={{ fill: "var(--a-ink-2)", fontSize: 12 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "var(--a-ink-2)", fontSize: 12 }} axisLine={false} tickLine={false} width={36} />
-                  <Tooltip formatter={(v) => [`AED ${v}M`, "Revenue"]} contentStyle={{ background: "var(--a-card)", border: "1px solid var(--a-line)", borderRadius: 12, color: "var(--a-ink)" }} />
+                  <Tooltip formatter={(v: any) => [`AED ${v}M`, "Revenue"]} contentStyle={{ background: "var(--a-card)", border: "1px solid var(--a-line)", borderRadius: 12, color: "var(--a-ink)" }} />
                   <Line type="monotone" dataKey="v" stroke="var(--a-gold)" strokeWidth={2.5} dot={{ r: 4, fill: "var(--a-gold)" }} />
                 </LineChart>
               </ResponsiveContainer>

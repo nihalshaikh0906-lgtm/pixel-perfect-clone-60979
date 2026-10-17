@@ -190,8 +190,10 @@ function Page() {
         const currentIdx = STAGES.indexOf(d.stage);
         if (currentIdx < STAGES.length - 1) {
           const nextStage = STAGES[currentIdx + 1];
-          toast.success(`${d.property} advanced to ${nextStage}`);
-          return { ...d, stage: nextStage };
+          if (nextStage) {
+            toast.success(`${d.property} advanced to ${nextStage}`);
+            return { ...d, stage: nextStage };
+          }
         }
         return d;
       })

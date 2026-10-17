@@ -221,7 +221,7 @@ function Page() {
                   {appt.time}
                 </p>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase mt-1">
-                  {appt.date.split("·")[0].trim()}
+                  {(appt.date.split("·")[0] || appt.date).trim()}
                 </p>
               </div>
 

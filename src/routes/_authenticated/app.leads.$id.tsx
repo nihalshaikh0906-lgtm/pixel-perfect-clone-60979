@@ -186,7 +186,7 @@ function BespokeLeadDossier({ lead, clientMode }: { lead: Lead; clientMode?: boo
 
   const p = priorityOf(lead);
   const cleanPhone = lead.phone.replace(/\D/g, "");
-  const heroProject = VERIFIED_MATCHES[activeProjectIndex];
+  const heroProject = VERIFIED_MATCHES[activeProjectIndex] ?? VERIFIED_MATCHES[0]!;
   const firstName = lead.name.split(" ")[0];
 
   // Dynamic high-converting tailored WhatsApp scripts

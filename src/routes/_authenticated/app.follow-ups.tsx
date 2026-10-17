@@ -223,7 +223,7 @@ function Page() {
             {/* Identity & Status Badge (Left) */}
             <div className="flex items-center gap-4 min-w-[240px]">
               <div className="size-13 rounded-2xl bg-secondary border border-border/80 flex items-center justify-center font-display font-black text-lg text-foreground shadow-sm">
-                {task.lead.split(" ")[0][0]}{task.lead.split(" ")[1]?.[0] || ""}
+                {(task.lead.split(" ")[0]?.[0] || "L")}{(task.lead.split(" ")[1]?.[0] || "")}
               </div>
 
               <div className="space-y-0.5">

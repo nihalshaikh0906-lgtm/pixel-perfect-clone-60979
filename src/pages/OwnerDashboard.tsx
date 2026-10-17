@@ -877,7 +877,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               asChild
               className="h-10 rounded-2xl text-xs font-bold gap-1.5 bg-primary text-primary-foreground shadow-sm hover:brightness-105"
             >
-              <Link to="/app/leads">
+              <Link to="/app/leads" search={{ queue: "all" }}>
                 <span>Broker Leads View ↗</span>
               </Link>
             </Button>
@@ -1753,7 +1753,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 </a>
 
                 <Button asChild size="sm" className="h-9 px-3.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm">
-                  <Link to="/app/leads">
+                  <Link to="/app/leads" search={{ queue: "all" }}>
                     <span>Inspect</span>
                     <ArrowUpRight size={13} className="ml-1" />
                   </Link>

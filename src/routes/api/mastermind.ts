@@ -59,8 +59,8 @@ export const Route = createFileRoute("/api/mastermind")({
         // Derive org_id from user metadata or profile to enforce tenant boundaries
         const userOrgId =
           parsed.data.org_id ||
-          userData.user.user_metadata?.org_id ||
-          userData.user.app_metadata?.org_id ||
+          (userData.user.user_metadata as Record<string, any>)?.org_id ||
+          (userData.user.app_metadata as Record<string, any>)?.org_id ||
           "org_default";
 
         try {
