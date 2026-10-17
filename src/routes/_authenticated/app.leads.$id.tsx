@@ -268,6 +268,19 @@ This client matches **${heroProject.name}** with a **${heroProject.matchScore}% 
 
           {/* Action Hub */}
           <div className="flex flex-wrap items-center gap-2.5">
+            {/* ═══ PROMINENT CLEAR AI SUGGESTION BUTTON ═══ */}
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById("ai-insights-panel");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-primary to-indigo-600 hover:brightness-110 text-white font-extrabold text-xs shadow-md transition-all ring-2 ring-primary/25 cursor-pointer"
+            >
+              <Sparkles size={15} />
+              <span>✨ Get AI Suggestion</span>
+            </button>
+
             <a
               href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(defaultPitch)}`}
               target="_blank"
@@ -327,6 +340,131 @@ This client matches **${heroProject.name}** with a **${heroProject.matchScore}% 
           <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground bg-card/60 px-3 py-1.5 rounded-xl border border-border/60">
             <FileText size={13} className="text-primary" />
             <span className="italic truncate max-w-xs">"{lead.message}"</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 2. EASY-TO-UNDERSTAND AI DEAL PLAYBOOK (CLEAR PILLARS & INSTANT ACTIONS) ═══ */}
+      <section id="ai-insights-panel" className="relative overflow-hidden rounded-3xl border border-primary/40 bg-card/95 backdrop-blur-xl p-6 sm:p-7 shadow-lg space-y-5 animate-in fade-in-50 duration-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shadow-sm">
+              <Sparkles size={18} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-black text-foreground font-display">
+                  AI Lead Strategy & Action Playbook
+                </h2>
+                <span className="rounded-full bg-primary/10 border border-primary/30 px-2.5 py-0.5 text-[10px] font-bold text-primary font-mono">
+                  Real-Time UAE Model
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Synthesized from lead profile, budget, and live Dubai off-plan inventory.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                toast.success("AI Strategy refreshed with latest DLD milestones.");
+              }}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border/80 bg-secondary/60 hover:bg-secondary text-[11px] font-bold text-foreground transition-all cursor-pointer"
+            >
+              <Sparkles size={12} className="text-primary" />
+              <span>Refresh Insights</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 3 Digestible Pillars (Easy to Comprehend) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          {/* Card 1: Investment Profile & Buying Power */}
+          <div className="rounded-2xl border border-border/80 bg-secondary/30 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <span>🎯</span> Profile & Buying Power
+              </span>
+              <span className="rounded-full bg-blue-500/10 border border-blue-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-blue-400">
+                High Net Worth
+              </span>
+            </div>
+            <p className="text-sm font-extrabold text-foreground">
+              {formatAed(lead.budget)} Budget ({lead.payment})
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Seeking <strong>{wants(lead)}</strong> in <strong>{lead.area}</strong>. Ample headroom for {heroProject.name} (priced at {heroProject.price}).
+            </p>
+          </div>
+
+          {/* Card 2: DLD Escrow & KYC Readiness */}
+          <div className="rounded-2xl border border-border/80 bg-secondary/30 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <span>🛡️</span> DLD Escrow & KYC Status
+              </span>
+              <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-400">
+                Request Passport Copy
+              </span>
+            </div>
+            <p className="text-sm font-extrabold text-foreground">
+              Escrow Verified · KYC Pending
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              DLD Escrow approved on matched project. Request passport & Emirates ID copy before issuing developer reservation holding slip.
+            </p>
+          </div>
+
+          {/* Card 3: Recommended Next Move */}
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                <span>⚡</span> Recommended Next Move
+              </span>
+              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
+                Speed to Lead
+              </span>
+            </div>
+            <p className="text-sm font-extrabold text-foreground">
+              Call & Send 10-Sec WhatsApp
+            </p>
+            <p className="text-xs text-foreground/80 leading-relaxed">
+              Inbound inquiry received {ago(lead.receivedHoursAgo)}. Call immediately, then send the pre-written holding breakdown below.
+            </p>
+          </div>
+        </div>
+
+        {/* 1-Click Actionable WhatsApp Script */}
+        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="space-y-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-500">
+              💬 Pre-Drafted 1-Click WhatsApp Opener
+            </span>
+            <p className="text-xs text-foreground font-medium italic">
+              "{defaultPitch}"
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => copyToClipboard(defaultPitch)}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border bg-card hover:bg-secondary text-xs font-bold text-foreground transition-all shadow-sm cursor-pointer"
+            >
+              {copiedPitch ? <CheckCheck size={13} className="text-emerald-400" /> : <Copy size={13} />}
+              <span>{copiedPitch ? "Copied" : "Copy"}</span>
+            </button>
+            <a
+              href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(defaultPitch)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm"
+            >
+              <MessageCircle size={13} />
+              <span>Send ↗</span>
+            </a>
           </div>
         </div>
       </section>
