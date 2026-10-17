@@ -74,13 +74,20 @@ function Inbox() {
   const openLead = (l: Lead) => void navigate({ to: "/app/leads/$id", params: { id: l.id } });
 
   return (
-    <div className="w-full space-y-6 pb-24 animate-in fade-in-50 duration-300">
+    <div className="relative w-full space-y-7 pb-24 animate-in fade-in-50 duration-300">
+      {/* ═══ LUXURY LANDING-PAGE LIVE AMBIENT BACKGROUND ANIMATION ═══ */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10" aria-hidden="true">
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-primary/12 via-violet-500/10 to-transparent blur-3xl animate-pulse duration-[7000ms]" />
+        <div className="absolute top-1/4 -right-32 w-[550px] h-[550px] rounded-full bg-gradient-to-bl from-blue-500/10 via-cyan-500/8 to-transparent blur-3xl animate-pulse duration-[9000ms]" />
+        <div className="absolute bottom-10 left-1/3 w-[650px] h-[650px] rounded-full bg-gradient-to-tr from-purple-500/8 via-primary/6 to-transparent blur-3xl" />
+      </div>
+
       {/* ═══ CLEAN EXECUTIVE HEADER ═══ */}
-      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-6 sm:p-7 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="space-y-1">
+      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-card/85 backdrop-blur-xl p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
                 Executive Action Stream
               </span>
               <span className="text-muted-foreground">•</span>
@@ -91,22 +98,22 @@ function Inbox() {
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
               Leads Inbox
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
               Prioritized by response urgency, budget size, and closing probability. Click any investor to open full-screen dossier.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-border bg-card text-foreground font-bold text-xs hover:bg-secondary transition-all"
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-border bg-card/80 backdrop-blur-sm text-foreground font-bold text-xs hover:bg-secondary transition-all shadow-sm"
               onClick={() => toast("CSV import ready in agency admin dashboard.")}
             >
               <Upload size={14} />
               <span>Import Leads</span>
             </button>
 
-            <Button asChild className="h-10 px-4 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-1.5 shadow-sm">
+            <Button asChild className="h-10 px-5 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-2 shadow-sm hover:brightness-105 transition-all">
               <Link to="/app/crm" search={{ action: "add" }}>
                 <Plus size={15} />
                 <span>New Lead</span>
@@ -116,8 +123,8 @@ function Inbox() {
         </div>
       </section>
 
-      {/* ═══ QUEUE SELECTOR TABS (PILL RIBBON) ═══ */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
+      {/* ═══ PRIORITY QUEUE TABS (GENEROUS CAPSULE RIBBON) ═══ */}
+      <div className="flex flex-wrap items-center gap-3 p-2.5 sm:p-3 rounded-2xl bg-card/75 backdrop-blur-md border border-border/80 shadow-sm">
         {QUEUES.map((x) => {
           const active = queue === x.id;
           return (
@@ -126,16 +133,16 @@ function Inbox() {
               to="/app/leads"
               search={{ queue: x.id }}
               onClick={() => setPage(0)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-3 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all shadow-sm ${
                 active
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-secondary/60 text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  ? "bg-primary text-primary-foreground shadow-md ring-2 ring-primary/25 scale-[1.02]"
+                  : "bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary border border-border/50"
               }`}
             >
               <span>{x.label}</span>
               <span
-                className={`rounded-full px-2 py-0.2 text-[10px] font-mono ${
-                  active ? "bg-black/30 text-white font-bold" : "bg-card text-muted-foreground border border-border/60"
+                className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                  active ? "bg-black/30 text-white" : "bg-card text-foreground border border-border/70"
                 }`}
               >
                 {queueCount(x.id).toLocaleString("en-US")}
@@ -145,17 +152,19 @@ function Inbox() {
         })}
       </div>
 
+      {/* ═══ STATUS HELPER BANNER (DECENT SPACING) ═══ */}
       {info && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/30 border border-border/60 px-4 py-2.5 rounded-2xl">
-          <Info size={14} className="text-primary shrink-0" />
+        <div className="flex items-center gap-3 text-xs sm:text-sm font-medium text-foreground/90 bg-primary/8 border border-primary/25 px-6 py-4 rounded-2xl shadow-sm backdrop-blur-sm">
+          <Info size={16} className="text-primary shrink-0" />
           <span>{info.info}</span>
         </div>
       )}
 
-      {/* ═══ FILTER & SEARCH CAPSULE ═══ */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-card p-3 rounded-2xl border border-border/80 shadow-sm">
-        {/* Type Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
+      {/* ═══ FILTER & SEARCH CAPSULE CONTAINER (GENEROUS PADDING & GAPS) ═══ */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-card/85 backdrop-blur-xl border border-border/80 shadow-sm space-y-5">
+        {/* Type Filter Pills Row */}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-1">Filter:</span>
           {(["All", "Off-plan", "Ready", "Rent"] as const).map((t) => (
             <button
               key={t}
@@ -163,13 +172,13 @@ function Inbox() {
                 setType(t);
                 setPage(0);
               }}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+              className={`h-10 px-4 sm:px-5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm ${
                 type === t
-                  ? "bg-primary/15 text-primary border border-primary/40 shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  ? "bg-primary text-primary-foreground shadow-md ring-2 ring-primary/20"
+                  : "bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary border border-border/60"
               }`}
             >
-              {t === "All" ? "All Types" : t}
+              {t === "All" ? "All types" : t}
             </button>
           ))}
 
@@ -179,9 +188,9 @@ function Inbox() {
               setSource(e.target.value);
               setPage(0);
             }}
-            className="h-8 px-2.5 rounded-xl border border-border/80 bg-secondary/50 text-foreground text-xs font-bold focus:outline-none"
+            className="h-10 px-3.5 rounded-xl border border-border/80 bg-secondary/70 text-foreground text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer shadow-sm ml-auto"
           >
-            <option value="All">All Sources</option>
+            <option value="All">All Sources ({SOURCES.length})</option>
             {SOURCES.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -190,23 +199,25 @@ function Inbox() {
           </select>
         </div>
 
-        {/* Search Input */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 sm:w-64">
-            <Search size={14} className="absolute left-3 top-2.5 text-muted-foreground" />
+        {/* Search & Meta Row with Decent Spacing */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-border/50">
+          <div className="relative flex-1 max-w-md">
+            <Search size={16} className="absolute left-3.5 top-3 text-muted-foreground" />
             <input
               value={text}
               onChange={(e) => {
                 setText(e.target.value);
                 setPage(0);
               }}
-              placeholder="Search name, area, country…"
-              className="w-full h-8 pl-8 pr-3 rounded-xl border border-border bg-secondary/30 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+              placeholder="Search by name, phone, area, country…"
+              className="w-full h-10 pl-10 pr-4 rounded-xl border border-border/80 bg-background/80 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
             />
           </div>
-          <span className="text-xs font-mono font-bold text-muted-foreground shrink-0">
-            {rows.length.toLocaleString("en-US")} leads
-          </span>
+          <div className="flex items-center gap-3 self-end sm:self-center">
+            <span className="text-xs font-mono font-bold text-muted-foreground">
+              Showing {view.length} of {rows.length.toLocaleString("en-US")} leads
+            </span>
+          </div>
         </div>
       </div>
 

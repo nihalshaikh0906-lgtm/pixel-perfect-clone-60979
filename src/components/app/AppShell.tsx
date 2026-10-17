@@ -373,10 +373,17 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             </div>
           </header>
 
-          {/* Full Screen Main Content */}
-          <main className="a-content">
+          {/* Full Screen Main Content with Live Ambient Background */}
+          <main className="a-content relative">
+            {/* ═══ LUXURY LANDING-PAGE LIVE AMBIENT BACKGROUND ANIMATION ═══ */}
+            <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10" aria-hidden="true">
+              <div className="absolute -top-40 -left-40 w-[650px] h-[650px] rounded-full bg-gradient-to-br from-primary/12 via-indigo-500/10 to-transparent blur-3xl animate-pulse duration-[8000ms]" />
+              <div className="absolute top-1/4 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-amber-500/8 via-rose-500/6 to-transparent blur-3xl animate-pulse duration-[10000ms]" />
+              <div className="absolute bottom-10 left-1/4 w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-cyan-500/8 via-primary/6 to-transparent blur-3xl animate-pulse duration-[12000ms]" />
+            </div>
+
             {clientMode && (
-              <div className="mb-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/15 to-amber-500/5 border border-amber-500/40 px-4 py-2.5 flex items-center justify-between text-xs text-amber-300 shadow-sm animate-in fade-in duration-200">
+              <div className="mb-6 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/15 to-amber-500/5 border border-amber-500/40 px-5 py-3 flex items-center justify-between text-xs text-amber-300 shadow-sm animate-in fade-in duration-200">
                 <div className="flex items-center gap-2.5">
                   <span className="size-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
                   <span className="font-extrabold uppercase tracking-wider text-[11px]">💎 Client Presentation Mode Active</span>

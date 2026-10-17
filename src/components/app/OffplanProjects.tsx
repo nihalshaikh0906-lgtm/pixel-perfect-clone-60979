@@ -333,8 +333,8 @@ export function OffplanProjects({
           )}
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+        {/* Filter Pills with Generous Spacing */}
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold">
           {[
             { id: "all", label: "All Famous Projects" },
             { id: "phpp", label: "1% Monthly (PHPP)" },
@@ -344,10 +344,10 @@ export function OffplanProjects({
             <button
               key={t.id}
               onClick={() => setFilter(t.id as typeof filter)}
-              className={`px-3 py-1 rounded-xl transition-all ${
+              className={`px-4 py-2 rounded-xl transition-all shadow-sm ${
                 filter === t.id
-                  ? "bg-primary text-primary-foreground font-bold shadow-sm"
-                  : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-primary-foreground font-bold shadow-md ring-2 ring-primary/20"
+                  : "bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary border border-border/60"
               }`}
             >
               {t.label}
@@ -356,12 +356,12 @@ export function OffplanProjects({
         </div>
 
         {/* Quick Project Jump Switcher */}
-        <div className="hidden lg:flex items-center gap-1 overflow-x-auto py-0.5">
+        <div className="hidden lg:flex items-center gap-2 overflow-x-auto py-1">
           {FAMOUS_DUBAI_PROJECTS.map((p, idx) => (
             <button
               key={p.id}
               onClick={() => scrollToProject(p.id)}
-              className="text-[11px] font-bold px-2.5 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-all shrink-0"
+              className="text-xs font-bold px-3 py-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/80 border border-transparent hover:border-border/60 transition-all shrink-0"
             >
               #{idx + 1} {p.name.split(" ")[0]}
             </button>

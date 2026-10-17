@@ -41,6 +41,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDossierCopilotRouteImport } from './routes/api/dossier-copilot'
 import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copilot'
+import { Route as ApiMastermindRouteImport } from './routes/api/mastermind'
 import { Route as MediaSplatRouteImport } from './routes/media.$'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
@@ -231,6 +232,11 @@ const ApiDossierCopilotRoute = ApiDossierCopilotRouteImport.update({
 const ApiGeneralCopilotRoute = ApiGeneralCopilotRouteImport.update({
   id: '/api/general-copilot',
   path: '/api/general-copilot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMastermindRoute = ApiMastermindRouteImport.update({
+  id: '/api/mastermind',
+  path: '/api/mastermind',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediaSplatRoute = MediaSplatRouteImport.update({
@@ -432,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
+  '/api/mastermind': typeof ApiMastermindRoute
   '/media/$': typeof MediaSplatRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
   '/app/about': typeof AuthenticatedAppAboutRoute
@@ -493,6 +500,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
+  '/api/mastermind': typeof ApiMastermindRoute
   '/media/$': typeof MediaSplatRoute
   '/': typeof AuthenticatedIndexRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
@@ -558,6 +566,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
+  '/api/mastermind': typeof ApiMastermindRoute
   '/media/$': typeof MediaSplatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
@@ -624,6 +633,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/dossier-copilot'
     | '/api/general-copilot'
+    | '/api/mastermind'
     | '/media/$'
     | '/app/$section'
     | '/app/about'
@@ -685,6 +695,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/dossier-copilot'
     | '/api/general-copilot'
+    | '/api/mastermind'
     | '/media/$'
     | '/'
     | '/app/$section'
@@ -749,6 +760,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/dossier-copilot'
     | '/api/general-copilot'
+    | '/api/mastermind'
     | '/media/$'
     | '/_authenticated/'
     | '/_authenticated/app/$section'
@@ -796,6 +808,7 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   ApiDossierCopilotRoute: typeof ApiDossierCopilotRoute
   ApiGeneralCopilotRoute: typeof ApiGeneralCopilotRoute
+  ApiMastermindRoute: typeof ApiMastermindRoute
   MediaSplatRoute: typeof MediaSplatRoute
 }
 
@@ -1023,6 +1036,13 @@ declare module '@tanstack/react-router' {
       path: '/api/general-copilot'
       fullPath: '/api/general-copilot'
       preLoaderRoute: typeof ApiGeneralCopilotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/mastermind': {
+      id: '/api/mastermind'
+      path: '/api/mastermind'
+      fullPath: '/api/mastermind'
+      preLoaderRoute: typeof ApiMastermindRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media/$': {
@@ -1366,6 +1386,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   ApiDossierCopilotRoute: ApiDossierCopilotRoute,
   ApiGeneralCopilotRoute: ApiGeneralCopilotRoute,
+  ApiMastermindRoute: ApiMastermindRoute,
   MediaSplatRoute: MediaSplatRoute,
 }
 export const routeTree = rootRouteImport

@@ -289,7 +289,7 @@ export function ReadyInventory({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold">
             {[
               { id: "all", label: "All Ready Units" },
               { id: "vacant", label: "🔑 Vacant on Transfer" },
@@ -299,10 +299,10 @@ export function ReadyInventory({
               <button
                 key={t.id}
                 onClick={() => setFilter(t.id as typeof filter)}
-                className={`px-3 py-1.5 rounded-xl transition-all ${
+                className={`px-4 py-2 rounded-xl transition-all shadow-sm ${
                   filter === t.id
-                    ? "bg-primary text-primary-foreground font-bold shadow-sm"
-                    : "bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/60"
+                    ? "bg-primary text-primary-foreground font-bold shadow-md ring-2 ring-primary/20"
+                    : "bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary border border-border/60"
                 }`}
               >
                 {t.label}
