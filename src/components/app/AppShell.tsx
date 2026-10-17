@@ -72,9 +72,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
 
   const groups: { title: string; items: Item[] }[] = [
     { title: "CORE", items: [
-      { label: "AI Assistant", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
-      { label: "Leads", desc: "Investor Inbox & Priority Action Queue", to: "/app/leads", icon: Inbox },
       { label: "Dashboard", desc: "Executive Cockpit & Portfolio Oversight", to: "/owner-dashboard", icon: Home, exact: true },
+      { label: "Leads", desc: "Investor Inbox & Priority Action Queue", to: "/app/leads", icon: Inbox },
+      { label: "AI Assistant", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
     ] },
     { title: "INVENTORY", items: [
       { label: "Offplan", desc: "1,450+ Verified Dubai Developments & Escrow", to: "/app/offplan", icon: Construction },
