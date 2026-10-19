@@ -511,7 +511,14 @@ export const TIMEFRAME_METRICS = {
   },
 };
 
-export function OwnerDashboard({ page = 1, onPage }: { page?: number; onPage?: (page: number) => void }) {
+function getTimeGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; onPage?: (page: number) => void; userName?: string }) {
   const [timeframe, setTimeframe] = useState<"today" | "week" | "month" | "ytd">("month");
   const [brokerFilter, setBrokerFilter] = useState<"all" | "top" | "fast" | "coaching">("all");
   const [broadcastOpen, setBroadcastOpen] = useState(false);
@@ -876,7 +883,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 <Crown size={18} />
               </span>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
-                Marhaban, Director Adam — Brokerage Floor is Live & Synchronized
+                {getTimeGreeting()}, {userName && userName !== "Owner" ? userName : "Agency Owner"} — Brokerage Floor is Live &amp; Synchronized
               </h1>
             </div>
 
@@ -1320,10 +1327,10 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                     variant="outline"
                     onClick={() => handleOpenLeadBrief(lead)}
                     className="h-9 px-3 rounded-xl text-xs font-bold border-border hover:bg-secondary gap-1"
-                    title="Open Director commercial brief"
+                    title="Open Executive commercial brief"
                   >
                     <FileText size={12} className="text-primary" />
-                    <span>Director Brief</span>
+                    <span>Executive Brief</span>
                   </Button>
 
                   {/* 1-Click Quick Move to another agent's leadbox */}
@@ -2478,7 +2485,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
 
               <div className="rounded-2xl border border-border/80 bg-secondary/30 p-4 space-y-1.5">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-primary block">
-                  Director's Brief &amp; Commercial Terms
+                  Executive Commercial Brief &amp; Terms
                 </span>
                 <p className="text-xs text-foreground leading-relaxed">
                   {selectedProjectForBrief.executiveBrief}
@@ -2557,7 +2564,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             {/* Executive Notes & Briefing */}
             <div className="rounded-2xl border border-border/80 bg-secondary/30 p-4 space-y-1.5">
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-primary block">
-                Director Commercial Intelligence
+                Executive Commercial Intelligence
               </span>
               <p className="text-xs text-foreground leading-relaxed">
                 {selectedLeadForDossier.executiveBrief}
@@ -2616,7 +2623,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <a
                   href={`https://wa.me/${selectedLeadForDossier.brokerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                    `Hi ${selectedLeadForDossier.assignedBrokerName.split(" ")[0]}, Director Adam here. How is ${selectedLeadForDossier.clientName} progressing on ${selectedLeadForDossier.projectInterest}? Let's schedule the viewing today.`
+                    `Hi ${selectedLeadForDossier.assignedBrokerName.split(" ")[0]}, following up on lead ${selectedLeadForDossier.clientName} (${selectedLeadForDossier.budgetFormatted} on ${selectedLeadForDossier.projectInterest}). What is the next step to lock this deal today?`
                   )}`}
                   target="_blank"
                   rel="noreferrer"

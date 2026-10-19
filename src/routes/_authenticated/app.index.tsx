@@ -52,29 +52,35 @@ function HomePage() {
   const { page } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [role, setRole] = useState<string | null | undefined>(undefined);
+  const [userName, setUserName] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    void supabase.auth.getUser().then(({ data }) =>
+    void supabase.auth.getUser().then(({ data }) => {
+      const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>;
+      const raw = String(meta["full_name"] ?? meta["name"] ?? data.user?.email?.split("@")[0] ?? "");
+      const first = (raw.split(/[\s._-]+/)[0] ?? "").replace(/\d+/g, "");
+      if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1).toLowerCase());
+
       (supabase as unknown as { from: (t: string) => any })
         .from("org_members")
         .select("role")
         .eq("user_id", data.user?.id ?? "")
         .maybeSingle()
-        .then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))
-    );
+        .then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null));
+    });
   }, []);
 
   if (role !== "agent") {
-    return <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} />;
+    return <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} userName={userName} />;
   }
-  return <AgentDashboard />;
+  return <AgentDashboard userName={userName} />;
 }
 
 /* ─────────────────────────────────────────────────────────────
    MASTER-DESIGNED AGENT DASHBOARD COCKPIT
 ────────────────────────────────────────────────────────────── */
 
-function AgentDashboard() {
+function AgentDashboard({ userName }: { userName?: string }) {
   const { data: projectData } = useSuspenseQuery(projectPageOptions(1));
   const [leadList, setLeadList] = useState<Lead[]>(() => queueLeads("all"));
   const [activeTab, setActiveTab] = useState<"urgent" | "hot" | "closing" | "all">("urgent");
@@ -167,15 +173,19 @@ When are you free today for a quick 2-minute overview?`;
               </span>
               <span className="text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground">
-                Saturday, 10 October 2026
+                {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
-              Good morning, Broker
+              {(() => {
+                const hour = new Date().getHours();
+                const g = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+                return `${g}, ${userName ? userName : "Property Consultant"}`;
+              })()}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
-              You have <span className="font-semibold text-foreground">4 priority client follow-ups</span> and <span className="font-semibold text-foreground">AED 14.8M</span> in active negotiations.
+              Welcome to your daily deal desk. You have <span className="font-semibold text-foreground">4 priority client follow-ups</span> and <span className="font-semibold text-foreground">AED 14.8M</span> in active negotiations.
             </p>
           </div>
 

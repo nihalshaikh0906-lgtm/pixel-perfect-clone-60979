@@ -46,7 +46,7 @@ function OwnerDashboardPage() {
   const agency = String(meta["company"] ?? meta["agency"] ?? "Your agency");
   return (
     <AppShell userName={name} initials={initials} agency={agency}>
-      <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} />
+      <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} userName={name} />
     </AppShell>
   );
 }
