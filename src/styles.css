@@ -231,3 +231,16 @@ html { scroll-behavior: smooth; }
   --sw-stone: #8A8F9C; --sw-stone-ink: #FFFFFF;
   --sw-mist: #DCE1EC; --sw-mist-ink: #141A33;
 }
+
+/* Force-hide Lovable watermark badge across all devices */
+#lovable-badge,
+[id*="lovable-badge"],
+[class*="lovable-badge"],
+a[href*="lovable.dev?utm_medium=badge"],
+div[data-lovable-badge] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
