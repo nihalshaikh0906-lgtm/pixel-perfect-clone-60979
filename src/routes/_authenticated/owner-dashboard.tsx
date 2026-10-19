@@ -1,11 +1,19 @@
 import type { SearchSchemaInput } from "@tanstack/react-router";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { AppShell } from "@/components/app/AppShell";
 import { OwnerDashboard } from "@/pages/OwnerDashboard";
 import { inventorySummaryOptions, projectPageOptions } from "@/lib/inventory.functions";
+import { detectRole, getStoredRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated/owner-dashboard")({
+  beforeLoad: async () => {
+    const role = await detectRole();
+    if (role === "agent") {
+      throw redirect({ to: "/app/leads", search: { queue: "all" }, replace: true });
+    }
+  },
   validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
   loaderDeps: ({ search }) => ({ page: search.page }),
   loader: async ({ context, deps }) => {
@@ -36,6 +44,16 @@ export const Route = createFileRoute("/_authenticated/owner-dashboard")({
 function OwnerDashboardPage() {
   const { page } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const role = getStoredRole();
+
+  useEffect(() => {
+    if (role === "agent") {
+      void navigate({ to: "/app/leads", search: { queue: "all" }, replace: true });
+    }
+  }, [role, navigate]);
+
+  if (role === "agent") return null;
+
   const { user } = Route.useRouteContext();
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
   const raw = String(meta["full_name"] ?? meta["name"] ?? user.email?.split("@")[0] ?? "Owner");

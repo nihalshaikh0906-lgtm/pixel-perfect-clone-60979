@@ -13,6 +13,7 @@ import { AiChat } from "./AiChat";
 import { AddMenu, Notifications, ThemeToggle, useTheme } from "./ShellExtras";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { detectRole, getStoredRole, clearStoredRole, type DealOSRole } from "@/lib/auth-role";
 
 type ShellCtx = { clientMode: boolean; openAi: () => void };
 const Ctx = createContext<ShellCtx>({ clientMode: false, openAi: () => {} });
@@ -65,32 +66,31 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   }, [userMenu]);
 
   const signOut = async () => {
+    clearStoredRole();
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
     void navigate({ to: "/login", search: { mode: undefined }, replace: true });
   };
 
-  const [role, setRole] = useState<string | null>(null);
+  const isOwnerRoute = pathname === "/owner-dashboard" || pathname.startsWith("/owner-dashboard");
+  const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? (isOwnerRoute ? "company" : "agent"));
+
   useEffect(() => {
-    void supabase.auth.getUser().then(({ data }) =>
-      (supabase as unknown as { from: (t: string) => any })
-        .from("org_members")
-        .select("role")
-        .eq("user_id", data.user?.id ?? "")
-        .maybeSingle()
-        .then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null))
-    );
+    void detectRole().then((r) => setRole(r));
   }, []);
 
-  const isOwnerRoute = pathname === "/owner-dashboard" || pathname.startsWith("/owner-dashboard");
-  const [executiveMode, setExecutiveMode] = useState<boolean>(true);
+  const [executiveMode, setExecutiveMode] = useState<boolean>(() => {
+    const r = getStoredRole();
+    if (r === "agent") return false;
+    return isOwnerRoute || r === "company";
+  });
 
   useEffect(() => {
-    if (isOwnerRoute) {
-      setExecutiveMode(true);
-    } else if (role === "agent") {
+    if (role === "agent") {
       setExecutiveMode(false);
+    } else if (isOwnerRoute) {
+      setExecutiveMode(true);
     }
   }, [isOwnerRoute, role]);
 
@@ -127,6 +127,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     {
       title: "BROKER DESK",
       items: [
+        { label: "Broker Cockpit", desc: "Daily Deal Desk, Priority Tasks & Actions", to: "/app", icon: Home, exact: true },
         { label: "Leads Inbox", desc: "Investor Inbox & Priority Action Queue", to: "/app/leads", icon: Inbox },
         { label: "Broker AI Copilot", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
       ],
@@ -155,9 +156,16 @@ export function AppShell({ children, userName, initials, agency }: { children: R
         { label: "Reports", desc: "Q4 Financial GMV & Broker Performance", to: "/app/reports", icon: LineChart },
       ],
     },
+    {
+      title: "MY WORKSPACE",
+      items: [
+        { label: "My Profile", desc: "Broker Profile & RERA BRN", to: "/app/my-account", icon: User },
+        { label: "Broker Settings", desc: "WhatsApp API, Goals & Preferences", to: "/app/settings", icon: Settings },
+      ],
+    },
   ];
 
-  const activeGroups = executiveMode ? ownerGroups : brokerGroups;
+  const activeGroups = (role === "agent" ? false : executiveMode) ? ownerGroups : brokerGroups;
 
   useEffect(() => { setDrawer(false); }, [pathname]);
   useEffect(() => {
@@ -185,7 +193,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     return it.exact ? pathname === it.to || pathname === `${it.to}/` : pathname.startsWith(it.to);
   };
 
-  const isAdmin = role === "company_admin" || !role;
+  const isAdmin = role === "company";
   const visibleGroups = activeGroups
     .map((g) => ({ ...g, items: isAdmin ? g.items : g.items.filter((it) => !it.adminOnly) }))
     .filter((g) => g.items.length > 0);
@@ -250,7 +258,15 @@ export function AppShell({ children, userName, initials, agency }: { children: R
           {/* Persona Switcher Pill */}
           {!collapsed && (
             <div className="px-3 py-2 border-b border-border/50">
-              {executiveMode ? (
+              {role === "agent" ? (
+                <div className="rounded-xl bg-primary/10 border border-primary/30 p-2 text-xs flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <User size={14} className="text-primary shrink-0" />
+                    <span className="font-extrabold text-[11px] text-primary truncate">Broker Desk</span>
+                  </div>
+                  <span className="text-[10px] text-primary/80 font-bold tracking-wider uppercase">Licensed Agent</span>
+                </div>
+              ) : executiveMode ? (
                 <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2 text-xs flex items-center justify-between shadow-xs">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Crown size={14} className="text-amber-400 shrink-0" />
@@ -260,7 +276,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     type="button"
                     onClick={() => {
                       setExecutiveMode(false);
-                      void navigate({ to: "/app/leads" });
+                      void navigate({ to: "/app/leads", search: { queue: "all" } });
                     }}
                     className="text-[10px] text-muted-foreground hover:text-foreground font-bold hover:underline shrink-0"
                     title="Switch to Licensed Broker Leads & Units Desk"
@@ -292,33 +308,49 @@ export function AppShell({ children, userName, initials, agency }: { children: R
 
           {collapsed && (
             <div className="flex justify-center py-2 border-b border-border/40">
-              <button
-                type="button"
-                onClick={() => {
-                  if (executiveMode) {
-                    setExecutiveMode(false);
-                    void navigate({ to: "/app/leads" });
-                  } else {
-                    setExecutiveMode(true);
-                    void navigate({ to: "/owner-dashboard" });
+              {role === "agent" ? (
+                <div
+                  className="size-8 rounded-xl flex items-center justify-center bg-primary/10 text-primary border border-primary/30"
+                  title="Broker Desk Mode · Licensed Agent"
+                  onMouseEnter={(e) =>
+                    handleMouseEnter(e, {
+                      label: "Broker Desk Mode",
+                      desc: "Licensed Broker Leads, Properties & Deals Desk",
+                    })
                   }
-                }}
-                className={`size-8 rounded-xl flex items-center justify-center transition-all ${
-                  executiveMode
-                    ? "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30"
-                    : "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30"
-                }`}
-                title={executiveMode ? "Company Owner Mode · Click to switch to Broker Desk" : "Broker Desk Mode · Click to switch to Owner Cockpit"}
-                onMouseEnter={(e) =>
-                  handleMouseEnter(e, {
-                    label: executiveMode ? "Company Owner Mode" : "Broker Desk Mode",
-                    desc: executiveMode ? "Click to toggle Broker Leads & Inventory" : "Click to toggle Company Owner Overwatch",
-                  })
-                }
-                onMouseLeave={handleMouseLeave}
-              >
-                {executiveMode ? <Crown size={15} /> : <User size={15} />}
-              </button>
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <User size={15} />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (executiveMode) {
+                      setExecutiveMode(false);
+                      void navigate({ to: "/app/leads", search: { queue: "all" } });
+                    } else {
+                      setExecutiveMode(true);
+                      void navigate({ to: "/owner-dashboard" });
+                    }
+                  }}
+                  className={`size-8 rounded-xl flex items-center justify-center transition-all ${
+                    executiveMode
+                      ? "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30"
+                      : "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30"
+                  }`}
+                  title={executiveMode ? "Company Owner Mode · Click to switch to Broker Desk" : "Broker Desk Mode · Click to switch to Owner Cockpit"}
+                  onMouseEnter={(e) =>
+                    handleMouseEnter(e, {
+                      label: executiveMode ? "Company Owner Mode" : "Broker Desk Mode",
+                      desc: executiveMode ? "Click to toggle Broker Leads & Inventory" : "Click to toggle Company Owner Overwatch",
+                    })
+                  }
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {executiveMode ? <Crown size={15} /> : <User size={15} />}
+                </button>
+              )}
             </div>
           )}
 
@@ -354,11 +386,11 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     <span className="a-avatar sm">{initials}</span>
                     <div className="min-w-0">
                       <p className="font-bold text-xs truncate text-foreground">{userName}</p>
-                      <p className="text-[11px] text-muted-foreground truncate">{role === "company_admin" ? "Company Owner & Principal" : "Property Consultant"} · {agency}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{role === "company" ? "Company Owner & Principal" : "Property Consultant"} · {agency}</p>
                     </div>
                   </div>
                   <div className="a-user-menu-divider" />
-                  {executiveMode ? (
+                  {role === "company" && executiveMode ? (
                     <>
                       <Link
                         to="/app/my-account"
@@ -448,14 +480,14 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 aria-expanded={userMenu}
                 aria-label="Account menu"
                 onClick={() => setUserMenu((v) => !v)}
-                onMouseEnter={(e) => handleMouseEnter(e, { label: userName, desc: `${role === "company_admin" ? "Company Owner" : "Licensed Broker"} · ${agency}` })}
+                onMouseEnter={(e) => handleMouseEnter(e, { label: userName, desc: `${role === "company" ? "Company Owner" : "Licensed Broker"} · ${agency}` })}
                 onMouseLeave={handleMouseLeave}
               >
                 <span className="a-avatar">{initials}</span>
                 {!collapsed && (
                   <span className="a-user-text">
                     <b>{userName}</b>
-                    <small>{role === "company_admin" ? "Owner" : "Broker"} · {agency}</small>
+                    <small>{role === "company" ? "Owner" : "Broker"} · {agency}</small>
                   </span>
                 )}
               </button>

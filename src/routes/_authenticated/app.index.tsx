@@ -16,6 +16,7 @@ import { aed, quarterOf } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { detectRole, getStoredRole, type DealOSRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({
@@ -51,26 +52,20 @@ export const Route = createFileRoute("/_authenticated/app/")({
 function HomePage() {
   const { page } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const [role, setRole] = useState<string | null | undefined>(undefined);
+  const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? "agent");
   const [userName, setUserName] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    void detectRole().then((r) => setRole(r));
     void supabase.auth.getUser().then(({ data }) => {
       const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>;
       const raw = String(meta["full_name"] ?? meta["name"] ?? data.user?.email?.split("@")[0] ?? "");
       const first = (raw.split(/[\s._-]+/)[0] ?? "").replace(/\d+/g, "");
       if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1).toLowerCase());
-
-      (supabase as unknown as { from: (t: string) => any })
-        .from("org_members")
-        .select("role")
-        .eq("user_id", data.user?.id ?? "")
-        .maybeSingle()
-        .then((r: { data: { role: string } | null }) => setRole(r.data?.role ?? null));
     });
   }, []);
 
-  if (role !== "agent") {
+  if (role === "company") {
     return <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} userName={userName} />;
   }
   return <AgentDashboard userName={userName} />;

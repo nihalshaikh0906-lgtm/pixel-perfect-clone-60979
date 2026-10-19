@@ -6,6 +6,7 @@ import { AuthShell, Logo } from "@/components/auth/AuthShell";
 import { CheckBox, EMAIL_RE, Field, GoogleIcon, PasswordField, googleEnabled } from "@/components/auth/fields";
 import { supabase } from "@/integrations/supabase/client";
 import { setRemember } from "@/lib/remember";
+import { setStoredRole, detectRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
@@ -23,7 +24,13 @@ export const Route = createFileRoute("/login")({
   beforeLoad: async ({ search }) => {
     if (search.mode === "signup") throw redirect({ to: "/signup", replace: true });
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/app/ai-assistant", replace: true });
+    if (data.session) {
+      const role = await detectRole();
+      if (role === "agent") {
+        throw redirect({ to: "/app/leads", search: { queue: "all" }, replace: true });
+      }
+      throw redirect({ to: "/owner-dashboard", replace: true });
+    }
   },
   component: LoginPage,
 });
@@ -78,6 +85,7 @@ function LoginPage() {
   }
 
   async function finish() {
+    setStoredRole(role);
     setRemember(remember);
     setState("success");
     await new Promise((r) => setTimeout(r, 450));
@@ -205,6 +213,7 @@ function LoginPage() {
             className="au-demo-btn"
             disabled={busy}
             onClick={() => {
+              setStoredRole("company");
               setEmail("demo-company@dealos.ae");
               setPassword("Demo1234!");
               setRole("company");
@@ -218,6 +227,7 @@ function LoginPage() {
             className="au-demo-btn"
             disabled={busy}
             onClick={() => {
+              setStoredRole("agent");
               setEmail("demo-agent@dealos.ae");
               setPassword("Demo1234!");
               setRole("agent");
