@@ -80,19 +80,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PropFlow · Luxury Broker Cockpit" },
+      { title: "DealOS · Dubai Real Estate Broker OS & Cockpit" },
       {
         name: "description",
-        content: "AI deal desk for Dubai brokers: live inventory, lead dossiers and instant pitches.",
+        content: "Institutional real estate operating system for Dubai brokers and agencies: 34,850+ verified units, lead dossiers, and owner cockpit.",
       },
-      { property: "og:title", content: "PropFlow · Luxury Broker Cockpit" },
+      { property: "og:title", content: "DealOS · Dubai Real Estate Broker OS & Cockpit" },
       {
         property: "og:description",
-        content: "AI deal desk for Dubai brokers: live inventory, lead dossiers and instant pitches.",
+        content: "Institutional real estate operating system for Dubai brokers and agencies: 34,850+ verified units, lead dossiers, and owner cockpit.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@dealos_ae" },
     ],
     links: [
       {
@@ -116,12 +116,60 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const gtmId = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_GTM_ID || "GTM-DEALOS01";
+  const gaId = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_GA_MEASUREMENT_ID || "G-DEALOS2026";
+  const metaPixelId = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_META_PIXEL_ID || "1234567890";
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${gtmId}');`,
+          }}
+        />
+        {/* Google Analytics 4 (GA4) */}
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}', { page_path: window.location.pathname });`,
+          }}
+        />
+        {/* Meta Pixel Code */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${metaPixelId}');
+fbq('track', 'PageView');`,
+          }}
+        />
       </head>
       <body>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         {children}
         <Scripts />
       </body>

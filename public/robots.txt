@@ -1,14 +1,23 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Allow: /welcome
+Allow: /pricing
+Allow: /about
+Allow: /faq
+Allow: /privacy
+Allow: /terms
+Allow: /login
+Allow: /signup
+
+# Protect authenticated workspaces and APIs
+Disallow: /app/
+Disallow: /client/
+Disallow: /agent/
+Disallow: /settings
+Disallow: /inventory
+Disallow: /listings
+Disallow: /market
+Disallow: /news
+Disallow: /api/
+
+Sitemap: https://dealos.ae/sitemap.xml

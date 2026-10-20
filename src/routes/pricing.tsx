@@ -1,50 +1,127 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check } from "lucide-react";
+import { Check, ArrowRight, MessageCircle } from "lucide-react";
 
 import { Eyebrow, meta, PublicLayout } from "@/components/public/PublicLayout";
+import { PLANS, aedPrice } from "@/lib/pricing";
 
 export const Route = createFileRoute("/pricing")({
-  head: () => meta("Pricing · PropFlow Advisory Licenses", "PropFlow plans from AED 100 — 50% launch discount on every 1, 3, 6 and 12-month advisory license."),
+  head: () =>
+    meta(
+      "Pricing · DealOS Institutional Broker Licenses",
+      "DealOS Dubai real estate operating system licenses from AED 91/mo — official 50% launch discount on monthly, quarterly, semi-annual and annual plans."
+    ),
   component: PricingPage,
 });
 
-const PLANS = [
-  { name: "1-Month Trial Pass", was: 200, now: 100, per: "/ month", note: "Billed monthly", v: "Ideal for evaluating the platform on active deals.", inc: ["Full access to 40,000+ project database", "Daily 8:00 AM market briefings", "AI client matching & 5-point pitch generator", "White-label PDF exports"], cta: "Get Started" },
-  { name: "3-Month Quarter Pass", was: 500, now: 250, per: "/ quarter", note: "~AED 83/mo", popular: true, v: "Built for consultants actively working qualified buyers through a 90-day pipeline.", inc: ["All 1-Month features", "Priority database sync", "Private inventory storage"], cta: "Start 3-Month Plan" },
-  { name: "6-Month Professional Tier", was: 1000, now: 500, per: "/ half-year", note: "~AED 83/mo", v: "For seasoned advisors handling steady deal flow and multi-unit investors.", inc: ["All Quarter Pass features", "Multi-asset comparison tables", "Advanced satellite mapping tools"], cta: "Start 6-Month Plan" },
-  { name: "1-Year Elite License", was: 1800, now: 900, per: "/ year", note: "AED 75/mo — Maximum Savings", v: "The complete annual operating system for top-producing property consultants.", inc: ["Unlimited white-label dossiers", "Dedicated account onboarding", "Continuous database updates", "Feature priority"], cta: "Claim Annual License" },
-];
-
-const aed = (n: number) => `AED ${n.toLocaleString("en-US")}`;
-
 function PricingPage() {
+  const waEnterpriseUrl = `https://wa.me/971500000000?text=${encodeURIComponent(
+    "Hello DealOS Team! I manage a team of 5+ property consultants in Dubai. I would like a quote for centralized brokerage seats, white-label branding, and dedicated onboarding."
+  )}`;
+
   return (
     <PublicLayout>
       <section className="mx-auto max-w-7xl px-6 py-20 text-center">
-        <Eyebrow>Transparent value. No hidden fees.</Eyebrow>
-        <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-medium md:text-6xl">Select Your Advisory License</h1>
-        <p className="mx-auto mt-5 max-w-2xl text-[16px] text-[#4B5272]">All plans include 50% introductory savings for the first 3 months. Close one additional transaction and your subscription pays for itself many times over.</p>
-        <p className="mt-6 inline-block rounded-full border border-[var(--bronze)]/50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bronze)]">✨ 50% launch discount applied to all plans</p>
+        <Eyebrow>Institutional value. Zero hidden fees.</Eyebrow>
+        <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-extrabold tracking-tight md:text-6xl text-foreground font-display">
+          Select Your DealOS License
+        </h1>
+        <p className="mx-auto mt-5 max-w-2xl text-[16px] text-muted-foreground">
+          Built exclusively for Dubai property consultants and agency owners. Close one additional off-plan or secondary transaction and your DealOS subscription pays for itself dozens of times over.
+        </p>
+        <p className="mt-6 inline-block rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-400">
+          ✨ Official Launch Offer · 50% Savings Applied
+        </p>
 
         <div className="mt-14 grid gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
           {PLANS.map((p) => (
-            <div key={p.name} className={`relative flex flex-col rounded-2xl border bg-white/70 p-6 backdrop-blur-md ${p.popular ? "border-[var(--bronze)]" : "border-[var(--obsidian)]/10"}`} style={{ boxShadow: "0 30px 80px -30px rgba(158,123,79,0.25)" }}>
-              {p.popular ? <span className="absolute -top-3 left-6 rounded-full bg-[var(--bronze)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--silk)]">Most popular</span> : null}
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--bronze)]">{p.name}</p>
-              <p className="metric mt-5 text-sm text-[#4B5272] line-through">{aed(p.was)}</p>
-              <p className="mt-1"><span className="metric text-4xl font-medium tracking-tight">{aed(p.now)}</span> <span className="text-sm text-[#4B5272]">{p.per}</span></p>
-              <p className="metric mt-1 text-xs text-[#4B5272]">{p.note}</p>
-              <p className="mt-5 text-[14px] italic text-[#4B5272]">{p.v}</p>
-              <ul className="mt-5 flex-1 space-y-2 text-[14px]">
-                {p.inc.map((x) => <li key={x} className="flex gap-2"><Check className="mt-1 size-3.5 shrink-0 text-[var(--bronze)]" />{x}</li>)}
+            <div
+              key={p.id}
+              className={`relative flex flex-col rounded-2xl border bg-card/80 p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 ${
+                p.highlighted ? "border-amber-500 ring-2 ring-amber-500/20 shadow-xl" : "border-border/80"
+              }`}
+            >
+              {p.highlighted ? (
+                <span className="absolute -top-3 left-6 rounded-full bg-amber-500 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-black">
+                  ★ Best Value
+                </span>
+              ) : null}
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-400">{p.label} Plan</p>
+              <p className="metric mt-5 text-sm text-muted-foreground line-through">{aedPrice(p.originalPrice)}</p>
+              <p className="mt-1 flex items-baseline gap-1">
+                <span className="metric text-4xl font-extrabold tracking-tight text-foreground">{aedPrice(p.price)}</span>
+                <span className="text-sm text-muted-foreground">{p.period}</span>
+              </p>
+              <p className="metric mt-1 text-xs text-emerald-400 font-semibold">
+                {p.months > 1 ? `${aedPrice(p.perMonth)} / month` : "Flexible monthly billing"}
+              </p>
+              <p className="mt-5 text-[13px] text-muted-foreground">{p.savingLabel}</p>
+              <ul className="mt-5 flex-1 space-y-2.5 text-[13px] text-zinc-300">
+                <li className="flex gap-2">
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                  <span>34,850+ verified units &amp; 1,355+ projects</span>
+                </li>
+                <li className="flex gap-2">
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                  <span>DLD transaction metrics &amp; yield maps</span>
+                </li>
+                <li className="flex gap-2">
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                  <span>Instant 1-tap WhatsApp pitch scripts</span>
+                </li>
+                <li className="flex gap-2">
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                  <span>1-click client PDF dossiers with your logo</span>
+                </li>
+                {p.months >= 6 ? (
+                  <li className="flex gap-2 font-semibold text-white">
+                    <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                    <span>Priority concierge support &amp; training</span>
+                  </li>
+                ) : null}
               </ul>
-              <Link to="/login" search={{ mode: "signup" }} className="mt-6 rounded-full bg-[var(--obsidian)] px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--silk)] hover:opacity-90">{p.cta}</Link>
+              <Link
+                to="/signup"
+                search={{ plan: p.id }}
+                className={`mt-6 rounded-xl py-3 px-4 text-center text-[11px] font-bold uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-1.5 ${
+                  p.highlighted
+                    ? "bg-amber-400 text-black hover:bg-amber-300 shadow-md"
+                    : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
+                }`}
+              >
+                <span>{p.buttonLabel}</span>
+                <ArrowRight size={14} />
+              </Link>
             </div>
           ))}
         </div>
 
-        <div className="mx-auto mt-14 max-w-3xl rounded-2xl border border-[var(--obsidian)]/10 bg-white/60 p-8 text-[15px] text-[#4B5272]">
-          Managing a team of 5+ consultants? Contact our concierge desk for centralized brokerage seats and custom CRM integrations.
+        {/* Enterprise & Brokerage Teams Callout */}
+        <div className="mx-auto mt-14 max-w-3xl rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/5 p-8 text-left sm:flex sm:items-center sm:justify-between gap-6 shadow-lg">
+          <div className="space-y-1.5">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">Brokerages &amp; Agencies (5+ Agents)</span>
+            <h3 className="text-lg font-bold text-foreground">Need multi-agent governance &amp; custom data migration?</h3>
+            <p className="text-xs text-muted-foreground max-w-md">
+              Centralized agency cockpit, broker leaderboard, developer commission aging ledger, and white-label client presentation mode.
+            </p>
+          </div>
+          <div className="mt-4 sm:mt-0 shrink-0 flex flex-col gap-2">
+            <a
+              href={waEnterpriseUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-5 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all"
+            >
+              <MessageCircle size={16} />
+              <span>WhatsApp Concierge ↗</span>
+            </a>
+            <Link
+              to="/welcome"
+              hash="cta"
+              className="inline-flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 px-5 py-2.5 text-xs font-semibold text-white transition-all text-center"
+            >
+              Request Agency Demo
+            </Link>
+          </div>
         </div>
       </section>
     </PublicLayout>

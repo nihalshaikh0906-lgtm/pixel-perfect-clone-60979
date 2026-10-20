@@ -15,9 +15,9 @@ import { marketReport } from "@/lib/research.functions";
 export const Route = createFileRoute("/_authenticated/market")({
   head: () => ({
     meta: [
-      { title: "Market Intel · PropFlow" },
+      { title: "Market Intel · DealOS" },
       { name: "description", content: "Area-by-area pricing and supply drawn from your live Dubai inventory." },
-      { property: "og:title", content: "Market Intel · PropFlow" },
+      { property: "og:title", content: "Market Intel · DealOS" },
       { property: "og:description", content: "Area-by-area pricing and supply drawn from your live Dubai inventory." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

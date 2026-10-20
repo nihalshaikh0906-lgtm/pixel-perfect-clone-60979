@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const LS = "propflow.ephemeral";
-const SS = "propflow.tab-session";
+const LS = "dealos.ephemeral";
+const SS = "dealos.tab-session";
 
 /** Call right after a successful sign-in. */
 export function setRemember(remember: boolean) {

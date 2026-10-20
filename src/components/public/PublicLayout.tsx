@@ -10,8 +10,8 @@ export function PublicLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-[var(--silk)] text-[var(--obsidian)]">
       <header className="sticky top-0 z-30 border-b border-[var(--obsidian)]/10 bg-[var(--silk)]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
-          <Link to="/welcome" className="flex items-center gap-1.5 text-lg font-semibold tracking-[0.3em]">
-            PROPFLOW<span className="size-1.5 rounded-full bg-[var(--bronze)]" />
+          <Link to="/welcome" className="flex items-center gap-1.5 text-lg font-bold tracking-[0.25em]">
+            DEALOS<span className="size-1.5 rounded-full bg-[var(--bronze)]" />
           </Link>
           <nav className="hidden gap-8 text-[#4B5272] md:flex">
             <Link to="/about" className={navCls} activeProps={active}>About Us</Link>
@@ -31,7 +31,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       </header>
       <main>{children}</main>
       <footer className="border-t border-[var(--obsidian)]/10 px-6 py-8 text-center text-xs text-[#4B5272]">
-        © {new Date().getFullYear()} PropFlow · Intelligence for Dubai real estate consultants
+        © {new Date().getFullYear()} DealOS Technologies Ltd. · Institutional OS for Dubai real estate brokerages
       </footer>
     </div>
   );

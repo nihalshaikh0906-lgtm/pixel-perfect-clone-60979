@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { CsvImporterModal } from "@/components/leads/CsvImporterModal";
 import {
   ago, formatAed, LEAD_BY_ID, QUEUES, queueCount, queueLeads,
   SOURCES, wants, priorityOf, type Lead, type LeadType, type Queue
@@ -51,8 +52,10 @@ function Inbox() {
   const [source, setSource] = useState("All");
   const [text, setText] = useState(q ?? "");
   const [page, setPage] = useState(0);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [importCount, setImportCount] = useState(0);
 
-  const base = useMemo(() => queueLeads(queue), [queue]);
+  const base = useMemo(() => queueLeads(queue), [queue, importCount]);
   const rows = useMemo(() => {
     const t = text.trim().toLowerCase();
     return base.filter(
@@ -106,11 +109,11 @@ function Inbox() {
           <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
-              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-border bg-card/80 backdrop-blur-sm text-foreground font-bold text-xs hover:bg-secondary transition-all shadow-sm"
-              onClick={() => toast("CSV import ready in agency admin dashboard.")}
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-primary/30 bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 font-bold text-xs transition-all shadow-sm"
+              onClick={() => setIsImportOpen(true)}
             >
               <Upload size={14} />
-              <span>Import Leads</span>
+              <span>Import Leads (CSV)</span>
             </button>
 
             <Button asChild className="h-10 px-5 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-2 shadow-sm hover:brightness-105 transition-all">
@@ -368,6 +371,12 @@ function Inbox() {
           </button>
         </div>
       </div>
+
+      <CsvImporterModal
+        open={isImportOpen}
+        onOpenChange={setIsImportOpen}
+        onImportSuccess={() => setImportCount((c) => c + 1)}
+      />
     </div>
   );
 }

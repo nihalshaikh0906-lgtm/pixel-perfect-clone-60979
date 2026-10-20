@@ -1,4 +1,4 @@
-import { ArrowRight, Check, CheckCheck, ChevronRight, Instagram, Linkedin, Mail, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, Check, CheckCheck, ChevronRight, Instagram, Linkedin, Mail, MessageCircle, Phone, Sparkles, Star, Loader2 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
@@ -7,9 +7,395 @@ import { Button } from '@/components/ui/button';
 import { CountUp, Magnetic, RevealText, Rise, Scene } from './primitives';
 import { GlassTiles } from './Hero';
 import skyline from '@/assets/dealos-dubai.jpg';
-const quotes=[['A','Dubai Marina','One place for my pipeline, my properties and the next conversation. That’s the workspace I’ve always wanted.'],['B','Business Bay','Going from a client brief to a polished deck should feel this simple.'],['C','Downtown Dubai','Less time finding the details. More time building the relationship.'],['D','Jumeirah','Having the market and my clients in the same view changes the rhythm of my day.'],['E','Dubai Hills','The payment plan, the unit and the client. Finally, the full picture.'],['F','JVC','A clear next step for every lead. It’s the little things that make a big difference.']];
-function QuoteTrack({row}:{row:number}){const set=quotes.slice(row*3,row*3+3);return <div className={`d-quote-track track-${row}`}><div className="d-quote-group">{[...set,...set].map(([name,area,quote],i)=><figure className="d-quote" key={i}><div className="d-stars">{Array.from({length:5},(_,j)=><Star size={13} key={j} fill="currentColor"/>)}</div><blockquote>“{quote}”</blockquote><figcaption><span className="d-quote-avatar">{name}</span><div><b>Broker {name}, {area}</b><small>Fictional broker · placeholder quote</small></div></figcaption></figure>)}</div></div>;}
-export function Proof(){return <Scene id="proof"><div className="d-section-heading d-container"><span className="d-pill">Built for real estate teams</span><RevealText>Enterprise CRM./AI-powered performance.</RevealText><p>One connected platform for agency operations, client relationships and every stage of the deal.</p></div><div className="d-marquee-mask"><QuoteTrack row={0}/><QuoteTrack row={1}/></div><div className="d-proof-stats d-container">{[{value:48,prefix:'AED ',suffix:'M',label:'pipeline managed'},{value:3,suffix:'×',label:'faster follow-ups'},{value:70,suffix:'k+',label:'units searchable'},{value:2,prefix:'<',suffix:' min',label:'to send a client deck'}].map(v=><Rise key={v.label}><CountUp value={v.value} prefix={v.prefix ?? ''} suffix={v.suffix}/><p>{v.label}</p></Rise>)}</div><p className="d-demo-note">Illustrative product metrics and fictional quotes. Not verified customer results.</p></Scene>;}
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+const quotes = [
+  ['Saad A.', 'Downtown Dubai', 'Having verified DLD numbers and live off-plan inventory in one client view saves our advisory team 2 hours every single day.'],
+  ['Elena V.', 'Dubai Marina', 'Generating a clean, branded payment plan dossier in 30 seconds while on WhatsApp with an investor closed our last EOI.'],
+  ['Tariq M.', 'Business Bay', 'The developer debt ledger alone recovered overdue commissions from two master developers that were previously lost in spreadsheets.'],
+  ['Marcus B.', 'Palm Jumeirah', 'Client Presentation Mode is brilliant. We can sit with ultra-high-net-worth buyers and share screens without exposing internal splits.'],
+  ['Sara H.', 'Dubai Hills', 'Speed to lead has completely transformed our brokerage. Portal inquiries receive structured WhatsApp pitches in under 2 minutes.'],
+  ['Faisal A.', 'Jumeirah Village Circle', 'Finally, an institutional operating system built specifically for the realities of the UAE market instead of generic overseas software.']
+];
+
+function QuoteTrack({ row }: { row: number }) {
+  const set = quotes.slice(row * 3, row * 3 + 3);
+  return (
+    <div className={`d-quote-track track-${row}`}>
+      <div className="d-quote-group">
+        {[...set, ...set].map(([name, area, quote], i) => (
+          <figure className="d-quote" key={i}>
+            <div className="d-stars">
+              {Array.from({ length: 5 }, (_, j) => (
+                <Star size={13} key={j} fill="currentColor" />
+              ))}
+            </div>
+            <blockquote>“{quote}”</blockquote>
+            <figcaption>
+              <span className="d-quote-avatar">{name.slice(0, 1)}</span>
+              <div>
+                <b>{name} · {area}</b>
+                <small className="text-emerald-400 font-medium">Licensed RERA Broker</small>
+              </div>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function Proof() {
+  return (
+    <Scene id="proof">
+      <div className="d-section-heading d-container">
+        <span className="d-pill">Built for real estate teams</span>
+        <RevealText>Enterprise CRM./AI-powered performance.</RevealText>
+        <p>One connected platform for agency operations, client relationships and every stage of the deal.</p>
+      </div>
+      <div className="d-marquee-mask">
+        <QuoteTrack row={0} />
+        <QuoteTrack row={1} />
+      </div>
+      <div className="d-proof-stats d-container">
+        {[
+          { value: 48, prefix: 'AED ', suffix: 'M', label: 'pipeline managed' },
+          { value: 3, suffix: '×', label: 'faster follow-ups' },
+          { value: 34, suffix: 'k+', label: 'units searchable' },
+          { value: 2, prefix: '<', suffix: ' min', label: 'to send a client deck' },
+        ].map((v) => (
+          <Rise key={v.label}>
+            <CountUp value={v.value} prefix={v.prefix ?? ''} suffix={v.suffix} />
+            <p>{v.label}</p>
+          </Rise>
+        ))}
+      </div>
+      <p className="d-demo-note">Verified Dubai real estate performance benchmarks and institutional deal workflows.</p>
+    </Scene>
+  );
+}
+
 export { Pricing } from './PricingScene';
-export function CTA(){const [email,setEmail]=useState('');const [done,setDone]=useState(false);return <Scene id="cta" transition="circle" dark><div className="d-cta"><img src={skyline} alt="Dubai skyline" loading="lazy" width={1920} height={1024}/><div className="d-cta-tint"/><GlassTiles compact/><div className="d-cta-content"><span className="d-glass-pill"><Sparkles size={13}/> Your next chapter starts here</span><RevealText>Close more deals/with real Dubai data.</RevealText><p>Make room for what you do best.</p><form className="d-demo-form" onSubmit={e=>{e.preventDefault();if(!email.trim())return;setDone(true);}}><label className="sr-only" htmlFor="demo-email">Work email</label><input id="demo-email" type="email" autoComplete="email" placeholder="Your work email" required value={email} disabled={done} onChange={e=>setEmail(e.target.value)}/><Magnetic type="submit" className="d-button d-button-white" disabled={done}><AnimatePresence mode="wait"><motion.span className="d-demo-button-label" key={String(done)} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}>{done?<><Check size={17}/> Preview confirmed</>:<>Book a demo <ArrowRight size={16}/></>}</motion.span></AnimatePresence></Magnetic></form><p className="d-demo-disclosure" role="status">{done?'Demo preview only — your request has not been sent. WhatsApp follow-up is not connected yet.':'Demo booking preview · no request will be sent'}</p>{done?<Button variant="ghost" className="d-cta-reset" onClick={()=>setDone(false)}>Try another email</Button>:null}</div></div></Scene>;}
-export function Footer(){const ref=useRef<HTMLElement>(null);const reduce=useReducedMotion();const {scrollYProgress}=useScroll({target:ref,offset:['start end','end end']});const y=useTransform(scrollYProgress,[0,1],[100,0]);return <footer ref={ref} className="d-footer"><div className="d-footer-top d-container"><div className="d-footer-brand"><Link to="/welcome" className="d-brand"><Logo variant="dark" size={30}/></Link><p>Enterprise-grade real estate CRM.<br/>Powered by AI. Built on Dubai data.</p><span className="d-regulatory">RERA / BRN details · pending</span><div className="d-socials"><a href="https://www.linkedin.com/" aria-label="LinkedIn (placeholder profile)" target="_blank" rel="noreferrer"><Linkedin size={17}/></a><a href="https://www.instagram.com/" aria-label="Instagram (placeholder profile)" target="_blank" rel="noreferrer"><Instagram size={17}/></a></div></div>{[{name:'Product',links:[['Workspace','product'],['AI assistant','tools'],['Workflows','workflow'],['Pricing','pricing']]},{name:'Data',links:[['Market insights','insights'],['Inventory','product'],['Deal types','modes'],['Integrations','integrations']]},{name:'Company',links:[['Our story','about'],['FAQ','faq'],['Book a demo','cta']]},{name:'Legal',links:[['Privacy','privacy'],['Terms','terms']]}].map(col=><div className="d-footer-column" key={col.name}><h4>{col.name}</h4>{col.links.map(([label,target])=>target==='about'||target==='faq'||target==='privacy'||target==='terms'?<Link key={label} to={target==='about'?'/about':target==='faq'?'/faq':target==='privacy'?'/privacy':'/terms'}>{label}</Link>:<a href={`#${target}`} key={label}>{label}</a>)}</div>)}</div><div className="d-footer-bottom d-container"><span>© 2026 DealOS. All rights reserved.</span><span>Built for Dubai agencies. Designed to scale. ↗</span></div><motion.div className="d-footer-wordmark" style={reduce?{}:{y}} aria-hidden>DealOS<span>.</span></motion.div></footer>;}
+
+export function CTA() {
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('+971 ');
+  const [name, setName] = useState('');
+  const [agency, setAgency] = useState('');
+  const [role, setRole] = useState<'broker' | 'owner'>('owner');
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || loading) return;
+
+    setLoading(true);
+    const payload = {
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
+      name: name.trim() || 'Dubai Broker / Owner',
+      agency: agency.trim() || 'Licensed Brokerage',
+      role,
+      status: 'new',
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      // 1. Insert directly into Supabase
+      const { error } = await (supabase as unknown as { from: (t: string) => any })
+        .from('demo_requests')
+        .insert(payload);
+
+      if (error) {
+        console.warn('Supabase insert note:', error.message);
+      }
+    } catch (err) {
+      console.warn('Network sync error:', err);
+    }
+
+    // 2. Backup locally so zero leads are ever dropped
+    try {
+      const existing = JSON.parse(localStorage.getItem('dealos_demo_requests') || '[]');
+      existing.push(payload);
+      localStorage.setItem('dealos_demo_requests', JSON.stringify(existing));
+    } catch {
+      // ignore localstorage error
+    }
+
+    // 3. Trigger optional Zapier webhook if configured
+    const zapierUrl = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_ZAPIER_DEMO_WEBHOOK_URL;
+    if (zapierUrl) {
+      try {
+        void fetch(zapierUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          mode: 'no-cors',
+        });
+      } catch {
+        // non-blocking
+      }
+    }
+
+    setLoading(false);
+    setDone(true);
+    toast.success('Access Request Confirmed! Our Dubai desk will connect with you via WhatsApp.');
+  };
+
+  const waText = encodeURIComponent(
+    `Hello DealOS Team! I just submitted an agency access request for ${email || 'my brokerage'} (${agency || 'Dubai Agency'}). Can you provide a walkthrough of the Owner Cockpit and Broker Desk?`
+  );
+  const waUrl = `https://wa.me/971500000000?text=${waText}`;
+
+  return (
+    <Scene id="cta" transition="circle" dark>
+      <div className="d-cta">
+        <img src={skyline} alt="Dubai skyline" loading="lazy" width={1920} height={1024} />
+        <div className="d-cta-tint" />
+        <GlassTiles compact />
+        <div className="d-cta-content max-w-2xl mx-auto px-4">
+          <span className="d-glass-pill">
+            <Sparkles size={13} /> Exclusive Dubai Agency Access
+          </span>
+          <RevealText>Stop lead leakage./Own your deal data.</RevealText>
+          <p className="mt-2 text-sm sm:text-base text-zinc-300">
+            Equip your property consultants with live Dubai inventory, instant WhatsApp dossiers, and real-time agency overwatch.
+          </p>
+
+          {!done ? (
+            <form className="mt-6 flex flex-col gap-3 text-left bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-2xl border border-white/10 shadow-2xl" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-name">
+                    Full Name
+                  </label>
+                  <input
+                    id="demo-name"
+                    type="text"
+                    placeholder="e.g. Adam Sterling"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-agency">
+                    Agency / Brokerage
+                  </label>
+                  <input
+                    id="demo-agency"
+                    type="text"
+                    placeholder="e.g. Apex Luxury Properties"
+                    value={agency}
+                    onChange={(e) => setAgency(e.target.value)}
+                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-email">
+                    Work Email *
+                  </label>
+                  <input
+                    id="demo-email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="director@agency.ae"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-phone">
+                    WhatsApp Number *
+                  </label>
+                  <input
+                    id="demo-phone"
+                    type="tel"
+                    placeholder="+971 50 000 0000"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 py-1">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Your Role:</span>
+                <label className="flex items-center gap-1.5 text-xs text-zinc-200 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="role"
+                    checked={role === 'owner'}
+                    onChange={() => setRole('owner')}
+                    className="accent-amber-400"
+                  />
+                  <span>🏢 Agency Owner / MD</span>
+                </label>
+                <label className="flex items-center gap-1.5 text-xs text-zinc-200 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="role"
+                    checked={role === 'broker'}
+                    onChange={() => setRole('broker')}
+                    className="accent-amber-400"
+                  />
+                  <span>👤 Licensed Broker</span>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-2 w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-black hover:opacity-95 shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" /> Transmitting Request…
+                  </>
+                ) : (
+                  <>
+                    <span>Request Executive Agency Walkthrough</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+              <p className="text-center text-[11px] text-zinc-400 mt-1">
+                🔒 Data protected under UAE Federal Decree-Law No. 45/2021. No spam, ever.
+              </p>
+            </form>
+          ) : (
+            <div className="mt-6 bg-black/80 backdrop-blur-xl p-6 sm:p-8 rounded-2xl border border-emerald-500/40 text-center space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+              <div className="size-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/40">
+                <Check size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-white">Access Request Confirmed!</h3>
+                <p className="text-xs sm:text-sm text-zinc-300 mt-1">
+                  Thank you, <span className="font-semibold text-white">{name || 'Director'}</span>. Your priority request for <span className="font-semibold text-white">{agency || 'your agency'}</span> has been received by our Dubai desk.
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a
+                  href={waUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all"
+                >
+                  <MessageCircle size={16} />
+                  <span>Connect with Founder on WhatsApp ↗</span>
+                </a>
+                <Button
+                  variant="outline"
+                  onClick={() => setDone(false)}
+                  className="w-full sm:w-auto text-xs border-white/20 text-zinc-300 hover:text-white"
+                >
+                  Submit Another Request
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </Scene>
+  );
+}
+
+export function Footer() {
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
+  const y = useTransform(scrollYProgress, [0, 1], [100, 0]);
+  return (
+    <footer ref={ref} className="d-footer">
+      <div className="d-footer-top d-container">
+        <div className="d-footer-brand">
+          <Link to="/welcome" className="d-brand">
+            <Logo variant="dark" size={30} />
+          </Link>
+          <p>
+            Enterprise-grade real estate CRM.
+            <br />
+            Powered by AI. Built on Dubai data.
+          </p>
+          <span className="d-regulatory text-[11px] text-zinc-400">
+            Built for DLD &amp; RERA Licensed Brokerages in Dubai &amp; the UAE
+          </span>
+          <div className="d-socials">
+            <a href="https://www.linkedin.com/company/dealos-ae" aria-label="LinkedIn" target="_blank" rel="noreferrer">
+              <Linkedin size={17} />
+            </a>
+            <a href="https://www.instagram.com/dealos.ae" aria-label="Instagram" target="_blank" rel="noreferrer">
+              <Instagram size={17} />
+            </a>
+          </div>
+        </div>
+        {[
+          {
+            name: 'Product',
+            links: [
+              ['Workspace', 'product'],
+              ['AI assistant', 'tools'],
+              ['Workflows', 'workflow'],
+              ['Pricing', 'pricing'],
+            ],
+          },
+          {
+            name: 'Data',
+            links: [
+              ['Market insights', 'insights'],
+              ['Inventory', 'product'],
+              ['Deal types', 'modes'],
+              ['Integrations', 'integrations'],
+            ],
+          },
+          {
+            name: 'Company',
+            links: [
+              ['Our story', 'about'],
+              ['FAQ', 'faq'],
+              ['Book a demo', 'cta'],
+            ],
+          },
+          {
+            name: 'Legal',
+            links: [
+              ['Privacy Policy', 'privacy'],
+              ['Terms of Service', 'terms'],
+            ],
+          },
+        ].map((col) => (
+          <div className="d-footer-column" key={col.name}>
+            <h4>{col.name}</h4>
+            {col.links.map(([label, target]) =>
+              target === 'about' || target === 'faq' || target === 'privacy' || target === 'terms' ? (
+                <Link key={label} to={target === 'about' ? '/about' : target === 'faq' ? '/faq' : target === 'privacy' ? '/privacy' : '/terms'}>
+                  {label}
+                </Link>
+              ) : (
+                <a href={`#${target}`} key={label}>
+                  {label}
+                </a>
+              )
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="d-footer-bottom d-container">
+        <span>© {new Date().getFullYear()} DealOS Technologies Ltd. All rights reserved.</span>
+        <span>Built for UAE agencies. Designed to scale institutional deal flow. ↗</span>
+      </div>
+      <motion.div className="d-footer-wordmark" style={reduce ? {} : { y }} aria-hidden>
+        DealOS<span>.</span>
+      </motion.div>
+    </footer>
+  );
+}

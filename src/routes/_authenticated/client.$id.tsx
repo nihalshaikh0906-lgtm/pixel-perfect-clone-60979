@@ -25,12 +25,12 @@ function mergeUnits(prev: MatchRow[], add: MatchRow[]) {
 export const Route = createFileRoute("/_authenticated/client/$id")({
   head: () => ({
     meta: [
-      { title: "Client dossier · PropFlow" },
+      { title: "Client dossier · DealOS" },
       {
         name: "description",
         content: "Client profile, AI unit recommendations and the Investment Engineer chat.",
       },
-      { property: "og:title", content: "Client dossier · PropFlow" },
+      { property: "og:title", content: "Client dossier · DealOS" },
       {
         property: "og:description",
         content: "Client profile, AI unit recommendations and the Investment Engineer chat.",
@@ -475,7 +475,7 @@ function Dossier() {
             ))}
             {askMutation.isPending ? (
               <p className="flex items-center gap-2 text-sm text-primary">
-                <span className="shimmer-text rounded-full border border-gold/40 px-3 py-1 text-xs font-medium">PropFlow is analyzing project details…</span>
+                <span className="shimmer-text rounded-full border border-gold/40 px-3 py-1 text-xs font-medium">DealOS is analyzing project details…</span>
               </p>
             ) : null}
             {askMutation.error ? (

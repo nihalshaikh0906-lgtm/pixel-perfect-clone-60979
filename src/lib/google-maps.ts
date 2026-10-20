@@ -4,7 +4,7 @@ let loader: Promise<typeof google.maps> | null = null;
 
 declare global {
   interface Window {
-    __propflowMapsReady?: () => void;
+    __dealosMapsReady?: () => void;
   }
 }
 
@@ -17,9 +17,9 @@ export function loadGoogleMaps(): Promise<typeof google.maps> {
   const channel = env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID"] ?? "";
   if (!key) return Promise.reject(new Error("Google Maps key is missing"));
   loader = new Promise((resolve, reject) => {
-    window.__propflowMapsReady = () => resolve(window.google.maps);
+    window.__dealosMapsReady = () => resolve(window.google.maps);
     const s = document.createElement("script");
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&loading=async&callback=__propflowMapsReady&channel=${channel}`;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&loading=async&callback=__dealosMapsReady&channel=${channel}`;
     s.async = true;
     s.onerror = () => {
       loader = null;

@@ -79,7 +79,7 @@ export const marketReport = createServerFn({ method: "POST" })
       .map((r) => `${r.district}: ${r.units} units, avg AED ${Math.round(r.avgPrice).toLocaleString("en-US")}, AED ${Math.round(r.avgPsf)}/sqft`)
       .join("\n");
     const text = await aiWrite(
-      "You are PropFlow's Dubai market analyst. Write a polished market report for a broker from the area figures given. Sections: Summary, Best value areas, Premium areas, Supply watch, Broker talking points. Use short paragraphs and dash bullets. Use ONLY the figures provided; never invent yields, growth rates or transaction volumes. Note the figures come from a sample of available inventory.",
+      "You are DealOS's Dubai market analyst. Write a polished market report for a broker from the area figures given. Sections: Summary, Best value areas, Premium areas, Supply watch, Broker talking points. Use short paragraphs and dash bullets. Use ONLY the figures provided; never invent yields, growth rates or transaction volumes. Note the figures come from a sample of available inventory.",
       table,
       1500,
     );

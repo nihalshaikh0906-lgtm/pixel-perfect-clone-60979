@@ -60,7 +60,7 @@ export function TopBar({
   );
 }
 
-const AGENCY_KEY = "propflow.agency";
+const AGENCY_KEY = "dealos.agency";
 const DEFAULT_AGENCY = "Private Client Office";
 
 function AgencyBadge({ company }: { company: string | null }) {

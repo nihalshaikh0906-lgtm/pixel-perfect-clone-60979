@@ -59,7 +59,7 @@ export function GeneralCopilot() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Open PropFlow Copilot"
+        aria-label="Open DealOS Copilot"
         className="fixed right-6 bottom-6 z-40 flex size-14 items-center justify-center rounded-full border border-gold bg-obsidian text-gold shadow-[0_18px_40px_-16px_rgba(0,0,0,0.6)] transition-transform hover:scale-105"
       >
         <MessageSquare className="size-5" />
@@ -69,7 +69,7 @@ export function GeneralCopilot() {
         <SheetContent className="flex w-full flex-col gap-0 bg-silk p-0 sm:max-w-md [&>button]:hidden">
           <SheetHeader className="flex-row items-center justify-between border-b border-gold/30 bg-obsidian px-5 py-4">
             <div>
-              <SheetTitle className="text-[13px] uppercase tracking-[0.18em] text-silk">PropFlow Copilot</SheetTitle>
+              <SheetTitle className="text-[13px] uppercase tracking-[0.18em] text-silk">DealOS Copilot</SheetTitle>
               <p className="text-[11px] uppercase tracking-[0.18em] text-gold">Ask anything</p>
             </div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="text-silk/70 hover:text-gold">
@@ -96,7 +96,7 @@ export function GeneralCopilot() {
             )}
             {busy ? (
               <span className="shimmer-text inline-flex items-center gap-2 rounded-full border border-gold/40 px-3 py-1 text-xs font-medium">
-                <Loader2 className="size-3 animate-spin text-gold" /> PropFlow is thinking…
+                <Loader2 className="size-3 animate-spin text-gold" /> DealOS is thinking…
               </span>
             ) : null}
             {error ? (
@@ -115,7 +115,7 @@ export function GeneralCopilot() {
                   void send();
                 }
               }}
-              placeholder="Ask PropFlow Copilot…"
+              placeholder="Ask DealOS Copilot…"
               rows={2}
               className="min-h-0 resize-none bg-card"
             />

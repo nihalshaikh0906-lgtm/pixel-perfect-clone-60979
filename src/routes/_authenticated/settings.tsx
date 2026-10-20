@@ -25,9 +25,9 @@ const SWATCHES = [
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
-      { title: "Account Settings · PropFlow" },
+      { title: "Account Settings · DealOS" },
       { name: "description", content: "Manage your broker profile, company branding and logo used on client documents." },
-      { property: "og:title", content: "Account Settings · PropFlow" },
+      { property: "og:title", content: "Account Settings · DealOS" },
       { property: "og:description", content: "Manage your broker profile, company branding and logo used on client documents." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

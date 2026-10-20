@@ -170,3 +170,31 @@ export function ago(hours: number): string {
 export function wants(l: Lead): string {
   return `${l.beds === 0 ? "Studio" : `${l.beds}BR`} · ${l.area}`;
 }
+
+export function addImportedLeads(newLeads: Lead[]): void {
+  LEADS.unshift(...newLeads);
+  for (const l of newLeads) {
+    LEAD_BY_ID.set(l.id, l);
+  }
+  if (typeof window !== "undefined") {
+    try {
+      const existing = JSON.parse(localStorage.getItem("dealos_custom_leads") || "[]");
+      localStorage.setItem("dealos_custom_leads", JSON.stringify([...newLeads, ...existing]));
+    } catch {}
+  }
+}
+
+// Hydrate custom leads from local storage if in browser
+if (typeof window !== "undefined") {
+  try {
+    const saved = JSON.parse(localStorage.getItem("dealos_custom_leads") || "[]");
+    if (Array.isArray(saved) && saved.length > 0) {
+      for (const l of saved) {
+        if (!LEAD_BY_ID.has(l.id)) {
+          LEADS.unshift(l);
+          LEAD_BY_ID.set(l.id, l);
+        }
+      }
+    }
+  } catch {}
+}

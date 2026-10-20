@@ -11,9 +11,9 @@ import { aed, beds, quarterOf, sqft } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/inventory")({
   head: () => ({
     meta: [
-      { title: "Property Inventory · PropFlow" },
+      { title: "Property Inventory · DealOS" },
       { name: "description", content: "Search live Dubai units by budget, bedrooms and area." },
-      { property: "og:title", content: "Property Inventory · PropFlow" },
+      { property: "og:title", content: "Property Inventory · DealOS" },
       { property: "og:description", content: "Search live Dubai units by budget, bedrooms and area." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

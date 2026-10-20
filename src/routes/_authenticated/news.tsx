@@ -10,9 +10,9 @@ import { getNews } from "@/lib/research.functions";
 export const Route = createFileRoute("/_authenticated/news")({
   head: () => ({
     meta: [
-      { title: "Morning Briefing · PropFlow" },
+      { title: "Morning Briefing · DealOS" },
       { name: "description", content: "Daily Dubai real estate news for brokers, from real sources." },
-      { property: "og:title", content: "Morning Briefing · PropFlow" },
+      { property: "og:title", content: "Morning Briefing · DealOS" },
       { property: "og:description", content: "Daily real estate news for brokers." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

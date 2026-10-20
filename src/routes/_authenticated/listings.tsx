@@ -11,9 +11,9 @@ import { aed } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/listings")({
   head: () => ({
     meta: [
-      { title: "Private Listings · PropFlow" },
+      { title: "Private Listings · DealOS" },
       { name: "description", content: "Your own off-market listings, visible only to you." },
-      { property: "og:title", content: "Private Listings · PropFlow" },
+      { property: "og:title", content: "Private Listings · DealOS" },
       { property: "og:description", content: "Your own off-market listings, visible only to you." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
