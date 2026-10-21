@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   ShieldCheck,
   Building2,
@@ -24,6 +24,7 @@ import {
   Calendar,
   X,
   CheckCheck,
+  Printer,
 } from "lucide-react";
 import { toast } from "sonner";
 import { LEAD_BY_ID, type Lead } from "@/lib/demo-leads";
@@ -221,27 +222,48 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
     setCustomAppreciation(deal.defaultCapitalAppreciation);
   };
 
-  const formatMoney = (amountAed: number): string => {
-    const { rate, symbol } = CURRENCY_RATES[currency];
-    const converted = amountAed * rate;
-    if (converted >= 1_000_000) {
-      return `${symbol} ${(converted / 1_000_000).toFixed(2)}M`;
-    }
-    if (converted >= 1_000) {
-      return `${symbol} ${Math.round(converted / 1_000).toLocaleString()}K`;
-    }
-    return `${symbol} ${Math.round(converted).toLocaleString()}`;
-  };
+  const formatMoney = useCallback(
+    (amountAed: number): string => {
+      const { rate, symbol } = CURRENCY_RATES[currency];
+      const converted = amountAed * rate;
+      if (converted >= 1_000_000) {
+        return `${symbol} ${(converted / 1_000_000).toFixed(2)}M`;
+      }
+      if (converted >= 1_000) {
+        return `${symbol} ${Math.round(converted / 1_000).toLocaleString()}K`;
+      }
+      return `${symbol} ${Math.round(converted).toLocaleString()}`;
+    },
+    [currency]
+  );
 
-  const annualRentalIncome = activeDeal.basePriceAed * (customYield / 100);
-  const monthlyRentalCashflow = annualRentalIncome / 12;
-  const fiveYearCapitalGain =
-    activeDeal.basePriceAed * Math.pow(1 + customAppreciation / 100, holdingYears) -
-    activeDeal.basePriceAed;
-  const total5YearReturn = annualRentalIncome * holdingYears + fiveYearCapitalGain;
-  const totalRoiPercent = ((total5YearReturn / activeDeal.basePriceAed) * 100).toFixed(1);
+  const annualRentalIncome = useMemo(
+    () => activeDeal.basePriceAed * (customYield / 100),
+    [activeDeal.basePriceAed, customYield]
+  );
+  const monthlyRentalCashflow = useMemo(
+    () => annualRentalIncome / 12,
+    [annualRentalIncome]
+  );
+  const fiveYearCapitalGain = useMemo(
+    () =>
+      activeDeal.basePriceAed * Math.pow(1 + customAppreciation / 100, holdingYears) -
+      activeDeal.basePriceAed,
+    [activeDeal.basePriceAed, customAppreciation, holdingYears]
+  );
+  const total5YearReturn = useMemo(
+    () => annualRentalIncome * holdingYears + fiveYearCapitalGain,
+    [annualRentalIncome, holdingYears, fiveYearCapitalGain]
+  );
+  const totalRoiPercent = useMemo(
+    () => ((total5YearReturn / activeDeal.basePriceAed) * 100).toFixed(1),
+    [total5YearReturn, activeDeal.basePriceAed]
+  );
 
-  const isGoldenVisaEligible = activeDeal.basePriceAed >= 2_000_000;
+  const isGoldenVisaEligible = useMemo(
+    () => activeDeal.basePriceAed >= 2_000_000,
+    [activeDeal.basePriceAed]
+  );
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
@@ -249,6 +271,12 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
       setIsCopied(true);
       toast.success("Private Deal Room link copied to clipboard!");
       setTimeout(() => setIsCopied(false), 2500);
+    }
+  };
+
+  const handlePrint = () => {
+    if (typeof window !== "undefined") {
+      window.print();
     }
   };
 
@@ -312,6 +340,16 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
                 </button>
               ))}
             </div>
+
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-xl border border-[#E6E9F5] bg-white hover:bg-[#F4F6FF] text-xs font-semibold text-[#141A33] transition-all shadow-xs cursor-pointer"
+              title="Print or Save PDF Investment Dossier"
+            >
+              <Printer size={13} className="text-[#2F6BFF]" />
+              <span className="hidden sm:inline">PDF Dossier</span>
+            </button>
 
             <button
               onClick={handleCopyLink}
@@ -689,6 +727,34 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
                     {formatMoney(total5YearReturn)}
                   </span>
                 </div>
+
+                {/* Visual Stacked ROI Payback Bar */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex justify-between text-[10px] font-mono font-bold text-[#4B5272]">
+                    <span>Asset Base ({formatMoney(activeDeal.basePriceAed)})</span>
+                    <span className="text-[#16A34A]">+{totalRoiPercent}% Net Growth</span>
+                  </div>
+                  <div className="w-full h-2.5 rounded-full bg-[#E6E9F5] overflow-hidden flex">
+                    <div
+                      className="h-full bg-[#2F6BFF]"
+                      style={{ width: `${Math.min(100, Math.round((annualRentalIncome * holdingYears / (total5YearReturn || 1)) * 100))}%` }}
+                      title="Rental Income Portion"
+                    />
+                    <div
+                      className="h-full bg-[#16A34A]"
+                      style={{ width: `${Math.max(0, 100 - Math.min(100, Math.round((annualRentalIncome * holdingYears / (total5YearReturn || 1)) * 100)))}%` }}
+                      title="Capital Appreciation Portion"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 text-[10px] text-[#4B5272] pt-0.5">
+                    <span className="flex items-center gap-1">
+                      <span className="size-2 rounded-full bg-[#2F6BFF]" /> Rental Cashflow
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="size-2 rounded-full bg-[#16A34A]" /> Capital Growth
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* Zero Tax Notice */}
@@ -810,19 +876,10 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(reservationMessageRaw);
-                  setCopiedReservation(true);
-                  setTimeout(() => setCopiedReservation(false), 2000);
-                  toast.success("Reservation script copied to clipboard!");
-                }}
-                className="w-full sm:flex-1 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-white/10"
-              >
-                <Copy size={14} />
-                <span>{copiedReservation ? "✓ Copied to Clipboard" : "Copy Message Script"}</span>
-              </button>
+              <div className="w-full sm:flex-1 h-11 rounded-xl bg-white/5 border border-white/10 text-zinc-300 font-mono text-[11px] flex items-center justify-center gap-1.5 px-3 text-center">
+                <Eye size={13} className="text-emerald-400" />
+                <span>Viewable Client Draft · Read-Only</span>
+              </div>
 
               <button
                 type="button"

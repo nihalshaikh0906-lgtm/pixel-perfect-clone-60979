@@ -407,18 +407,9 @@ export function CTA() {
 
                     <div className="flex items-center justify-between pt-1 text-[10px] text-zinc-400">
                       <span>🔒 Simulated preview · Device WhatsApp app not opened</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(decodeURIComponent(waText));
-                          setCopiedWa(true);
-                          setTimeout(() => setCopiedWa(false), 2000);
-                          toast.success("Text copied to clipboard!");
-                        }}
-                        className="text-zinc-300 hover:text-white underline cursor-pointer"
-                      >
-                        {copiedWa ? "✓ Copied" : "Copy Message Text"}
-                      </button>
+                      <span className="text-zinc-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[10px] font-mono">
+                        Viewable Draft (Clipboard writing disabled)
+                      </span>
                     </div>
                   </motion.div>
                 )}

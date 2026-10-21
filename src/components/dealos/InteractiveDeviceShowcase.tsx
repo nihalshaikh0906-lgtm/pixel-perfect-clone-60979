@@ -22,6 +22,10 @@ import {
   Check,
   RotateCcw,
   Loader2,
+  Eye,
+  FileText,
+  SlidersHorizontal,
+  Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
@@ -60,6 +64,9 @@ export function InteractiveDeviceShowcase() {
   const [activeTab, setActiveTab] = useState<"voice" | "dld" | "dealroom" | "owner">("voice");
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [waDispatchState, setWaDispatchState] = useState<"idle" | "sending" | "delivered">("idle");
+  const [showClientDraft, setShowClientDraft] = useState(false);
+  const [selectedMatchIndex, setSelectedMatchIndex] = useState(0);
+  const [commissionFilter, setCommissionFilter] = useState<"all" | "overdue" | "processing">("all");
 
   const handleWhatsAppSimulate = () => {
     if (waDispatchState === "sending") return;
@@ -249,23 +256,39 @@ export function InteractiveDeviceShowcase() {
                       <button
                         type="button"
                         onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                        className="size-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+                        className="size-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                        title={isPlayingAudio ? "Pause Audio" : "Play Investor Voice Note"}
                       >
                         {isPlayingAudio ? <Pause size={16} /> : <Play size={16} className="ml-0.5 fill-current" />}
                       </button>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 h-10 items-end">
                         {[14, 28, 20, 36, 18, 30, 24, 16, 32, 40, 22, 16, 26, 34, 18, 22, 30, 24, 16, 20].map((h, i) => (
-                          <span
+                          <motion.span
                             key={i}
-                            style={{ height: `${h}px` }}
-                            className={`w-1 rounded-full transition-all ${
-                              isPlayingAudio && i % 2 === 0 ? "bg-emerald-400 animate-pulse" : "bg-emerald-500/40"
-                            }`}
+                            animate={
+                              isPlayingAudio
+                                ? {
+                                    height: [h, Math.max(8, (h * 1.4) % 38), Math.max(10, (h * 0.6) % 32), h],
+                                    backgroundColor: ["#34D399", "#10B981", "#6EE7B7", "#34D399"],
+                                  }
+                                : { height: `${h}px`, backgroundColor: "rgba(16, 185, 129, 0.4)" }
+                            }
+                            transition={
+                              isPlayingAudio
+                                ? { repeat: Infinity, duration: 0.5 + (i % 4) * 0.15, ease: "easeInOut" }
+                                : { duration: 0.2 }
+                            }
+                            className="w-1 rounded-full"
                           />
                         ))}
                       </div>
                     </div>
-                    <span className="text-xs font-mono text-zinc-400">Dr. Mansoor Al-Ketbi (+971 50...)</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono text-zinc-400">Dr. Mansoor Al-Ketbi (+971 50...)</span>
+                      {isPlayingAudio && (
+                        <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
+                      )}
+                    </div>
                   </div>
 
                   {/* Transcript & Extraction */}
@@ -291,6 +314,58 @@ export function InteractiveDeviceShowcase() {
                       <span className="font-extrabold text-emerald-400 font-mono text-sm">100% Cash Ready</span>
                     </div>
                   </div>
+
+                  {/* Action Row: View Client Draft (View-Only Button, Zero Keyboard Copy) */}
+                  <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowClientDraft(!showClientDraft)}
+                        className="h-9 px-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-xs flex items-center gap-1.5 transition-all border border-white/10 cursor-pointer shadow-xs"
+                      >
+                        <Eye size={13} className="text-emerald-400" />
+                        <span>{showClientDraft ? "Hide Client Draft" : "View Client Draft"}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("dealroom")}
+                        className="h-9 px-4 rounded-xl bg-violet-600 hover:bg-violet-500 active:scale-95 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                      >
+                        <span>Match Deal Room</span>
+                        <ArrowRight size={13} />
+                      </button>
+                    </div>
+
+                    <span className="text-[10px] font-mono text-zinc-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
+                      Viewable button · Nothing copied to keyboard
+                    </span>
+                  </div>
+
+                  {/* Viewable Client Draft Drawer (No Keyboard Copy) */}
+                  <AnimatePresence>
+                    {showClientDraft && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="p-4 rounded-2xl bg-black/60 border border-emerald-500/30 space-y-2 text-xs overflow-hidden"
+                      >
+                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                          <span className="font-mono font-bold text-emerald-400 text-[11px] flex items-center gap-1.5">
+                            <FileText size={13} />
+                            Verified Client Intake Brief · Dr. Mansoor Al-Ketbi
+                          </span>
+                          <span className="text-[10px] font-mono text-zinc-400 bg-white/5 px-2 py-0.5 rounded">
+                            Read-Only View
+                          </span>
+                        </div>
+                        <p className="text-zinc-300 leading-relaxed text-[11px]">
+                          <strong>Target:</strong> 2-Bedroom Waterfront Suite · <strong>Budget:</strong> AED 4,000,000 (Cash Ready) · <strong>Timeline:</strong> Pre-weekend allocation · <strong>DLD Registration:</strong> Primary Buyer
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
 
@@ -337,13 +412,25 @@ export function InteractiveDeviceShowcase() {
                         yield: "8.2% Net ROI",
                         badge: "95% Match Score",
                       },
-                    ].map((p) => (
-                      <div key={p.name} className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3 hover:border-primary/50 transition-colors">
+                    ].map((p, idx) => (
+                      <div
+                        key={p.name}
+                        onClick={() => setSelectedMatchIndex(idx)}
+                        className={`p-4 rounded-2xl bg-white/5 border transition-all cursor-pointer space-y-3 ${
+                          selectedMatchIndex === idx
+                            ? "border-emerald-400/80 bg-emerald-500/10 shadow-lg shadow-emerald-500/10 scale-[1.02]"
+                            : "border-white/10 hover:border-white/20"
+                        }`}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">
+                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                            selectedMatchIndex === idx ? "bg-emerald-400 text-black" : "text-emerald-400 bg-emerald-500/10"
+                          }`}>
                             {p.badge}
                           </span>
-                          <span className="text-[10px] text-zinc-400 font-mono">DLD Escrow Active</span>
+                          <span className="text-[10px] text-zinc-400 font-mono">
+                            {selectedMatchIndex === idx ? "✓ Selected" : "DLD Escrow Active"}
+                          </span>
                         </div>
                         <div>
                           <p className="font-extrabold text-base text-white">{p.name}</p>
@@ -485,16 +572,29 @@ export function InteractiveDeviceShowcase() {
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between pt-1 text-[10px] text-zinc-400">
-                              <span>🔒 Interactive show effect · No external WhatsApp app launched on device</span>
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 border-t border-white/10 text-[10px]">
                               <button
                                 type="button"
-                                onClick={() => setWaDispatchState("idle")}
-                                className="text-zinc-300 hover:text-white underline cursor-pointer flex items-center gap-1"
+                                onClick={() => setShowClientDraft(!showClientDraft)}
+                                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono flex items-center gap-1.5 transition-all cursor-pointer border border-white/10"
                               >
-                                <RotateCcw size={11} />
-                                <span>Reset Demo</span>
+                                <Eye size={12} className="text-emerald-400" />
+                                <span>{showClientDraft ? "Hide Client Draft" : "View Client Draft"}</span>
                               </button>
+
+                              <div className="flex items-center gap-3">
+                                <span className="text-zinc-400 font-mono">
+                                  🔒 Viewable only · Nothing copied
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => setWaDispatchState("idle")}
+                                  className="text-zinc-300 hover:text-white underline cursor-pointer flex items-center gap-1"
+                                >
+                                  <RotateCcw size={11} />
+                                  <span>Reset</span>
+                                </button>
+                              </div>
                             </div>
                           </motion.div>
                         )}
@@ -521,13 +621,47 @@ export function InteractiveDeviceShowcase() {
                     </span>
                   </div>
 
+                  {/* Interactive Filter Pills */}
+                  <div className="flex items-center gap-2">
+                    {[
+                      { id: "all", label: "All Tranches (3)" },
+                      { id: "overdue", label: "⚠️ Overdue Claims (2)" },
+                      { id: "processing", label: "✓ In Processing (1)" },
+                    ].map((f) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setCommissionFilter(f.id as "all" | "overdue" | "processing")}
+                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                          commissionFilter === f.id
+                            ? "bg-amber-400 text-black shadow-sm"
+                            : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+
                   <div className="space-y-2 text-xs">
                     {[
                       { dev: "Emaar Properties PJSC", deal: "Burj Crown (Unit 2402)", tranche: "2% on SPA Signing", amount: "AED 78,000", days: "68 Days Overdue", alert: true },
                       { dev: "DAMAC Properties", deal: "Damac Lagoons (Villa 89)", tranche: "2% Handover Tranche", amount: "AED 140,000", days: "42 Days Overdue", alert: true },
                       { dev: "Sobha Realty LLC", deal: "Sobha Hartland (Unit 1204)", tranche: "3% Full Broker Commission", amount: "AED 95,000", days: "14 Days (Processing)", alert: false },
-                    ].map((row) => (
-                      <div key={row.deal} className="p-3.5 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    ]
+                      .filter((row) => {
+                        if (commissionFilter === "overdue") return row.alert;
+                        if (commissionFilter === "processing") return !row.alert;
+                        return true;
+                      })
+                      .map((row) => (
+                        <motion.div
+                          layout
+                          key={row.deal}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="p-3.5 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-amber-400/40 transition-colors"
+                        >
                         <div>
                           <p className="font-extrabold text-white">{row.dev}</p>
                           <p className="text-[11px] text-zinc-400">{row.deal} · {row.tranche}</p>
@@ -540,7 +674,7 @@ export function InteractiveDeviceShowcase() {
                             {row.days}
                           </span>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
