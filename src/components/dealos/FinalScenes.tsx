@@ -50,28 +50,35 @@ export function Proof() {
   return (
     <Scene id="proof">
       <div className="d-section-heading d-container">
-        <span className="d-pill">Built for real estate teams</span>
-        <RevealText>Enterprise CRM./AI-powered performance.</RevealText>
-        <p>One connected platform for agency operations, client relationships and every stage of the deal.</p>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold mb-4 border border-emerald-500/30">
+          <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>LIVE DUBAI REGISTRY SYNC · UPDATED DAILY</span>
+        </div>
+        <RevealText>Institutional Data./Verified Dubai Pipeline.</RevealText>
+        <p>Enterprise operating system engineered specifically for DLD &amp; RERA licensed agencies.</p>
       </div>
       <div className="d-marquee-mask">
         <QuoteTrack row={0} />
         <QuoteTrack row={1} />
       </div>
-      <div className="d-proof-stats d-container">
+      <div className="d-proof-stats d-container grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
         {[
-          { value: 48, prefix: 'AED ', suffix: 'M', label: 'pipeline managed' },
-          { value: 3, suffix: '×', label: 'faster follow-ups' },
-          { value: 34, suffix: 'k+', label: 'units searchable' },
-          { value: 2, prefix: '<', suffix: ' min', label: 'to send a client deck' },
+          { stat: "34,850+", label: "Verified DLD Units", detail: "Live secondary & ready stock", icon: "🏢" },
+          { stat: "1,355+", label: "Off-Plan Projects", detail: "Floor plans, brochures & payment plans", icon: "📐" },
+          { stat: "100%", label: "Native Escrow Integration", detail: "Direct trust account verification", icon: "🛡️" },
+          { stat: "< 2 min", label: "Speed to Lead SLA", detail: "Automated WhatsApp investor outreach", icon: "⚡" },
         ].map((v) => (
-          <Rise key={v.label}>
-            <CountUp value={v.value} prefix={v.prefix ?? ''} suffix={v.suffix} />
-            <p>{v.label}</p>
-          </Rise>
+          <div key={v.label} className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md text-left space-y-1.5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xl">{v.icon}</span>
+              <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Active</span>
+            </div>
+            <p className="text-2xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">{v.stat}</p>
+            <p className="text-xs font-bold text-zinc-200">{v.label}</p>
+            <p className="text-[11px] text-zinc-400">{v.detail}</p>
+          </div>
         ))}
       </div>
-      <p className="d-demo-note">Verified Dubai real estate performance benchmarks and institutional deal workflows.</p>
     </Scene>
   );
 }
@@ -399,7 +406,7 @@ export function Footer() {
             Built for DLD &amp; RERA Licensed Brokerages in Dubai &amp; the UAE
           </span>
           <div className="d-socials">
-            <a href="https://www.linkedin.com/company/dealos-ae" aria-label="LinkedIn" target="_blank" rel="noreferrer">
+            <a href="https://linkedin.com/company/dealos" aria-label="LinkedIn" target="_blank" rel="noreferrer">
               <Linkedin size={17} />
             </a>
             <a href="https://www.instagram.com/dealos.ae" aria-label="Instagram" target="_blank" rel="noreferrer">
