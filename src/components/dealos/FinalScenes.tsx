@@ -87,6 +87,8 @@ export { Pricing } from './PricingScene';
 
 export function CTA() {
   const [bookingMode, setBookingMode] = useState<'form' | 'calendly'>('form');
+  const [simulatedWaOpened, setSimulatedWaOpened] = useState(false);
+  const [copiedWa, setCopiedWa] = useState(false);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('+971 ');
   const [name, setName] = useState('');
@@ -348,15 +350,17 @@ export function CTA() {
               </div>
 
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <a
-                  href={waUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSimulatedWaOpened(!simulatedWaOpened);
+                    toast.success("Founder WhatsApp preview opened (in-page simulation)");
+                  }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
                 >
                   <MessageCircle size={16} />
-                  <span>Connect with Founder on WhatsApp ↗</span>
-                </a>
+                  <span>{simulatedWaOpened ? "Hide WhatsApp Simulation" : "Preview Founder WhatsApp Desk"}</span>
+                </button>
                 <a
                   href={calendlyUrl}
                   target="_blank"
@@ -367,6 +371,58 @@ export function CTA() {
                   <span>Or Pick Time on Calendly ↗</span>
                 </a>
               </div>
+
+              {/* Dynamic In-Page Simulated WhatsApp Chat Bubble */}
+              <AnimatePresence>
+                {simulatedWaOpened && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                    className="p-4 rounded-2xl bg-[#0B141A] border border-emerald-500/30 text-xs text-white space-y-2 text-left shadow-2xl mt-3 animate-in fade-in"
+                  >
+                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                          Founder Direct WhatsApp Desk · +971 50 000 0000
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono text-zinc-400">Dubai GST</span>
+                    </div>
+
+                    <div className="bg-[#005c4b]/35 p-3 rounded-xl border border-emerald-500/20 space-y-1.5">
+                      <p className="text-zinc-100 text-[11px] leading-relaxed">
+                        "Hello DealOS Team! I just submitted an agency access request for {email || 'my brokerage'} ({agency || 'Dubai Agency'}). Can you provide a walkthrough of the Owner Cockpit and Broker Desk?"
+                      </p>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[10px] text-zinc-300">
+                          Status: In-Page Dynamic Effect
+                        </span>
+                        <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
+                          Simulated Delivery <CheckCheck size={14} className="text-emerald-400 inline" />
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 text-[10px] text-zinc-400">
+                      <span>🔒 Simulated preview · Device WhatsApp app not opened</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(decodeURIComponent(waText));
+                          setCopiedWa(true);
+                          setTimeout(() => setCopiedWa(false), 2000);
+                          toast.success("Text copied to clipboard!");
+                        }}
+                        className="text-zinc-300 hover:text-white underline cursor-pointer"
+                      >
+                        {copiedWa ? "✓ Copied" : "Copy Message Text"}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="pt-2">
                 <button

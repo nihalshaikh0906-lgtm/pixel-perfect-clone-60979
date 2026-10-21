@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Sparkles,
   Mic,
@@ -17,14 +17,58 @@ import {
   Layers,
   Radio,
   ExternalLink,
+  MessageCircle,
+  CheckCheck,
+  Check,
+  RotateCcw,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
+
+// Tactile acoustic WhatsApp confirmation chime
+function playWhatsAppChime() {
+  try {
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc1.type = "sine";
+    osc2.type = "sine";
+    osc1.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+    osc2.frequency.setValueAtTime(880, ctx.currentTime + 0.08); // A5
+
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc1.start(ctx.currentTime);
+    osc1.stop(ctx.currentTime + 0.08);
+    osc2.start(ctx.currentTime + 0.08);
+    osc2.stop(ctx.currentTime + 0.25);
+  } catch {
+    // AudioContext blocked or not supported in environment
+  }
+}
 
 export function InteractiveDeviceShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"voice" | "dld" | "dealroom" | "owner">("voice");
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [waDispatchState, setWaDispatchState] = useState<"idle" | "sending" | "delivered">("idle");
+
+  const handleWhatsAppSimulate = () => {
+    if (waDispatchState === "sending") return;
+    setWaDispatchState("sending");
+    playWhatsAppChime();
+    setTimeout(() => {
+      setWaDispatchState("delivered");
+    }, 650);
+  };
 
   // 3D Parallax Mouse Tracking
   const x = useMotionValue(0);
@@ -364,6 +408,97 @@ export function InteractiveDeviceShowcase() {
                         <span className="text-[10px] text-zinc-400 uppercase font-mono block">Handover Balance</span>
                         <span className="font-extrabold text-emerald-400 text-sm">50% in 2027</span>
                       </div>
+                    </div>
+
+                    {/* Action Area: Review in WhatsApp with In-Animation Dynamic Simulation (No External Device App Launch) */}
+                    <div className="pt-3 border-t border-white/10 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={handleWhatsAppSimulate}
+                          disabled={waDispatchState === "sending"}
+                          className="h-11 px-6 rounded-xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-110 active:scale-[0.98] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#2F6BFF]/25 transition-all cursor-pointer disabled:opacity-75"
+                        >
+                          {waDispatchState === "sending" ? (
+                            <Loader2 size={16} className="animate-spin text-white" />
+                          ) : (
+                            <MessageCircle size={16} />
+                          )}
+                          <span>
+                            {waDispatchState === "idle" && "Review in WhatsApp"}
+                            {waDispatchState === "sending" && "Dispatching to WhatsApp..."}
+                            {waDispatchState === "delivered" && "✓ Sent to Client WhatsApp (Simulated)"}
+                          </span>
+                        </button>
+
+                        <span className="text-[10px] font-mono text-zinc-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full self-start sm:self-auto">
+                          Project preview
+                        </span>
+                      </div>
+
+                      {/* Dynamic In-Page Simulated WhatsApp Chat Bubble */}
+                      <AnimatePresence>
+                        {waDispatchState === "delivered" && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                            className="p-4 rounded-2xl bg-[#0B141A] border border-emerald-500/30 text-xs text-white space-y-2.5 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in-95"
+                          >
+                            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                                  WhatsApp Direct Session · Dr. Mansoor Al-Ketbi (+971 50...)
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-mono text-zinc-400">14:32 UAE</span>
+                            </div>
+
+                            <div className="bg-[#005c4b]/35 p-3.5 rounded-xl border border-emerald-500/25 space-y-2">
+                              <p className="text-zinc-100 text-[11px] leading-relaxed">
+                                "Salam Dr. Mansoor, following up on your voice note. I've prepared your private Live Deal Room for <strong>Creek Waters 2</strong> (2BR Waterfront Suite · AED 3,650,000) with DLD escrow security."
+                              </p>
+                              
+                              <div className="p-2.5 rounded-lg bg-black/40 border border-white/10 flex items-center justify-between hover:border-violet-500/50 transition-colors">
+                                <div>
+                                  <span className="text-violet-300 font-mono text-[11px] font-bold block">
+                                    🔗 deals.dealos.ae/mansoor
+                                  </span>
+                                  <span className="text-[10px] text-zinc-400">
+                                    Private Live Deal Room · Emaar Off-Plan Allocation
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                  Active Link
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between pt-1">
+                                <span className="text-[10px] text-zinc-300">
+                                  ⚡ Delivered via DealOS Copilot Engine
+                                </span>
+                                <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
+                                  Delivered <CheckCheck size={14} className="text-emerald-400 inline" />
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-1 text-[10px] text-zinc-400">
+                              <span>🔒 Interactive show effect · No external WhatsApp app launched on device</span>
+                              <button
+                                type="button"
+                                onClick={() => setWaDispatchState("idle")}
+                                className="text-zinc-300 hover:text-white underline cursor-pointer flex items-center gap-1"
+                              >
+                                <RotateCcw size={11} />
+                                <span>Reset Demo</span>
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
                 </div>

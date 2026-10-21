@@ -16,13 +16,14 @@ import {
   Layers,
   ArrowRight,
   Wallet,
-  Percent,
   Check,
   Copy,
   FileText,
   Star,
   ArrowLeft,
   Calendar,
+  X,
+  CheckCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { LEAD_BY_ID, type Lead } from "@/lib/demo-leads";
@@ -251,8 +252,13 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
     }
   };
 
+  const [reservationModalOpen, setReservationModalOpen] = useState(false);
+  const [copiedReservation, setCopiedReservation] = useState(false);
+
+  const reservationMessageRaw = `Hello ${brokerName}, I am reviewing the DealOS Live Deal Room prepared for ${investorName}. I would like to lock in the reservation for ${activeDeal.name} (${activeDeal.unitType} at ${formatMoney(activeDeal.basePriceAed)}). Please confirm the allocation and next escrow steps.`;
+
   const waReservationLink = `https://wa.me/${brokerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(
-    `Hello ${brokerName}, I am reviewing the DealOS Live Deal Room prepared for ${investorName}. I would like to lock in the reservation for ${activeDeal.name} (${activeDeal.unitType} at ${formatMoney(activeDeal.basePriceAed)}). Please confirm the allocation and next escrow steps.`
+    reservationMessageRaw
   )}`;
 
   return (
@@ -696,15 +702,14 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
 
             {/* Instant Action CTA */}
             <div className="space-y-3 pt-2">
-              <a
-                href={waReservationLink}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-105 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-[#2F6BFF]/25 transition-all cursor-pointer"
+              <button
+                type="button"
+                onClick={() => setReservationModalOpen(true)}
+                className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-105 active:scale-[0.99] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-[#2F6BFF]/25 transition-all cursor-pointer"
               >
                 <MessageCircle size={18} />
                 <span>Reserve Unit with 10% Token on WhatsApp</span>
-              </a>
+              </button>
 
               <button
                 type="button"
@@ -740,19 +745,96 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
               <span className="hidden sm:inline">Call Advisor</span>
             </a>
 
-            <a
-              href={waReservationLink}
-              target="_blank"
-              rel="noreferrer"
-              className="h-10 px-5 rounded-xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-105 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-[#2F6BFF]/25 w-full sm:w-auto"
+            <button
+              type="button"
+              onClick={() => setReservationModalOpen(true)}
+              className="h-10 px-5 rounded-xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-105 active:scale-[0.99] text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-[#2F6BFF]/25 w-full sm:w-auto cursor-pointer"
             >
               <MessageCircle size={15} />
               <span>Lock Reservation · WhatsApp</span>
               <ArrowRight size={14} />
-            </a>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* ═══ IN-PAGE SIMULATED WHATSAPP RESERVATION MODAL ═══ */}
+      {reservationModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B141A] border border-emerald-500/40 p-6 sm:p-7 shadow-2xl text-white space-y-4 relative my-8">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-mono font-bold text-emerald-400">
+                  Simulated WhatsApp Dispatch · {brokerName} ({brokerPhone})
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReservationModalOpen(false)}
+                className="text-zinc-400 hover:text-white p-1"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="text-center py-2 space-y-1">
+              <div className="size-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/40 mb-2">
+                <CheckCheck size={24} />
+              </div>
+              <h3 className="text-lg font-extrabold text-white">
+                10% Token Reservation Request Ready
+              </h3>
+              <p className="text-xs text-zinc-300 max-w-sm mx-auto">
+                Prepared specifically for <span className="text-white font-bold">{investorName}</span> under DLD Escrow registration.
+              </p>
+            </div>
+
+            {/* Chat Bubble Simulation */}
+            <div className="bg-[#005c4b]/35 p-3.5 rounded-2xl border border-emerald-500/25 space-y-2 text-xs">
+              <p className="text-zinc-100 leading-relaxed text-[11px]">
+                "{reservationMessageRaw}"
+              </p>
+              <div className="p-2 rounded-lg bg-black/40 border border-white/10 flex items-center justify-between text-[11px]">
+                <span className="text-violet-300 font-mono font-bold">
+                  {activeDeal.name} · {formatMoney(activeDeal.basePriceAed)}
+                </span>
+                <span className="text-emerald-400 font-bold flex items-center gap-1 text-[10px]">
+                  Delivered <CheckCheck size={13} />
+                </span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-zinc-400 text-center">
+              🔒 In-page demonstration effect · External WhatsApp app not opened on device.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(reservationMessageRaw);
+                  setCopiedReservation(true);
+                  setTimeout(() => setCopiedReservation(false), 2000);
+                  toast.success("Reservation script copied to clipboard!");
+                }}
+                className="w-full sm:flex-1 h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-white/10"
+              >
+                <Copy size={14} />
+                <span>{copiedReservation ? "✓ Copied to Clipboard" : "Copy Message Script"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setReservationModalOpen(false)}
+                className="w-full sm:w-auto h-11 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition-all cursor-pointer"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

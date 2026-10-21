@@ -70,7 +70,8 @@ export function CorporateInvoiceModal({
 
   const shareToFinanceWhatsApp = () => {
     const text = `Hi Team, here is the official DealOS Proforma Invoice (${invoiceNumber}) for ${agencyName}. Total: AED ${grandTotal.toLocaleString()} (Bank Wire Transfer). Beneficiary: DealOS Technologies, IBAN: AE450260000123456789012.`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    navigator.clipboard.writeText(text);
+    toast.success("Finance invoice dispatch simulated & message copied to clipboard!");
   };
 
   return (
