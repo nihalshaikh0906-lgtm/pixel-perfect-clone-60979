@@ -65,10 +65,6 @@ export async function detectRole(): Promise<DealOSRole> {
     setStoredRole("agent");
     return "agent";
   }
-  if (activeEmail === "nihalshaikh09065@icloud.com") {
-    setStoredRole("company");
-    return "company";
-  }
 
   try {
     const { data } = await supabase.auth.getUser();
@@ -79,11 +75,6 @@ export async function detectRole(): Promise<DealOSRole> {
         setStoredRole("agent");
         setActiveEmail(cleanEmail);
         return "agent";
-      }
-      if (cleanEmail === "nihalshaikh09065@icloud.com") {
-        setStoredRole("company");
-        setActiveEmail(cleanEmail);
-        return "company";
       }
 
       const metaRole = (user.user_metadata?.role as string | undefined)?.toLowerCase();

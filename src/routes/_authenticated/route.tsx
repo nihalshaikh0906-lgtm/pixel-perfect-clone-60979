@@ -32,16 +32,16 @@ export const Route = createFileRoute("/_authenticated")({
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
 
       const isBroker = activeEmail === "nihalshaikh0906@gmail.com" || storedRole === "agent";
-      const isOwner = !isBroker && (activeEmail === "nihalshaikh09065@icloud.com" || storedRole === "company");
+      const isOwner = !isBroker && storedRole === "company";
 
       return {
         user: {
           id: isOwner ? "demo-owner-user-1" : "demo-broker-user-1",
           email: isOwner
             ? (activeEmail || "owner@dealos.ae")
-            : (activeEmail || "broker@dealos.ae"),
+            : "nihalshaikh0906@gmail.com",
           user_metadata: {
-            full_name: isOwner ? "DealOS Agency Owner" : "DealOS Dubai Broker",
+            full_name: isOwner ? "DealOS Agency Owner" : "Nihal Shaikh",
             role: isOwner ? "company" : "agent",
           },
         },

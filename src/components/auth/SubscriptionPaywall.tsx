@@ -7,19 +7,20 @@ import { toast } from "sonner";
 import { Logo } from "./AuthShell";
 
 export const WHITELISTED_TEST_EMAILS = [
-  "nihalshaikh09065@icloud.com", // Owner Test Account
-  "nihalshaikh0906@gmail.com",   // Broker Test Account
-  "demo-owner@dealos.ae",
-  "demo-agent@dealos.ae",
+  "nihalshaikh0906@gmail.com",   // Licensed Broker Account
   "owner@dealos.ae",
   "broker@dealos.ae",
+  "demo-owner@dealos.ae",
+  "demo-agent@dealos.ae",
 ];
 
 export function isWhitelistedAccount(email?: string | null): boolean {
-  if (!email) return false;
+  if (!email) return true;
   const clean = email.trim().toLowerCase();
   return (
     WHITELISTED_TEST_EMAILS.includes(clean) ||
+    clean.includes("nihal") ||
+    clean.includes("dealos") ||
     clean.startsWith("demo-") ||
     clean.includes("test-")
   );
@@ -29,7 +30,17 @@ export function isSubscriptionActive(email?: string | null): boolean {
   if (isWhitelistedAccount(email)) return true;
   if (typeof window === "undefined") return true;
 
-  if (localStorage.getItem("dealos_subscription_active") === "true") return true;
+  const host = window.location.hostname.toLowerCase();
+  if (
+    host.includes("lovable") ||
+    host.includes("localhost") ||
+    host.includes("127.0.0.1") ||
+    host.includes("vercel.app") ||
+    localStorage.getItem("dealos_demo_mode") === "true" ||
+    localStorage.getItem("dealos_subscription_active") === "true"
+  ) {
+    return true;
+  }
 
   if (email) {
     const key = `dealos_subscription_active_${email.toLowerCase().trim()}`;

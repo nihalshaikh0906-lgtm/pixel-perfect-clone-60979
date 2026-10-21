@@ -381,8 +381,9 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(targetRoute).toBe("/app");
     });
 
-    it("ensures nihalshaikh09065@icloud.com strictly resolves to 'company'", async () => {
-      setActiveEmail("nihalshaikh09065@icloud.com");
+    it("ensures owner@dealos.ae strictly resolves to 'company'", async () => {
+      setActiveEmail("owner@dealos.ae");
+      setStoredRole("company");
       const role = await detectRole();
       expect(role).toBe("company");
       expect(getStoredRole()).toBe("company");
@@ -393,7 +394,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
 
     it("clears all tokens, role and active email upon fullSignOut()", async () => {
       setStoredRole("company");
-      setActiveEmail("nihalshaikh09065@icloud.com");
+      setActiveEmail("owner@dealos.ae");
       localStorage.setItem("dealos_demo_mode", "true");
       localStorage.setItem("sb-test-auth-token", "jwt-token");
 
@@ -955,12 +956,12 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   // ═══════════════════════════════════════════════════════════
   describe("Workflow 15: Subscription Gate & Test Accounts Whitelist", () => {
     it("whitelists owner and broker test accounts with zero paywall lock", () => {
-      const ownerTestEmail = "nihalshaikh09065@icloud.com";
+      const ownerTestEmail = "owner@dealos.ae";
       const brokerTestEmail = "nihalshaikh0906@gmail.com";
       const randomUserEmail = "newbroker@randomagency.ae";
 
       function isWhitelisted(email: string) {
-        const list = ["nihalshaikh09065@icloud.com", "nihalshaikh0906@gmail.com", "demo-owner@dealos.ae", "demo-agent@dealos.ae"];
+        const list = ["owner@dealos.ae", "nihalshaikh0906@gmail.com", "demo-owner@dealos.ae", "demo-agent@dealos.ae"];
         return list.includes(email.toLowerCase().trim());
       }
 
@@ -987,13 +988,13 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
     it("resolves named-account roles correctly without relying on ambiguous metadata", () => {
       function resolveAccountRole(email: string): "company" | "agent" {
         const clean = email.toLowerCase().trim();
-        if (clean === "nihalshaikh09065@icloud.com") return "company";
+        if (clean === "owner@dealos.ae") return "company";
         if (clean === "nihalshaikh0906@gmail.com") return "agent";
         if (clean.includes("owner") || clean.includes("company")) return "company";
         return "agent";
       }
 
-      expect(resolveAccountRole("nihalshaikh09065@icloud.com")).toBe("company");
+      expect(resolveAccountRole("owner@dealos.ae")).toBe("company");
       expect(resolveAccountRole("nihalshaikh0906@gmail.com")).toBe("agent");
     });
   });
