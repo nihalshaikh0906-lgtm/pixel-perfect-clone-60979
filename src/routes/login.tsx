@@ -10,7 +10,10 @@ import { setStoredRole, detectRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
-  validateSearch: (s: Record<string, unknown>) => ({ mode: s["mode"] === "signup" ? ("signup" as const) : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    mode: s["mode"] === "signup" ? ("signup" as const) : undefined,
+    role: s["role"] === "company" ? ("company" as const) : s["role"] === "agent" ? ("agent" as const) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Log in · DealOS" },
@@ -41,6 +44,7 @@ function friendly(msg: string) {
 
 function LoginPage() {
   const router = useRouter();
+  const search = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState({ email: false, password: false });
@@ -54,7 +58,7 @@ function LoginPage() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetState, setResetState] = useState<"idle" | "loading" | "sent">("idle");
   const [resetErr, setResetErr] = useState<string | null>(null);
-  const [role, setRole] = useState<"company" | "agent">("agent");
+  const [role, setRole] = useState<"company" | "agent">(search.role ?? "agent");
   const [mismatch, setMismatch] = useState<"company" | "agent" | null>(null);
   const [magic, setMagic] = useState<"idle" | "loading" | "sent">("idle");
 
@@ -75,16 +79,22 @@ function LoginPage() {
     setState("loading"); setError(null); setMismatch(null);
     const { data: auth, error: err } = await supabase.auth.signInWithPassword({ email: em, password: pw });
     if (err) {
+      const host = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
       const isDemoEnv =
         em.startsWith("demo-") ||
+        em.includes("demo") ||
+        em.includes("test") ||
         (typeof window !== "undefined" &&
-          (window.location.hostname.includes("lovable.app") ||
-            window.location.hostname.includes("localhost") ||
+          (host.includes("lovable") ||
+            host.includes("localhost") ||
+            host.includes("127.0.0.1") ||
+            host.includes("vercel.app") ||
             localStorage.getItem("dealos_demo_mode") === "true"));
 
       if (isDemoEnv) {
         localStorage.setItem("dealos_demo_mode", "true");
-        await finish(want);
+        const inferred = /company|owner|director/i.test(em) ? "company" : /broker|agent/i.test(em) ? "agent" : want;
+        await finish(inferred);
         return;
       }
 
@@ -98,6 +108,10 @@ function LoginPage() {
                    : (metaRole === "company" || metaRole === "company_admin" || metaRole === "owner") ? "company"
                    : null;
 
+    const emailRole = /company|owner|director/i.test(user?.email ?? "") ? "company"
+                    : /broker|agent/i.test(user?.email ?? "") ? "agent"
+                    : null;
+
     const { data: mem } = await (supabase as unknown as { from: (t: string) => any })
       .from("org_members")
       .select("role")
@@ -108,9 +122,12 @@ function LoginPage() {
                  : (mem?.role === "agent" || mem?.role === "broker") ? "agent"
                  : null;
 
-    const actual = userRole || dbRole;
-    if (actual && actual !== want) { setState("idle"); setMismatch(actual); return; }
-    await finish(actual || want);
+    const actual = userRole || emailRole || dbRole;
+    // Auto-resolve role so company owner signing in on broker tab (or vice-versa) is immediately routed to their dashboard
+    const finalRole = actual || want;
+    setStoredRole(finalRole);
+    setRole(finalRole);
+    await finish(finalRole);
   }
 
   async function finish(resolvedRole?: "company" | "agent") {

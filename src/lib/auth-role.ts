@@ -65,5 +65,10 @@ export async function detectRole(): Promise<DealOSRole> {
     // Network fallback
   }
 
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/owner-dashboard")) {
+    setStoredRole("company");
+    return "company";
+  }
+
   return stored ?? "agent";
 }

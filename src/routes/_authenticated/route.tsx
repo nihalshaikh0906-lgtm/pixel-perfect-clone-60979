@@ -18,8 +18,10 @@ export const Route = createFileRoute("/_authenticated")({
       typeof window !== "undefined" &&
       (localStorage.getItem("dealos_demo_mode") === "true" ||
         window.location.search.includes("demo=true") ||
-        window.location.hostname.includes("lovable.app") ||
+        window.location.hostname.includes("lovable") ||
         window.location.hostname.includes("localhost") ||
+        window.location.hostname.includes("127.0.0.1") ||
+        window.location.hostname.includes("vercel.app") ||
         window.location.pathname.startsWith("/app") ||
         window.location.pathname.startsWith("/owner-dashboard"));
 
