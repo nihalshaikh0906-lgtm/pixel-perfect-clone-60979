@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, ArrowRight, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { Check, ArrowRight, MessageCircle, Landmark, ShieldCheck } from "lucide-react";
 
 import { Eyebrow, meta, PublicLayout } from "@/components/public/PublicLayout";
 import { PLANS, aedPrice } from "@/lib/pricing";
+import { CorporateInvoiceModal } from "@/components/pricing/CorporateInvoiceModal";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/pricing")({
   head: () =>
@@ -14,6 +17,7 @@ export const Route = createFileRoute("/pricing")({
 });
 
 function PricingPage() {
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const waEnterpriseUrl = `https://wa.me/971500000000?text=${encodeURIComponent(
     "Hello DealOS Team! I manage a team of 5+ property consultants in Dubai. I would like a quote for centralized brokerage seats, white-label branding, and dedicated onboarding."
   )}`;
@@ -95,8 +99,33 @@ function PricingPage() {
           ))}
         </div>
 
+        {/* Corporate UAE Bank Wire Option Banner */}
+        <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-border/80 bg-secondary/30 p-5 text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <Landmark size={20} />
+            </div>
+            <div>
+              <p className="font-extrabold text-sm text-foreground">
+                Paying via Corporate UAE Bank Wire or Manager's Cheque?
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Generate an instant official Proforma Invoice with our UAE IBAN (Emirates NBD / Wio Bank).
+              </p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            onClick={() => setShowInvoiceModal(true)}
+            className="h-10 px-4 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shrink-0 gap-1.5 shadow-sm"
+          >
+            <Landmark size={14} />
+            <span>Generate Proforma Invoice</span>
+          </Button>
+        </div>
+
         {/* Enterprise & Brokerage Teams Callout */}
-        <div className="mx-auto mt-14 max-w-3xl rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/5 p-8 text-left sm:flex sm:items-center sm:justify-between gap-6 shadow-lg">
+        <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-card to-amber-500/5 p-8 text-left sm:flex sm:items-center sm:justify-between gap-6 shadow-lg">
           <div className="space-y-1.5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">Brokerages &amp; Agencies (5+ Agents)</span>
             <h3 className="text-lg font-bold text-foreground">Need multi-agent governance &amp; custom data migration?</h3>
@@ -124,6 +153,12 @@ function PricingPage() {
           </div>
         </div>
       </section>
+
+      {/* Corporate Wire & Proforma Modal */}
+      <CorporateInvoiceModal
+        isOpen={showInvoiceModal}
+        onClose={() => setShowInvoiceModal(false)}
+      />
     </PublicLayout>
   );
 }

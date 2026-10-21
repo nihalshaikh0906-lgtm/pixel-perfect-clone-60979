@@ -15,6 +15,7 @@ import { ago, formatAed, LEAD_BY_ID, OPEN_STAGES, priorityOf, wants, type Lead, 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DealRoomView } from "../deal-room.$id";
+import { DriveTimeVoiceTranscriber } from "@/components/leads/DriveTimeVoiceTranscriber";
 
 export const Route = createFileRoute("/_authenticated/app/leads/$id")({
   head: () => ({
@@ -563,6 +564,9 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
             RIGHT COLUMN (5 COLS / ~40%): STICKY AI DECISION RAIL & ACTION COCKPIT
             ════════════════════════════════════════════════════════════ */}
         <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-4 space-y-5">
+          {/* ═══ 0. DRIVE-TIME WHATSAPP VOICE NOTE TRANSCRIBER ═══ */}
+          <DriveTimeVoiceTranscriber leadName={lead.name} leadId={lead.id} />
+
           {/* ═══ 1. LIVE AI COPILOT & SCRIPT LAUNCHPAD ═══ */}
           <div className="rounded-3xl border border-primary/40 bg-card/95 backdrop-blur-xl p-5 sm:p-6 shadow-xl space-y-5">
             {/* Playbook Header */}
