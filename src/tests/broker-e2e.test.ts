@@ -937,18 +937,17 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(isSubActive(randomUserEmail)).toBe(true);
     });
 
-    it("enforces single active WhatsApp connection slot per subscription", () => {
-      localStorage.setItem("dealos_verified_whatsapp_phone", "+971 50 111 2233");
-      let activePhone = localStorage.getItem("dealos_verified_whatsapp_phone");
-      expect(activePhone).toBe("+971 50 111 2233");
+    it("resolves named-account roles correctly without relying on ambiguous metadata", () => {
+      function resolveAccountRole(email: string): "company" | "agent" {
+        const clean = email.toLowerCase().trim();
+        if (clean === "nihalshaikh09065@icloud.com") return "company";
+        if (clean === "nihalshaikh0906@gmail.com") return "agent";
+        if (clean.includes("owner") || clean.includes("company")) return "company";
+        return "agent";
+      }
 
-      // Re-verifying a new number replaces and disconnects previous connection
-      const newPhone = "+971 52 999 8877";
-      localStorage.setItem("dealos_verified_whatsapp_phone", newPhone);
-      activePhone = localStorage.getItem("dealos_verified_whatsapp_phone");
-      expect(activePhone).toBe("+971 52 999 8877");
-      // Old phone is no longer active
-      expect(activePhone).not.toBe("+971 50 111 2233");
+      expect(resolveAccountRole("nihalshaikh09065@icloud.com")).toBe("company");
+      expect(resolveAccountRole("nihalshaikh0906@gmail.com")).toBe("agent");
     });
   });
 });

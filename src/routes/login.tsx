@@ -93,7 +93,12 @@ function LoginPage() {
 
       if (isDemoEnv) {
         localStorage.setItem("dealos_demo_mode", "true");
-        const inferred = /company|owner|director/i.test(em) ? "company" : /broker|agent/i.test(em) ? "agent" : want;
+        const cleanEm = em.toLowerCase().trim();
+        const inferred = cleanEm === "nihalshaikh09065@icloud.com" ? "company"
+                       : cleanEm === "nihalshaikh0906@gmail.com" ? "agent"
+                       : /company|owner|director/i.test(em) ? "company"
+                       : /broker|agent/i.test(em) ? "agent"
+                       : want;
         await finish(inferred);
         return;
       }
@@ -103,13 +108,18 @@ function LoginPage() {
     }
 
     const user = auth.user;
+    const cleanUserEmail = (user?.email ?? em).toLowerCase().trim();
+    const namedRole = cleanUserEmail === "nihalshaikh09065@icloud.com" ? "company"
+                    : cleanUserEmail === "nihalshaikh0906@gmail.com" ? "agent"
+                    : null;
+
     const metaRole = (user?.user_metadata?.role as string | undefined)?.toLowerCase();
     const userRole = (metaRole === "agent" || metaRole === "broker") ? "agent"
                    : (metaRole === "company" || metaRole === "company_admin" || metaRole === "owner") ? "company"
                    : null;
 
-    const emailRole = /company|owner|director/i.test(user?.email ?? "") ? "company"
-                    : /broker|agent/i.test(user?.email ?? "") ? "agent"
+    const emailRole = /company|owner|director/i.test(cleanUserEmail) ? "company"
+                    : /broker|agent/i.test(cleanUserEmail) ? "agent"
                     : null;
 
     const { data: mem } = await (supabase as unknown as { from: (t: string) => any })
@@ -122,7 +132,7 @@ function LoginPage() {
                  : (mem?.role === "agent" || mem?.role === "broker") ? "agent"
                  : null;
 
-    const actual = userRole || emailRole || dbRole;
+    const actual = namedRole || userRole || emailRole || dbRole;
     // Auto-resolve role so company owner signing in on broker tab (or vice-versa) is immediately routed to their dashboard
     const finalRole = actual || want;
     setStoredRole(finalRole);

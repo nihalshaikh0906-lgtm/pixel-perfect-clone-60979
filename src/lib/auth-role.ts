@@ -27,6 +27,16 @@ export async function detectRole(): Promise<DealOSRole> {
     const user = data?.user;
     if (!user) return stored ?? "agent";
 
+    const cleanEmail = (user.email ?? "").toLowerCase().trim();
+    if (cleanEmail === "nihalshaikh09065@icloud.com") {
+      setStoredRole("company");
+      return "company";
+    }
+    if (cleanEmail === "nihalshaikh0906@gmail.com") {
+      setStoredRole("agent");
+      return "agent";
+    }
+
     const metaRole = (user.user_metadata?.role as string | undefined)?.toLowerCase();
     if (metaRole === "agent" || metaRole === "broker") {
       setStoredRole("agent");
@@ -37,12 +47,11 @@ export async function detectRole(): Promise<DealOSRole> {
       return "company";
     }
 
-    const email = (user.email ?? "").toLowerCase();
-    if (email.includes("agent") || email.includes("broker")) {
+    if (cleanEmail.includes("agent") || cleanEmail.includes("broker")) {
       setStoredRole("agent");
       return "agent";
     }
-    if (email.includes("company") || email.includes("owner") || email.includes("director") || email.includes("admin")) {
+    if (cleanEmail.includes("company") || cleanEmail.includes("owner") || cleanEmail.includes("director") || cleanEmail.includes("admin")) {
       setStoredRole("company");
       return "company";
     }
