@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Logo as DealLogo, LogoMark } from "@/components/Logo";
-import { ChevronDown, KeyRound, Lock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ChevronDown, KeyRound, Lock, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { DotSkyline } from "./DotSkyline";
@@ -22,9 +22,9 @@ const TICKER = [
 
 export function Logo({ size = 40 }: { size?: number }) {
   return (
-    <span className="au-logo d-brand" style={{ fontSize: size * 0.6 }}>
+    <Link to="/welcome" className="au-logo d-brand hover:opacity-90 transition-opacity" style={{ fontSize: size * 0.6 }} aria-label="DealOS home">
       <DealLogo size={size} />
-    </span>
+    </Link>
   );
 }
 
@@ -126,6 +126,15 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
 
         <div className="au-col">
           <section className="au-form-wrap" data-head="form">
+            <div className="mb-4">
+              <Link
+                to="/welcome"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+              >
+                <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
+                <span>Back to Landing Page</span>
+              </Link>
+            </div>
             <div className="au-form">{children}</div>
           </section>
 
