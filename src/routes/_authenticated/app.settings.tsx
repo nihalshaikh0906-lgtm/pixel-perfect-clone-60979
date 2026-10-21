@@ -403,6 +403,9 @@ export function SettingsPage() {
               </div>
             </div>
           </section>
+
+          {/* Agency WhatsApp Gateway (Meta Cloud API & AI Voice Sandbox) */}
+          <WhatsAppQrSync />
         </div>
       ) : (
         /* ═══ BROKER DESK VIEW ═══ */

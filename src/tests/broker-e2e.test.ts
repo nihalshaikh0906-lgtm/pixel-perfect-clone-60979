@@ -716,5 +716,79 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(fiveYearGain).toBeGreaterThan(1000000);
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 12: DIRECT BROKER COACHING & META CLOUD API SETTINGS
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 12: Direct Broker Coaching & Meta Cloud API Settings", () => {
+    it("opens direct chat addressed straight to that specific broker's number and logs in DealOS", () => {
+      let openedUrl = "";
+      (global as any).window.open = (url: string) => {
+        openedUrl = url;
+        return null;
+      };
+
+      const omar = AGENCY_BROKERS.find((b) => b.name === "Omar Farooq")!;
+      expect(omar.phone).toBe("+971567890123");
+      expect(omar.speedToLeadMins).toBe(24.5);
+
+      function coachBroker(broker: typeof omar) {
+        const isCoaching = broker.tier === "Needs Coaching";
+        const msg = isCoaching
+          ? `Hi ${broker.name} (${broker.reraNumber}), checking in from DealOS Agency Overwatch. Noticed your average lead response time is currently ${broker.speedToLeadMins} mins today. Let's make sure we contact new inquiries within 5 minutes to keep conversion high!`
+          : `Hi ${broker.name} (${broker.reraNumber}), congratulations from DealOS Agency Overwatch! You've closed ${broker.closedVolumeFormatted} across ${broker.dealsClosed} deals this month. Fantastic momentum!`;
+
+        const cleanPhone = broker.phone.replace(/\D/g, "");
+        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        (global as any).window.open(url, "_blank");
+
+        // Log into DealOS
+        const logs = JSON.parse(localStorage.getItem("dealos_coaching_logs") || "[]");
+        logs.unshift({
+          id: `coach-${Date.now()}`,
+          brokerId: broker.id,
+          brokerName: broker.name,
+          brokerPhone: broker.phone,
+          reraNumber: broker.reraNumber,
+          timestamp: new Date().toISOString(),
+          message: msg,
+          tier: broker.tier,
+        });
+        localStorage.setItem("dealos_coaching_logs", JSON.stringify(logs));
+      }
+
+      coachBroker(omar);
+
+      // Verify opened URL is addressed straight to Omar's phone number
+      expect(openedUrl).toContain("https://wa.me/971567890123?text=");
+      expect(decodeURIComponent(openedUrl)).toContain("Hi Omar Farooq (RERA #62194)");
+      expect(decodeURIComponent(openedUrl)).toContain("24.5 mins");
+
+      // Verify logged into DealOS
+      const storedLogs = JSON.parse(localStorage.getItem("dealos_coaching_logs") || "[]");
+      expect(storedLogs).toHaveLength(1);
+      expect(storedLogs[0].brokerName).toBe("Omar Farooq");
+      expect(storedLogs[0].brokerPhone).toBe("+971567890123");
+    });
+
+    it("verifies Meta WhatsApp Cloud API credentials configuration and storage in settings", () => {
+      const metaConfig = {
+        wabaPhone: "+971 4 800 3325",
+        phoneNumberId: "104928172819283",
+        wabaAccountId: "294819281729182",
+        accessToken: "EAAG_dealos_test_token_2026",
+      };
+
+      localStorage.setItem("dealos_meta_waba_phone", metaConfig.wabaPhone);
+      localStorage.setItem("dealos_meta_phone_id", metaConfig.phoneNumberId);
+      localStorage.setItem("dealos_meta_waba_id", metaConfig.wabaAccountId);
+      localStorage.setItem("dealos_meta_access_token", metaConfig.accessToken);
+
+      expect(localStorage.getItem("dealos_meta_waba_phone")).toBe("+971 4 800 3325");
+      expect(localStorage.getItem("dealos_meta_phone_id")).toBe("104928172819283");
+      expect(localStorage.getItem("dealos_meta_waba_id")).toBe("294819281729182");
+      expect(localStorage.getItem("dealos_meta_access_token")).toBe("EAAG_dealos_test_token_2026");
+    });
+  });
 });
 

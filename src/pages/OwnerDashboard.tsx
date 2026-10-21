@@ -666,6 +666,37 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
     setLeadBriefModalOpen(false);
   };
 
+  const handleCoachBroker = (broker: BrokerStats) => {
+    const isCoaching = broker.tier === "Needs Coaching";
+    const msg = isCoaching
+      ? `Hi ${broker.name} (${broker.reraNumber}), checking in from DealOS Agency Overwatch. Noticed your average lead response time is currently ${broker.speedToLeadMins} mins today. Let's make sure we contact new inquiries within 5 minutes to keep conversion high!`
+      : `Hi ${broker.name} (${broker.reraNumber}), congratulations from DealOS Agency Overwatch! You've closed ${broker.closedVolumeFormatted} across ${broker.dealsClosed} deals this month. Fantastic momentum!`;
+
+    const cleanPhone = broker.phone.replace(/\D/g, "");
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+
+    try {
+      const logs = JSON.parse(localStorage.getItem("dealos_coaching_logs") || "[]");
+      logs.unshift({
+        id: `coach-${Date.now()}`,
+        brokerId: broker.id,
+        brokerName: broker.name,
+        brokerPhone: broker.phone,
+        reraNumber: broker.reraNumber,
+        timestamp: new Date().toISOString(),
+        message: msg,
+        tier: broker.tier,
+      });
+      localStorage.setItem("dealos_coaching_logs", JSON.stringify(logs.slice(0, 50)));
+    } catch {
+      // Ignore
+    }
+
+    toast.success(`Direct WhatsApp opened for ${broker.name} (${broker.phone}) & logged coaching note in DealOS.`, {
+      icon: "💬",
+    });
+  };
+
   const handleOpenNoticeModal = (voucher: typeof DEVELOPER_VOUCHERS[0]) => {
     setSelectedVoucherForNotice(voucher);
     setDldNoticeOpen(true);
@@ -1824,22 +1855,17 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 </div>
               </div>
 
-              {/* 1-Click Management Triggers */}
+              {/* 1-Click Direct Management Triggers */}
               <div className="flex items-center gap-2 shrink-0">
-                <a
-                  href={`https://wa.me/${broker.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                    broker.tier === "Needs Coaching"
-                      ? `Hi ${broker.name.split(" ")[0]}, noticed your average lead response time slipped to ${broker.speedToLeadMins} mins today. Let's make sure we hit inquiries within 5 minutes to keep conversion high!`
-                      : `Great work ${broker.name.split(" ")[0]}! You've closed ${broker.closedVolumeFormatted} across ${broker.dealsClosed} deals this month. Keep up the great velocity!`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs shadow-sm transition-all"
-                  title="WhatsApp Coaching Prompt"
+                <button
+                  type="button"
+                  onClick={() => handleCoachBroker(broker)}
+                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs shadow-sm transition-all cursor-pointer"
+                  title={`Direct WhatsApp to ${broker.name} (${broker.phone}) · Logs in DealOS`}
                 >
                   <MessageCircle size={14} className="text-emerald-500" />
                   <span>{broker.tier === "Needs Coaching" ? "Coach Agent" : "Congratulate"}</span>
-                </a>
+                </button>
 
                 <Button
                   size="sm"
@@ -2426,17 +2452,41 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 Close Brief
               </Button>
 
-              <a
-                href={`https://wa.me/${selectedLeadForBrief.brokerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                  `Hi ${selectedLeadForBrief.assignedBrokerName.split(" ")[0]}, following up on your lead ${selectedLeadForBrief.clientName} (${selectedLeadForBrief.budgetFormatted} on ${selectedLeadForBrief.projectInterest}). What is the next step to lock this deal today?`
-                )}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-bold text-xs shadow-sm transition-all"
+              <button
+                type="button"
+                onClick={() => {
+                  const brokerName = selectedLeadForBrief.assignedBrokerName;
+                  const brokerPhone = selectedLeadForBrief.brokerPhone;
+                  const cleanPhone = brokerPhone.replace(/\D/g, "");
+                  const msg = `Hi ${brokerName}, checking in regarding lead ${selectedLeadForBrief.clientName} (${selectedLeadForBrief.budgetFormatted} on ${selectedLeadForBrief.projectInterest}). What is the next milestone to lock this deal today?`;
+                  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+
+                  try {
+                    const logs = JSON.parse(localStorage.getItem("dealos_coaching_logs") || "[]");
+                    logs.unshift({
+                      id: `lead-coach-${Date.now()}`,
+                      brokerId: selectedLeadForBrief.assignedBrokerId,
+                      brokerName: brokerName,
+                      brokerPhone: brokerPhone,
+                      leadId: selectedLeadForBrief.id,
+                      clientName: selectedLeadForBrief.clientName,
+                      timestamp: new Date().toISOString(),
+                      message: msg,
+                    });
+                    localStorage.setItem("dealos_coaching_logs", JSON.stringify(logs.slice(0, 50)));
+                  } catch {
+                    // Ignore
+                  }
+
+                  toast.success(`Direct WhatsApp sent to ${brokerName} (${brokerPhone}) & logged in DealOS.`, {
+                    icon: "💬",
+                  });
+                }}
+                className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-bold text-xs shadow-sm transition-all cursor-pointer"
               >
                 <MessageCircle size={14} />
                 <span>Coach Broker on WhatsApp</span>
-              </a>
+              </button>
             </div>
           </DialogContent>
         </Dialog>
