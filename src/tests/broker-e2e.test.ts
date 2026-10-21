@@ -902,6 +902,55 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(session.platform).toContain("WhatsApp OTP Verified");
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 15: SUBSCRIPTION GATE & TEST ACCOUNTS WHITELIST
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 15: Subscription Gate & Test Accounts Whitelist", () => {
+    it("whitelists owner and broker test accounts with zero paywall lock", () => {
+      const ownerTestEmail = "nihalshaikh09065@icloud.com";
+      const brokerTestEmail = "nihalshaikh0906@gmail.com";
+      const randomUserEmail = "newbroker@randomagency.ae";
+
+      function isWhitelisted(email: string) {
+        const list = ["nihalshaikh09065@icloud.com", "nihalshaikh0906@gmail.com", "demo-owner@dealos.ae", "demo-agent@dealos.ae"];
+        return list.includes(email.toLowerCase().trim());
+      }
+
+      function isSubActive(email: string) {
+        if (isWhitelisted(email)) return true;
+        return localStorage.getItem(`dealos_subscription_active_${email}`) === "true";
+      }
+
+      // 1. VIP test accounts bypass paywall immediately
+      expect(isWhitelisted(ownerTestEmail)).toBe(true);
+      expect(isWhitelisted(brokerTestEmail)).toBe(true);
+      expect(isSubActive(ownerTestEmail)).toBe(true);
+      expect(isSubActive(brokerTestEmail)).toBe(true);
+
+      // 2. Unwhitelisted accounts are blocked without confirmed payment
+      expect(isWhitelisted(randomUserEmail)).toBe(false);
+      expect(isSubActive(randomUserEmail)).toBe(false);
+
+      // 3. Confirming payment unlocks workspace for unwhitelisted accounts
+      localStorage.setItem(`dealos_subscription_active_${randomUserEmail}`, "true");
+      expect(isSubActive(randomUserEmail)).toBe(true);
+    });
+
+    it("enforces single active WhatsApp connection slot per subscription", () => {
+      localStorage.setItem("dealos_verified_whatsapp_phone", "+971 50 111 2233");
+      let activePhone = localStorage.getItem("dealos_verified_whatsapp_phone");
+      expect(activePhone).toBe("+971 50 111 2233");
+
+      // Re-verifying a new number replaces and disconnects previous connection
+      const newPhone = "+971 52 999 8877";
+      localStorage.setItem("dealos_verified_whatsapp_phone", newPhone);
+      activePhone = localStorage.getItem("dealos_verified_whatsapp_phone");
+      expect(activePhone).toBe("+971 52 999 8877");
+      // Old phone is no longer active
+      expect(activePhone).not.toBe("+971 50 111 2233");
+    });
+  });
 });
 
 

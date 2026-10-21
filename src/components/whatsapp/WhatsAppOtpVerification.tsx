@@ -165,12 +165,18 @@ export function WhatsAppOtpVerification() {
   };
 
   const handleReset = () => {
+    if (typeof window !== "undefined") {
+      const confirmChange = window.confirm(
+        "Changing your WhatsApp number will immediately disconnect your current phone from DealOS. Only 1 active WhatsApp connection is allowed at a time per subscription. Do you want to proceed?"
+      );
+      if (!confirmChange) return;
+    }
     setStep("input");
     setOtpValue("");
     localStorage.removeItem("dealos_verified_whatsapp_phone");
     localStorage.removeItem("dealos_whatsapp_verified_at");
     setVerifiedPhone(null);
-    toast.info("WhatsApp verification cleared. You can now link a new phone number.");
+    toast.info("Previous WhatsApp number disconnected. Enter your new phone number to link it.");
   };
 
   const handleTestEcho = () => {
@@ -222,6 +228,27 @@ export function WhatsAppOtpVerification() {
             <span>Test WhatsApp Chat</span>
           </Button>
         )}
+      </div>
+
+      {/* ═══ SINGLE CONNECTION SLOT POLICY ═══ */}
+      <div className="rounded-2xl bg-secondary/30 border border-border/80 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+        <div className="flex items-center gap-2">
+          <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
+          <span className="font-bold text-foreground">Single Device Policy:</span>
+          <span className="text-muted-foreground">Only 1 active WhatsApp connection permitted at a time per subscription.</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[11px] font-mono font-bold text-muted-foreground uppercase">Connection Slot:</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+              step === "verified"
+                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                : "bg-secondary text-muted-foreground border border-border"
+            }`}
+          >
+            {step === "verified" ? "1 / 1 Slot In Use" : "0 / 1 Slot Active"}
+          </span>
+        </div>
       </div>
 
       {/* ═══ STEP 1: ENTER PHONE NUMBER ═══ */}

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { createFileRoute, Outlet, redirect, useRouterState } from "@tanstack/react-router";
 
 import { GeneralCopilot } from "@/components/GeneralCopilot";
 import { ProfileWidget } from "@/components/ProfileWidget";
+import { SubscriptionPaywall, isSubscriptionActive, isWhitelistedAccount } from "@/components/auth/SubscriptionPaywall";
 
 import { supabase } from "@/integrations/supabase/client";
 import { enforceRemember } from "@/lib/remember";
@@ -47,8 +49,20 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthedLayout() {
   const inApp = useRouterState({ select: (s) => s.location.pathname.startsWith("/app") });
+  const { user } = Route.useRouteContext();
+  const [hasPaid, setHasPaid] = useState<boolean>(() => isSubscriptionActive(user?.email));
+
+  const role = ((user?.user_metadata?.role as string | undefined)?.toLowerCase() === "company" ? "company" : "agent") as "company" | "agent";
+
   return (
     <>
+      {!hasPaid && !isWhitelistedAccount(user?.email) && (
+        <SubscriptionPaywall
+          userEmail={user?.email}
+          userRole={role}
+          onActivated={() => setHasPaid(true)}
+        />
+      )}
       <Outlet />
       {inApp ? null : <ProfileWidget />}
       {inApp ? null : <GeneralCopilot />}
