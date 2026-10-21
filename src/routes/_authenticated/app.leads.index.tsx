@@ -4,7 +4,7 @@ import {
   Sparkles, Filter, Search, ChevronRight, CheckCircle2, Clock,
   ArrowRight, ShieldCheck, Flame, Star, Compass
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -54,6 +54,12 @@ function Inbox() {
   const [page, setPage] = useState(0);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [importCount, setImportCount] = useState(0);
+
+  useEffect(() => {
+    const handleLeadAdded = () => setImportCount((c) => c + 1);
+    window.addEventListener("dealos:lead_added", handleLeadAdded);
+    return () => window.removeEventListener("dealos:lead_added", handleLeadAdded);
+  }, []);
 
   const base = useMemo(() => queueLeads(queue), [queue, importCount]);
   const rows = useMemo(() => {

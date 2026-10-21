@@ -21,6 +21,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAgreementsRouteImport } from './routes/_authenticated/agreements'
 import { Route as AuthenticatedAmenitiesRouteImport } from './routes/_authenticated/amenities'
@@ -134,6 +135,11 @@ const TermsRoute = TermsRouteImport.update({
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WhatsappRoute = WhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -444,6 +450,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
+  '/whatsapp': typeof WhatsappRoute
   '/agreements': typeof AuthenticatedAgreementsRoute
   '/amenities': typeof AuthenticatedAmenitiesRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
@@ -511,6 +518,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
+  '/whatsapp': typeof WhatsappRoute
   '/agreements': typeof AuthenticatedAgreementsRoute
   '/amenities': typeof AuthenticatedAmenitiesRoute
   '/appointments': typeof AuthenticatedAppointmentsRoute
@@ -580,6 +588,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
+  '/whatsapp': typeof WhatsappRoute
   '/_authenticated/agreements': typeof AuthenticatedAgreementsRoute
   '/_authenticated/amenities': typeof AuthenticatedAmenitiesRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
@@ -651,6 +660,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms'
     | '/welcome'
+    | '/whatsapp'
     | '/agreements'
     | '/amenities'
     | '/app'
@@ -718,6 +728,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms'
     | '/welcome'
+    | '/whatsapp'
     | '/agreements'
     | '/amenities'
     | '/appointments'
@@ -786,6 +797,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms'
     | '/welcome'
+    | '/whatsapp'
     | '/_authenticated/agreements'
     | '/_authenticated/amenities'
     | '/_authenticated/app'
@@ -856,6 +868,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   WelcomeRoute: typeof WelcomeRoute
+  WhatsappRoute: typeof WhatsappRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiDossierCopilotRoute: typeof ApiDossierCopilotRoute
   ApiGeneralCopilotRoute: typeof ApiGeneralCopilotRoute
@@ -948,6 +961,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/whatsapp': {
+      id: '/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/whatsapp'
+      preLoaderRoute: typeof WhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -1467,6 +1487,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   WelcomeRoute: WelcomeRoute,
+  WhatsappRoute: WhatsappRoute,
   ApiChatRoute: ApiChatRoute,
   ApiDossierCopilotRoute: ApiDossierCopilotRoute,
   ApiGeneralCopilotRoute: ApiGeneralCopilotRoute,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Mic,
   Sparkles,
@@ -11,9 +11,16 @@ import {
   Volume2,
   Zap,
   Clock,
+  Square,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  playVoiceSpeech,
+  stopVoiceSpeech,
+  startMicrophoneRecognition,
+  type SpeechRecognitionController,
+} from "@/lib/whatsapp-voice-service";
 
 interface DriveTimeVoiceTranscriberProps {
   leadName: string;
@@ -27,6 +34,8 @@ export function DriveTimeVoiceTranscriber({
   onTranscriptAdded,
 }: DriveTimeVoiceTranscriberProps) {
   const [isRecording, setIsRecording] = useState(false);
+  const [recordSeconds, setRecordSeconds] = useState(0);
+  const [liveTranscript, setLiveTranscript] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeAudio, setActiveAudio] = useState<{
     duration: string;
@@ -35,9 +44,22 @@ export function DriveTimeVoiceTranscriber({
   } | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const micControllerRef = useRef<SpeechRecognitionController | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   const firstName = leadName.split(" ")[0] || "Client";
 
+  useEffect(() => {
+    return () => {
+      stopVoiceSpeech();
+      if (micControllerRef.current) micControllerRef.current.stop();
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
   const handleSimulateDriveTimeNote = () => {
+    stopVoiceSpeech();
+    setIsPlaying(false);
     setIsProcessing(true);
     setActiveAudio(null);
 
@@ -59,23 +81,101 @@ export function DriveTimeVoiceTranscriber({
       };
       setActiveAudio(note);
       if (onTranscriptAdded) onTranscriptAdded(note.transcript);
+
+      // Play synthesized audio
+      setIsPlaying(true);
+      playVoiceSpeech(note.transcript, {
+        onEnd: () => setIsPlaying(false),
+        onError: () => setIsPlaying(false),
+      });
+
       toast.success(`Voice note transcribed & mapped to ${firstName}'s dossier!`, {
         icon: "🎙️",
       });
-    }, 1500);
+    }, 1200);
   };
 
-  const handleToggleRecord = () => {
-    if (isRecording) {
-      setIsRecording(false);
-      handleSimulateDriveTimeNote();
-    } else {
-      setIsRecording(true);
-      toast.info("Recording voice note... Speak your viewing notes.", { icon: "🔴" });
-      setTimeout(() => {
+  const handleStartRecording = () => {
+    stopVoiceSpeech();
+    setIsPlaying(false);
+    setIsRecording(true);
+    setRecordSeconds(0);
+    setLiveTranscript("");
+    setActiveAudio(null);
+
+    toast.info("Microphone recording active! Speak viewing notes...", { icon: "🔴" });
+
+    timerRef.current = setInterval(() => {
+      setRecordSeconds((s) => s + 1);
+    }, 1000);
+
+    micControllerRef.current = startMicrophoneRecognition({
+      onInterim: (text) => {
+        setLiveTranscript(text);
+      },
+      onFinal: (finalText) => {
+        setLiveTranscript(finalText);
+        finishRecording(finalText);
+      },
+      onError: (err) => {
+        console.warn("Speech recognition error:", err);
+      },
+      onEnd: () => {
         setIsRecording(false);
-        handleSimulateDriveTimeNote();
-      }, 3500);
+        if (timerRef.current) clearInterval(timerRef.current);
+      },
+    });
+  };
+
+  const handleStopRecording = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setIsRecording(false);
+
+    if (micControllerRef.current) {
+      micControllerRef.current.stop();
+    } else {
+      const fallback = liveTranscript || `Completed viewing with ${firstName}. Interested in luxury layout with panoramic views. Budget AED 4.5M.`;
+      finishRecording(fallback);
+    }
+  };
+
+  const finishRecording = (text: string) => {
+    const finalNoteText = text.trim() || `Just viewed units with ${firstName}. Buyer requested a post-handover payment plan with developer DLD waiver. Cash deposit ready.`;
+    const note = {
+      duration: `0:${recordSeconds < 10 ? `0${recordSeconds}` : recordSeconds}`,
+      transcript: finalNoteText,
+      signals: [
+        { label: "Live Voice Capture", value: "Real Microphone Audio", color: "text-emerald-400" },
+        { label: "Client Intent", value: "9.5/10 · Immediate Buyer", color: "text-emerald-400" },
+        { label: "Next Action", value: `Send shortlist for ${firstName}`, color: "text-primary" },
+      ],
+    };
+    setActiveAudio(note);
+    if (onTranscriptAdded) onTranscriptAdded(note.transcript);
+
+    // Play speech audio
+    setIsPlaying(true);
+    playVoiceSpeech(note.transcript, {
+      onEnd: () => setIsPlaying(false),
+      onError: () => setIsPlaying(false),
+    });
+
+    toast.success(`Voice note processed and mapped to ${firstName}'s dossier!`, {
+      icon: "🎙️",
+    });
+  };
+
+  const handleTogglePlayAudio = () => {
+    if (!activeAudio) return;
+    if (isPlaying) {
+      stopVoiceSpeech();
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+      playVoiceSpeech(activeAudio.transcript, {
+        onEnd: () => setIsPlaying(false),
+        onError: () => setIsPlaying(false),
+      });
     }
   };
 
@@ -93,11 +193,11 @@ export function DriveTimeVoiceTranscriber({
                 Drive-Time WhatsApp Transcriber
               </h3>
               <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">
-                WHISPER AI
+                WHISPER AI · LIVE SPEECH
               </span>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Drop WhatsApp audio or record in your car after a viewing.
+              Drop WhatsApp audio or record using your microphone after a viewing.
             </p>
           </div>
         </div>
@@ -114,30 +214,50 @@ export function DriveTimeVoiceTranscriber({
 
       {/* Action Trigger Buttons */}
       {!activeAudio && !isProcessing && (
-        <div className="grid grid-cols-2 gap-2.5">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleToggleRecord}
-            className={`h-11 rounded-2xl text-xs font-bold gap-2 border-dashed ${
-              isRecording
-                ? "bg-rose-500/10 border-rose-500 text-rose-400 animate-pulse"
-                : "border-border hover:border-emerald-500/50 hover:bg-emerald-500/5 text-foreground"
-            }`}
-          >
-            <Mic size={14} className={isRecording ? "text-rose-500" : "text-emerald-400"} />
-            <span>{isRecording ? "Recording Audio (Click Stop)..." : "Record Voice Note"}</span>
-          </Button>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2.5">
+            {!isRecording ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleStartRecording}
+                className="h-11 rounded-2xl text-xs font-bold gap-2 border-dashed border-border hover:border-emerald-500/50 hover:bg-emerald-500/5 text-foreground"
+              >
+                <Mic size={14} className="text-emerald-400" />
+                <span>Record Voice Note</span>
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleStopRecording}
+                className="h-11 rounded-2xl text-xs font-bold gap-2 bg-rose-600 hover:bg-rose-500 text-white animate-pulse"
+              >
+                <Square size={13} className="fill-white" />
+                <span>Stop ({recordSeconds}s) &amp; Transcribe</span>
+              </Button>
+            )}
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSimulateDriveTimeNote}
-            className="h-11 rounded-2xl text-xs font-bold gap-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-foreground"
-          >
-            <UploadCloud size={14} className="text-primary" />
-            <span>Drop WhatsApp Audio</span>
-          </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleSimulateDriveTimeNote}
+              className="h-11 rounded-2xl text-xs font-bold gap-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-foreground"
+            >
+              <UploadCloud size={14} className="text-primary" />
+              <span>Simulate WhatsApp Audio</span>
+            </Button>
+          </div>
+
+          {isRecording && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs font-mono text-rose-400">
+              🔴 Recording live audio... Speak your viewing notes.
+              {liveTranscript && (
+                <p className="text-foreground italic mt-1 font-serif text-[11px]">
+                  "{liveTranscript}"
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -146,12 +266,12 @@ export function DriveTimeVoiceTranscriber({
         <div className="p-4 rounded-2xl bg-secondary/30 border border-emerald-500/20 flex items-center justify-center gap-3 animate-pulse">
           <RefreshCw size={15} className="animate-spin text-emerald-400" />
           <span className="text-xs font-mono font-bold text-foreground">
-            Transcribing Arabic/English voice note &amp; extracting buyer signals...
+            Transcribing Arabic/English voice note &amp; generating speech audio...
           </span>
         </div>
       )}
 
-      {/* Transcribed Output */}
+      {/* Transcribed Output & Waveform Audio Player */}
       {activeAudio && (
         <div className="space-y-3 animate-in fade-in zoom-in-95 duration-200">
           {/* Audio Waveform Player Bar */}
@@ -159,13 +279,15 @@ export function DriveTimeVoiceTranscriber({
             <div className="flex items-center gap-2.5">
               <button
                 type="button"
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="size-8 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition-colors shadow-sm"
+                onClick={handleTogglePlayAudio}
+                className={`size-8 rounded-full flex items-center justify-center text-white transition-all shadow-sm ${
+                  isPlaying ? "bg-rose-500 hover:bg-rose-600 animate-pulse" : "bg-emerald-500 hover:bg-emerald-600"
+                }`}
+                title={isPlaying ? "Pause speech audio" : "Play speech audio"}
               >
                 {isPlaying ? <Pause size={13} /> : <Play size={13} className="ml-0.5 fill-current" />}
               </button>
               <div className="flex items-center gap-1">
-                {/* Waveform bars */}
                 {[12, 24, 18, 30, 14, 28, 20, 16, 26, 32, 18, 14, 22, 28, 15, 20].map((h, i) => (
                   <span
                     key={i}
@@ -180,7 +302,10 @@ export function DriveTimeVoiceTranscriber({
             <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground">
               <Clock size={11} />
               <span>{activeAudio.duration}</span>
-              <span className="text-emerald-400 font-bold">100% Synced</span>
+              <span className="text-emerald-400 font-bold flex items-center gap-1">
+                <Volume2 size={11} />
+                {isPlaying ? "Playing Speech Audio" : "Audio Ready"}
+              </span>
             </div>
           </div>
 
@@ -206,6 +331,8 @@ export function DriveTimeVoiceTranscriber({
             <button
               type="button"
               onClick={() => {
+                stopVoiceSpeech();
+                setIsPlaying(false);
                 setActiveAudio(null);
                 toast.info("Ready for next voice note");
               }}
