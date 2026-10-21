@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ago, formatAed, LEAD_BY_ID, OPEN_STAGES, priorityOf, wants, type Lead, type Stage } from "@/lib/demo-leads";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DealRoomView } from "../deal-room.$id";
 
 export const Route = createFileRoute("/_authenticated/app/leads/$id")({
   head: () => ({
@@ -179,6 +180,7 @@ function BespokeLeadDossier({ lead, clientMode }: { lead: Lead; clientMode?: boo
   const [aiChatHistory, setAiChatHistory] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [aiTyping, setAiTyping] = useState(false);
   const [copiedScript, setCopiedScript] = useState(false);
+  const [showDealRoomModal, setShowDealRoomModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -319,16 +321,25 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2 shrink-0">
-                <a
-                  href={`/deal-room/${lead.id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-bold text-xs transition-all shadow-sm"
-                  title="Open client-facing Live Deal Room"
+                <button
+                  type="button"
+                  onClick={() => setShowDealRoomModal(true)}
+                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs transition-all shadow-xs cursor-pointer"
+                  title="Preview client-facing Live Deal Room"
                 >
-                  <Sparkles size={13} className="text-amber-400" />
-                  <span>Live Deal Room ↗</span>
-                </a>
+                  <Sparkles size={13} className="text-primary" />
+                  <span>Preview Deal Room</span>
+                </button>
+
+                <Link
+                  to="/deal-room/$id"
+                  params={{ id: lead.id }}
+                  className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs transition-all shadow-xs"
+                  title="Open full page"
+                >
+                  <ExternalLink size={13} className="text-muted-foreground" />
+                  <span className="hidden sm:inline">Full Page</span>
+                </Link>
 
                 <a
                   href={`tel:${lead.phone.replace(/\s/g, "")}`}
@@ -642,7 +653,7 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
                     const dealRoomMsg = `Hi ${firstName}, I've engineered your private Live Deal Room with real-time ROI simulations, unit floor plans, and verified DLD escrow milestones:\n\n${dealRoomUrl}\n\nHave a look and let me know if you would like me to lock in the 48-hour reservation.`;
                     window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(dealRoomMsg)}`, "_blank");
                   }}
-                  className="col-span-2 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-xs inline-flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+                  className="col-span-2 h-10 rounded-xl bg-gradient-to-r from-primary to-violet-600 hover:brightness-105 text-white font-extrabold text-xs inline-flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
                 >
                   <Sparkles size={14} />
                   <span>Send Live Deal Room Link on WhatsApp ⚡</span>
@@ -775,6 +786,38 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
           </DialogContent>
         </Dialog>
       )}
+
+      {/* ═══ LIVE DEAL ROOM PREVIEW MODAL ═══ */}
+      <Dialog open={showDealRoomModal} onOpenChange={setShowDealRoomModal}>
+        <DialogContent className="max-w-6xl max-h-[92vh] overflow-y-auto p-0 bg-[#F7F8FC] border border-[#E6E9F5] rounded-3xl shadow-2xl">
+          <div className="p-4 bg-white border-b border-[#E6E9F5] flex items-center justify-between sticky top-0 z-50">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-extrabold text-[#141A33]">Live Deal Room Preview</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#EEF1FF] text-[#2A45C8] font-mono font-bold text-[10px]">
+                Client View
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/deal-room/$id"
+                params={{ id: lead.id }}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
+              >
+                <ExternalLink size={13} />
+                <span>Open in Full Page</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowDealRoomModal(false)}
+                className="text-xs font-bold text-[#4B5272] hover:text-[#141A33] px-2.5 py-1 rounded-lg border border-[#E6E9F5] bg-[#F7F8FC]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          <DealRoomView leadId={lead.id} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

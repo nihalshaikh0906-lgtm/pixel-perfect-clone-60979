@@ -70,6 +70,7 @@ import { Route as AuthenticatedAppTrashRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppUsersRouteImport } from './routes/_authenticated/app.users'
 import { Route as AuthenticatedAppUsersManagementRouteImport } from './routes/_authenticated/app.users-management'
 import { Route as AuthenticatedClientIdRouteImport } from './routes/_authenticated/client.$id'
+import { Route as AuthenticatedAppDealRoomIdRouteImport } from './routes/_authenticated/app.deal-room.$id'
 import { Route as AuthenticatedAppLeadsIndexRouteImport } from './routes/_authenticated/app.leads.index'
 import { Route as AuthenticatedAppLeadsIdRouteImport } from './routes/_authenticated/app.leads.$id'
 import { Route as AuthenticatedAppProjectIdRouteImport } from './routes/_authenticated/app.project.$id'
@@ -394,6 +395,12 @@ const AuthenticatedClientIdRoute = AuthenticatedClientIdRouteImport.update({
   path: '/client/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppDealRoomIdRoute =
+  AuthenticatedAppDealRoomIdRouteImport.update({
+    id: '/deal-room/$id',
+    path: '/deal-room/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppLeadsIndexRoute =
   AuthenticatedAppLeadsIndexRouteImport.update({
     id: '/leads/',
@@ -473,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/deal-room/$id': typeof AuthenticatedAppDealRoomIdRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
   '/app/project/$id': typeof AuthenticatedAppProjectIdRoute
   '/app/leads/': typeof AuthenticatedAppLeadsIndexRoute
@@ -537,6 +545,7 @@ export interface FileRoutesByTo {
   '/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/client/$id': typeof AuthenticatedClientIdRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/deal-room/$id': typeof AuthenticatedAppDealRoomIdRoute
   '/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
   '/app/project/$id': typeof AuthenticatedAppProjectIdRoute
   '/app/leads': typeof AuthenticatedAppLeadsIndexRoute
@@ -604,6 +613,7 @@ export interface FileRoutesById {
   '/_authenticated/app/users-management': typeof AuthenticatedAppUsersManagementRoute
   '/_authenticated/client/$id': typeof AuthenticatedClientIdRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/deal-room/$id': typeof AuthenticatedAppDealRoomIdRoute
   '/_authenticated/app/leads/$id': typeof AuthenticatedAppLeadsIdRoute
   '/_authenticated/app/project/$id': typeof AuthenticatedAppProjectIdRoute
   '/_authenticated/app/leads/': typeof AuthenticatedAppLeadsIndexRoute
@@ -671,6 +681,7 @@ export interface FileRouteTypes {
     | '/app/users-management'
     | '/client/$id'
     | '/app/'
+    | '/app/deal-room/$id'
     | '/app/leads/$id'
     | '/app/project/$id'
     | '/app/leads/'
@@ -735,6 +746,7 @@ export interface FileRouteTypes {
     | '/app/users-management'
     | '/client/$id'
     | '/app'
+    | '/app/deal-room/$id'
     | '/app/leads/$id'
     | '/app/project/$id'
     | '/app/leads'
@@ -801,6 +813,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/users-management'
     | '/_authenticated/client/$id'
     | '/_authenticated/app/'
+    | '/_authenticated/app/deal-room/$id'
     | '/_authenticated/app/leads/$id'
     | '/_authenticated/app/project/$id'
     | '/_authenticated/app/leads/'
@@ -1254,6 +1267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/deal-room/$id': {
+      id: '/_authenticated/app/deal-room/$id'
+      path: '/deal-room/$id'
+      fullPath: '/app/deal-room/$id'
+      preLoaderRoute: typeof AuthenticatedAppDealRoomIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/leads/': {
       id: '/_authenticated/app/leads/'
       path: '/leads'
@@ -1304,6 +1324,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppUsersRoute: typeof AuthenticatedAppUsersRoute
   AuthenticatedAppUsersManagementRoute: typeof AuthenticatedAppUsersManagementRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppDealRoomIdRoute: typeof AuthenticatedAppDealRoomIdRoute
   AuthenticatedAppLeadsIdRoute: typeof AuthenticatedAppLeadsIdRoute
   AuthenticatedAppProjectIdRoute: typeof AuthenticatedAppProjectIdRoute
   AuthenticatedAppLeadsIndexRoute: typeof AuthenticatedAppLeadsIndexRoute
@@ -1335,6 +1356,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppUsersRoute: AuthenticatedAppUsersRoute,
   AuthenticatedAppUsersManagementRoute: AuthenticatedAppUsersManagementRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppDealRoomIdRoute: AuthenticatedAppDealRoomIdRoute,
   AuthenticatedAppLeadsIdRoute: AuthenticatedAppLeadsIdRoute,
   AuthenticatedAppProjectIdRoute: AuthenticatedAppProjectIdRoute,
   AuthenticatedAppLeadsIndexRoute: AuthenticatedAppLeadsIndexRoute,

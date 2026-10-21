@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import {
   ShieldCheck,
@@ -21,14 +21,17 @@ import {
   Copy,
   FileText,
   Star,
+  ArrowLeft,
+  Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
 import { LEAD_BY_ID, type Lead } from "@/lib/demo-leads";
 
 export const Route = createFileRoute("/deal-room/$id")({
+  ssr: false,
   head: () => ({
     meta: [
-      { title: "Live Deal Room · Private Dubai Investor Presentation | DealOS" },
+      { title: "Live Deal Room · Private Dubai Investor Allocation | DealOS" },
       {
         name: "description",
         content: "Bespoke off-plan real estate allocation with live interactive ROI simulation, verified DLD escrow, and instant unit reservation.",
@@ -53,7 +56,7 @@ const CURRENCY_RATES: Record<Currency, { rate: number; symbol: string }> = {
   GBP: { rate: 0.218, symbol: "£" },
 };
 
-interface OffPlanDeal {
+export interface OffPlanDeal {
   id: string;
   name: string;
   developer: string;
@@ -77,7 +80,7 @@ interface OffPlanDeal {
   paymentPlan: { milestone: string; percent: number; note: string }[];
 }
 
-const SAMPLE_DEALS: OffPlanDeal[] = [
+export const SAMPLE_DEALS: OffPlanDeal[] = [
   {
     id: "creek-waters",
     name: "Creek Waters Residences",
@@ -103,8 +106,8 @@ const SAMPLE_DEALS: OffPlanDeal[] = [
     features: [
       "Direct Creek Marina & Burj Khalifa Skyline Panorama",
       "Infinity edge lap pool & health club",
-      "Licensed licensed private yacht berths",
-      "Direct connection to Central Park & metro line",
+      "Licensed private yacht berths available",
+      "Direct connection to Central Park & future metro line",
     ],
     defaultRentalYield: 7.9,
     defaultCapitalAppreciation: 6.8,
@@ -136,7 +139,7 @@ const SAMPLE_DEALS: OffPlanDeal[] = [
       "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80",
     ],
     features: [
-      "Crystal Lagoon beach access with water activities",
+      "Crystal Lagoon beach access with water sports",
       "5 minutes from Downtown Dubai and Meydan Racecourse",
       "Twin international schools within the community",
       "Fully fitted luxury kitchen with German appliances",
@@ -172,7 +175,7 @@ const SAMPLE_DEALS: OffPlanDeal[] = [
     ],
     features: [
       "Direct private beach access on Palm Jumeirah East Crescent",
-      "Private clubhouse, cigar lounge, and spa facilities",
+      "Private clubhouse, cigar lounge, and wellness spa",
       "Hotel-style concierge and valet service 24/7",
       "Exceptional capital appreciation track record on Palm Jumeirah",
     ],
@@ -186,11 +189,9 @@ const SAMPLE_DEALS: OffPlanDeal[] = [
   },
 ];
 
-function DealRoomPage() {
-  const { id } = Route.useParams();
-  
+export function DealRoomView({ leadId }: { leadId?: string }) {
   // Extract or fallback lead info
-  const matchedLead: Lead | undefined = LEAD_BY_ID.get(id);
+  const matchedLead: Lead | undefined = leadId ? LEAD_BY_ID.get(leadId) : undefined;
   const investorName = matchedLead ? matchedLead.name : "Dr. Tariq Al-Nuaimi";
   const investorCountry = matchedLead ? matchedLead.country : "United Arab Emirates";
   const brokerName = "Nihal Shaikh";
@@ -204,25 +205,21 @@ function DealRoomPage() {
   const [currency, setCurrency] = useState<Currency>("AED");
   const [holdingYears, setHoldingYears] = useState<number>(5);
   const [isCopied, setIsCopied] = useState<boolean>(false);
-  const [showReserveModal, setShowReserveModal] = useState<boolean>(false);
 
   const activeDeal = useMemo(
     () => SAMPLE_DEALS.find((d) => d.id === selectedDealId) || SAMPLE_DEALS[0],
     [selectedDealId]
   );
 
-  // Dynamic ROI inputs initialized from the active deal
   const [customYield, setCustomYield] = useState<number>(activeDeal.defaultRentalYield);
   const [customAppreciation, setCustomAppreciation] = useState<number>(activeDeal.defaultCapitalAppreciation);
 
-  // Switch deal handler
   const handleSelectDeal = (deal: OffPlanDeal) => {
     setSelectedDealId(deal.id);
     setCustomYield(deal.defaultRentalYield);
     setCustomAppreciation(deal.defaultCapitalAppreciation);
   };
 
-  // Financial Calculations
   const formatMoney = (amountAed: number): string => {
     const { rate, symbol } = CURRENCY_RATES[currency];
     const converted = amountAed * rate;
@@ -235,7 +232,7 @@ function DealRoomPage() {
     return `${symbol} ${Math.round(converted).toLocaleString()}`;
   };
 
-  const annualRentalIncome = (activeDeal.basePriceAed * (customYield / 100));
+  const annualRentalIncome = activeDeal.basePriceAed * (customYield / 100);
   const monthlyRentalCashflow = annualRentalIncome / 12;
   const fiveYearCapitalGain =
     activeDeal.basePriceAed * Math.pow(1 + customAppreciation / 100, holdingYears) -
@@ -255,48 +252,54 @@ function DealRoomPage() {
   };
 
   const waReservationLink = `https://wa.me/${brokerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(
-    `Hello ${brokerName}, I am in the private Deal Room for ${investorName}. I would like to lock in the reservation for ${activeDeal.name} (${activeDeal.unitType} at ${formatMoney(activeDeal.basePriceAed)}). Please confirm the next steps and escrow allocation.`
+    `Hello ${brokerName}, I am reviewing the DealOS Live Deal Room prepared for ${investorName}. I would like to lock in the reservation for ${activeDeal.name} (${activeDeal.unitType} at ${formatMoney(activeDeal.basePriceAed)}). Please confirm the allocation and next escrow steps.`
   )}`;
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-zinc-100 font-sans selection:bg-amber-500/20 selection:text-amber-200 antialiased pb-28">
-      {/* ═══ AMBIENT LUXURY GLOW ═══ */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
-        <div className="absolute top-0 left-1/4 w-[700px] h-[450px] bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent rounded-full blur-3xl opacity-60" />
-        <div className="absolute top-1/3 right-10 w-[550px] h-[550px] bg-gradient-to-bl from-blue-600/8 via-cyan-500/5 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      {/* ═══ TOP UTILITY BAR (CONFIDENTIALITY & CURRENCY SWITCHER) ═══ */}
-      <header className="border-b border-white/10 bg-black/60 backdrop-blur-xl sticky top-0 z-40">
+    <div className="min-h-screen bg-[#F7F8FC] text-[#141A33] font-sans selection:bg-[#2F6BFF]/15 selection:text-[#2A45C8] antialiased pb-28">
+      {/* ═══ CLEAN BRAND TOP BAR ═══ */}
+      <header className="border-b border-[#E6E9F5] bg-white sticky top-0 z-40 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-black text-black text-sm shadow-md shadow-amber-500/20">
-              D
-            </div>
-            <div>
-              <span className="font-extrabold text-sm tracking-tight text-white flex items-center gap-1.5">
-                <span>{agencyName}</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30">
-                  LIVE DEAL ROOM
+            <Link
+              to="/app/leads"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4B5272] hover:text-[#141A33] px-2.5 py-1.5 rounded-xl border border-[#E6E9F5] hover:bg-[#F4F6FF] transition-all"
+            >
+              <ArrowLeft size={13} />
+              <span>Back</span>
+            </Link>
+
+            <div className="h-5 w-px bg-[#E6E9F5]" />
+
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2F6BFF] to-[#7B4DFF] flex items-center justify-center font-extrabold text-white text-sm shadow-sm">
+                D
+              </div>
+              <div>
+                <span className="font-extrabold text-sm tracking-tight text-[#141A33] flex items-center gap-1.5">
+                  <span>{agencyName}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EEF1FF] text-[#2A45C8] font-mono font-bold border border-[#2F6BFF]/20">
+                    LIVE DEAL ROOM
+                  </span>
                 </span>
-              </span>
-              <p className="text-[10px] text-zinc-400 font-mono">
-                RERA DLD Verified · Confidential Dossier #{id}
-              </p>
+                <p className="text-[10px] text-[#4B5272] font-mono">
+                  DLD Verified Allocation · Client Dossier #{leadId || "demo"}
+                </p>
+              </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2.5">
             {/* Currency selector */}
-            <div className="inline-flex rounded-xl bg-zinc-900/90 p-1 border border-zinc-800 text-xs">
+            <div className="inline-flex rounded-xl bg-[#F4F6FF] p-1 border border-[#E6E9F5] text-xs">
               {(["AED", "USD", "EUR", "GBP"] as Currency[]).map((c) => (
                 <button
                   key={c}
                   onClick={() => setCurrency(c)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     currency === c
-                      ? "bg-amber-400 text-black shadow-sm"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-white text-[#2F6BFF] shadow-xs"
+                      : "text-[#4B5272] hover:text-[#141A33]"
                   }`}
                 >
                   {c}
@@ -306,57 +309,55 @@ function DealRoomPage() {
 
             <button
               onClick={handleCopyLink}
-              className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-xl border border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800 text-xs font-semibold text-zinc-300 transition-all"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-xl border border-[#E6E9F5] bg-white hover:bg-[#F4F6FF] text-xs font-semibold text-[#141A33] transition-all shadow-xs cursor-pointer"
               title="Copy private presentation link"
             >
-              {isCopied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-              <span>{isCopied ? "Link Copied" : "Share"}</span>
+              {isCopied ? <Check size={13} className="text-[#16A34A]" /> : <Copy size={13} />}
+              <span>{isCopied ? "Copied" : "Share"}</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* ═══ HERO PRESENTATION BANNER ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
-        <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-zinc-950 via-zinc-900/90 to-zinc-950 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl -z-10" />
-
+      {/* ═══ HERO BANNER (DEALOS SIGNATURE CLEAN LUXURY) ═══ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-4">
+        <div className="rounded-3xl border border-[#E6E9F5] bg-white p-6 sm:p-8 shadow-sm relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-[11px] font-bold uppercase tracking-wider text-amber-300">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EEF1FF] border border-[#2F6BFF]/20 text-[11px] font-bold uppercase tracking-wider text-[#2A45C8]">
                 <Lock size={12} />
-                <span>Private Allocation Dossier · Exclusively for</span>
+                <span>Private Off-Plan Allocation · Prepared Exclusively For</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-display">
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#141A33] font-display">
                 {investorName}
               </h1>
-              <p className="text-sm text-zinc-400 flex items-center gap-2">
-                <span>Investor Nationality: <strong>{investorCountry}</strong></span>
+              <p className="text-xs sm:text-sm text-[#4B5272] flex items-center gap-2">
+                <span>Investor Nationality: <strong className="text-[#141A33]">{investorCountry}</strong></span>
                 <span>•</span>
-                <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="text-[#16A34A] font-semibold flex items-center gap-1">
                   <ShieldCheck size={14} /> 48-Hour Reservation Hold Active
                 </span>
               </p>
             </div>
 
             {/* Certified Broker Snapshot Card */}
-            <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800/80 shadow-md shrink-0">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 border border-amber-400/30 flex items-center justify-center font-bold text-amber-300 font-display text-lg">
+            <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-[#F7F8FC] border border-[#E6E9F5] shadow-xs shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2F6BFF] to-[#7B4DFF] flex items-center justify-center font-bold text-white font-display text-lg shadow-sm">
                 NS
               </div>
               <div className="space-y-0.5 text-xs">
-                <p className="font-bold text-white flex items-center gap-1">
+                <p className="font-bold text-[#141A33] flex items-center gap-1">
                   <span>{brokerName}</span>
-                  <CheckCircle2 size={13} className="text-emerald-400" />
+                  <CheckCircle2 size={13} className="text-[#16A34A]" />
                 </p>
-                <p className="text-[11px] text-zinc-400">{brokerTitle}</p>
-                <p className="text-[10px] font-mono text-amber-400 font-semibold">{brokerRera}</p>
+                <p className="text-[11px] text-[#4B5272]">{brokerTitle}</p>
+                <p className="text-[10px] font-mono text-[#2F6BFF] font-semibold">{brokerRera}</p>
               </div>
               <a
                 href={`https://wa.me/${brokerPhone.replace(/\D/g, "")}`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-9 h-9 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-center transition-all ml-1"
+                className="w-9 h-9 rounded-xl bg-[#E8F7EE] hover:bg-[#d6f0df] text-[#16A34A] flex items-center justify-center transition-all ml-1"
                 title="Direct WhatsApp with Advisor"
               >
                 <MessageCircle size={16} />
@@ -366,15 +367,15 @@ function DealRoomPage() {
         </div>
       </section>
 
-      {/* ═══ UNIT COMPARISON TABS (3 CURATED ALLOCATIONS) ═══ */}
+      {/* ═══ PROPERTY SWITCHER CARDS (3 CURATED ALLOCATIONS) ═══ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
-            <Layers size={15} className="text-amber-400" />
+          <h2 className="text-xs font-bold text-[#4B5272] uppercase tracking-wider flex items-center gap-2">
+            <Layers size={14} className="text-[#2F6BFF]" />
             <span>Select Matching Off-Plan Opportunity:</span>
           </h2>
-          <span className="text-xs text-zinc-500 hidden sm:inline">
-            3 verified projects shortlisted by advisor
+          <span className="text-xs text-[#8A90A8] hidden sm:inline">
+            3 verified projects matching your investment criteria
           </span>
         </div>
 
@@ -387,35 +388,35 @@ function DealRoomPage() {
                 onClick={() => handleSelectDeal(deal)}
                 className={`cursor-pointer rounded-2xl p-4 border transition-all duration-200 relative overflow-hidden ${
                   isSelected
-                    ? "bg-zinc-900 border-amber-400 ring-2 ring-amber-400/20 shadow-lg scale-[1.01]"
-                    : "bg-zinc-950/70 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/60"
+                    ? "bg-white border-[#2F6BFF] ring-2 ring-[#2F6BFF]/20 shadow-md scale-[1.01]"
+                    : "bg-white border-[#E6E9F5] hover:border-[#2F6BFF]/40 hover:bg-[#F4F6FF]/40 shadow-xs"
                 }`}
               >
                 {isSelected && (
-                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-amber-400 text-black font-extrabold text-[10px] uppercase tracking-wide">
+                  <div className="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] text-white font-extrabold text-[10px] uppercase tracking-wide shadow-xs">
                     Active Focus
                   </div>
                 )}
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-white/10">
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-[#E6E9F5]">
                     <img src={deal.heroImage} alt={deal.name} className="w-full h-full object-cover" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="font-bold text-white text-sm truncate">{deal.name}</h3>
-                    <p className="text-[11px] text-zinc-400 truncate">{deal.developer} · {deal.location}</p>
+                  <div className="min-w-0 pr-16">
+                    <h3 className="font-extrabold text-[#141A33] text-sm truncate">{deal.name}</h3>
+                    <p className="text-[11px] text-[#4B5272] truncate">{deal.developer} · {deal.location}</p>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
+                <div className="pt-2.5 border-t border-[#E6E9F5] flex items-center justify-between text-xs">
                   <div>
-                    <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Price</span>
-                    <span className="font-extrabold font-mono text-amber-300 text-sm">
+                    <span className="text-[10px] text-[#8A90A8] uppercase font-semibold block">Price</span>
+                    <span className="font-extrabold font-mono text-[#2F6BFF] text-sm">
                       {formatMoney(deal.basePriceAed)}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Yield / ROI</span>
-                    <span className="font-bold text-emerald-400 text-xs">
+                    <span className="text-[10px] text-[#8A90A8] uppercase font-semibold block">Yield / ROI</span>
+                    <span className="font-bold text-[#16A34A] text-xs">
                       {deal.defaultRentalYield}% Net
                     </span>
                   </div>
@@ -427,48 +428,48 @@ function DealRoomPage() {
       </section>
 
       {/* ═══ ACTIVE DEAL SHOWCASE & REAL-TIME ROI ENGINE ═══ */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* ─── LEFT: PROPERTY VISUALS, DLD ESCROW & AMENITIES (7 COLS) ─── */}
         <div className="lg:col-span-7 space-y-6">
-          {/* Main Visual Carousel Card */}
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
-            <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-950">
+          {/* Main Visual Card */}
+          <div className="rounded-3xl border border-[#E6E9F5] bg-white overflow-hidden shadow-sm">
+            <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
               <img
                 src={activeDeal.heroImage}
                 alt={activeDeal.name}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
               {/* Overlaid Badges */}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                <span className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-xs font-bold text-white flex items-center gap-1.5">
-                  <MapPin size={13} className="text-amber-400" />
+                <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-xs font-bold text-[#141A33] flex items-center gap-1.5 shadow-xs">
+                  <MapPin size={13} className="text-[#2F6BFF]" />
                   <span>{activeDeal.location}</span>
                 </span>
                 {isGoldenVisaEligible && (
-                  <span className="px-3 py-1 rounded-full bg-amber-500/20 backdrop-blur-md border border-amber-500/40 text-xs font-bold text-amber-300 flex items-center gap-1">
+                  <span className="px-3 py-1 rounded-full bg-[#EEF1FF] text-[#2A45C8] border border-[#2F6BFF]/30 text-xs font-bold flex items-center gap-1 shadow-xs">
                     <Star size={13} />
                     <span>UAE 10-Yr Golden Visa Eligible</span>
                   </span>
                 )}
               </div>
 
-              <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+              <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white">
                 <div>
-                  <p className="text-xs font-mono font-semibold text-amber-400 uppercase tracking-wider">
+                  <p className="text-xs font-mono font-semibold text-white/90 uppercase tracking-wider">
                     {activeDeal.developer} · {activeDeal.developerReputation}
                   </p>
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                     {activeDeal.name}
                   </h2>
-                  <p className="text-xs text-zinc-300 mt-1">
+                  <p className="text-xs text-white/80 mt-1">
                     {activeDeal.unitType} · {activeDeal.areaSqft.toLocaleString()} Sq. Ft.
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-xs text-zinc-400 uppercase block font-semibold">Handover</span>
-                  <span className="text-sm font-bold text-white bg-zinc-900/90 px-2.5 py-1 rounded-xl border border-white/10">
+                  <span className="text-xs text-white/70 uppercase block font-semibold">Handover</span>
+                  <span className="text-sm font-bold text-white bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-xl">
                     {activeDeal.handover}
                   </span>
                 </div>
@@ -476,27 +477,27 @@ function DealRoomPage() {
             </div>
 
             {/* DLD Escrow & Regulatory Security Strip */}
-            <div className="p-4 sm:p-5 border-t border-zinc-800 bg-zinc-950/80 grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
+            <div className="p-4 sm:p-5 border-t border-[#E6E9F5] bg-[#F7F8FC] grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">DLD Escrow Account</span>
-                <p className="font-mono font-bold text-zinc-200">{activeDeal.escrowAccount}</p>
-                <p className="text-[10px] text-zinc-400">{activeDeal.escrowBank}</p>
+                <span className="text-[10px] text-[#8A90A8] uppercase font-bold tracking-wider">DLD Escrow Account</span>
+                <p className="font-mono font-bold text-[#141A33]">{activeDeal.escrowAccount}</p>
+                <p className="text-[10px] text-[#4B5272]">{activeDeal.escrowBank}</p>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Trakheesi Permit</span>
-                <p className="font-mono font-bold text-emerald-400">{activeDeal.trakheesiPermit}</p>
-                <p className="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
+                <span className="text-[10px] text-[#8A90A8] uppercase font-bold tracking-wider">Trakheesi Permit</span>
+                <p className="font-mono font-bold text-[#2F6BFF]">{activeDeal.trakheesiPermit}</p>
+                <p className="text-[10px] text-[#16A34A] font-semibold flex items-center gap-1">
                   <CheckCircle2 size={11} /> Verified Live with RERA
                 </p>
               </div>
               <div className="col-span-2 sm:col-span-1 space-y-1">
                 <div className="flex items-center justify-between text-[10px] font-bold">
-                  <span className="text-zinc-500 uppercase">Construction Progress</span>
-                  <span className="text-amber-400">{activeDeal.readinessProgress}%</span>
+                  <span className="text-[#8A90A8] uppercase">Civil Construction Progress</span>
+                  <span className="text-[#2F6BFF]">{activeDeal.readinessProgress}%</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-[#E6E9F5] overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full"
+                    className="h-full bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] rounded-full"
                     style={{ width: `${activeDeal.readinessProgress}%` }}
                   />
                 </div>
@@ -505,18 +506,18 @@ function DealRoomPage() {
           </div>
 
           {/* Key Investment Highlights */}
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Sparkles size={16} className="text-amber-400" />
+          <div className="rounded-3xl border border-[#E6E9F5] bg-white p-6 space-y-4 shadow-sm">
+            <h3 className="text-base font-extrabold text-[#141A33] flex items-center gap-2">
+              <Sparkles size={16} className="text-[#2F6BFF]" />
               <span>Signature Architectural & Lifestyle Features</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               {activeDeal.features.map((feat, i) => (
                 <div
                   key={i}
-                  className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5 text-zinc-300"
+                  className="p-3 rounded-2xl bg-[#F7F8FC] border border-[#E6E9F5] flex items-start gap-2.5 text-[#141A33]"
                 >
-                  <CheckCircle2 size={15} className="text-amber-400 shrink-0 mt-0.5" />
+                  <CheckCircle2 size={15} className="text-[#2F6BFF] shrink-0 mt-0.5" />
                   <span className="leading-snug">{feat}</span>
                 </div>
               ))}
@@ -524,32 +525,34 @@ function DealRoomPage() {
           </div>
 
           {/* DLD Verified Payment Schedule */}
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
+          <div className="rounded-3xl border border-[#E6E9F5] bg-white p-6 space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Clock size={16} className="text-amber-400" />
+              <h3 className="text-base font-extrabold text-[#141A33] flex items-center gap-2">
+                <Clock size={16} className="text-[#2F6BFF]" />
                 <span>Structured Milestone Payment Schedule</span>
               </h3>
-              <span className="text-[11px] font-mono text-zinc-400">Escrow Protected</span>
+              <span className="text-[11px] font-mono text-[#4B5272] bg-[#F4F6FF] px-2.5 py-1 rounded-lg border border-[#E6E9F5]">
+                DLD Escrow Protected
+              </span>
             </div>
 
             <div className="space-y-3">
               {activeDeal.paymentPlan.map((stage, i) => (
                 <div
                   key={i}
-                  className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-between gap-4 text-xs"
+                  className="p-3.5 rounded-2xl bg-[#F7F8FC] border border-[#E6E9F5] flex items-center justify-between gap-4 text-xs"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center font-bold text-amber-300 font-mono text-xs">
+                    <div className="w-8 h-8 rounded-xl bg-white border border-[#E6E9F5] flex items-center justify-center font-bold text-[#2F6BFF] font-mono text-xs shadow-xs">
                       {stage.percent}%
                     </div>
                     <div>
-                      <p className="font-bold text-white">{stage.milestone}</p>
-                      <p className="text-[11px] text-zinc-400">{stage.note}</p>
+                      <p className="font-bold text-[#141A33]">{stage.milestone}</p>
+                      <p className="text-[11px] text-[#4B5272]">{stage.note}</p>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="font-mono font-bold text-amber-300 text-sm">
+                    <span className="font-mono font-bold text-[#2F6BFF] text-sm">
                       {formatMoney((activeDeal.basePriceAed * stage.percent) / 100)}
                     </span>
                   </div>
@@ -561,18 +564,16 @@ function DealRoomPage() {
 
         {/* ─── RIGHT: INTERACTIVE FINANCIAL ENGINEERING & ROI ENGINE (5 COLS) ─── */}
         <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
-          <div className="rounded-3xl border-2 border-amber-400/40 bg-zinc-950 p-6 sm:p-7 shadow-2xl space-y-6 relative overflow-hidden">
-            <div className="absolute -top-16 -right-16 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+          <div className="rounded-3xl border border-[#E6E9F5] bg-white p-6 sm:p-7 shadow-sm space-y-6 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-[#E6E9F5] pb-4">
               <div>
-                <h3 className="text-lg font-extrabold text-white flex items-center gap-2 font-display">
-                  <TrendingUp size={18} className="text-amber-400" />
+                <h3 className="text-lg font-extrabold text-[#141A33] flex items-center gap-2 font-display">
+                  <TrendingUp size={18} className="text-[#2F6BFF]" />
                   <span>Real-Time ROI Simulator</span>
                 </h3>
-                <p className="text-xs text-zinc-400">Engineered specifically for Dubai off-plan yields</p>
+                <p className="text-xs text-[#4B5272]">Live projections for Dubai off-plan yields</p>
               </div>
-              <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold font-mono">
+              <div className="px-2.5 py-1 rounded-full bg-[#E8F7EE] text-[#16A34A] text-[11px] font-bold font-mono">
                 {totalRoiPercent}% ROI
               </div>
             </div>
@@ -582,8 +583,8 @@ function DealRoomPage() {
               {/* Projected Rental Yield Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-300">Projected Net Rental Yield</span>
-                  <span className="font-mono font-bold text-amber-300 text-sm bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                  <span className="font-semibold text-[#141A33]">Projected Net Rental Yield</span>
+                  <span className="font-mono font-bold text-[#2F6BFF] text-sm bg-[#EEF1FF] px-2 py-0.5 rounded border border-[#2F6BFF]/20">
                     {customYield.toFixed(1)}% p.a.
                   </span>
                 </div>
@@ -594,11 +595,11 @@ function DealRoomPage() {
                   step="0.1"
                   value={customYield}
                   onChange={(e) => setCustomYield(parseFloat(e.target.value))}
-                  className="w-full accent-amber-400 cursor-pointer h-2 bg-zinc-800 rounded-lg"
+                  className="w-full accent-[#2F6BFF] cursor-pointer h-2 bg-[#E6E9F5] rounded-lg"
                 />
-                <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
+                <div className="flex justify-between text-[10px] text-[#8A90A8] font-mono">
                   <span>Conservative (5.0%)</span>
-                  <span>Prime Dubai Average (8.0%)</span>
+                  <span>Prime Dubai (8.0%)</span>
                   <span>High Yield (12.0%)</span>
                 </div>
               </div>
@@ -606,8 +607,8 @@ function DealRoomPage() {
               {/* Capital Appreciation Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-300">Estimated Annual Capital Appreciation</span>
-                  <span className="font-mono font-bold text-emerald-400 text-sm bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                  <span className="font-semibold text-[#141A33]">Estimated Annual Capital Growth</span>
+                  <span className="font-mono font-bold text-[#16A34A] text-sm bg-[#E8F7EE] px-2 py-0.5 rounded border border-[#16A34A]/20">
                     {customAppreciation.toFixed(1)}% p.a.
                   </span>
                 </div>
@@ -618,11 +619,11 @@ function DealRoomPage() {
                   step="0.5"
                   value={customAppreciation}
                   onChange={(e) => setCustomAppreciation(parseFloat(e.target.value))}
-                  className="w-full accent-emerald-400 cursor-pointer h-2 bg-zinc-800 rounded-lg"
+                  className="w-full accent-[#16A34A] cursor-pointer h-2 bg-[#E6E9F5] rounded-lg"
                 />
-                <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
+                <div className="flex justify-between text-[10px] text-[#8A90A8] font-mono">
                   <span>Modest (3%)</span>
-                  <span>Waterfront Growth (7%)</span>
+                  <span>Waterfront (7%)</span>
                   <span>Hyper-Growth (15%)</span>
                 </div>
               </div>
@@ -630,8 +631,8 @@ function DealRoomPage() {
               {/* Holding Horizon */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-300">Investment Holding Horizon</span>
-                  <span className="font-mono font-bold text-white text-sm bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                  <span className="font-semibold text-[#141A33]">Investment Holding Horizon</span>
+                  <span className="font-mono font-bold text-[#141A33] text-sm bg-[#F4F6FF] px-2 py-0.5 rounded border border-[#E6E9F5]">
                     {holdingYears} Years
                   </span>
                 </div>
@@ -640,10 +641,10 @@ function DealRoomPage() {
                     <button
                       key={yr}
                       onClick={() => setHoldingYears(yr)}
-                      className={`py-1.5 rounded-xl text-xs font-bold border transition-all ${
+                      className={`py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         holdingYears === yr
-                          ? "bg-amber-400 text-black border-amber-400"
-                          : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-white"
+                          ? "bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] text-white border-transparent shadow-xs"
+                          : "bg-white text-[#4B5272] border-[#E6E9F5] hover:text-[#141A33]"
                       }`}
                     >
                       {yr} Yrs
@@ -654,41 +655,41 @@ function DealRoomPage() {
             </div>
 
             {/* Calculated Yield Dashboard */}
-            <div className="pt-4 border-t border-zinc-800 space-y-3">
-              <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-3">
+            <div className="pt-4 border-t border-[#E6E9F5] space-y-3">
+              <div className="p-4 rounded-2xl bg-[#F7F8FC] border border-[#E6E9F5] space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Monthly Passive Rental Income</span>
-                  <span className="font-mono font-bold text-white text-sm">
+                  <span className="text-[#4B5272]">Monthly Passive Rental Income</span>
+                  <span className="font-mono font-bold text-[#141A33] text-sm">
                     {formatMoney(monthlyRentalCashflow)} / mo
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Net Annual Rental Return</span>
-                  <span className="font-mono font-bold text-amber-300 text-sm">
+                  <span className="text-[#4B5272]">Net Annual Rental Return</span>
+                  <span className="font-mono font-bold text-[#2F6BFF] text-sm">
                     {formatMoney(annualRentalIncome)} / yr
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">{holdingYears}-Year Capital Equity Gain</span>
-                  <span className="font-mono font-bold text-emerald-400 text-sm">
+                  <span className="text-[#4B5272]">{holdingYears}-Year Capital Equity Gain</span>
+                  <span className="font-mono font-bold text-[#16A34A] text-sm">
                     + {formatMoney(fiveYearCapitalGain)}
                   </span>
                 </div>
-                <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between">
-                  <span className="text-xs font-extrabold text-white uppercase tracking-wider">
+                <div className="pt-2 border-t border-[#E6E9F5] flex items-center justify-between">
+                  <span className="text-xs font-extrabold text-[#141A33] uppercase tracking-wider">
                     Total Estimated Return
                   </span>
-                  <span className="font-mono font-extrabold text-amber-300 text-base">
+                  <span className="font-mono font-extrabold text-[#2F6BFF] text-base">
                     {formatMoney(total5YearReturn)}
                   </span>
                 </div>
               </div>
 
               {/* Zero Tax Notice */}
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200/90 leading-relaxed flex items-center gap-2">
-                <ShieldCheck size={16} className="text-amber-400 shrink-0" />
+              <div className="p-3 rounded-xl bg-[#EEF1FF] border border-[#2F6BFF]/20 text-[11px] text-[#2A45C8] leading-relaxed flex items-center gap-2">
+                <ShieldCheck size={16} className="text-[#2F6BFF] shrink-0" />
                 <span>
-                  <strong>0% Personal Income Tax & 0% Capital Gains Tax</strong> in the UAE. Rental revenue and sales profits remain 100% repatriable.
+                  <strong>0% Personal Income Tax & 0% Capital Gains Tax</strong> in Dubai. Rental profits and sales proceeds remain 100% repatriable.
                 </span>
               </div>
             </div>
@@ -699,7 +700,7 @@ function DealRoomPage() {
                 href={waReservationLink}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:brightness-110 text-black font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-amber-500/20 transition-all cursor-pointer"
+                className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-105 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-[#2F6BFF]/25 transition-all cursor-pointer"
               >
                 <MessageCircle size={18} />
                 <span>Reserve Unit with 10% Token on WhatsApp</span>
@@ -710,7 +711,7 @@ function DealRoomPage() {
                 onClick={() => {
                   toast.success("DLD Floor Plan & Brochure downloaded.");
                 }}
-                className="w-full h-10 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                className="w-full h-10 rounded-xl bg-white hover:bg-[#F4F6FF] border border-[#E6E9F5] text-[#141A33] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
               >
                 <Download size={14} />
                 <span>Download Official DLD Floor Plan (PDF)</span>
@@ -721,21 +722,21 @@ function DealRoomPage() {
       </main>
 
       {/* ═══ STICKY BOTTOM ACTION STRIP (MOBILE + DESKTOP) ═══ */}
-      <div className="fixed bottom-0 inset-x-0 bg-black/90 backdrop-blur-xl border-t border-white/10 p-3.5 z-40">
+      <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-[#E6E9F5] p-3.5 z-40 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="hidden sm:block">
-            <p className="text-xs font-bold text-white">{activeDeal.name} · {activeDeal.unitType}</p>
-            <p className="text-[11px] font-mono text-amber-400 font-semibold">
-              Allocation Price: {formatMoney(activeDeal.basePriceAed)} ({activeDeal.defaultRentalYield}% Yield)
+            <p className="text-xs font-bold text-[#141A33]">{activeDeal.name} · {activeDeal.unitType}</p>
+            <p className="text-[11px] font-mono text-[#2F6BFF] font-semibold">
+              Allocation Price: {formatMoney(activeDeal.basePriceAed)} ({activeDeal.defaultRentalYield}% Net Yield)
             </p>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             <a
               href={`tel:${brokerPhone}`}
-              className="h-10 px-4 rounded-xl border border-zinc-700 bg-zinc-900 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-zinc-800 transition-all shrink-0"
+              className="h-10 px-4 rounded-xl border border-[#E6E9F5] bg-white text-[#141A33] font-bold text-xs flex items-center gap-1.5 hover:bg-[#F4F6FF] transition-all shrink-0 shadow-xs"
             >
-              <Phone size={14} />
+              <Phone size={14} className="text-[#4B5272]" />
               <span className="hidden sm:inline">Call Advisor</span>
             </a>
 
@@ -743,7 +744,7 @@ function DealRoomPage() {
               href={waReservationLink}
               target="_blank"
               rel="noreferrer"
-              className="h-10 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/20 w-full sm:w-auto"
+              className="h-10 px-5 rounded-xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-105 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-[#2F6BFF]/25 w-full sm:w-auto"
             >
               <MessageCircle size={15} />
               <span>Lock Reservation · WhatsApp</span>
@@ -754,4 +755,9 @@ function DealRoomPage() {
       </div>
     </div>
   );
+}
+
+function DealRoomPage() {
+  const { id } = Route.useParams();
+  return <DealRoomView leadId={id} />;
 }
