@@ -57,8 +57,13 @@ export const Route = createFileRoute("/_authenticated/app/")({
 
 function HomePage() {
   const navigate = Route.useNavigate();
+  const context = Route.useRouteContext();
   const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? "agent");
-  const [userName, setUserName] = useState<string | undefined>(undefined);
+  const [userName, setUserName] = useState<string | undefined>(() => {
+    const raw = String(context.user?.user_metadata?.full_name ?? context.user?.email?.split("@")[0] ?? "");
+    const first = (raw.split(/[\s._-]+/)[0] ?? "").replace(/\d+/g, "");
+    return first ? first.charAt(0).toUpperCase() + first.slice(1).toLowerCase() : undefined;
+  });
 
   useEffect(() => {
     void detectRole().then((r) => {
@@ -68,8 +73,9 @@ function HomePage() {
       }
     });
     void supabase.auth.getUser().then(({ data }) => {
-      const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>;
-      const raw = String(meta["full_name"] ?? meta["name"] ?? data.user?.email?.split("@")[0] ?? "");
+      if (!data?.user) return;
+      const meta = (data.user.user_metadata ?? {}) as Record<string, unknown>;
+      const raw = String(meta["full_name"] ?? meta["name"] ?? data.user.email?.split("@")[0] ?? "");
       const first = (raw.split(/[\s._-]+/)[0] ?? "").replace(/\d+/g, "");
       if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1).toLowerCase());
     });

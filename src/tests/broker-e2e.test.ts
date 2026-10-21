@@ -29,6 +29,9 @@ import {
   setStoredRole,
   clearStoredRole,
   detectRole,
+  getActiveEmail,
+  setActiveEmail,
+  fullSignOut,
   type DealOSRole,
 } from "@/lib/auth-role";
 import {
@@ -56,7 +59,9 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       clear: () => {
         for (const k in store) delete store[k];
       },
-      length: 0,
+      get length() {
+        return Object.keys(store).length;
+      },
       key: (i: number) => Object.keys(store)[i] || null,
     };
     (global as any).localStorage = mockStorage;
@@ -356,6 +361,48 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       // Verify routing target for owner
       const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
       expect(targetRoute).toBe("/owner-dashboard");
+    });
+
+    it("ensures nihalshaikh0906@gmail.com strictly resolves to 'agent' even if role was cached as 'company'", async () => {
+      // Simulate leftover owner session cache
+      setStoredRole("company");
+      expect(getStoredRole()).toBe("company");
+
+      // Set active broker email
+      setActiveEmail("nihalshaikh0906@gmail.com");
+      expect(getActiveEmail()).toBe("nihalshaikh0906@gmail.com");
+
+      // detectRole must override and enforce 'agent'
+      const role = await detectRole();
+      expect(role).toBe("agent");
+      expect(getStoredRole()).toBe("agent");
+
+      const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
+      expect(targetRoute).toBe("/app");
+    });
+
+    it("ensures nihalshaikh09065@icloud.com strictly resolves to 'company'", async () => {
+      setActiveEmail("nihalshaikh09065@icloud.com");
+      const role = await detectRole();
+      expect(role).toBe("company");
+      expect(getStoredRole()).toBe("company");
+
+      const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
+      expect(targetRoute).toBe("/owner-dashboard");
+    });
+
+    it("clears all tokens, role and active email upon fullSignOut()", async () => {
+      setStoredRole("company");
+      setActiveEmail("nihalshaikh09065@icloud.com");
+      localStorage.setItem("dealos_demo_mode", "true");
+      localStorage.setItem("sb-test-auth-token", "jwt-token");
+
+      await fullSignOut();
+
+      expect(getStoredRole()).toBeNull();
+      expect(getActiveEmail()).toBeNull();
+      expect(localStorage.getItem("dealos_demo_mode")).toBeNull();
+      expect(localStorage.getItem("sb-test-auth-token")).toBeNull();
     });
 
     it("blocks broker from owner-dashboard route and redirects to /app", () => {

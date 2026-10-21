@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { logoDataUrl, useBrokerProfile } from "@/lib/broker";
+import { fullSignOut } from "@/lib/auth-role";
 
 const INPUT =
   "w-full rounded-t-md border-b border-border bg-card px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-primary";
@@ -20,9 +21,9 @@ export function ProfileWidget() {
   const queryClient = useQueryClient();
   if (!profile) return null;
   async function logout() {
+    await fullSignOut();
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
     router.navigate({ to: "/welcome", replace: true });
   }
   return (

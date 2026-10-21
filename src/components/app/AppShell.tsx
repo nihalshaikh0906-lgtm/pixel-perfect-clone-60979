@@ -13,7 +13,7 @@ import { AiChat } from "./AiChat";
 import { AddMenu, Notifications, ThemeToggle, useTheme } from "./ShellExtras";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { detectRole, getStoredRole, clearStoredRole, type DealOSRole } from "@/lib/auth-role";
+import { detectRole, getStoredRole, clearStoredRole, fullSignOut, type DealOSRole } from "@/lib/auth-role";
 
 type ShellCtx = { clientMode: boolean; openAi: () => void };
 const Ctx = createContext<ShellCtx>({ clientMode: false, openAi: () => {} });
@@ -66,10 +66,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   }, [userMenu]);
 
   const signOut = async () => {
-    clearStoredRole();
+    await fullSignOut();
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
     void navigate({ to: "/login", search: { mode: undefined }, replace: true });
   };
 

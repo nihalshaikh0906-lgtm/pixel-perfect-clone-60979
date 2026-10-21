@@ -6,13 +6,14 @@ import { AuthShell, Logo } from "@/components/auth/AuthShell";
 import { CheckBox, EMAIL_RE, Field, GoogleIcon, PasswordField, googleEnabled } from "@/components/auth/fields";
 import { supabase } from "@/integrations/supabase/client";
 import { setRemember } from "@/lib/remember";
-import { setStoredRole, detectRole } from "@/lib/auth-role";
+import { setStoredRole, detectRole, setActiveEmail, fullSignOut } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
   validateSearch: (s: Record<string, unknown>) => ({
     mode: s["mode"] === "signup" ? ("signup" as const) : undefined,
     role: s["role"] === "company" ? ("company" as const) : s["role"] === "agent" ? ("agent" as const) : undefined,
+    switch: s["switch"] === "true" || s["switch"] === true ? true : undefined,
   }),
   head: () => ({
     meta: [
@@ -26,6 +27,10 @@ export const Route = createFileRoute("/login")({
   }),
   beforeLoad: async ({ search }) => {
     if (search.mode === "signup") throw redirect({ to: "/signup", replace: true });
+    if (search.switch) {
+      await fullSignOut();
+      return;
+    }
     const { data } = await supabase.auth.getSession();
     if (data.session) {
       const role = await detectRole();
@@ -77,6 +82,14 @@ function LoginPage() {
 
   async function doSignIn(em: string, pw: string, want: "company" | "agent") {
     setState("loading"); setError(null); setMismatch(null);
+    const cleanEm = em.toLowerCase().trim();
+    setActiveEmail(cleanEm);
+    if (cleanEm === "nihalshaikh0906@gmail.com") {
+      setStoredRole("agent");
+    } else if (cleanEm === "nihalshaikh09065@icloud.com") {
+      setStoredRole("company");
+    }
+
     const { data: auth, error: err } = await supabase.auth.signInWithPassword({ email: em, password: pw });
     if (err) {
       const host = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
@@ -93,12 +106,12 @@ function LoginPage() {
 
       if (isDemoEnv) {
         localStorage.setItem("dealos_demo_mode", "true");
-        const cleanEm = em.toLowerCase().trim();
         const inferred = cleanEm === "nihalshaikh09065@icloud.com" ? "company"
                        : cleanEm === "nihalshaikh0906@gmail.com" ? "agent"
                        : /company|owner|director/i.test(em) ? "company"
                        : /broker|agent/i.test(em) ? "agent"
                        : want;
+        setStoredRole(inferred);
         await finish(inferred);
         return;
       }
@@ -109,6 +122,7 @@ function LoginPage() {
 
     const user = auth.user;
     const cleanUserEmail = (user?.email ?? em).toLowerCase().trim();
+    setActiveEmail(cleanUserEmail);
     const namedRole = cleanUserEmail === "nihalshaikh09065@icloud.com" ? "company"
                     : cleanUserEmail === "nihalshaikh0906@gmail.com" ? "agent"
                     : null;
@@ -193,7 +207,18 @@ function LoginPage() {
           ["agent", "👤 Licensed Broker / Agent", "Inbound leads, client dossiers & unit matching"],
           ["company", "🏢 Company Owner / Director", "Agency cockpit, broker oversight & escrow payouts"]
         ] as const).map(([k, t, d]) => (
-          <button key={k} type="button" role="radio" aria-checked={role === k} className={`au-role ${role === k ? "on" : ""}`} onClick={() => { setRole(k); setMismatch(null); }}>
+          <button
+            key={k}
+            type="button"
+            role="radio"
+            aria-checked={role === k}
+            className={`au-role ${role === k ? "on" : ""}`}
+            onClick={() => {
+              setRole(k);
+              setStoredRole(k);
+              setMismatch(null);
+            }}
+          >
             <b>{t}</b>
             <small>{d}</small>
           </button>
@@ -271,6 +296,7 @@ function LoginPage() {
             disabled={busy}
             onClick={() => {
               setStoredRole("agent");
+              setActiveEmail("demo-agent@dealos.ae");
               setEmail("demo-agent@dealos.ae");
               setPassword("Demo1234!");
               setRole("agent");
@@ -285,6 +311,7 @@ function LoginPage() {
             disabled={busy}
             onClick={() => {
               setStoredRole("company");
+              setActiveEmail("demo-company@dealos.ae");
               setEmail("demo-company@dealos.ae");
               setPassword("Demo1234!");
               setRole("company");

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { logoDataUrl } from "@/lib/broker";
+import { fullSignOut } from "@/lib/auth-role";
 
 // Model picker options for the AI section below.
 const MODELS = ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "o4-mini"];
@@ -121,9 +122,9 @@ function SettingsPage() {
   }
 
   async function signOut() {
+    await fullSignOut();
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
     router.navigate({ to: "/welcome", replace: true });
   }
 
