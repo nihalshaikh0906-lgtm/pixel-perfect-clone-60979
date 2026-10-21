@@ -8,6 +8,7 @@ import {
 import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { Button } from "@/components/ui/button";
+import { WhatsAppQrSync } from "@/components/whatsapp/WhatsAppQrSync";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   head: () => workspaceHead("System Settings · DealOS"),
@@ -406,15 +407,18 @@ export function SettingsPage() {
       ) : (
         /* ═══ BROKER DESK VIEW ═══ */
         <div className="space-y-6">
+          {/* Multi-Device QR Gateway */}
+          <WhatsAppQrSync />
+
           <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-7 shadow-sm space-y-5">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <div className="flex items-center gap-2">
                 <MessageCircle size={16} className="text-primary" />
                 <h2 className="text-base font-extrabold text-foreground font-display">
-                  Personal WhatsApp Outreach Gateway
+                  Personal 1-Click WhatsApp Quick Dispatch
                 </h2>
               </div>
-              <span className="text-xs text-muted-foreground font-mono">1-Click Dispatch</span>
+              <span className="text-xs text-muted-foreground font-mono">Direct Browser Dispatch</span>
             </div>
 
             <div className="space-y-4 text-xs">
