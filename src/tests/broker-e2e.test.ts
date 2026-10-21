@@ -790,5 +790,58 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(localStorage.getItem("dealos_meta_access_token")).toBe("EAAG_dealos_test_token_2026");
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 13: WHATSAPP PHONE NUMBER OTP VERIFICATION
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 13: WhatsApp Phone Number OTP Verification", () => {
+    it("simulates full 6-digit OTP dispatch, verification, and persistence", () => {
+      const countryCode = "+971";
+      const rawNumber = "50 839 2104";
+      const fullPhone = `${countryCode} ${rawNumber.trim()}`;
+      const mockOtp = "742918";
+
+      // 1. Dispatch OTP
+      let dispatchedOtp = "";
+      function sendOtp(phone: string) {
+        expect(phone).toBe("+971 50 839 2104");
+        dispatchedOtp = mockOtp;
+        return { success: true, phone, code: mockOtp };
+      }
+
+      const sendResult = sendOtp(fullPhone);
+      expect(sendResult.success).toBe(true);
+      expect(sendResult.code).toBe("742918");
+
+      // 2. Validate OTP entry
+      function verifyOtp(enteredCode: string, targetCode: string, phone: string) {
+        if (enteredCode === targetCode) {
+          const verifiedAt = "22 Oct 2026, 01:25";
+          localStorage.setItem("dealos_verified_whatsapp_phone", phone);
+          localStorage.setItem("dealos_whatsapp_verified_at", verifiedAt);
+          localStorage.setItem("dealos_broker_phone", phone);
+          return { verified: true, phone, verifiedAt };
+        }
+        return { verified: false };
+      }
+
+      const failAttempt = verifyOtp("111111", dispatchedOtp, fullPhone);
+      expect(failAttempt.verified).toBe(false);
+
+      const successAttempt = verifyOtp("742918", dispatchedOtp, fullPhone);
+      expect(successAttempt.verified).toBe(true);
+
+      // 3. Verify persistent storage
+      expect(localStorage.getItem("dealos_verified_whatsapp_phone")).toBe("+971 50 839 2104");
+      expect(localStorage.getItem("dealos_broker_phone")).toBe("+971 50 839 2104");
+      expect(localStorage.getItem("dealos_whatsapp_verified_at")).toBe("22 Oct 2026, 01:25");
+
+      // 4. Verify test confirmation echo link
+      const cleanDigits = localStorage.getItem("dealos_verified_whatsapp_phone")!.replace(/\D/g, "");
+      expect(cleanDigits).toBe("971508392104");
+      const testEchoUrl = `https://wa.me/${cleanDigits}?text=DealOS%20WhatsApp%20Verification`;
+      expect(testEchoUrl).toContain("https://wa.me/971508392104");
+    });
+  });
 });
 

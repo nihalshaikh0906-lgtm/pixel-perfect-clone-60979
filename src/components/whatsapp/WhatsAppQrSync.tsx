@@ -52,6 +52,7 @@ import {
 } from "@/lib/whatsapp-voice-service";
 import { Button } from "@/components/ui/button";
 import { LEADS, type Lead } from "@/lib/demo-leads";
+import { WhatsAppOtpVerification } from "./WhatsAppOtpVerification";
 
 export function WhatsAppQrSync() {
   const [session, setSession] = useState<WhatsAppSession>(getWhatsAppSession);
@@ -59,8 +60,8 @@ export function WhatsAppQrSync() {
   const [showQrModal, setShowQrModal] = useState(false);
   const [countdown, setCountdown] = useState(60);
 
-  // Integration mode: Demo Sandbox vs Official Meta Cloud API
-  const [integrationMode, setIntegrationMode] = useState<"sandbox" | "cloud_api">("sandbox");
+  // Integration mode: WhatsApp OTP vs Sandbox Demo vs Meta Cloud API
+  const [integrationMode, setIntegrationMode] = useState<"otp" | "sandbox" | "cloud_api">("otp");
 
   // Meta Cloud API configuration state
   const [wabaPhone, setWabaPhone] = useState(() => {
@@ -355,9 +356,25 @@ export function WhatsAppQrSync() {
         data-testid="dealos-audible-element"
       />
 
-      {/* Mode Switcher: Sandbox vs Meta Cloud API */}
+      {/* Mode Switcher: WhatsApp OTP vs Sandbox vs Meta Cloud API */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-1.5 rounded-2xl bg-secondary/40 border border-border/80">
         <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setIntegrationMode("otp")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              integrationMode === "otp"
+                ? "bg-card text-foreground shadow-sm border border-border"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Smartphone size={14} className={integrationMode === "otp" ? "text-emerald-400" : "text-muted-foreground"} />
+            <span>WhatsApp Phone OTP</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              RECOMMENDED
+            </span>
+          </button>
+
           <button
             type="button"
             onClick={() => setIntegrationMode("sandbox")}
@@ -368,7 +385,7 @@ export function WhatsAppQrSync() {
             }`}
           >
             <Sparkles size={14} className={integrationMode === "sandbox" ? "text-amber-400" : "text-muted-foreground"} />
-            <span>Voice &amp; AI Sandbox (Demo Simulation)</span>
+            <span>Voice &amp; AI Sandbox</span>
             <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">
               DEMO
             </span>
@@ -383,18 +400,25 @@ export function WhatsAppQrSync() {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <ShieldCheck size={14} className={integrationMode === "cloud_api" ? "text-emerald-400" : "text-muted-foreground"} />
-            <span>Official Meta Cloud API</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              PRODUCTION
+            <ShieldCheck size={14} className={integrationMode === "cloud_api" ? "text-primary" : "text-muted-foreground"} />
+            <span>Meta Cloud API</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-primary/15 text-primary border border-primary/30">
+              ENTERPRISE
             </span>
           </button>
         </div>
 
         <div className="text-[11px] text-muted-foreground px-2">
-          {integrationMode === "sandbox" ? "Interactive Demo Sandbox active" : "Meta Business Platform Integration"}
+          {integrationMode === "otp"
+            ? "Direct 6-Digit WhatsApp OTP Verification"
+            : integrationMode === "sandbox"
+            ? "Interactive Demo Sandbox active"
+            : "Official Meta Business Platform"}
         </div>
       </div>
+
+      {/* WhatsApp OTP Verification Panel */}
+      {integrationMode === "otp" && <WhatsAppOtpVerification />}
 
       {/* Meta WhatsApp Business Cloud API Configuration Panel */}
       {integrationMode === "cloud_api" && (
