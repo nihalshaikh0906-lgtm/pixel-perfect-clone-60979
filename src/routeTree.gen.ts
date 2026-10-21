@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as JoinRouteImport } from './routes/join'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -93,6 +94,11 @@ const DownloadRoute = DownloadRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -430,6 +436,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -496,6 +503,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -564,6 +572,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -634,6 +643,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/download'
     | '/faq'
+    | '/join'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -700,6 +710,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/download'
     | '/faq'
+    | '/join'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -767,6 +778,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/download'
     | '/faq'
+    | '/join'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -836,6 +848,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   DownloadRoute: typeof DownloadRoute
   FaqRoute: typeof FaqRoute
+  JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -879,6 +892,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1439,6 +1459,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   DownloadRoute: DownloadRoute,
   FaqRoute: FaqRoute,
+  JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

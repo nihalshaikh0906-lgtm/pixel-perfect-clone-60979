@@ -4,7 +4,7 @@ import {
   Users, ShieldCheck, Plus, Pencil, Trash2, X, Search, Phone, Mail, Award,
   Check, Filter, ChevronRight, AlertCircle, Building2, Crown, UserCheck,
   UserX, ArrowUpDown, Lock, Key, RefreshCw, Sparkles, MessageCircle, ExternalLink,
-  Briefcase, ToggleLeft, ToggleRight
+  Briefcase, ToggleLeft, ToggleRight, Copy, Share2
 } from "lucide-react";
 import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
@@ -453,6 +453,51 @@ export function ManageUsersPage() {
               <span>Add / Invite Broker</span>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* ═══ AGENCY SEAT ALLOCATION & 1-CLICK TEAM INVITE ═══ */}
+      <section className="rounded-3xl border border-primary/30 bg-primary/5 p-5 sm:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
+        <div className="space-y-1 text-left">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs font-mono font-bold text-primary uppercase tracking-wider">
+              Growth Agency Tier · 25 Broker Licenses
+            </span>
+          </div>
+          <h3 className="text-lg font-extrabold text-foreground font-display">
+            {users.length} of 25 Broker Seats Allocated ({25 - users.length} Available)
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Brokers can self-activate under your corporate license with 1 tap. Send your invite link directly to your team WhatsApp group.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto shrink-0">
+          <Button
+            variant="outline"
+            onClick={() => {
+              const link = `${window.location.origin}/join?agency=Skyline%20Luxury%20Real%20Estate%20LLC&token=sky2026`;
+              navigator.clipboard.writeText(link);
+              toast.success("Agency Team Invite Link copied to clipboard!");
+            }}
+            className="h-10 px-4 rounded-xl text-xs font-bold gap-2 bg-card"
+          >
+            <Copy size={13} />
+            <span>Copy Team Link</span>
+          </Button>
+
+          <Button
+            onClick={() => {
+              const link = `${window.location.origin}/join?agency=Skyline%20Luxury%20Real%20Estate%20LLC&token=sky2026`;
+              const msg = `Salam Team, here is the link to activate your broker seat on DealOS under our company license:\n\n${link}`;
+              window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+            }}
+            className="h-10 px-4 rounded-xl text-xs font-bold gap-2 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
+          >
+            <MessageCircle size={14} />
+            <span>Share to Team WhatsApp</span>
+          </Button>
         </div>
       </section>
 
