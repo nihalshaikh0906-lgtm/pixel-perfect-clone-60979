@@ -510,28 +510,30 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             </form>
 
             <div className="a-top-actions">
-              <button
-                type="button"
-                className={`a-btn a-btn-line a-hide-sm transition-all ${
-                  clientMode ? "bg-amber-500/15 border-amber-500/50 text-amber-300 font-bold shadow-sm" : ""
-                }`}
-                aria-pressed={clientMode}
-                onClick={() => {
-                  setClientMode((v) => {
-                    const next = !v;
-                    if (next) {
-                      toast.success("Client Presentation Mode ON: Internal commissions, broker splits, and notes masked.");
-                    } else {
-                      toast.info("Broker Internal Mode: Full agency commission and internal data visible.");
-                    }
-                    return next;
-                  });
-                }}
-                title="Hides commission and internal notes for client viewing"
-              >
-                {clientMode ? "💎 Client Mode: ON" : "Client mode: off"}
-              </button>
-              <AddMenu />
+              {role === "agent" && (
+                <button
+                  type="button"
+                  className={`a-btn a-btn-line a-hide-sm transition-all ${
+                    clientMode ? "bg-amber-500/15 border-amber-500/50 text-amber-300 font-bold shadow-sm" : ""
+                  }`}
+                  aria-pressed={clientMode}
+                  onClick={() => {
+                    setClientMode((v) => {
+                      const next = !v;
+                      if (next) {
+                        toast.success("Client Presentation Mode ON: Internal commissions, broker splits, and notes masked.");
+                      } else {
+                        toast.info("Broker Internal Mode: Full agency commission and internal data visible.");
+                      }
+                      return next;
+                    });
+                  }}
+                  title="Hides commission and internal notes for client viewing"
+                >
+                  {clientMode ? "💎 Client Mode: ON" : "Client mode: off"}
+                </button>
+              )}
+              {role === "agent" && <AddMenu />}
               <Notifications />
               <ThemeToggle {...theme} />
             </div>

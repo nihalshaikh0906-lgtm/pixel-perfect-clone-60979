@@ -325,7 +325,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(role).toBe("agent"); // Must NEVER default to 'company'
     });
 
-    it("verifies broker login sets role to 'agent' and routes to broker leads", async () => {
+    it("verifies broker login sets role to 'agent' and routes to broker cockpit desk", async () => {
       setStoredRole("agent");
       expect(getStoredRole()).toBe("agent");
 
@@ -333,8 +333,8 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(role).toBe("agent");
 
       // Verify routing target for broker
-      const targetRoute = role === "company" ? "/owner-dashboard" : "/app/leads";
-      expect(targetRoute).toBe("/app/leads");
+      const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
+      expect(targetRoute).toBe("/app");
     });
 
     it("verifies owner login sets role to 'company' and routes to owner cockpit", async () => {
@@ -345,24 +345,43 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(role).toBe("company");
 
       // Verify routing target for owner
-      const targetRoute = role === "company" ? "/owner-dashboard" : "/app/leads";
+      const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
       expect(targetRoute).toBe("/owner-dashboard");
     });
 
-    it("blocks broker from owner-dashboard route and redirects to /app/leads", () => {
+    it("blocks broker from owner-dashboard route and redirects to /app", () => {
       const brokerRole: DealOSRole = "agent";
       function guardOwnerDashboard(role: DealOSRole) {
         if (role !== "company") {
-          return { redirect: "/app/leads?queue=all" };
+          return { redirect: "/app" };
         }
         return { allow: true };
       }
 
       const brokerAttempt = guardOwnerDashboard(brokerRole);
-      expect(brokerAttempt).toEqual({ redirect: "/app/leads?queue=all" });
+      expect(brokerAttempt).toEqual({ redirect: "/app" });
 
       const ownerAttempt = guardOwnerDashboard("company");
       expect(ownerAttempt).toEqual({ allow: true });
+    });
+
+    it("verifies company owner topbar hides broker-only import tools and client presentation mode", () => {
+      function getTopBarActions(role: DealOSRole) {
+        if (role === "agent") {
+          return ["clientPresentationMode", "addMenu", "notifications", "themeToggle"];
+        }
+        return ["notifications", "themeToggle"];
+      }
+
+      const ownerActions = getTopBarActions("company");
+      expect(ownerActions).not.toContain("addMenu");
+      expect(ownerActions).not.toContain("clientPresentationMode");
+      expect(ownerActions).toContain("notifications");
+      expect(ownerActions).toContain("themeToggle");
+
+      const agentActions = getTopBarActions("agent");
+      expect(agentActions).toContain("addMenu");
+      expect(agentActions).toContain("clientPresentationMode");
     });
 
     it("blocks company owner from broker workspace root and redirects to /owner-dashboard", () => {

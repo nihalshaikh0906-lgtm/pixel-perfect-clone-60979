@@ -436,6 +436,15 @@ When are you free today for a quick 2-minute overview?`;
               No pending leads in this filter. All clients contacted!
             </div>
           )}
+
+          <div className="text-center pt-2">
+            <Button variant="outline" asChild className="h-9 text-xs font-semibold rounded-xl gap-1">
+              <Link to="/app/leads" search={{ queue: "all" }}>
+                <span>Open Complete Leads Inbox (1,000+ Verified Dubai Investors &amp; CSV Importer)</span>
+                <ArrowUpRight className="size-3.5" />
+              </Link>
+            </Button>
+          </div>
         </div>
       )}
 

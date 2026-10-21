@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/owner-dashboard")({
   beforeLoad: async () => {
     const role = await detectRole();
     if (role !== "company") {
-      throw redirect({ to: "/app/leads", search: { queue: "all" }, replace: true });
+      throw redirect({ to: "/app", replace: true });
     }
   },
   validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({ page: Math.max(1, Math.floor(Number(s["page"]) || 1)) }),
@@ -48,7 +48,7 @@ function OwnerDashboardPage() {
 
   useEffect(() => {
     if (role !== "company") {
-      void navigate({ to: "/app/leads", search: { queue: "all" }, replace: true });
+      void navigate({ to: "/app", replace: true });
     }
   }, [role, navigate]);
 

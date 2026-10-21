@@ -7,6 +7,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     if (role === "company") {
       throw redirect({ to: "/owner-dashboard", replace: true });
     }
-    throw redirect({ to: "/app/leads", search: { queue: "all" }, replace: true });
+    throw redirect({ to: "/app", replace: true });
   },
 });

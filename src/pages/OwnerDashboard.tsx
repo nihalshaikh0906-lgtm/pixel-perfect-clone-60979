@@ -578,7 +578,7 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
       metric: "94% < 5 min response",
       detail: "38 high-intent investor inquiries across Instagram Reels (48%), WhatsApp (32%), and Portals (20%). Lead response speed is at an optimal 3.4 minutes.",
       actionLabel: "Inspect Inbound Queue",
-      actionLink: "/app/leads",
+      actionLink: "#leads-overwatch",
       tagColor: "border-blue-500/40 text-blue-400 bg-blue-500/10",
     },
     {
@@ -926,13 +926,14 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               <span>Broadcast to Team</span>
             </Button>
 
-            {/* Switch to Broker Workspace */}
+            {/* Manage Team Action */}
             <Button
               asChild
               className="h-10 rounded-2xl text-xs font-bold gap-1.5 bg-primary text-primary-foreground shadow-sm hover:brightness-105"
             >
-              <Link to="/app/leads" search={{ queue: "all" }}>
-                <span>Broker Leads View ↗</span>
+              <Link to="/app/users">
+                <Users size={14} />
+                <span>Manage 12 Brokers</span>
               </Link>
             </Button>
           </div>
@@ -1206,7 +1207,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
       </section>
 
       {/* ═══ 5. EXECUTIVE ALL LEADS OVERWATCH (DYNAMIC AGENT LEADBOX MODEL) ═══ */}
-      <section className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
+      <section id="leads-overwatch" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <div className="flex items-center gap-2">
@@ -1840,11 +1841,17 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   <span>{broker.tier === "Needs Coaching" ? "Coach Agent" : "Congratulate"}</span>
                 </a>
 
-                <Button asChild size="sm" className="h-9 px-3.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm">
-                  <Link to="/app/leads" search={{ queue: "all" }}>
-                    <span>Inspect</span>
-                    <ArrowUpRight size={13} className="ml-1" />
-                  </Link>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setLeadFilterBroker(broker.id);
+                    document.getElementById("leads-overwatch")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="h-9 px-3.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm gap-1"
+                  title={`Inspect ${broker.name}'s assigned leadbox`}
+                >
+                  <span>Leadbox</span>
+                  <ArrowUpRight size={13} />
                 </Button>
               </div>
             </div>
@@ -2633,16 +2640,6 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   <span>Message Broker</span>
                 </a>
 
-                <Button
-                  asChild
-                  variant="outline"
-                  className="h-10 px-4 rounded-xl text-xs font-bold border-border hover:bg-secondary w-full sm:w-auto"
-                >
-                  <Link to="/app/leads" search={{ queue: "all" }}>
-                    <span>Open in Leads Queue</span>
-                    <ArrowUpRight size={13} className="ml-1" />
-                  </Link>
-                </Button>
               </div>
 
               <Button

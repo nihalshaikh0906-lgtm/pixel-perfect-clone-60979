@@ -125,7 +125,7 @@ function LoginPage() {
     if (finalRole === "company") {
       void router.navigate({ to: "/owner-dashboard", replace: true });
     } else {
-      void router.navigate({ to: "/app/leads", search: { queue: "all" }, replace: true });
+      void router.navigate({ to: "/app", replace: true });
     }
   }
 
