@@ -188,14 +188,14 @@ export function Pricing() {
 
                 <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
                   <ShieldCheck size={13} className="text-emerald-500" />
-                  <span>Instant activation · 14-day money-back guarantee · Cancel anytime</span>
+                  <span>Activation and cancellation terms confirmed at checkout</span>
                 </p>
               </div>
 
               {/* Payment Methods Badges */}
               <div className="space-y-2 pt-2 border-t border-border/60">
                 <span className="text-[10px] uppercase font-mono font-bold text-muted-foreground block">
-                  Accepted Payment Methods (Lemon Squeezy &amp; Stripe)
+                  Accepted Payment Methods (Lemon Squeezy)
                 </span>
                 <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold text-foreground">
                   <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Apple Pay</span>
@@ -207,7 +207,7 @@ export function Pricing() {
                 </div>
                 <p className="text-[10px] text-muted-foreground flex items-center gap-1 pt-1">
                   <Lock size={11} className="text-muted-foreground" />
-                  <span>256-Bit SSL Encrypted Checkout · Plus 5% UAE VAT with official Tax Invoice.</span>
+                  <span>Secure checkout by Lemon Squeezy · Plus 5% UAE VAT. Monthly equivalents rounded.</span>
                 </p>
               </div>
 
@@ -216,18 +216,18 @@ export function Pricing() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-bold text-foreground">
                     <Landmark size={14} className="text-amber-500" />
-                    <span>Paying by UAE Bank Wire (IBAN)?</span>
+                    <span>Paying by UAE Corporate Bank Transfer (IBAN)?</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowInvoiceModal(true)}
                     className="text-[11px] font-bold text-amber-500 hover:underline cursor-pointer"
                   >
-                    Generate Invoice ↗
+                    Contact Agency Concierge ↗
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground">
-                  Direct transfer to our Emirates NBD or Wio Bank corporate accounts.
+                  Request an official UAE proforma tax invoice via our Agency Concierge desk.
                 </p>
               </div>
             </div>
@@ -270,7 +270,7 @@ export function Pricing() {
                     <span>DLD Market Context</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground pl-7">
-                    Official Dubai Land Department registry stats with price/sq.ft and rental yield heatmaps.
+                    DLD market context with verified transaction sources and sample sizes.
                   </p>
                 </div>
 
@@ -293,10 +293,10 @@ export function Pricing() {
                     <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
                       <Check size={12} />
                     </div>
-                    <span>WhatsApp Voice Transcriber</span>
+                    <span>Voice Note Capture</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground pl-7">
-                    Whisper AI transcribes client audio notes &amp; live drive-time mic directly into CRM leads.
+                    AI transcribes client voice notes &amp; drive-time audio directly into CRM lead dossiers.
                   </p>
                 </div>
 
