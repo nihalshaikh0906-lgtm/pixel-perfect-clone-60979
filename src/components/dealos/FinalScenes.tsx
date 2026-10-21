@@ -1,4 +1,4 @@
-import { ArrowRight, Check, CheckCheck, ChevronRight, Instagram, Linkedin, Mail, MessageCircle, Phone, Sparkles, Star, Loader2 } from 'lucide-react';
+import { ArrowRight, Check, CheckCheck, ChevronRight, Instagram, Linkedin, Mail, MessageCircle, Phone, Sparkles, Star, Loader2, Calendar, Video, Clock, ExternalLink } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
@@ -79,6 +79,7 @@ export function Proof() {
 export { Pricing } from './PricingScene';
 
 export function CTA() {
+  const [bookingMode, setBookingMode] = useState<'form' | 'calendly'>('form');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('+971 ');
   const [name, setName] = useState('');
@@ -86,6 +87,8 @@ export function CTA() {
   const [role, setRole] = useState<'broker' | 'owner'>('owner');
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  const calendlyUrl = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_CALENDLY_URL || "https://calendly.com/dealos-ae/demo";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +106,7 @@ export function CTA() {
     };
 
     try {
-      // 1. Insert directly into Supabase
+      // 1. Insert directly into Supabase demo_requests table
       const { error } = await (supabase as unknown as { from: (t: string) => any })
         .from('demo_requests')
         .insert(payload);
@@ -164,8 +167,62 @@ export function CTA() {
             Equip your property consultants with live Dubai inventory, instant WhatsApp dossiers, and real-time agency overwatch.
           </p>
 
-          {!done ? (
-            <form className="mt-6 flex flex-col gap-3 text-left bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-2xl border border-white/10 shadow-2xl" onSubmit={handleSubmit}>
+          {/* Booking Method Selector Tabs */}
+          <div className="mt-6 flex items-center justify-center gap-2 p-1 rounded-2xl bg-white/5 border border-white/10 max-w-md mx-auto">
+            <button
+              type="button"
+              onClick={() => setBookingMode('form')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                bookingMode === 'form'
+                  ? 'bg-amber-400 text-black shadow-md'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <span>⚡ Quick Callback (30s)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setBookingMode('calendly')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                bookingMode === 'calendly'
+                  ? 'bg-amber-400 text-black shadow-md'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Calendar size={13} />
+              <span>📅 Book Live Zoom</span>
+            </button>
+          </div>
+
+          {bookingMode === 'calendly' ? (
+            <div className="mt-4 flex flex-col items-center gap-4 text-center bg-black/60 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-white/10 shadow-2xl animate-in fade-in duration-200">
+              <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-300 flex items-center justify-center mx-auto border border-amber-400/30">
+                <Video size={22} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Schedule 15-Min Executive Walkthrough</h3>
+                <p className="text-xs text-zinc-400 mt-1 max-w-md">
+                  Choose a convenient time on our live calendar. A DealOS Dubai Partner will demonstrate the live agency overwatch cockpit and inventory sync.
+                </p>
+              </div>
+
+              <a
+                href={calendlyUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-3.5 px-6 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-black hover:opacity-95 shadow-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Calendar size={16} />
+                <span>Open Live Calendar on Calendly ↗</span>
+              </a>
+
+              <div className="flex items-center gap-2 text-xs text-zinc-400 pt-1">
+                <Clock size={13} />
+                <span>Available Sunday – Thursday · 10:00 AM – 7:00 PM GST</span>
+              </div>
+            </div>
+          ) : !done ? (
+            <form className="mt-4 flex flex-col gap-3 text-left bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-2xl border border-white/10 shadow-2xl animate-in fade-in duration-200" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-name">
@@ -293,13 +350,25 @@ export function CTA() {
                   <MessageCircle size={16} />
                   <span>Connect with Founder on WhatsApp ↗</span>
                 </a>
-                <Button
-                  variant="outline"
+                <a
+                  href={calendlyUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs uppercase tracking-wider shadow-lg transition-all"
+                >
+                  <Calendar size={16} />
+                  <span>Or Pick Time on Calendly ↗</span>
+                </a>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
                   onClick={() => setDone(false)}
-                  className="w-full sm:w-auto text-xs border-white/20 text-zinc-300 hover:text-white"
+                  className="text-xs text-zinc-400 hover:text-white underline cursor-pointer"
                 >
                   Submit Another Request
-                </Button>
+                </button>
               </div>
             </div>
           )}
