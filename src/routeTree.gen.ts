@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as BrokerDashboardRouteImport } from './routes/broker-dashboard'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as JoinRouteImport } from './routes/join'
@@ -56,7 +57,9 @@ import { Route as AuthenticatedAppAgreementsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppAiAssistantRouteImport } from './routes/_authenticated/app.ai-assistant'
 import { Route as AuthenticatedAppAmenitiesRouteImport } from './routes/_authenticated/app.amenities'
 import { Route as AuthenticatedAppAppointmentsRouteImport } from './routes/_authenticated/app.appointments'
+import { Route as AuthenticatedAppBrokerDashboardRouteImport } from './routes/_authenticated/app.broker-dashboard'
 import { Route as AuthenticatedAppCrmRouteImport } from './routes/_authenticated/app.crm'
+import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppDealsRouteImport } from './routes/_authenticated/app.deals'
 import { Route as AuthenticatedAppFollowUpsRouteImport } from './routes/_authenticated/app.follow-ups'
 import { Route as AuthenticatedAppListingsRouteImport } from './routes/_authenticated/app.listings'
@@ -85,6 +88,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrokerDashboardRoute = BrokerDashboardRouteImport.update({
+  id: '/broker-dashboard',
+  path: '/broker-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DownloadRoute = DownloadRouteImport.update({
@@ -320,11 +328,23 @@ const AuthenticatedAppAppointmentsRoute =
     path: '/appointments',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppBrokerDashboardRoute =
+  AuthenticatedAppBrokerDashboardRouteImport.update({
+    id: '/broker-dashboard',
+    path: '/broker-dashboard',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppCrmRoute = AuthenticatedAppCrmRouteImport.update({
   id: '/crm',
   path: '/crm',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppDashboardRoute =
+  AuthenticatedAppDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppDealsRoute = AuthenticatedAppDealsRouteImport.update({
   id: '/deals',
   path: '/deals',
@@ -440,6 +460,7 @@ const AuthenticatedAppProjectIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/about': typeof AboutRoute
+  '/broker-dashboard': typeof BrokerDashboardRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
   '/join': typeof JoinRoute
@@ -483,7 +504,9 @@ export interface FileRoutesByFullPath {
   '/app/ai-assistant': typeof AuthenticatedAppAiAssistantRoute
   '/app/amenities': typeof AuthenticatedAppAmenitiesRoute
   '/app/appointments': typeof AuthenticatedAppAppointmentsRoute
+  '/app/broker-dashboard': typeof AuthenticatedAppBrokerDashboardRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
+  '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/deals': typeof AuthenticatedAppDealsRoute
   '/app/follow-ups': typeof AuthenticatedAppFollowUpsRoute
   '/app/listings': typeof AuthenticatedAppListingsRoute
@@ -508,6 +531,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
+  '/broker-dashboard': typeof BrokerDashboardRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
   '/join': typeof JoinRoute
@@ -551,7 +575,9 @@ export interface FileRoutesByTo {
   '/app/ai-assistant': typeof AuthenticatedAppAiAssistantRoute
   '/app/amenities': typeof AuthenticatedAppAmenitiesRoute
   '/app/appointments': typeof AuthenticatedAppAppointmentsRoute
+  '/app/broker-dashboard': typeof AuthenticatedAppBrokerDashboardRoute
   '/app/crm': typeof AuthenticatedAppCrmRoute
+  '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/deals': typeof AuthenticatedAppDealsRoute
   '/app/follow-ups': typeof AuthenticatedAppFollowUpsRoute
   '/app/listings': typeof AuthenticatedAppListingsRoute
@@ -578,6 +604,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/broker-dashboard': typeof BrokerDashboardRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
   '/join': typeof JoinRoute
@@ -622,7 +649,9 @@ export interface FileRoutesById {
   '/_authenticated/app/ai-assistant': typeof AuthenticatedAppAiAssistantRoute
   '/_authenticated/app/amenities': typeof AuthenticatedAppAmenitiesRoute
   '/_authenticated/app/appointments': typeof AuthenticatedAppAppointmentsRoute
+  '/_authenticated/app/broker-dashboard': typeof AuthenticatedAppBrokerDashboardRoute
   '/_authenticated/app/crm': typeof AuthenticatedAppCrmRoute
+  '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/deals': typeof AuthenticatedAppDealsRoute
   '/_authenticated/app/follow-ups': typeof AuthenticatedAppFollowUpsRoute
   '/_authenticated/app/listings': typeof AuthenticatedAppListingsRoute
@@ -650,6 +679,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/broker-dashboard'
     | '/download'
     | '/faq'
     | '/join'
@@ -693,7 +723,9 @@ export interface FileRouteTypes {
     | '/app/ai-assistant'
     | '/app/amenities'
     | '/app/appointments'
+    | '/app/broker-dashboard'
     | '/app/crm'
+    | '/app/dashboard'
     | '/app/deals'
     | '/app/follow-ups'
     | '/app/listings'
@@ -718,6 +750,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
+    | '/broker-dashboard'
     | '/download'
     | '/faq'
     | '/join'
@@ -761,7 +794,9 @@ export interface FileRouteTypes {
     | '/app/ai-assistant'
     | '/app/amenities'
     | '/app/appointments'
+    | '/app/broker-dashboard'
     | '/app/crm'
+    | '/app/dashboard'
     | '/app/deals'
     | '/app/follow-ups'
     | '/app/listings'
@@ -787,6 +822,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/about'
+    | '/broker-dashboard'
     | '/download'
     | '/faq'
     | '/join'
@@ -831,7 +867,9 @@ export interface FileRouteTypes {
     | '/_authenticated/app/ai-assistant'
     | '/_authenticated/app/amenities'
     | '/_authenticated/app/appointments'
+    | '/_authenticated/app/broker-dashboard'
     | '/_authenticated/app/crm'
+    | '/_authenticated/app/dashboard'
     | '/_authenticated/app/deals'
     | '/_authenticated/app/follow-ups'
     | '/_authenticated/app/listings'
@@ -858,6 +896,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  BrokerDashboardRoute: typeof BrokerDashboardRoute
   DownloadRoute: typeof DownloadRoute
   FaqRoute: typeof FaqRoute
   JoinRoute: typeof JoinRoute
@@ -891,6 +930,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/broker-dashboard': {
+      id: '/broker-dashboard'
+      path: '/broker-dashboard'
+      fullPath: '/broker-dashboard'
+      preLoaderRoute: typeof BrokerDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/download': {
@@ -1208,11 +1254,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAppointmentsRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/broker-dashboard': {
+      id: '/_authenticated/app/broker-dashboard'
+      path: '/broker-dashboard'
+      fullPath: '/app/broker-dashboard'
+      preLoaderRoute: typeof AuthenticatedAppBrokerDashboardRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/crm': {
       id: '/_authenticated/app/crm'
       path: '/crm'
       fullPath: '/app/crm'
       preLoaderRoute: typeof AuthenticatedAppCrmRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/dashboard': {
+      id: '/_authenticated/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AuthenticatedAppDashboardRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/deals': {
@@ -1367,7 +1427,9 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppAiAssistantRoute: typeof AuthenticatedAppAiAssistantRoute
   AuthenticatedAppAmenitiesRoute: typeof AuthenticatedAppAmenitiesRoute
   AuthenticatedAppAppointmentsRoute: typeof AuthenticatedAppAppointmentsRoute
+  AuthenticatedAppBrokerDashboardRoute: typeof AuthenticatedAppBrokerDashboardRoute
   AuthenticatedAppCrmRoute: typeof AuthenticatedAppCrmRoute
+  AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppDealsRoute: typeof AuthenticatedAppDealsRoute
   AuthenticatedAppFollowUpsRoute: typeof AuthenticatedAppFollowUpsRoute
   AuthenticatedAppListingsRoute: typeof AuthenticatedAppListingsRoute
@@ -1399,7 +1461,9 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAiAssistantRoute: AuthenticatedAppAiAssistantRoute,
   AuthenticatedAppAmenitiesRoute: AuthenticatedAppAmenitiesRoute,
   AuthenticatedAppAppointmentsRoute: AuthenticatedAppAppointmentsRoute,
+  AuthenticatedAppBrokerDashboardRoute: AuthenticatedAppBrokerDashboardRoute,
   AuthenticatedAppCrmRoute: AuthenticatedAppCrmRoute,
+  AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppDealsRoute: AuthenticatedAppDealsRoute,
   AuthenticatedAppFollowUpsRoute: AuthenticatedAppFollowUpsRoute,
   AuthenticatedAppListingsRoute: AuthenticatedAppListingsRoute,
@@ -1477,6 +1541,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  BrokerDashboardRoute: BrokerDashboardRoute,
   DownloadRoute: DownloadRoute,
   FaqRoute: FaqRoute,
   JoinRoute: JoinRoute,

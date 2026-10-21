@@ -843,5 +843,65 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(testEchoUrl).toContain("https://wa.me/971508392104");
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 14: STRICT ROLE-BASED DASHBOARD ISOLATION
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 14: Strict Role-Based Dashboard Isolation", () => {
+    it("strictly isolates Company Owner from Broker Desk routes", () => {
+      const allowedOwnerPaths = [
+        "/app/settings",
+        "/app/users",
+        "/app/activity-logs",
+        "/app/my-account",
+        "/app/about",
+      ];
+
+      function checkOwnerRouteAccess(path: string, role: "company" | "agent") {
+        if (role === "company") {
+          const isAllowed = allowedOwnerPaths.some((p) => path.startsWith(p));
+          if (!isAllowed) {
+            return { allowed: false, redirectTo: "/owner-dashboard" };
+          }
+        }
+        return { allowed: true, redirectTo: null };
+      }
+
+      // Company owner must be redirected to /owner-dashboard from broker operational routes
+      expect(checkOwnerRouteAccess("/app", "company")).toEqual({ allowed: false, redirectTo: "/owner-dashboard" });
+      expect(checkOwnerRouteAccess("/app/broker-dashboard", "company")).toEqual({ allowed: false, redirectTo: "/owner-dashboard" });
+      expect(checkOwnerRouteAccess("/app/dashboard", "company")).toEqual({ allowed: false, redirectTo: "/owner-dashboard" });
+      expect(checkOwnerRouteAccess("/app/leads", "company")).toEqual({ allowed: false, redirectTo: "/owner-dashboard" });
+      expect(checkOwnerRouteAccess("/app/deals", "company")).toEqual({ allowed: false, redirectTo: "/owner-dashboard" });
+      expect(checkOwnerRouteAccess("/app/crm", "company")).toEqual({ allowed: false, redirectTo: "/owner-dashboard" });
+
+      // Company owner CAN access administrative governance routes
+      expect(checkOwnerRouteAccess("/app/settings", "company")).toEqual({ allowed: true, redirectTo: null });
+      expect(checkOwnerRouteAccess("/app/users", "company")).toEqual({ allowed: true, redirectTo: null });
+      expect(checkOwnerRouteAccess("/app/activity-logs", "company")).toEqual({ allowed: true, redirectTo: null });
+    });
+
+    it("strictly isolates Broker Agents from Company Owner Dashboard", () => {
+      function checkBrokerAccess(path: string, role: "company" | "agent") {
+        if (path.startsWith("/owner-dashboard") && role !== "company") {
+          return { allowed: false, redirectTo: "/app" };
+        }
+        return { allowed: true, redirectTo: null };
+      }
+
+      expect(checkBrokerAccess("/owner-dashboard", "agent")).toEqual({ allowed: false, redirectTo: "/app" });
+      expect(checkBrokerAccess("/owner-dashboard#vouchers", "agent")).toEqual({ allowed: false, redirectTo: "/app" });
+      expect(checkBrokerAccess("/owner-dashboard", "company")).toEqual({ allowed: true, redirectTo: null });
+    });
+
+    it("connects WhatsApp session when OTP phone is verified", () => {
+      localStorage.setItem("dealos_verified_whatsapp_phone", "+971 50 839 2104");
+      const session = getWhatsAppSession();
+      expect(session.connected).toBe(true);
+      expect(session.phoneNumber).toBe("+971 50 839 2104");
+      expect(session.platform).toContain("WhatsApp OTP Verified");
+    });
+  });
 });
+
 

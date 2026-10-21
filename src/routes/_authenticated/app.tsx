@@ -1,8 +1,25 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { AppShell } from "@/components/app/AppShell";
+import { detectRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated/app")({
+  beforeLoad: async ({ location }) => {
+    const role = await detectRole();
+    if (role === "company") {
+      const allowedOwnerPaths = [
+        "/app/settings",
+        "/app/users",
+        "/app/activity-logs",
+        "/app/my-account",
+        "/app/about",
+      ];
+      const isAllowed = allowedOwnerPaths.some((p) => location.pathname.startsWith(p));
+      if (!isAllowed) {
+        throw redirect({ to: "/owner-dashboard", replace: true });
+      }
+    }
+  },
   head: () => ({
     meta: [
       { title: "DealOS Workspace — Broker dashboard" },

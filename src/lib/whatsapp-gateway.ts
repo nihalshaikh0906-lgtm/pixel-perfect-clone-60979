@@ -111,6 +111,21 @@ export function getWhatsAppSession(): WhatsAppSession {
     if (raw) {
       return JSON.parse(raw);
     }
+
+    const verifiedPhone = localStorage.getItem("dealos_verified_whatsapp_phone");
+    if (verifiedPhone) {
+      return {
+        connected: true,
+        phoneNumber: verifiedPhone,
+        pushName: "DealOS Verified UAE Number",
+        connectedAt: new Date().toISOString(),
+        batteryLevel: 100,
+        platform: "WhatsApp OTP Verified (+971 UAE)",
+        autoTranscribe: true,
+        autoCreateLeads: true,
+        autoMatchInventory: true,
+      };
+    }
   } catch (err) {
     console.error("Failed to load WhatsApp session", err);
   }
