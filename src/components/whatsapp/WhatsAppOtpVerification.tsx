@@ -14,6 +14,8 @@ import {
   Edit2,
   AlertCircle,
   Clock,
+  Mail,
+  Copy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -45,6 +47,7 @@ export function WhatsAppOtpVerification() {
   const [loading, setLoading] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
   const [verifiedAt, setVerifiedAt] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string>("broker@dealos.ae");
 
   // Initialize from storage or user metadata
   useEffect(() => {
@@ -57,6 +60,9 @@ export function WhatsAppOtpVerification() {
       setStep("verified");
     } else {
       void supabase.auth.getUser().then(({ data }) => {
+        if (data.user?.email) {
+          setUserEmail(data.user.email);
+        }
         const metaPhone = data.user?.user_metadata?.phone as string | undefined;
         if (metaPhone) {
           setRawPhone(metaPhone.replace(/^\+971/, "").replace(/\D/g, ""));
@@ -304,12 +310,63 @@ export function WhatsAppOtpVerification() {
 
       {/* ═══ STEP 2: ENTER 6-DIGIT OTP ═══ */}
       {step === "otp" && (
-        <div className="space-y-5 max-w-md animate-in fade-in zoom-in-95 duration-200">
+        <div className="space-y-5 max-w-lg animate-in fade-in zoom-in-95 duration-200">
+          {/* Official auth@dealos.ae Email Dispatch Card */}
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+            <div className="flex items-center justify-between text-xs border-b border-border/50 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="size-6 rounded-lg bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px]">
+                  @
+                </div>
+                <div>
+                  <span className="font-bold text-foreground">auth@dealos.ae</span>
+                  <span className="text-[10px] text-muted-foreground ml-1.5">(DealOS Security Dispatch)</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                EMAIL DISPATCHED
+              </span>
+            </div>
+
+            <div className="text-xs space-y-1.5">
+              <p className="text-[11px] text-muted-foreground">
+                To: <span className="text-foreground font-semibold font-mono">{userEmail}</span>
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Subject: <span className="text-foreground font-semibold">Your DealOS WhatsApp Device Verification Code</span>
+              </p>
+              <div className="p-3 rounded-xl bg-background border border-border/70 mt-2 space-y-2">
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Enter this 6-digit security code into your DealOS Settings to connect WhatsApp device (<strong>{fullPhone}</strong>):
+                </p>
+                <div className="flex items-center justify-between bg-secondary/50 rounded-lg p-2.5 border border-border/40 font-mono">
+                  <span className="text-lg font-black tracking-widest text-primary">{generatedOtp}</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setOtpValue(generatedOtp);
+                      toast.success("Code auto-filled from auth@dealos.ae email!");
+                    }}
+                    className="h-7 text-[10px] font-bold gap-1 rounded-lg"
+                  >
+                    <Check size={12} />
+                    <span>Auto-Fill Code</span>
+                  </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground italic">
+                  Single Device Rule: Linking this device locks your 1/1 connection slot.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="p-4 rounded-2xl bg-secondary/30 border border-border/60 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                 <Clock size={13} className="text-primary" />
-                <span>Verification Code Sent</span>
+                <span>Enter Verification Code</span>
               </span>
               <button
                 type="button"
@@ -317,24 +374,12 @@ export function WhatsAppOtpVerification() {
                 className="text-[11px] text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
               >
                 <Edit2 size={11} />
-                <span>Edit Number</span>
+                <span>Change Number</span>
               </button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Enter the 6-digit code sent to <strong className="text-foreground">{fullPhone}</strong>:
+              Type the 6-digit code received from <strong className="text-foreground">auth@dealos.ae</strong> below:
             </p>
-
-            {/* Quick Demo Hint */}
-            <div className="pt-1 flex items-center justify-between text-[11px] font-mono">
-              <span className="text-amber-400">Sandbox Code: <strong>{generatedOtp}</strong></span>
-              <button
-                type="button"
-                onClick={() => setOtpValue(generatedOtp)}
-                className="text-xs text-primary underline cursor-pointer"
-              >
-                1-Click Auto Fill
-              </button>
-            </div>
           </div>
 
           <form onSubmit={handleVerifyOtp} className="space-y-4">
