@@ -1,5 +1,5 @@
 import type { SearchSchemaInput } from "@tanstack/react-router";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Banknote, Building2, Calendar, CheckCircle2, ChevronRight, Clock,
@@ -19,6 +19,12 @@ import { toast } from "sonner";
 import { detectRole, getStoredRole, type DealOSRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated/app/")({
+  beforeLoad: async () => {
+    const role = await detectRole();
+    if (role === "company") {
+      throw redirect({ to: "/owner-dashboard", replace: true });
+    }
+  },
   validateSearch: (s: Record<string, unknown> & SearchSchemaInput) => ({
     page: Math.max(1, Math.floor(Number(s["page"]) || 1)),
   }),
@@ -50,24 +56,26 @@ export const Route = createFileRoute("/_authenticated/app/")({
 });
 
 function HomePage() {
-  const { page } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? "agent");
   const [userName, setUserName] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    void detectRole().then((r) => setRole(r));
+    void detectRole().then((r) => {
+      setRole(r);
+      if (r === "company") {
+        void navigate({ to: "/owner-dashboard", replace: true });
+      }
+    });
     void supabase.auth.getUser().then(({ data }) => {
       const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>;
       const raw = String(meta["full_name"] ?? meta["name"] ?? data.user?.email?.split("@")[0] ?? "");
       const first = (raw.split(/[\s._-]+/)[0] ?? "").replace(/\d+/g, "");
       if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1).toLowerCase());
     });
-  }, []);
+  }, [navigate]);
 
-  if (role === "company") {
-    return <OwnerDashboard page={page} onPage={(next) => void navigate({ search: { page: next } })} userName={userName} />;
-  }
+  if (role === "company") return null;
   return <AgentDashboard userName={userName} />;
 }
 

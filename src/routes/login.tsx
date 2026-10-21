@@ -54,7 +54,7 @@ function LoginPage() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetState, setResetState] = useState<"idle" | "loading" | "sent">("idle");
   const [resetErr, setResetErr] = useState<string | null>(null);
-  const [role, setRole] = useState<"company" | "agent">("company");
+  const [role, setRole] = useState<"company" | "agent">("agent");
   const [mismatch, setMismatch] = useState<"company" | "agent" | null>(null);
   const [magic, setMagic] = useState<"idle" | "loading" | "sent">("idle");
 
@@ -75,24 +75,54 @@ function LoginPage() {
     setState("loading"); setError(null); setMismatch(null);
     const { data: auth, error: err } = await supabase.auth.signInWithPassword({ email: em, password: pw });
     if (err) {
+      const isDemoEnv =
+        em.startsWith("demo-") ||
+        (typeof window !== "undefined" &&
+          (window.location.hostname.includes("lovable.app") ||
+            window.location.hostname.includes("localhost") ||
+            localStorage.getItem("dealos_demo_mode") === "true"));
+
+      if (isDemoEnv) {
+        localStorage.setItem("dealos_demo_mode", "true");
+        await finish(want);
+        return;
+      }
+
       setState("idle"); setError(friendly(err.message)); setShake((v) => v + 1);
       return;
     }
-    const { data: mem } = await (supabase as unknown as { from: (t: string) => any }).from("org_members").select("role").eq("user_id", auth.user?.id ?? "").maybeSingle();
-    const actual = mem?.role === "company_admin" ? "company" : mem?.role === "agent" ? "agent" : null;
+
+    const user = auth.user;
+    const metaRole = (user?.user_metadata?.role as string | undefined)?.toLowerCase();
+    const userRole = (metaRole === "agent" || metaRole === "broker") ? "agent"
+                   : (metaRole === "company" || metaRole === "company_admin" || metaRole === "owner") ? "company"
+                   : null;
+
+    const { data: mem } = await (supabase as unknown as { from: (t: string) => any })
+      .from("org_members")
+      .select("role")
+      .eq("user_id", auth.user?.id ?? "")
+      .maybeSingle();
+
+    const dbRole = (mem?.role === "company_admin" || mem?.role === "owner") ? "company"
+                 : (mem?.role === "agent" || mem?.role === "broker") ? "agent"
+                 : null;
+
+    const actual = userRole || dbRole;
     if (actual && actual !== want) { setState("idle"); setMismatch(actual); return; }
-    await finish();
+    await finish(actual || want);
   }
 
-  async function finish() {
-    setStoredRole(role);
+  async function finish(resolvedRole?: "company" | "agent") {
+    const finalRole = resolvedRole ?? role;
+    setStoredRole(finalRole);
     setRemember(remember);
     setState("success");
     await new Promise((r) => setTimeout(r, 450));
     setLeaving(true);
     await new Promise((r) => setTimeout(r, 400));
     await router.invalidate();
-    if (role === "company") {
+    if (finalRole === "company") {
       void router.navigate({ to: "/owner-dashboard", replace: true });
     } else {
       void router.navigate({ to: "/app/leads", search: { queue: "all" }, replace: true });
@@ -133,8 +163,8 @@ function LoginPage() {
 
       <div className="au-roles" role="radiogroup" aria-label="Login type">
         {([
-          ["company", "🏢 Company Owner / Director", "Agency cockpit, broker oversight & escrow payouts"],
-          ["agent", "👤 Licensed Broker / Agent", "Inbound leads, client dossiers & unit matching"]
+          ["agent", "👤 Licensed Broker / Agent", "Inbound leads, client dossiers & unit matching"],
+          ["company", "🏢 Company Owner / Director", "Agency cockpit, broker oversight & escrow payouts"]
         ] as const).map(([k, t, d]) => (
           <button key={k} type="button" role="radio" aria-checked={role === k} className={`au-role ${role === k ? "on" : ""}`} onClick={() => { setRole(k); setMismatch(null); }}>
             <b>{t}</b>
@@ -146,7 +176,7 @@ function LoginPage() {
       {mismatch ? (
         <div className="au-msg bad" role="alert">
           This account is {mismatch === "agent" ? "an agent" : "a company"} account — switch to {mismatch === "agent" ? "Broker" : "Company"} login?{" "}
-          <button type="button" className="au-link" onClick={() => { setRole(mismatch); setMismatch(null); void finish(); }}>Switch &amp; continue</button>
+          <button type="button" className="au-link" onClick={() => { setRole(mismatch); setMismatch(null); void finish(mismatch); }}>Switch &amp; continue</button>
         </div>
       ) : null}
 
@@ -159,7 +189,7 @@ function LoginPage() {
 
       <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
         <Field
-          id="email" label="Work Email Address" type="email" autoComplete="email" placeholder="director@agency.ae"
+          id="email" label="Work Email Address" type="email" autoComplete="email" placeholder={role === "company" ? "director@agency.ae" : "broker@agency.ae"}
           value={email} onChange={(v) => { setEmail(v); setError(null); }} disabled={busy}
           onBlur={() => setTouched((t) => ({ ...t, email: true }))}
           ok={touched.email && emailOk}
@@ -184,7 +214,7 @@ function LoginPage() {
               ) : (
                 <>
                   <b>Reset your password</b>
-                  <Field id="reset-email" label="Email" type="email" autoComplete="email" placeholder="director@agency.ae" value={resetEmail} onChange={setResetEmail} error={resetErr} disabled={!forgot} />
+                  <Field id="reset-email" label="Email" type="email" autoComplete="email" placeholder={role === "company" ? "director@agency.ae" : "broker@agency.ae"} value={resetEmail} onChange={setResetEmail} error={resetErr} disabled={!forgot} />
                   <button type="button" className="au-btn au-btn-line" onClick={() => void sendReset()} disabled={!forgot || resetState === "loading"}>
                     {resetState === "loading" ? <Loader2 size={18} className="au-spin" /> : null} Send reset link
                   </button>
@@ -213,20 +243,6 @@ function LoginPage() {
             className="au-demo-btn"
             disabled={busy}
             onClick={() => {
-              setStoredRole("company");
-              setEmail("demo-company@dealos.ae");
-              setPassword("Demo1234!");
-              setRole("company");
-              void doSignIn("demo-company@dealos.ae", "Demo1234!", "company");
-            }}
-          >
-            <span>🏢</span> Demo as Company
-          </button>
-          <button
-            type="button"
-            className="au-demo-btn"
-            disabled={busy}
-            onClick={() => {
               setStoredRole("agent");
               setEmail("demo-agent@dealos.ae");
               setPassword("Demo1234!");
@@ -234,7 +250,21 @@ function LoginPage() {
               void doSignIn("demo-agent@dealos.ae", "Demo1234!", "agent");
             }}
           >
-            <span>👤</span> Demo as Agent
+            <span>👤</span> Demo as Licensed Broker
+          </button>
+          <button
+            type="button"
+            className="au-demo-btn"
+            disabled={busy}
+            onClick={() => {
+              setStoredRole("company");
+              setEmail("demo-company@dealos.ae");
+              setPassword("Demo1234!");
+              setRole("company");
+              void doSignIn("demo-company@dealos.ae", "Demo1234!", "company");
+            }}
+          >
+            <span>🏢</span> Demo as Agency Owner
           </button>
         </div>
       </div>

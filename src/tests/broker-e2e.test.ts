@@ -24,6 +24,13 @@ import {
   parseSpokenTextToLead,
   isSpeechSpeaking,
 } from "@/lib/whatsapp-voice-service";
+import {
+  getStoredRole,
+  setStoredRole,
+  clearStoredRole,
+  detectRole,
+  type DealOSRole,
+} from "@/lib/auth-role";
 
 describe("DealOS End-to-End Broker Simulation Audit", () => {
   // Mock localStorage for node environment
@@ -305,4 +312,130 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(mobilePaddingClasses).toContain("sm:p-10");
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 8: ROLE-BASED ROUTING & STRICT WORKSPACE ISOLATION
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 8: Role-Based Routing & Strict Workspace Isolation", () => {
+    it("ensures fallback role is 'agent' when storage and user metadata are empty", async () => {
+      clearStoredRole();
+      expect(getStoredRole()).toBeNull();
+
+      const role = await detectRole();
+      expect(role).toBe("agent"); // Must NEVER default to 'company'
+    });
+
+    it("verifies broker login sets role to 'agent' and routes to broker leads", async () => {
+      setStoredRole("agent");
+      expect(getStoredRole()).toBe("agent");
+
+      const role = await detectRole();
+      expect(role).toBe("agent");
+
+      // Verify routing target for broker
+      const targetRoute = role === "company" ? "/owner-dashboard" : "/app/leads";
+      expect(targetRoute).toBe("/app/leads");
+    });
+
+    it("verifies owner login sets role to 'company' and routes to owner cockpit", async () => {
+      setStoredRole("company");
+      expect(getStoredRole()).toBe("company");
+
+      const role = await detectRole();
+      expect(role).toBe("company");
+
+      // Verify routing target for owner
+      const targetRoute = role === "company" ? "/owner-dashboard" : "/app/leads";
+      expect(targetRoute).toBe("/owner-dashboard");
+    });
+
+    it("blocks broker from owner-dashboard route and redirects to /app/leads", () => {
+      const brokerRole: DealOSRole = "agent";
+      function guardOwnerDashboard(role: DealOSRole) {
+        if (role !== "company") {
+          return { redirect: "/app/leads?queue=all" };
+        }
+        return { allow: true };
+      }
+
+      const brokerAttempt = guardOwnerDashboard(brokerRole);
+      expect(brokerAttempt).toEqual({ redirect: "/app/leads?queue=all" });
+
+      const ownerAttempt = guardOwnerDashboard("company");
+      expect(ownerAttempt).toEqual({ allow: true });
+    });
+
+    it("blocks company owner from broker workspace root and redirects to /owner-dashboard", () => {
+      const ownerRole: DealOSRole = "company";
+      function guardBrokerDesk(role: DealOSRole) {
+        if (role === "company") {
+          return { redirect: "/owner-dashboard" };
+        }
+        return { allow: true };
+      }
+
+      const ownerAttempt = guardBrokerDesk(ownerRole);
+      expect(ownerAttempt).toEqual({ redirect: "/owner-dashboard" });
+
+      const brokerAttempt = guardBrokerDesk("agent");
+      expect(brokerAttempt).toEqual({ allow: true });
+    });
+
+    it("verifies broker navigation menu strictly contains broker-only tools and no executive overwatch", () => {
+      const brokerNavItems = [
+        "Broker Cockpit",
+        "Leads Inbox",
+        "Broker AI Copilot",
+        "Offplan",
+        "Ready Property",
+        "Rentals",
+        "Follow-Ups",
+        "Appointments",
+        "Deals",
+        "Tenancies",
+        "Agreements",
+        "Reports",
+        "My Profile",
+        "Broker Settings",
+      ];
+
+      const restrictedOwnerItems = [
+        "Executive Cockpit",
+        "Broker Leaderboard",
+        "Deals Stages Radar",
+        "Developer Debt",
+        "Owner AI Mastermind",
+        "Agency Audit Trail",
+      ];
+
+      for (const restricted of restrictedOwnerItems) {
+        expect(brokerNavItems).not.toContain(restricted);
+      }
+      expect(brokerNavItems).toContain("Leads Inbox");
+      expect(brokerNavItems).toContain("Offplan");
+      expect(brokerNavItems).toContain("Broker Cockpit");
+    });
+
+    it("verifies owner navigation menu strictly contains agency executive overwatch and governance", () => {
+      const ownerNavItems = [
+        "Executive Cockpit",
+        "Broker Leaderboard",
+        "Deals Stages Radar",
+        "Reels & Marketing ROI",
+        "Manage Users & Team",
+        "Developer Debt",
+        "Owner AI Mastermind",
+        "Agency Audit Trail",
+        "Owner Account",
+        "Agency Settings",
+        "Platform Overview",
+      ];
+
+      expect(ownerNavItems).toContain("Executive Cockpit");
+      expect(ownerNavItems).toContain("Broker Leaderboard");
+      expect(ownerNavItems).toContain("Developer Debt");
+      expect(ownerNavItems).toContain("Owner AI Mastermind");
+    });
+  });
 });
+

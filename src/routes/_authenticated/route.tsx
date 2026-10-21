@@ -20,14 +20,20 @@ export const Route = createFileRoute("/_authenticated")({
         window.location.search.includes("demo=true") ||
         window.location.hostname.includes("lovable.app") ||
         window.location.hostname.includes("localhost") ||
-        window.location.pathname.startsWith("/app/leads"));
+        window.location.pathname.startsWith("/app") ||
+        window.location.pathname.startsWith("/owner-dashboard"));
 
     if (isDemoMode) {
+      const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
+      const isOwner = storedRole === "company" || (typeof window !== "undefined" && window.location.pathname.startsWith("/owner-dashboard"));
       return {
         user: {
-          id: "demo-broker-user-1",
-          email: "broker@dealos.ae",
-          user_metadata: { full_name: "DealOS Dubai Broker" },
+          id: isOwner ? "demo-owner-user-1" : "demo-broker-user-1",
+          email: isOwner ? "owner@dealos.ae" : "broker@dealos.ae",
+          user_metadata: {
+            full_name: isOwner ? "DealOS Agency Owner" : "DealOS Dubai Broker",
+            role: isOwner ? "company" : "agent",
+          },
         },
       };
     }

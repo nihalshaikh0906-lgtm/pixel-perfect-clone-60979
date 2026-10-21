@@ -89,7 +89,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   useEffect(() => {
     if (role === "agent") {
       setExecutiveMode(false);
-    } else if (isOwnerRoute) {
+    } else if (isOwnerRoute || role === "company") {
       setExecutiveMode(true);
     }
   }, [isOwnerRoute, role]);
@@ -165,7 +165,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     },
   ];
 
-  const activeGroups = (role === "agent" ? false : executiveMode) ? ownerGroups : brokerGroups;
+  const activeGroups = (role === "company" || (role !== "agent" && executiveMode)) ? ownerGroups : brokerGroups;
 
   useEffect(() => { setDrawer(false); }, [pathname]);
   useEffect(() => {
@@ -266,41 +266,13 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                   </div>
                   <span className="text-[10px] text-primary/80 font-bold tracking-wider uppercase">Licensed Agent</span>
                 </div>
-              ) : executiveMode ? (
+              ) : (
                 <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2 text-xs flex items-center justify-between shadow-xs">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Crown size={14} className="text-amber-400 shrink-0" />
                     <span className="font-extrabold text-[11px] text-amber-300 truncate">Owner Cockpit</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setExecutiveMode(false);
-                      void navigate({ to: "/app/leads", search: { queue: "all" } });
-                    }}
-                    className="text-[10px] text-muted-foreground hover:text-foreground font-bold hover:underline shrink-0"
-                    title="Switch to Licensed Broker Leads & Units Desk"
-                  >
-                    Broker Desk ↗
-                  </button>
-                </div>
-              ) : (
-                <div className="rounded-xl bg-primary/10 border border-primary/30 p-2 text-xs flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <User size={14} className="text-primary shrink-0" />
-                    <span className="font-extrabold text-[11px] text-primary truncate">Broker Desk</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setExecutiveMode(true);
-                      void navigate({ to: "/owner-dashboard" });
-                    }}
-                    className="text-[10px] text-muted-foreground hover:text-foreground font-bold hover:underline shrink-0"
-                    title="Switch to Executive Agency Overwatch Cockpit"
-                  >
-                    Owner Cockpit ↗
-                  </button>
+                  <span className="text-[10px] text-amber-300/80 font-bold tracking-wider uppercase">Agency Owner</span>
                 </div>
               )}
             </div>
@@ -323,33 +295,19 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                   <User size={15} />
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (executiveMode) {
-                      setExecutiveMode(false);
-                      void navigate({ to: "/app/leads", search: { queue: "all" } });
-                    } else {
-                      setExecutiveMode(true);
-                      void navigate({ to: "/owner-dashboard" });
-                    }
-                  }}
-                  className={`size-8 rounded-xl flex items-center justify-center transition-all ${
-                    executiveMode
-                      ? "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30"
-                      : "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30"
-                  }`}
-                  title={executiveMode ? "Company Owner Mode · Click to switch to Broker Desk" : "Broker Desk Mode · Click to switch to Owner Cockpit"}
+                <div
+                  className="size-8 rounded-xl flex items-center justify-center bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                  title="Owner Cockpit Mode · Agency Owner"
                   onMouseEnter={(e) =>
                     handleMouseEnter(e, {
-                      label: executiveMode ? "Company Owner Mode" : "Broker Desk Mode",
-                      desc: executiveMode ? "Click to toggle Broker Leads & Inventory" : "Click to toggle Company Owner Overwatch",
+                      label: "Owner Cockpit Mode",
+                      desc: "Agency Overwatch, GMV & Executive Radar",
                     })
                   }
                   onMouseLeave={handleMouseLeave}
                 >
-                  {executiveMode ? <Crown size={15} /> : <User size={15} />}
-                </button>
+                  <Crown size={15} />
+                </div>
               )}
             </div>
           )}

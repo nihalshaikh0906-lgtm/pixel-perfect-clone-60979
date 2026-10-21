@@ -10,7 +10,7 @@ import { detectRole, getStoredRole } from "@/lib/auth-role";
 export const Route = createFileRoute("/_authenticated/owner-dashboard")({
   beforeLoad: async () => {
     const role = await detectRole();
-    if (role === "agent") {
+    if (role !== "company") {
       throw redirect({ to: "/app/leads", search: { queue: "all" }, replace: true });
     }
   },
@@ -47,12 +47,12 @@ function OwnerDashboardPage() {
   const role = getStoredRole();
 
   useEffect(() => {
-    if (role === "agent") {
+    if (role !== "company") {
       void navigate({ to: "/app/leads", search: { queue: "all" }, replace: true });
     }
   }, [role, navigate]);
 
-  if (role === "agent") return null;
+  if (role !== "company") return null;
 
   const { user } = Route.useRouteContext();
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
