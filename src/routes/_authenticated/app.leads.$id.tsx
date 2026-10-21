@@ -320,6 +320,17 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
               {/* Action Buttons */}
               <div className="flex items-center gap-2 shrink-0">
                 <a
+                  href={`/deal-room/${lead.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-bold text-xs transition-all shadow-sm"
+                  title="Open client-facing Live Deal Room"
+                >
+                  <Sparkles size={13} className="text-amber-400" />
+                  <span>Live Deal Room ↗</span>
+                </a>
+
+                <a
                   href={`tel:${lead.phone.replace(/\s/g, "")}`}
                   className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs transition-all shadow-sm"
                   title="Direct phone call"
@@ -622,6 +633,20 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
                   <MessageCircle size={15} />
                   <span>Send on WhatsApp ↗</span>
                 </a>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const origin = typeof window !== "undefined" ? window.location.origin : "https://dealos.ae";
+                    const dealRoomUrl = `${origin}/deal-room/${lead.id}`;
+                    const dealRoomMsg = `Hi ${firstName}, I've engineered your private Live Deal Room with real-time ROI simulations, unit floor plans, and verified DLD escrow milestones:\n\n${dealRoomUrl}\n\nHave a look and let me know if you would like me to lock in the 48-hour reservation.`;
+                    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(dealRoomMsg)}`, "_blank");
+                  }}
+                  className="col-span-2 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-xs inline-flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+                >
+                  <Sparkles size={14} />
+                  <span>Send Live Deal Room Link on WhatsApp ⚡</span>
+                </button>
               </div>
             </div>
 

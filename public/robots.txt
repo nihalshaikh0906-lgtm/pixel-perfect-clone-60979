@@ -8,6 +8,7 @@ Allow: /privacy
 Allow: /terms
 Allow: /login
 Allow: /signup
+Allow: /deal-room
 
 # Protect authenticated workspaces and APIs
 Disallow: /app/

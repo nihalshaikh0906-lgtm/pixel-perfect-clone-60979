@@ -42,6 +42,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDossierCopilotRouteImport } from './routes/api/dossier-copilot'
 import { Route as ApiGeneralCopilotRouteImport } from './routes/api/general-copilot'
 import { Route as ApiMastermindRouteImport } from './routes/api/mastermind'
+import { Route as DealRoomIdRouteImport } from './routes/deal-room.$id'
 import { Route as MediaSplatRouteImport } from './routes/media.$'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSectionRouteImport } from './routes/_authenticated/app.$section'
@@ -237,6 +238,11 @@ const ApiGeneralCopilotRoute = ApiGeneralCopilotRouteImport.update({
 const ApiMastermindRoute = ApiMastermindRouteImport.update({
   id: '/api/mastermind',
   path: '/api/mastermind',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DealRoomIdRoute = DealRoomIdRouteImport.update({
+  id: '/deal-room/$id',
+  path: '/deal-room/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediaSplatRoute = MediaSplatRouteImport.update({
@@ -439,6 +445,7 @@ export interface FileRoutesByFullPath {
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/api/mastermind': typeof ApiMastermindRoute
+  '/deal-room/$id': typeof DealRoomIdRoute
   '/media/$': typeof MediaSplatRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
   '/app/about': typeof AuthenticatedAppAboutRoute
@@ -501,6 +508,7 @@ export interface FileRoutesByTo {
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/api/mastermind': typeof ApiMastermindRoute
+  '/deal-room/$id': typeof DealRoomIdRoute
   '/media/$': typeof MediaSplatRoute
   '/': typeof AuthenticatedIndexRoute
   '/app/$section': typeof AuthenticatedAppSectionRoute
@@ -567,6 +575,7 @@ export interface FileRoutesById {
   '/api/dossier-copilot': typeof ApiDossierCopilotRoute
   '/api/general-copilot': typeof ApiGeneralCopilotRoute
   '/api/mastermind': typeof ApiMastermindRoute
+  '/deal-room/$id': typeof DealRoomIdRoute
   '/media/$': typeof MediaSplatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/app/$section': typeof AuthenticatedAppSectionRoute
@@ -634,6 +643,7 @@ export interface FileRouteTypes {
     | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/api/mastermind'
+    | '/deal-room/$id'
     | '/media/$'
     | '/app/$section'
     | '/app/about'
@@ -696,6 +706,7 @@ export interface FileRouteTypes {
     | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/api/mastermind'
+    | '/deal-room/$id'
     | '/media/$'
     | '/'
     | '/app/$section'
@@ -761,6 +772,7 @@ export interface FileRouteTypes {
     | '/api/dossier-copilot'
     | '/api/general-copilot'
     | '/api/mastermind'
+    | '/deal-room/$id'
     | '/media/$'
     | '/_authenticated/'
     | '/_authenticated/app/$section'
@@ -809,6 +821,7 @@ export interface RootRouteChildren {
   ApiDossierCopilotRoute: typeof ApiDossierCopilotRoute
   ApiGeneralCopilotRoute: typeof ApiGeneralCopilotRoute
   ApiMastermindRoute: typeof ApiMastermindRoute
+  DealRoomIdRoute: typeof DealRoomIdRoute
   MediaSplatRoute: typeof MediaSplatRoute
 }
 
@@ -1043,6 +1056,13 @@ declare module '@tanstack/react-router' {
       path: '/api/mastermind'
       fullPath: '/api/mastermind'
       preLoaderRoute: typeof ApiMastermindRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deal-room/$id': {
+      id: '/deal-room/$id'
+      path: '/deal-room/$id'
+      fullPath: '/deal-room/$id'
+      preLoaderRoute: typeof DealRoomIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media/$': {
@@ -1387,6 +1407,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDossierCopilotRoute: ApiDossierCopilotRoute,
   ApiGeneralCopilotRoute: ApiGeneralCopilotRoute,
   ApiMastermindRoute: ApiMastermindRoute,
+  DealRoomIdRoute: DealRoomIdRoute,
   MediaSplatRoute: MediaSplatRoute,
 }
 export const routeTree = rootRouteImport
