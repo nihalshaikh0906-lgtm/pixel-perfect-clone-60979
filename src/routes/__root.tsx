@@ -91,10 +91,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Institutional real estate operating system for Dubai brokers and agencies: 34,850+ verified units, lead dossiers, and owner cockpit.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://dealos.ae" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@dealos_ae" },
     ],
     links: [
+      { rel: "canonical", href: "https://dealos.ae" },
       {
         rel: "stylesheet",
         href: appCss,
