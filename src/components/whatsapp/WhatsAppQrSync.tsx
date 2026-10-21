@@ -377,6 +377,22 @@ export function WhatsAppQrSync() {
 
           <button
             type="button"
+            onClick={() => setIntegrationMode("cloud_api")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              integrationMode === "cloud_api"
+                ? "bg-card text-foreground shadow-sm border border-border"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ShieldCheck size={14} className={integrationMode === "cloud_api" ? "text-primary" : "text-muted-foreground"} />
+            <span>Meta Cloud API</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-primary/15 text-primary border border-primary/30">
+              OFFICIAL WABA
+            </span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIntegrationMode("sandbox")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               integrationMode === "sandbox"
@@ -390,30 +406,14 @@ export function WhatsAppQrSync() {
               DEMO
             </span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => setIntegrationMode("cloud_api")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              integrationMode === "cloud_api"
-                ? "bg-card text-foreground shadow-sm border border-border"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <ShieldCheck size={14} className={integrationMode === "cloud_api" ? "text-primary" : "text-muted-foreground"} />
-            <span>Meta Cloud API</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-primary/15 text-primary border border-primary/30">
-              ENTERPRISE
-            </span>
-          </button>
         </div>
 
         <div className="text-[11px] text-muted-foreground px-2">
           {integrationMode === "otp"
-            ? "Direct 6-Digit WhatsApp OTP Verification"
-            : integrationMode === "sandbox"
-            ? "Interactive Demo Sandbox active"
-            : "Official Meta Business Platform"}
+            ? "Direct 1/1 Device Slot OTP + Live Test Echo"
+            : integrationMode === "cloud_api"
+            ? "Official Meta WABA & Server Webhooks"
+            : "Interactive Audio Speech Demo"}
         </div>
       </div>
 
