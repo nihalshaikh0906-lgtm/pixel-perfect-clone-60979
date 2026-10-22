@@ -521,24 +521,41 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 .a-dev{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .a-dev-mark{width:56px;height:56px;border-radius:50%;background:var(--a-cream);border:1px solid var(--a-line);display:grid;place-items:center;font-weight:750;color:var(--a-gold-text)}
 
-/* ═══ All-White Minimalist Owner Sidebar ═══ */
+/* ═══ Universal All-White Minimalist Modern Sidebar (Broker & Owner) ═══ */
+.a-side,
+.a-side.modern-side-white,
 .a-side.owner-side-white {
   background: #ffffff !important;
   border-right: 1px solid #edf2f7 !important;
   box-shadow: 1px 0 4px rgba(0, 0, 0, 0.02) !important;
 }
+.a-side .a-brand-wrap,
+.a-side.modern-side-white .a-brand-wrap,
 .a-side.owner-side-white .a-brand-wrap {
   border-bottom: 1px solid #f1f5f9 !important;
   background: #ffffff !important;
 }
+.a-side .a-brand-text .logo-word,
+.a-side.modern-side-white .a-brand-text .logo-word,
 .a-side.owner-side-white .a-brand-text .logo-word {
   color: #0f172a !important;
 }
+.a-side .a-brand-text .logo-word .text-gradient,
+.a-side.modern-side-white .a-brand-text .logo-word .text-gradient,
+.a-side.owner-side-white .a-brand-text .logo-word .text-gradient {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  color: #0f172a !important;
+}
+.a-side .a-collapse-mini,
+.a-side.modern-side-white .a-collapse-mini,
 .a-side.owner-side-white .a-collapse-mini {
   color: #64748b !important;
   background: #f8fafc !important;
   border: 1px solid #e2e8f0 !important;
 }
+.a-side .a-group > p,
+.a-side.modern-side-white .a-group > p,
 .a-side.owner-side-white .a-group > p {
   color: #94a3b8 !important;
   font-size: 10px !important;
@@ -546,6 +563,8 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
   letter-spacing: 0.12em !important;
   margin: 14px 0 6px 14px !important;
 }
+.a-side .a-link,
+.a-side.modern-side-white .a-link,
 .a-side.owner-side-white .a-link {
   color: #475569 !important;
   font-weight: 500 !important;
@@ -555,28 +574,55 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
   margin: 2px 8px !important;
   transition: all 0.15s ease !important;
 }
+.a-side .a-link svg,
+.a-side.modern-side-white .a-link svg,
+.a-side.owner-side-white .a-link svg {
+  color: #64748b !important;
+}
+.a-side .a-link:hover,
+.a-side.modern-side-white .a-link:hover,
 .a-side.owner-side-white .a-link:hover {
   background: #f8fafc !important;
   color: #0f172a !important;
 }
+.a-side .a-link:hover svg,
+.a-side.modern-side-white .a-link:hover svg,
+.a-side.owner-side-white .a-link:hover svg {
+  color: #0f172a !important;
+}
+.a-side .a-link.active,
+.a-side.modern-side-white .a-link.active,
 .a-side.owner-side-white .a-link.active {
   background: #0f172a !important;
   color: #ffffff !important;
   font-weight: 600 !important;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
 }
+.a-side .a-link.active svg,
+.a-side.modern-side-white .a-link.active svg,
+.a-side.owner-side-white .a-link.active svg {
+  color: #ffffff !important;
+}
+.a-side .a-side-footer,
+.a-side.modern-side-white .a-side-footer,
 .a-side.owner-side-white .a-side-footer {
   border-top: 1px solid #f1f5f9 !important;
   background: #ffffff !important;
 }
+.a-side .a-user,
+.a-side.modern-side-white .a-user,
 .a-side.owner-side-white .a-user {
   background: #f8fafc !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 12px !important;
 }
+.a-side .a-user-text b,
+.a-side.modern-side-white .a-user-text b,
 .a-side.owner-side-white .a-user-text b {
   color: #0f172a !important;
 }
+.a-side .a-user-text small,
+.a-side.modern-side-white .a-user-text small,
 .a-side.owner-side-white .a-user-text small {
   color: #64748b !important;
 }

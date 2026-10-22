@@ -48,7 +48,7 @@ export const Route = createFileRoute("/_authenticated/app/")({
   notFoundComponent: () => <div>Dashboard not found.</div>,
   head: () => ({
     meta: [
-      { title: "Agent Command Center — DealOS Dubai" },
+      { title: "Broker Cockpit — DealOS Dubai" },
       { name: "description", content: "High-performance Dubai real estate broker cockpit with priority action queue and instant inventory matching." },
     ],
   }),
@@ -82,14 +82,14 @@ function HomePage() {
   }, [navigate]);
 
   if (role === "company") return null;
-  return <AgentDashboard userName={userName} />;
+  return <BrokerCockpit userName={userName} />;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   MASTER-DESIGNED AGENT DASHBOARD COCKPIT
+   MASTER-DESIGNED BROKER COCKPIT
 ────────────────────────────────────────────────────────────── */
 
-function AgentDashboard({ userName }: { userName?: string }) {
+function BrokerCockpit({ userName }: { userName?: string }) {
   const { data: projectData } = useSuspenseQuery(projectPageOptions(1));
   const [leadList, setLeadList] = useState<Lead[]>(() => queueLeads("all"));
   const [activeTab, setActiveTab] = useState<"urgent" | "hot" | "closing" | "all">("urgent");
@@ -190,7 +190,7 @@ When are you free today for a quick 2-minute overview?`;
               {(() => {
                 const hour = new Date().getHours();
                 const g = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-                return `${g}, ${userName ? userName : "Property Consultant"}`;
+                return `${g}, ${userName ? userName : "Licensed Broker"}`;
               })()}
             </h1>
             <p className="text-[11px] sm:text-sm text-muted-foreground max-w-xl leading-relaxed">

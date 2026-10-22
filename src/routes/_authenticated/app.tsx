@@ -22,9 +22,9 @@ export const Route = createFileRoute("/_authenticated/app")({
   },
   head: () => ({
     meta: [
-      { title: "DealOS Workspace — Broker dashboard" },
+      { title: "DealOS Workspace — Broker Cockpit" },
       { name: "description", content: "Your DealOS broker workspace: leads inbox, next best action, pipeline and Dubai market snapshot." },
-      { property: "og:title", content: "DealOS Workspace — Broker dashboard" },
+      { property: "og:title", content: "DealOS Workspace — Broker Cockpit" },
       { property: "og:description", content: "Leads, pipeline and AI assistance in one Dubai broker workspace." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -244,9 +244,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       <div className={`dapp ${theme.dark ? "a-dark" : ""}`}>
         {drawer ? <div className="a-scrim" onClick={() => setDrawer(false)} aria-hidden /> : null}
 
-        {/* ═══ GEMINI-STYLE SIDEBAR RAIL ═══ */}
+        {/* ═══ GEMINI-STYLE SIDEBAR RAIL (MODERN ALL-WHITE MINIMALIST FOR BOTH BROKER & OWNER) ═══ */}
         <aside
-          className={`a-side ${role === "company" || isOwnerRoute ? "owner-side-white" : ""} ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`}
+          className={`a-side modern-side-white owner-side-white ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`}
           aria-label="Workspace navigation"
         >
           {/* Top Logo Button: Toggles the entire sidebar like Gemini */}
@@ -263,7 +263,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               <LogoMark size={28} />
               {!collapsed && (
                 <div className="a-brand-text flex items-center gap-2">
-                  <span className="logo-word font-extrabold text-base">Deal<span className="text-gradient">OS</span></span>
+                  <span className="logo-word font-extrabold text-base text-slate-900">Deal<span className="text-slate-900 font-black">OS</span></span>
                   <span className="a-demo text-[10px] uppercase font-bold tracking-wider">PRO</span>
                 </div>
               )}
@@ -294,12 +294,12 @@ export function AppShell({ children, userName, initials, agency }: { children: R
           {!collapsed && (
             <div className="px-3 py-2 border-b border-border/50">
               {role === "agent" ? (
-                <div className="rounded-xl bg-primary/10 border border-primary/30 p-2 text-xs flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <User size={14} className="text-primary shrink-0" />
-                    <span className="font-extrabold text-[11px] text-primary truncate">Broker Desk</span>
+                <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-2.5 text-xs flex items-center justify-between">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <User size={15} className="text-slate-800 shrink-0" />
+                    <span className="font-bold text-[11.5px] text-slate-800 truncate">Broker Desk</span>
                   </div>
-                  <span className="text-[10px] text-primary/80 font-bold tracking-wider uppercase">Licensed Agent</span>
+                  <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">Licensed Broker</span>
                 </div>
               ) : (
                 <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-2.5 text-xs flex items-center justify-between">
@@ -317,8 +317,8 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             <div className="flex justify-center py-2 border-b border-border/40">
               {role === "agent" ? (
                 <div
-                  className="size-8 rounded-xl flex items-center justify-center bg-primary/10 text-primary border border-primary/30"
-                  title="Broker Desk Mode · Licensed Agent"
+                  className="size-8 rounded-xl flex items-center justify-center bg-slate-100 text-slate-800 border border-slate-200"
+                  title="Broker Desk Mode · Licensed Broker"
                   onMouseEnter={(e) =>
                     handleMouseEnter(e, {
                       label: "Broker Desk Mode",
@@ -380,7 +380,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     <span className="a-avatar sm">{initials}</span>
                     <div className="min-w-0">
                       <p className="font-bold text-xs truncate text-foreground">{userName}</p>
-                      <p className="text-[11px] text-muted-foreground truncate">{role === "company" ? "Company Owner & Principal" : "Property Consultant"} · {agency}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{role === "company" ? "Company Owner & Principal" : "Licensed Broker"} · {agency}</p>
                     </div>
                   </div>
                   <div className="a-user-menu-divider" />

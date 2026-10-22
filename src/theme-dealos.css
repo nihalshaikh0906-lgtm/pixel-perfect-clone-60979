@@ -74,8 +74,7 @@
 .dapp .c-ready{color:#6B3FE0;background:#F1EBFF}
 .dapp .c-offplan{color:#2A45C8;background:#EEF1FF}
 .dapp .a-logo{background:var(--brand-gradient);color:#fff}
-.dapp .a-avatar{background:#EEF1FF;color:#2A45C8}
-.dapp .a-link.active svg{color:#2F6BFF}
+.dapp .a-link.active svg{color:#ffffff!important}
 .dapp .a-search:focus-within{border-color:#2F6BFF;box-shadow:0 0 0 3px rgba(47,107,255,.18)}
 .dapp .a-btn:focus-visible{outline-color:#2F6BFF}
 
@@ -102,7 +101,7 @@
 .dealos a:not([class]){color:#2A45C8}
 .dapp .a-card,.dapp .a-panel{border-radius:24px}
 .dapp .a-top{background:rgba(255,255,255,.82)}
-.dapp .a-link.active{background:linear-gradient(90deg,rgba(58,100,255,.12),rgba(138,77,255,.10));color:#141A33}
+.dapp .a-link.active{background:#0f172a!important;color:#ffffff!important;font-weight:600!important;box-shadow:0 1px 3px rgba(15,23,42,.12)!important}
 .dapp .a-side{background:#fff}
 ::selection{background:rgba(47,107,255,.2)}
 .dealos .d-insight p,.dealos .d-dashboard p{color:#141A33!important}
