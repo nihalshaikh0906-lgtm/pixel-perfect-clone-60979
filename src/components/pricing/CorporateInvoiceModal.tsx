@@ -18,32 +18,44 @@ interface CorporateInvoiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultPlan?: string;
+  initialAgencyName?: string;
+  initialContactName?: string;
+  initialEmail?: string;
+  initialPhone?: string;
+  initialBillingCycle?: "quarterly" | "annual";
 }
 
 export function CorporateInvoiceModal({
   isOpen,
   onClose,
-  defaultPlan = "Growth Agency (AED 3,500/mo)",
+  defaultPlan = "Growth Brokerage (11–25 Agents · AED 999/mo)",
+  initialAgencyName = "",
+  initialContactName = "",
+  initialEmail = "",
+  initialPhone = "+971 ",
+  initialBillingCycle = "annual",
 }: CorporateInvoiceModalProps) {
   const [step, setStep] = useState<"form" | "invoice">("form");
-  const [agencyName, setAgencyName] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("+971 ");
+  const [agencyName, setAgencyName] = useState(initialAgencyName);
+  const [contactName, setContactName] = useState(initialContactName);
+  const [email, setEmail] = useState(initialEmail);
+  const [phone, setPhone] = useState(initialPhone);
   const [selectedPlan, setSelectedPlan] = useState(defaultPlan);
-  const [billingCycle, setBillingCycle] = useState<"quarterly" | "annual">("quarterly");
+  const [billingCycle, setBillingCycle] = useState<"quarterly" | "annual">(initialBillingCycle);
   const [invoiceNumber, setInvoiceNumber] = useState("INV-2026-AE-1092");
 
   if (!isOpen) return null;
 
   const calculateTotal = () => {
-    let monthlyRate = 3500;
-    if (selectedPlan.includes("Solo")) monthlyRate = 129;
-    if (selectedPlan.includes("Sovereign")) monthlyRate = 15000;
+    let monthlyRate = 999;
+    if (selectedPlan.includes("Boutique")) monthlyRate = 599;
+    else if (selectedPlan.includes("Enterprise")) monthlyRate = 2199;
+    else if (selectedPlan.includes("Corporate") || selectedPlan.includes("Sovereign")) monthlyRate = 3999;
+    else if (selectedPlan.includes("Solo")) monthlyRate = 129;
 
     const months = billingCycle === "annual" ? 12 : 3;
     const subtotal = monthlyRate * months;
-    const discount = billingCycle === "annual" ? subtotal * 0.15 : 0;
+    const discount = billingCycle === "annual" ? subtotal * 0.16 : 0;
     const total = subtotal - discount;
     const vat = total * 0.05;
     return { subtotal, discount, vat, grandTotal: total + vat };
@@ -180,9 +192,11 @@ export function CorporateInvoiceModal({
                   onChange={(e) => setSelectedPlan(e.target.value)}
                   className="w-full h-10 px-3.5 rounded-xl border border-border bg-secondary/30 text-xs text-foreground focus:outline-none focus:border-primary"
                 >
-                  <option value="Growth Agency (AED 3,500/mo)">Growth Agency (AED 3,500/mo · 20 Seats)</option>
-                  <option value="White-Label Sovereign (AED 15,000/mo)">White-Label Sovereign (AED 15,000/mo · Unlimited)</option>
-                  <option value="Solo Broker (AED 129/mo)">Solo Broker (AED 129/mo · 1 Seat)</option>
+                  <option value="Boutique Agency (5–10 Agents · AED 599/mo)">Boutique Agency (5–10 Agents · AED 599/mo)</option>
+                  <option value="Growth Brokerage (11–25 Agents · AED 999/mo)">Growth Brokerage (11–25 Agents · AED 999/mo · Most Popular)</option>
+                  <option value="Enterprise Brokerage (26–50 Agents · AED 2,199/mo)">Enterprise Brokerage (26–50 Agents · AED 2,199/mo)</option>
+                  <option value="Corporate Institutional (50+ Agents · AED 3,999/mo)">Corporate Institutional (50+ Agents · Custom)</option>
+                  <option value="Solo Broker (AED 129/mo)">Solo Broker Pro (AED 129/mo · 1 Desk)</option>
                 </select>
               </div>
 

@@ -18,10 +18,10 @@ export type Plan = {
 };
 
 export const PLANS: Plan[] = [
-  { id: "monthly", label: "1 Month", period: "/month", buttonLabel: "1 month", months: 1, originalPrice: 199, price: 129, perMonth: 129, savingLabel: "Launch discount · 35% off", toggleBadge: "Launch offer", stripePriceId: "price_monthly_129", highlighted: false },
-  { id: "quarterly", label: "3 Months", period: "/3 months", buttonLabel: "3 months", months: 3, originalPrice: 597, price: 349, perMonth: 116, savingLabel: "Save AED 248 (AED 116/mo)", toggleBadge: "−42%", stripePriceId: "price_quarterly_349", highlighted: false },
-  { id: "semiannual", label: "6 Months", period: "/6 months", buttonLabel: "6 months", months: 6, originalPrice: 1194, price: 629, perMonth: 105, savingLabel: "Save AED 565 (AED 105/mo)", toggleBadge: "−47%", stripePriceId: "price_semiannual_629", highlighted: false },
-  { id: "annual", label: "1 Year", period: "/year", buttonLabel: "1 year", months: 12, originalPrice: 2388, price: 1099, perMonth: 91, perMonthNote: "Only AED 91 / month", savingLabel: "Best Value · Save 54%", toggleBadge: "★ Best Deal", stripePriceId: "price_annual_1099", highlighted: true },
+  { id: "monthly", label: "1 Month", period: "/month", buttonLabel: "1 month", months: 1, originalPrice: 199, price: 129, perMonth: 129, savingLabel: "Launch discount · 35% off (AED 70 saved)", toggleBadge: "−35%", stripePriceId: "price_monthly_129", highlighted: false },
+  { id: "quarterly", label: "3 Months", period: "/3 months", buttonLabel: "3 months", months: 3, originalPrice: 597, price: 349, perMonth: 116, savingLabel: "Save AED 248 (AED 116/mo · 42% off)", toggleBadge: "−42%", stripePriceId: "price_quarterly_349", highlighted: false },
+  { id: "semiannual", label: "6 Months", period: "/6 months", buttonLabel: "6 months", months: 6, originalPrice: 1194, price: 629, perMonth: 105, savingLabel: "Save AED 565 (AED 105/mo · 47% off)", toggleBadge: "−47%", stripePriceId: "price_semiannual_629", highlighted: false },
+  { id: "annual", label: "1 Year", period: "/year", buttonLabel: "1 year", months: 12, originalPrice: 2388, price: 1099, perMonth: 91, perMonthNote: "Only AED 91 / month", savingLabel: "Best Value · Save AED 1,289 (54% off)", toggleBadge: "−54% · Best", stripePriceId: "price_annual_1099", highlighted: true },
 ];
 
 export const DEFAULT_PLAN: PlanId = "annual";
@@ -37,5 +37,108 @@ export const PLAN_FEATURES = [
   "Priority support",
 ];
 
+export type AgencyTierId = "boutique" | "growth" | "enterprise" | "corporate";
+
+export interface AgencyTier {
+  id: AgencyTierId;
+  name: string;
+  minAgents: number;
+  maxAgents: number;
+  agentRangeLabel: string;
+  monthlyPrice: number;
+  annualPrice: number;
+  annualEquivalentMonthly: number;
+  standardSoloAnnualCost: number;
+  adminSeats: string;
+  brokerSeats: string;
+  recommended?: boolean;
+  features: string[];
+}
+
+export const AGENCY_TIERS: AgencyTier[] = [
+  {
+    id: "boutique",
+    name: "Boutique Agency",
+    minAgents: 5,
+    maxAgents: 10,
+    agentRangeLabel: "5 – 10 Agents",
+    monthlyPrice: 599,
+    annualPrice: 4990,
+    annualEquivalentMonthly: 415,
+    standardSoloAnnualCost: 10990, // 10 x AED 1,099
+    adminSeats: "1 Master Admin Cockpit",
+    brokerSeats: "Up to 10 Dedicated Broker Desks",
+    features: [
+      "1 Master Admin + 10 Dedicated Broker Desks",
+      "Full Dubai off-plan catalog (1,355+ developments)",
+      "Team WhatsApp script library & branded dossiers",
+      "Centralized agency lead inbox & tracking",
+      "UAE corporate tax invoice & Emirates NBD / Wio IBAN",
+    ],
+  },
+  {
+    id: "growth",
+    name: "Growth Brokerage",
+    minAgents: 11,
+    maxAgents: 25,
+    agentRangeLabel: "11 – 25 Agents",
+    monthlyPrice: 1199,
+    annualPrice: 9990,
+    annualEquivalentMonthly: 832,
+    standardSoloAnnualCost: 27475, // 25 x AED 1,099
+    adminSeats: "2 Admin Cockpits",
+    brokerSeats: "Up to 25 Dedicated Broker Desks",
+    recommended: true,
+    features: [
+      "2 Admin Cockpits + 25 Dedicated Broker Desks",
+      "Automated Round-Robin Lead Distribution Engine",
+      "Broker commission split ledger & payout tracking",
+      "Custom agency branding on all client PDF decks",
+      "Dedicated WhatsApp account manager & priority onboarding",
+    ],
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise Brokerage",
+    minAgents: 26,
+    maxAgents: 50,
+    agentRangeLabel: "26 – 50 Agents",
+    monthlyPrice: 2199,
+    annualPrice: 18990,
+    annualEquivalentMonthly: 1582,
+    standardSoloAnnualCost: 54950, // 50 x AED 1,099
+    adminSeats: "5 Admin Cockpits",
+    brokerSeats: "Up to 50 Dedicated Broker Desks",
+    features: [
+      "5 Admin Cockpits + 50 Dedicated Broker Desks",
+      "Custom Brokerage Domain (e.g. crm.youragency.ae)",
+      "Developer direct inventory sync & priority feeds",
+      "Agent productivity leaderboard & KPI analytics",
+      "1-on-1 team training session & priority 24/7 SLA",
+    ],
+  },
+  {
+    id: "corporate",
+    name: "Corporate Institutional",
+    minAgents: 51,
+    maxAgents: 200,
+    agentRangeLabel: "50+ Agents",
+    monthlyPrice: 3999,
+    annualPrice: 34990,
+    annualEquivalentMonthly: 2915,
+    standardSoloAnnualCost: 109900, // 100 x AED 1,099
+    adminSeats: "Unlimited Admins",
+    brokerSeats: "Custom Unlimited Desks",
+    features: [
+      "Unlimited Admin & Manager accounts + custom desks",
+      "Multi-branch / Multi-license isolation support",
+      "Dedicated database instance & automated daily backup",
+      "Custom CRM data migration from HubSpot / Salesforce",
+      "Institutional SLA with dedicated UAE Account Executive",
+    ],
+  },
+];
+
 export const aedPrice = (n: number) => `AED ${Math.round(n).toLocaleString("en-US")}`;
 export const isPlanId = (v: unknown): v is PlanId => PLANS.some((p) => p.id === v);
+

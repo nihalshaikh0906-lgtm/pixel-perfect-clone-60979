@@ -508,13 +508,20 @@
   }
   .dealos .d-tool-card,
   .dealos [data-tool-card] {
-    min-height: 230px !important;
+    min-height: 240px !important;
     height: auto !important;
     overflow: visible !important;
-    padding-bottom: 22px !important;
+    padding-bottom: 24px !important;
+  }
+  .dealos .d-tools-carousel-card {
+    min-height: 285px !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding-bottom: 30px !important;
   }
   .dealos .d-bento {
     gap: 14px !important;
   }
 }
+
 

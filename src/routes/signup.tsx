@@ -10,7 +10,10 @@ import { isPlanId, type PlanId } from "@/lib/pricing";
 
 export const Route = createFileRoute("/signup")({
   ssr: false,
-  validateSearch: (s: Record<string, unknown>): { plan?: PlanId } => (isPlanId(s["plan"]) ? { plan: s["plan"] } : {}),
+  validateSearch: (s: Record<string, unknown>): { plan?: string; agency?: string } => ({
+    plan: typeof s["plan"] === "string" ? s["plan"] : undefined,
+    agency: typeof s["agency"] === "string" ? s["agency"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Create your account · DealOS" },
@@ -30,8 +33,8 @@ export const Route = createFileRoute("/signup")({
 
 function SignupPage() {
   const router = useRouter();
-  const { plan } = Route.useSearch();
-  const [f, setF] = useState({ name: "", agency: "", phone: "", email: "", password: "" });
+  const { plan, agency } = Route.useSearch();
+  const [f, setF] = useState({ name: "", agency: agency ?? "", phone: "", email: "", password: "" });
   const [terms, setTerms] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [state, setState] = useState<"idle" | "loading" | "success">("idle");

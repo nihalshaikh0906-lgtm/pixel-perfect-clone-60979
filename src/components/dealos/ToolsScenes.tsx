@@ -120,12 +120,12 @@ export function Tools() {
               return (
                 <div
                   key={t.title}
-                  className="w-[82vw] max-w-[320px] sm:w-[310px] shrink-0 snap-center rounded-2xl sm:rounded-3xl p-5 sm:p-6 bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-                  style={{ minHeight: "230px", height: "auto" }}
+                  className="d-tools-carousel-card w-[84vw] max-w-[325px] sm:w-[310px] shrink-0 snap-center rounded-2xl sm:rounded-3xl p-6 sm:p-6 pb-8 bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-visible"
+                  style={{ minHeight: "285px", height: "auto" }}
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                      <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                         <Icon size={20} />
                       </div>
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-secondary border border-border text-muted-foreground">
@@ -142,7 +142,7 @@ export function Tools() {
                     </div>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-3 break-words">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-4 break-words">
                     {t.description}
                   </p>
                 </div>

@@ -7,17 +7,27 @@ import {
   Sparkles,
   Users,
   ShieldCheck,
-  CreditCard,
   Landmark,
   Building2,
   Lock,
   MessageCircle,
-  Zap,
   LogIn,
+  User,
+  Calculator,
+  RotateCcw,
+  CheckCircle2,
+  Loader2,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { DEFAULT_PLAN, PLANS, PLAN_FEATURES, aedPrice, type PlanId } from '@/lib/pricing';
-import { RevealText, Rise, Scene } from './primitives';
+import {
+  DEFAULT_PLAN,
+  PLANS,
+  AGENCY_TIERS,
+  aedPrice,
+  type PlanId,
+  type AgencyTierId,
+} from '@/lib/pricing';
+import { RevealText, Scene } from './primitives';
 import { CorporateInvoiceModal } from '@/components/pricing/CorporateInvoiceModal';
 import { Button } from '@/components/ui/button';
 
@@ -41,23 +51,86 @@ const FAQ = [
   ['Can I cancel anytime?', 'Yes, your plan stays active until the end of the paid period with zero cancellation penalties.'],
   ['What happens after the launch offer?', 'Your discounted price stays locked for as long as your subscription stays active.'],
   ['Can I switch plans or add broker seats later?', 'Yes, upgrade anytime; your unused days are automatically prorated and credited.'],
-  ['How do I pay by UAE Corporate Bank Wire (IBAN)?', 'Click the Proforma Invoice link below to generate an official UAE tax invoice with our Emirates NBD or Wio Bank IBAN.'],
+  ['How do agency teams pay by UAE Corporate Bank Wire (IBAN)?', 'Click the Bank Wire link to generate an official UAE tax invoice with our Emirates NBD or Wio Bank IBAN.'],
 ] as const;
 
 export function Pricing() {
+  // Plan type: solo broker vs agency
+  const [planType, setPlanType] = useState<'broker' | 'agency'>('broker');
+
+  // Solo Broker Plan state
   const [id, setId] = useState<PlanId>(DEFAULT_PLAN);
   const [faq, setFaq] = useState<number | null>(null);
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const plan = PLANS.find((p) => p.id === id) ?? PLANS[3]!;
   const idx = PLANS.findIndex((p) => p.id === id);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(cardRef, { once: true, amount: 0.3 });
-  const reduce = useReducedMotion();
-  const rx = useSpring(0, { stiffness: 160, damping: 20 });
-  const ry = useSpring(0, { stiffness: 160, damping: 20 });
 
-  const waEnterpriseUrl = `https://wa.me/971500000000?text=${encodeURIComponent(
-    "Hello DealOS Team! I manage a team of 5+ property consultants in Dubai. I would like a quote for centralized brokerage seats and onboarding."
+  // Dynamic discount calculation for solo broker
+  const discountPercent = Math.round((1 - plan.price / plan.originalPrice) * 100);
+  const savingsAmount = plan.originalPrice - plan.price;
+
+  // Agency Interactive Quote State
+  const [agencyName, setAgencyName] = useState('');
+  const [agentTierId, setAgentTierId] = useState<AgencyTierId>('growth');
+  const [contactName, setContactName] = useState('');
+  const [agencyEmail, setAgencyEmail] = useState('');
+  const [agencyPhone, setAgencyPhone] = useState('+971 ');
+  const [agencyBilling, setAgencyBilling] = useState<'annual' | 'quarterly'>('annual');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [quoteCode, setQuoteCode] = useState('DEALOS-AGY-8492');
+
+  // Corporate Invoice Modal state
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoicePrefill, setInvoicePrefill] = useState({
+    agencyName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    plan: '',
+    billing: 'annual' as 'annual' | 'quarterly',
+  });
+
+  const activeAgencyTier = AGENCY_TIERS.find((t) => t.id === agentTierId) ?? AGENCY_TIERS[1]!;
+
+  // Agency pricing calculation
+  const agencyMonthlyRate = agencyBilling === 'annual'
+    ? activeAgencyTier.annualEquivalentMonthly
+    : activeAgencyTier.monthlyPrice;
+  const agencyTotalCharge = agencyBilling === 'annual'
+    ? activeAgencyTier.annualPrice
+    : activeAgencyTier.monthlyPrice * 3;
+  const agencySavings = activeAgencyTier.standardSoloAnnualCost - activeAgencyTier.annualPrice;
+
+  const handleVerifyQuote = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!agencyName.trim()) return;
+    setIsVerifying(true);
+    setTimeout(() => {
+      setQuoteCode(`DEALOS-AGY-${Math.floor(1000 + Math.random() * 9000)}`);
+      setIsVerifying(false);
+      setIsVerified(true);
+    }, 1100);
+  };
+
+  const handleResetAgencyQuote = () => {
+    setIsVerified(false);
+    setIsVerifying(false);
+  };
+
+  const handleLaunchAgencyInvoice = () => {
+    setInvoicePrefill({
+      agencyName: agencyName.trim() || 'Verified Brokerage LLC',
+      contactName: contactName.trim() || 'Managing Director',
+      email: agencyEmail.trim() || 'finance@agency.ae',
+      phone: agencyPhone.trim() || '+971 50 000 0000',
+      plan: `${activeAgencyTier.name} (${activeAgencyTier.agentRangeLabel} · AED ${agencyMonthlyRate}/mo)`,
+      billing: agencyBilling,
+    });
+    setShowInvoiceModal(true);
+  };
+
+  const waAgencyUrl = `https://wa.me/971500000000?text=${encodeURIComponent(
+    `Hello DealOS Team! We verified Agency Quote (${quoteCode}) for ${agencyName || 'our brokerage'} (${activeAgencyTier.agentRangeLabel}). We would like to proceed with team activation.`
   )}`;
 
   return (
@@ -67,321 +140,741 @@ export function Pricing() {
         <div className="d-section-heading text-center max-w-3xl mx-auto space-y-3">
           <span className="d-pill inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold font-mono bg-amber-500/10 text-amber-500 border border-amber-500/30">
             <Sparkles size={13} className="text-amber-500" />
-            Official Launch Offer · Up to 54% Savings Applied
+            {planType === 'broker'
+              ? `Official Launch Offer · ${discountPercent}% Savings Applied`
+              : 'Enterprise Brokerage Licensing · Custom Company Scale'}
           </span>
           <RevealText>Institutional value./Zero hidden fees.</RevealText>
           <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
-            One comprehensive operating system with every feature. Choose your billing cadence. Cancel anytime.
+            {planType === 'broker'
+              ? 'Complete Dubai real estate workspace with verified off-plan data & AI CRM. Choose your billing cadence.'
+              : 'Centralized brokerage governance, automated lead round-robin, and multi-broker seats tailored to your headcount.'}
           </p>
 
-          {/* Luxury Segmented Billing Switcher */}
-          <div className="pt-3">
-            <div
-              className="d-pr-toggle inline-grid grid-cols-4 p-1.5 rounded-full bg-secondary/80 border border-border shadow-sm max-w-xl w-full mx-auto relative"
-              role="radiogroup"
-              aria-label="Billing period"
-              style={{ ['--i' as string]: idx }}
-            >
-              <span className="d-pr-indicator" aria-hidden />
-              {PLANS.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={p.id === id}
-                  className={`flex flex-col items-center justify-center py-2 px-3 rounded-full text-xs font-bold transition-all relative z-10 cursor-pointer ${
-                    p.id === id ? 'active text-white' : 'text-foreground hover:text-foreground/80'
-                  }`}
-                  onClick={() => setId(p.id)}
-                >
-                  <span>{p.label}</span>
-                  {p.toggleBadge ? (
-                    <small className={`text-[10px] font-mono font-bold mt-0.5 ${p.id === id ? 'text-white' : 'text-amber-500'}`}>
-                      {p.toggleBadge}
-                    </small>
-                  ) : (
-                    <small className="text-[10px] opacity-0">_</small>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Mobile portrait quick login link */}
-            <div className="pt-3.5 sm:hidden flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-              <span>Already have an account?</span>
-              <Link
-                to="/login"
-                search={{ mode: undefined }}
-                className="font-bold text-amber-500 hover:text-amber-400 inline-flex items-center gap-1 underline underline-offset-4"
+          {/* Master License Type Switcher: Solo Broker vs Agency Teams */}
+          <div className="pt-2 flex justify-center">
+            <div className="inline-flex p-1 rounded-2xl bg-secondary/80 border border-border shadow-sm max-w-md w-full">
+              <button
+                type="button"
+                onClick={() => setPlanType('broker')}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  planType === 'broker'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
-                <span>Log In to Workspace</span>
-                <span>↗</span>
-              </Link>
+                <User size={15} />
+                <span>Individual Broker</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPlanType('agency')}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  planType === 'agency'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Building2 size={15} />
+                <span>Agency &amp; Brokerage</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold">
+                  Quote
+                </span>
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* ═══ REDESIGNED LUXURY PRICING HERO CARD ═══ */}
-        <div className="mt-12 rounded-3xl border border-border/80 bg-card/95 backdrop-blur-2xl shadow-2xl p-6 sm:p-10 lg:p-12 relative overflow-hidden">
-          {/* Top subtle ambient gradient accent */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-primary to-emerald-400" />
+          {/* Cadence Switcher ONLY for Solo Broker Pro */}
+          {planType === 'broker' && (
+            <div className="pt-3">
+              <div
+                className="d-pr-toggle inline-grid grid-cols-4 p-1.5 rounded-full bg-secondary/80 border border-border shadow-sm max-w-xl w-full mx-auto relative"
+                role="radiogroup"
+                aria-label="Billing period"
+                style={{ ['--i' as string]: idx }}
+              >
+                <span className="d-pr-indicator" aria-hidden />
+                {PLANS.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={p.id === id}
+                    className={`flex flex-col items-center justify-center py-2 px-3 rounded-full text-xs font-bold transition-all relative z-10 cursor-pointer ${
+                      p.id === id ? 'active text-white' : 'text-foreground hover:text-foreground/80'
+                    }`}
+                    onClick={() => setId(p.id)}
+                  >
+                    <span>{p.label}</span>
+                    {p.toggleBadge ? (
+                      <small className={`text-[10px] font-mono font-bold mt-0.5 ${p.id === id ? 'text-white' : 'text-amber-500'}`}>
+                        {p.toggleBadge}
+                      </small>
+                    ) : (
+                      <small className="text-[10px] opacity-0">_</small>
+                    )}
+                  </button>
+                ))}
+              </div>
 
-          {/* Floating Most Popular Badge for Annual */}
-          {plan.highlighted && (
-            <div className="absolute top-4 right-6 sm:top-6 sm:right-8">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-extrabold uppercase tracking-wider bg-amber-500 text-black shadow-md">
-                <Sparkles size={12} />
-                ★ Best Value · 54% Off
-              </span>
+              {/* Mobile portrait quick login link */}
+              <div className="pt-3 sm:hidden flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                <span>Already have an account?</span>
+                <Link
+                  to="/login"
+                  search={{ mode: undefined }}
+                  className="font-bold text-amber-500 hover:text-amber-400 inline-flex items-center gap-1 underline underline-offset-4"
+                >
+                  <span>Log In to Workspace</span>
+                  <span>↗</span>
+                </Link>
+              </div>
             </div>
           )}
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            {/* ── LEFT COLUMN: PRICING & CHECKOUT (5 Cols) ── */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500">
-                    Individual Broker License
-                  </span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                    Instant Access
-                  </span>
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground font-display">
-                  DealOS Broker Pro
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  Complete Dubai real estate workspace with verified off-plan data &amp; AI CRM.
-                </p>
-              </div>
+        {/* ══════════════════════════════════════════════════════════ */}
+        {/* VIEW A: INDIVIDUAL BROKER PRO PLAN                          */}
+        {/* ══════════════════════════════════════════════════════════ */}
+        {planType === 'broker' && (
+          <div className="mt-8 rounded-3xl border border-border/80 bg-card/95 backdrop-blur-2xl shadow-2xl p-6 sm:p-10 lg:p-12 relative overflow-hidden">
+            {/* Top subtle ambient gradient accent */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-primary to-emerald-400" />
 
-              {/* Price Display */}
-              <div className="p-5 rounded-2xl bg-secondary/40 border border-border/60 space-y-2">
-                <div className="flex items-baseline gap-2">
-                  <s className="text-sm font-semibold text-muted-foreground line-through">
-                    {aedPrice(plan.originalPrice)}
-                  </s>
-                  <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
-                    {plan.savingLabel}
-                  </span>
-                </div>
-
-                <div className="flex items-baseline gap-2">
-                  <strong className="text-4xl sm:text-5xl font-black text-foreground font-display tracking-tight">
-                    <RollingPrice value={plan.price} />
-                  </strong>
-                  <span className="text-sm text-muted-foreground font-semibold">
-                    {plan.period}
-                  </span>
-                </div>
-
-                <p className="text-xs text-muted-foreground">
-                  {plan.months > 1 ? (
-                    <span className="font-mono font-bold text-foreground">
-                      Equivalent to {aedPrice(plan.perMonth)} / month
-                    </span>
-                  ) : (
-                    "Flexible 30-day billing · No lock-in"
-                  )}
-                  {plan.perMonthNote ? ` (${plan.perMonthNote})` : ""}
-                </p>
-              </div>
-
-              {/* CTA Button */}
-              <div className="space-y-2.5">
-                <Button
-                  asChild
-                  className="w-full h-12 rounded-xl text-sm font-extrabold bg-gradient-to-r from-primary to-primary/90 hover:opacity-95 text-primary-foreground shadow-lg shadow-primary/25 gap-2 transition-all group"
-                >
-                  <Link to="/signup" search={{ plan: plan.id }}>
-                    <span>Get Started Now</span>
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-
-                {/* Mobile & Portrait Member Login Button */}
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full h-11 rounded-xl text-xs font-bold border-amber-500/40 bg-secondary/60 hover:bg-secondary text-foreground hover:border-amber-400 hover:text-amber-400 gap-2 transition-all shadow-xs"
-                >
-                  <Link to="/login" search={{ mode: undefined }}>
-                    <LogIn size={15} className="text-amber-500" />
-                    <span>Already have a license? Sign In to DealOS ↗</span>
-                  </Link>
-                </Button>
-
-                <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
-                  <ShieldCheck size={13} className="text-emerald-500" />
-                  <span>Activation and cancellation terms confirmed at checkout</span>
-                </p>
-              </div>
-
-              {/* Payment Methods Badges */}
-              <div className="space-y-2 pt-2 border-t border-border/60">
-                <span className="text-[10px] uppercase font-mono font-bold text-muted-foreground block">
-                  Accepted Payment Methods (Lemon Squeezy)
-                </span>
-                <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold text-foreground">
-                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Apple Pay</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Google Pay</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Visa</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Mastercard</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">AMEX</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">PayPal</span>
-                </div>
-                <p className="text-[10px] text-muted-foreground flex items-center gap-1 pt-1">
-                  <Lock size={11} className="text-muted-foreground" />
-                  <span>Secure checkout by Lemon Squeezy · Plus 5% UAE VAT. Monthly equivalents rounded.</span>
-                </p>
-              </div>
-
-              {/* UAE Corporate Bank Transfer Callout */}
-              <div className="p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 text-xs space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-bold text-foreground">
-                    <Landmark size={14} className="text-amber-500" />
-                    <span>Paying by UAE Corporate Bank Transfer (IBAN)?</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowInvoiceModal(true)}
-                    className="text-[11px] font-bold text-amber-500 hover:underline cursor-pointer"
-                  >
-                    Contact Agency Concierge ↗
-                  </button>
-                </div>
-                <p className="text-[11px] text-muted-foreground">
-                  Request an official UAE proforma tax invoice via our Agency Concierge desk.
-                </p>
-              </div>
+            {/* Dynamic Badge reflecting the active plan's discount */}
+            <div className="absolute top-4 right-6 sm:top-6 sm:right-8">
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-extrabold uppercase tracking-wider shadow-md ${
+                  plan.id === 'annual'
+                    ? 'bg-amber-500 text-black'
+                    : plan.id === 'semiannual'
+                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                    : plan.id === 'quarterly'
+                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
+                    : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                }`}
+              >
+                <Sparkles size={12} />
+                {plan.id === 'annual'
+                  ? '★ Best Value · 54% Off'
+                  : plan.id === 'semiannual'
+                  ? '★ Semiannual Saver · 47% Off'
+                  : plan.id === 'quarterly'
+                  ? '★ Quarterly Pick · 42% Off'
+                  : '★ Launch Rate · 35% Off'}
+              </span>
             </div>
 
-            {/* ── RIGHT COLUMN: STRUCTURED FEATURES & CAPABILITIES (7 Cols) ── */}
-            <div className="lg:col-span-7 space-y-6 lg:border-l lg:border-border/60 lg:pl-10">
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-500">
-                  Included in Every License
-                </span>
-                <h4 className="text-lg font-bold text-foreground font-display">
-                  Everything you need to source, pitch, and close Dubai property
-                </h4>
-                <p className="text-xs text-muted-foreground">
-                  Zero tiered feature gates. You get the complete institutional suite from day one:
-                </p>
-              </div>
-
-              {/* Structured Feature Categories Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Item 1 */}
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                  <div className="flex items-center gap-2 text-foreground font-bold text-xs">
-                    <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                      <Check size={12} />
-                    </div>
-                    <span>1,355+ Off-Plan Registry</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground pl-7">
-                    Official UAE catalog with verified payment plans, milestones, and unit inventory.
-                  </p>
-                </div>
-
-                {/* Item 2 */}
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                  <div className="flex items-center gap-2 text-foreground font-bold text-xs">
-                    <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                      <Check size={12} />
-                    </div>
-                    <span>DLD Market Context</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground pl-7">
-                    DLD market context with verified transaction sources and sample sizes.
-                  </p>
-                </div>
-
-                {/* Item 3 */}
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                  <div className="flex items-center gap-2 text-foreground font-bold text-xs">
-                    <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                      <Check size={12} />
-                    </div>
-                    <span>1-Click WhatsApp Pitch</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground pl-7">
-                    Instant tailored investor scripts formatted for WhatsApp with payment plan breakdowns.
-                  </p>
-                </div>
-
-                {/* Item 4 */}
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                  <div className="flex items-center gap-2 text-foreground font-bold text-xs">
-                    <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                      <Check size={12} />
-                    </div>
-                    <span>Voice Note Capture</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground pl-7">
-                    AI transcribes client voice notes &amp; drive-time audio directly into CRM lead dossiers.
-                  </p>
-                </div>
-
-                {/* Item 5 */}
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                  <div className="flex items-center gap-2 text-foreground font-bold text-xs">
-                    <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                      <Check size={12} />
-                    </div>
-                    <span>Bespoke Investor Lead Dossiers</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground pl-7">
-                    Prioritized speed-to-lead queue (Hot, Warm, Follow-ups) with full client criteria matching.
-                  </p>
-                </div>
-
-                {/* Item 6 */}
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                  <div className="flex items-center gap-2 text-foreground font-bold text-xs">
-                    <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                      <Check size={12} />
-                    </div>
-                    <span>Client Presentation Mode</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground pl-7">
-                    100% white-label client view that hides agency internal commission margins during live meetings.
-                  </p>
-                </div>
-              </div>
-
-              {/* Agency / Team Provisioning Callout */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-secondary/50 via-secondary/20 to-secondary/40 border border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-start gap-3">
-                  <div className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-                    <Users size={16} />
-                  </div>
-                  <div>
-                    <span className="font-bold text-xs text-foreground block">
-                      Solo Setup · Agency Activation Ready
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+              {/* ── LEFT COLUMN: PRICING & CHECKOUT (5 Cols) ── */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500">
+                      Individual Broker License
                     </span>
-                    <span className="text-[11px] text-muted-foreground">
-                      Start solo today. Join your brokerage team or invite other agents with 1 click anytime.
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                      Instant Access
                     </span>
                   </div>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground font-display">
+                    DealOS Broker Pro
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Complete Dubai real estate workspace with verified off-plan data &amp; AI CRM.
+                  </p>
                 </div>
 
-                <a
-                  href={waEnterpriseUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border shrink-0 transition-all"
-                >
-                  <MessageCircle size={13} className="text-emerald-500" />
-                  <span>Team Rates (5+ Seats)</span>
-                </a>
+                {/* Price Display */}
+                <div className="p-5 rounded-2xl bg-secondary/40 border border-border/60 space-y-2">
+                  <div className="flex items-baseline gap-2">
+                    <s className="text-sm font-semibold text-muted-foreground line-through">
+                      {aedPrice(plan.originalPrice)}
+                    </s>
+                    <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                      Save {aedPrice(savingsAmount)} · {discountPercent}% off
+                    </span>
+                  </div>
+
+                  <div className="flex items-baseline gap-2">
+                    <strong className="text-4xl sm:text-5xl font-black text-foreground font-display tracking-tight">
+                      <RollingPrice value={plan.price} />
+                    </strong>
+                    <span className="text-sm text-muted-foreground font-semibold">
+                      {plan.period}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    {plan.months > 1 ? (
+                      <span className="font-mono font-bold text-foreground">
+                        Equivalent to {aedPrice(plan.perMonth)} / month
+                      </span>
+                    ) : (
+                      'Flexible 30-day billing · No lock-in'
+                    )}
+                    {plan.perMonthNote ? ` (${plan.perMonthNote})` : ''}
+                  </p>
+                </div>
+
+                {/* CTA Button */}
+                <div className="space-y-2.5">
+                  <Button
+                    asChild
+                    className="w-full h-12 rounded-xl text-sm font-extrabold bg-gradient-to-r from-primary to-primary/90 hover:opacity-95 text-primary-foreground shadow-lg shadow-primary/25 gap-2 transition-all group"
+                  >
+                    <Link to="/signup" search={{ plan: plan.id }}>
+                      <span>Get Started Now</span>
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+
+                  {/* Mobile & Portrait Member Login Button */}
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full h-11 rounded-xl text-xs font-bold border-amber-500/40 bg-secondary/60 hover:bg-secondary text-foreground hover:border-amber-400 hover:text-amber-400 gap-2 transition-all shadow-xs"
+                  >
+                    <Link to="/login" search={{ mode: undefined }}>
+                      <LogIn size={15} className="text-amber-500" />
+                      <span>Already have a license? Sign In to DealOS ↗</span>
+                    </Link>
+                  </Button>
+
+                  <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
+                    <ShieldCheck size={13} className="text-emerald-500" />
+                    <span>Instant digital activation · Cancel anytime</span>
+                  </p>
+                </div>
+
+                {/* Payment Methods Badges */}
+                <div className="space-y-2 pt-2 border-t border-border/60">
+                  <span className="text-[10px] uppercase font-mono font-bold text-muted-foreground block">
+                    Accepted Payment Methods
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold text-foreground">
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Apple Pay</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Google Pay</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Visa</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Mastercard</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">AMEX</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 pt-1">
+                    <Lock size={11} className="text-muted-foreground" />
+                    <span>Secure encrypted checkout · Plus 5% UAE VAT</span>
+                  </p>
+                </div>
+
+                {/* UAE Corporate Bank Transfer Callout */}
+                <div className="p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 font-bold text-foreground">
+                      <Landmark size={14} className="text-amber-500" />
+                      <span>Paying by UAE Corporate Bank Transfer?</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowInvoiceModal(true)}
+                      className="text-[11px] font-bold text-amber-500 hover:underline cursor-pointer"
+                    >
+                      Proforma Invoice ↗
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Request an official UAE tax invoice with our Emirates NBD or Wio Bank IBAN.
+                  </p>
+                </div>
+              </div>
+
+              {/* ── RIGHT COLUMN: STRUCTURED FEATURES & CAPABILITIES (7 Cols) ── */}
+              <div className="lg:col-span-7 space-y-6 lg:border-l lg:border-border/60 lg:pl-10">
+                <div className="space-y-1">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-500">
+                    Included in Every License
+                  </span>
+                  <h4 className="text-lg font-bold text-foreground font-display">
+                    Everything you need to source, pitch, and close Dubai property
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Zero tiered feature gates. You get the complete institutional suite from day one:
+                  </p>
+                </div>
+
+                {/* Structured Feature Categories Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
+                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                      <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Check size={12} />
+                      </div>
+                      <span>1,355+ Off-Plan Registry</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground pl-7">
+                      Official UAE catalog with verified payment plans, milestones, and unit inventory.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
+                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                      <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Check size={12} />
+                      </div>
+                      <span>DLD Market Context</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground pl-7">
+                      DLD market context with verified transaction sources and sample sizes.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
+                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                      <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Check size={12} />
+                      </div>
+                      <span>1-Click WhatsApp Pitch</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground pl-7">
+                      Instant tailored investor scripts formatted for WhatsApp with payment plan breakdowns.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
+                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                      <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Check size={12} />
+                      </div>
+                      <span>Voice Note Capture</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground pl-7">
+                      AI transcribes client voice notes &amp; drive-time audio directly into CRM lead dossiers.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
+                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                      <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Check size={12} />
+                      </div>
+                      <span>Bespoke Investor Dossiers</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground pl-7">
+                      Prioritized speed-to-lead queue (Hot, Warm, Follow-ups) with client criteria matching.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
+                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                      <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Check size={12} />
+                      </div>
+                      <span>Client Presentation Mode</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground pl-7">
+                      100% white-label client view that hides agency internal commission margins during live meetings.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Agency Switcher Callout */}
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-secondary/50 via-secondary/20 to-secondary/40 border border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <Users size={16} />
+                    </div>
+                    <div>
+                      <span className="font-bold text-xs text-foreground block">
+                        Managing a Team of 5+ Agents?
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        Get centralized governance, broker leaderboards, and corporate volume pricing.
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setPlanType('agency')}
+                    className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shrink-0 transition-all cursor-pointer shadow-sm"
+                  >
+                    <Building2 size={13} />
+                    <span>Get Agency Quote ➔</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════ */}
+        {/* VIEW B: AGENCY & BROKERAGE INTERACTIVE QUOTE & CHECKOUT    */}
+        {/* ══════════════════════════════════════════════════════════ */}
+        {planType === 'agency' && (
+          <div className="mt-8 rounded-3xl border border-amber-500/40 bg-card/95 backdrop-blur-2xl shadow-2xl p-6 sm:p-10 lg:p-12 relative overflow-hidden">
+            {/* Top gold accent line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-emerald-400" />
+
+            {!isVerified ? (
+              /* ── STEP 1: INTERACTIVE AGENCY QUESTIONNAIRE (NO UPFRONT AMOUNT) ── */
+              <div className="max-w-3xl mx-auto space-y-8">
+                <div className="text-center space-y-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500 border border-amber-500/30">
+                    <Building2 size={13} />
+                    DealOS Agency &amp; Brokerage Suite
+                  </span>
+                  <h3 className="text-2xl sm:text-4xl font-extrabold text-foreground font-display">
+                    Configure Your Brokerage License
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
+                    Never overpay for individual broker seats. Tell us your agency scale to verify and calculate volume licensing with centralized administrative controls.
+                  </p>
+                </div>
+
+                <form onSubmit={handleVerifyQuote} className="space-y-6">
+                  {/* Question 1: Agency Name */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center justify-between">
+                      <span>1. What is your Brokerage / Agency Name? *</span>
+                      <span className="text-[11px] font-normal text-muted-foreground">Trade license / ORN name</span>
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="e.g. Metropolitan Premium Properties, Royal Vista Real Estate LLC"
+                      value={agencyName}
+                      onChange={(e) => setAgencyName(e.target.value)}
+                      className="w-full h-12 px-4 rounded-xl border border-border bg-secondary/40 text-sm text-foreground focus:outline-none focus:border-amber-500 font-medium transition-all"
+                    />
+                  </div>
+
+                  {/* Question 2: Number of Agents / Company Size */}
+                  <div className="space-y-2.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center justify-between">
+                      <span>2. How many active brokers / consultants are on your team? *</span>
+                      <span className="text-[11px] font-normal text-amber-500">Tier volume rates apply</span>
+                    </label>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {AGENCY_TIERS.map((tier) => {
+                        const isSelected = tier.id === agentTierId;
+                        return (
+                          <button
+                            key={tier.id}
+                            type="button"
+                            onClick={() => setAgentTierId(tier.id)}
+                            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative flex flex-col justify-between ${
+                              isSelected
+                                ? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/20'
+                                : 'border-border/80 bg-secondary/20 hover:bg-secondary/40'
+                            }`}
+                          >
+                            {tier.recommended && (
+                              <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500 text-black uppercase">
+                                Popular
+                              </span>
+                            )}
+                            <div>
+                              <span className="font-extrabold text-sm text-foreground block">
+                                {tier.agentRangeLabel}
+                              </span>
+                              <span className="text-xs font-semibold text-amber-500 mt-0.5 block">
+                                {tier.name}
+                              </span>
+                            </div>
+                            <div className="mt-3 pt-2 border-t border-border/50 text-[11px] text-muted-foreground space-y-0.5">
+                              <div>{tier.adminSeats}</div>
+                              <div>{tier.brokerSeats}</div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Question 3: Primary License Holder Contact */}
+                  <div className="space-y-2.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-foreground block">
+                      3. Primary Administrator / Decision Maker Contact *
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <input
+                          required
+                          type="text"
+                          placeholder="Your Full Name"
+                          value={contactName}
+                          onChange={(e) => setContactName(e.target.value)}
+                          className="w-full h-11 px-3.5 rounded-xl border border-border bg-secondary/40 text-xs text-foreground focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          required
+                          type="email"
+                          placeholder="Work Email (e.g. md@agency.ae)"
+                          value={agencyEmail}
+                          onChange={(e) => setAgencyEmail(e.target.value)}
+                          className="w-full h-11 px-3.5 rounded-xl border border-border bg-secondary/40 text-xs text-foreground focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          required
+                          type="tel"
+                          placeholder="WhatsApp Mobile (+971 50 ...)"
+                          value={agencyPhone}
+                          onChange={(e) => setAgencyPhone(e.target.value)}
+                          className="w-full h-11 px-3.5 rounded-xl border border-border bg-secondary/40 text-xs text-foreground focus:outline-none focus:border-amber-500 font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Question 4: Billing Cadence */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-foreground block">
+                      4. Preferred Billing Cadence
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setAgencyBilling('annual')}
+                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                          agencyBilling === 'annual'
+                            ? 'border-amber-500 bg-amber-500/10 text-foreground'
+                            : 'border-border bg-secondary/20 text-muted-foreground'
+                        }`}
+                      >
+                        <div>
+                          <span className="font-bold text-xs block text-foreground">Annual Agency Agreement</span>
+                          <span className="text-[11px] text-muted-foreground">Save 20% + 2 Months Free Included</span>
+                        </div>
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          Best Value
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setAgencyBilling('quarterly')}
+                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                          agencyBilling === 'quarterly'
+                            ? 'border-amber-500 bg-amber-500/10 text-foreground'
+                            : 'border-border bg-secondary/20 text-muted-foreground'
+                        }`}
+                      >
+                        <div>
+                          <span className="font-bold text-xs block text-foreground">Quarterly Billing</span>
+                          <span className="text-[11px] text-muted-foreground">Flexible 90-day renewal</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-muted-foreground">Standard</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Submission & Verification Button */}
+                  <div className="pt-2 space-y-3">
+                    <Button
+                      type="submit"
+                      disabled={isVerifying}
+                      className="w-full h-13 rounded-xl text-sm font-extrabold bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-95 text-black shadow-lg shadow-amber-500/25 gap-2 transition-all cursor-pointer"
+                    >
+                      {isVerifying ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin text-black" />
+                          <span>Verifying Brokerage Scale &amp; Calculating Volume Tier...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Verify Company Size &amp; Generate Official Quote ➔</span>
+                        </>
+                      )}
+                    </Button>
+
+                    <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
+                      <ShieldCheck size={13} className="text-emerald-500" />
+                      <span>Zero commitment · Instant verified quote tailored to your team headcount</span>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            ) : (
+              /* ── STEP 2: VERIFIED AGENCY BREAKDOWN & TAILORED PAYMENT ROUTING ── */
+              <div className="space-y-8 animate-in fade-in duration-300">
+                {/* Verified Header Pill */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
+                  <div className="flex items-center gap-2.5">
+                    <div className="size-9 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                      <CheckCircle2 size={18} />
+                    </div>
+                    <div>
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 block">
+                        Verified Corporate Rate
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-extrabold text-foreground font-display">
+                        Official DealOS Quote for {agencyName || 'Your Brokerage'}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-secondary border border-border text-muted-foreground">
+                      Quote #{quoteCode}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleResetAgencyQuote}
+                      className="text-xs text-amber-500 hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                    >
+                      <RotateCcw size={12} />
+                      <span>Edit Parameters</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                  {/* Left Column: Tailored Calculation & Checkout Actions (5 Cols) */}
+                  <div className="lg:col-span-5 space-y-6">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500">
+                          {activeAgencyTier.agentRangeLabel} · {activeAgencyTier.name}
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
+                          Verified Scale
+                        </span>
+                      </div>
+                      <h4 className="text-2xl font-black text-foreground font-display">
+                        Tailored Team Operating System
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        Includes {activeAgencyTier.adminSeats} + {activeAgencyTier.brokerSeats}.
+                      </p>
+                    </div>
+
+                    {/* Calculated Price Box */}
+                    <div className="p-5 rounded-2xl bg-secondary/40 border border-border/80 space-y-2">
+                      <div className="flex items-baseline gap-2">
+                        <s className="text-sm font-semibold text-muted-foreground line-through">
+                          {aedPrice(activeAgencyTier.standardSoloAnnualCost)} / yr
+                        </s>
+                        <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                          Save {aedPrice(agencySavings)} / yr
+                        </span>
+                      </div>
+
+                      <div className="flex items-baseline gap-2">
+                        <strong className="text-4xl sm:text-5xl font-black text-foreground font-display tracking-tight">
+                          <RollingPrice value={agencyTotalCharge} />
+                        </strong>
+                        <span className="text-sm text-muted-foreground font-semibold">
+                          {agencyBilling === 'annual' ? '/ year' : '/ 3 months'}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-mono font-bold text-foreground">
+                          Equivalent to {aedPrice(agencyMonthlyRate)} / month
+                        </span>{' '}
+                        (Corporate volume rate applied for {agencyName})
+                      </p>
+                    </div>
+
+                    {/* Direct Payment Page Routing Actions */}
+                    <div className="space-y-2.5">
+                      <Button
+                        asChild
+                        className="w-full h-12 rounded-xl text-sm font-extrabold bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-95 text-black shadow-lg shadow-amber-500/25 gap-2 transition-all cursor-pointer"
+                      >
+                        <Link
+                          to="/signup"
+                          search={{
+                            plan: 'annual',
+                            agency: agencyName.trim() || undefined,
+                          }}
+                        >
+                          <span>Proceed to Corporate Checkout ➔</span>
+                        </Link>
+                      </Button>
+
+                      {/* Pay via Corporate Bank Wire (IBAN) */}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleLaunchAgencyInvoice}
+                        className="w-full h-11 rounded-xl text-xs font-bold border-amber-500/40 bg-secondary/60 hover:bg-secondary text-foreground hover:border-amber-400 hover:text-amber-400 gap-2 transition-all shadow-xs cursor-pointer"
+                      >
+                        <Landmark size={15} className="text-amber-500" />
+                        <span>Pay via UAE Bank Wire · Instant Proforma Tax Invoice</span>
+                      </Button>
+
+                      {/* Instant WhatsApp Concierge Activation */}
+                      <a
+                        href={waAgencyUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full h-11 rounded-xl text-xs font-bold border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center gap-2 transition-all"
+                      >
+                        <MessageCircle size={15} />
+                        <span>Activate Quote via WhatsApp Concierge</span>
+                      </a>
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground flex items-center justify-center gap-1.5 text-center">
+                      <ShieldCheck size={13} className="text-emerald-500" />
+                      <span>Formal UAE Tax Invoice + VAT 5% receipt generated for your accounting</span>
+                    </p>
+                  </div>
+
+                  {/* Right Column: Tailored Agency Inclusions (7 Cols) */}
+                  <div className="lg:col-span-7 space-y-5 lg:border-l lg:border-border/60 lg:pl-10">
+                    <div className="space-y-1">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-500">
+                        Tailored Agency Infrastructure
+                      </span>
+                      <h4 className="text-lg font-bold text-foreground font-display">
+                        Built for multi-agent governance &amp; institutional speed
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        Your verified license for {agencyName} includes full access to:
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      {activeAgencyTier.features.map((feature, i) => (
+                        <div
+                          key={i}
+                          className="p-3.5 rounded-2xl bg-secondary/20 border border-border/60 flex items-start gap-2.5"
+                        >
+                          <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                            <Check size={12} />
+                          </div>
+                          <span className="text-xs text-foreground font-semibold leading-snug">
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Dedicated Concierge Box */}
+                    <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-secondary/30 to-amber-500/5 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <span className="text-xs font-bold text-foreground block">
+                          VIP Onboarding &amp; Custom Team Training
+                        </span>
+                        <span className="text-[11px] text-muted-foreground">
+                          Dedicated Dubai account manager assists with CRM migration and agent orientation.
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-amber-500 text-black shrink-0">
+                        Included
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ═══ FAQ ACCORDION ═══ */}
         <div className="mt-14 max-w-3xl mx-auto space-y-3">
@@ -425,7 +918,12 @@ export function Pricing() {
       <CorporateInvoiceModal
         isOpen={showInvoiceModal}
         onClose={() => setShowInvoiceModal(false)}
-        defaultPlan={`Solo Broker (${plan.label} · AED ${plan.price})`}
+        defaultPlan={invoicePrefill.plan || `Solo Broker (${plan.label} · AED ${plan.price})`}
+        initialAgencyName={invoicePrefill.agencyName}
+        initialContactName={invoicePrefill.contactName}
+        initialEmail={invoicePrefill.email}
+        initialPhone={invoicePrefill.phone}
+        initialBillingCycle={invoicePrefill.billing}
       />
     </Scene>
   );
