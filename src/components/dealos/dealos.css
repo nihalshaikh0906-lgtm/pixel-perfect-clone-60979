@@ -373,3 +373,129 @@
    window with a soft fade instead; the full dashboard stays in "Explore the workspace". */
 .dealos .d-hero-dashboard{max-height:max(520px,calc(100svh - 136px));overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent);mask-image:linear-gradient(to bottom,#000 78%,transparent)}
 @media (max-width:767px){.dealos .d-hero-dashboard{height:auto;max-height:440px;overflow:hidden;margin-bottom:24px}}
+
+/* ═════════════════════════════════════════════════════════════════
+   MOBILE PHONE POLISH & CLUTTER REMOVAL (iPhone & Small Screens)
+   ═════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* 1. Ensure Login Button is Always Visible in Navbar */
+  .dealos .d-navbar nav {
+    display: none !important;
+  }
+  .dealos .d-navbar .d-login {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 36px !important;
+    padding: 0 14px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    margin-right: 2px !important;
+    white-space: nowrap !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+  .dealos .d-navbar .d-login:active {
+    background: rgba(255, 255, 255, 0.25) !important;
+  }
+  .dealos .d-navbar.on-dark .d-login {
+    background: rgba(245, 158, 11, 0.15) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    color: #fbbf24 !important;
+  }
+  .dealos .d-navbar .d-button.d-button-primary {
+    display: none !important; /* Hide 'Book a demo' in top bar so Login & Hamburger have plenty of room */
+  }
+  .dealos .d-navbar {
+    width: calc(100% - 24px) !important;
+    height: 52px !important;
+    top: 10px !important;
+    padding: 0 8px 0 16px !important;
+  }
+
+  /* 2. De-clutter & Streamline Section Spacing */
+  .dealos .d-scene-inner {
+    padding: 44px 0 !important;
+  }
+  .dealos .d-section-heading {
+    margin-bottom: 24px !important;
+  }
+  .dealos .d-section-heading > p {
+    font-size: 13.5px !important;
+    margin-top: 10px !important;
+    line-height: 1.5 !important;
+  }
+  .dealos h2 {
+    font-size: clamp(28px, 7.5vw, 36px) !important;
+    line-height: 1.15 !important;
+  }
+
+  /* 3. Streamlined Pricing Switcher (2x2 Grid instead of 4 squished columns) */
+  .d-pr-toggle {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    border-radius: 16px !important;
+    gap: 5px !important;
+    padding: 5px !important;
+    width: 100% !important;
+    max-width: 380px !important;
+  }
+  .d-pr-indicator {
+    display: none !important;
+  }
+  .d-pr-toggle button {
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    padding: 7px 4px !important;
+    min-height: 44px !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+  }
+  .d-pr-toggle button.active {
+    background: var(--d-gold, #2a45c8) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(42, 69, 200, 0.3) !important;
+  }
+
+  /* 4. Streamlined Pricing Card */
+  .d-pr-card, .d-plan {
+    padding: 18px 14px !important;
+    border-radius: 20px !important;
+  }
+
+  /* 5. Clean Hero & Preview Window */
+  .dealos .d-hero {
+    height: auto !important;
+    min-height: 94svh !important;
+  }
+  .dealos .d-hero-sticky {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-bottom: 40px !important;
+  }
+  .dealos .d-hero-copy {
+    padding-top: 105px !important;
+  }
+  .dealos .d-hero h1 {
+    font-size: clamp(34px, 9vw, 42px) !important;
+    line-height: 1.12 !important;
+    padding: 0 10px !important;
+  }
+  .dealos .d-hero-sub {
+    font-size: 13.5px !important;
+    padding: 0 12px !important;
+    margin-top: 14px !important;
+  }
+  .dealos .d-hero-buttons {
+    margin-top: 18px !important;
+    gap: 8px !important;
+  }
+  .dealos .d-hero-dashboard {
+    width: 100% !important;
+    max-height: 320px !important;
+    margin-top: 24px !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+  }
+}

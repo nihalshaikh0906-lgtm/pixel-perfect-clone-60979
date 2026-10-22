@@ -625,46 +625,66 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 /* Phone layout tuning (<= 640px) */
 @media (max-width: 640px) {
   .dapp .a-top {
-    gap: 8px;
-    padding: 10px 14px;
+    height: 48px;
+    gap: 6px;
+    padding: 6px 10px;
   }
   .dapp .a-back-btn {
-    height: 38px;
-    padding: 0 10px;
-    font-size: 12.5px;
+    height: 34px;
+    padding: 0 8px;
+    font-size: 12px;
   }
   .dapp .a-route-pill {
     display: none !important;
   }
   .dapp .a-search {
-    height: 38px;
-    padding: 0 10px;
+    height: 34px;
+    padding: 0 8px;
     min-width: 0;
   }
   .dapp .a-search input {
-    font-size: 13px;
+    font-size: 12.5px;
   }
   .dapp .a-top-actions {
-    gap: 6px;
+    gap: 4px;
   }
   .dapp .a-top-actions .a-btn {
-    height: 38px;
+    height: 34px;
+    padding: 0 8px;
+    font-size: 11.5px;
   }
   .dapp .a-content {
-    padding: 16px 12px;
-    gap: 14px;
+    padding: 10px 8px;
+    gap: 10px;
   }
+  /* Modern 2-column KPI grid on phones (halves the vertical height & clutter) */
   .dapp .a-kpis {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .dapp .a-kpi {
+    padding: 10px 10px !important;
+    border-radius: 12px !important;
+  }
+  .dapp .a-kpi strong {
+    font-size: 19px !important;
+    margin-top: 4px !important;
+  }
+  .dapp .a-kpi-label {
+    font-size: 11px !important;
+  }
+  .dapp .a-kpi small {
+    font-size: 10.5px !important;
+    margin-top: 6px !important;
+    padding-top: 4px !important;
   }
   .dapp .a-row3 {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: 10px;
   }
   .dapp .a-card {
-    padding: 18px 14px;
-    border-radius: 16px;
+    padding: 14px 12px !important;
+    border-radius: 14px !important;
   }
 }
 

@@ -891,9 +891,9 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-24 animate-in fade-in-50 duration-300">
+    <div className="space-y-4 sm:space-y-8 max-w-7xl mx-auto pb-20 sm:pb-24 animate-in fade-in-50 duration-300">
       {/* ═══ 1. ZEN EXECUTIVE COMMAND CANOPY ═══ */}
-      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card/95 to-secondary/30 p-6 sm:p-8 shadow-sm">
+      <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-border/80 bg-gradient-to-r from-card via-card/95 to-secondary/30 p-4 sm:p-8 shadow-xs">
         <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-primary/10 blur-3xl" />
 
         <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">

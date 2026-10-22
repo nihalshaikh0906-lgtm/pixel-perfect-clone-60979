@@ -170,40 +170,40 @@ When are you free today for a quick 2-minute overview?`;
   const [dashboardTab, setDashboardTab] = useState<"queue" | "inventory" | "targets">("queue");
 
   return (
-    <div className="min-h-screen bg-background pb-20 space-y-6 max-w-7xl mx-auto animate-in fade-in-50 duration-300">
+    <div className="min-h-screen bg-background pb-16 sm:pb-20 space-y-3.5 sm:space-y-6 max-w-7xl mx-auto animate-in fade-in-50 duration-300">
       {/* ═══ 1. CLEAN EXECUTIVE HERO BANNER ═══ */}
-      <section className="relative overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-6 sm:p-7 shadow-sm">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <section className="relative overflow-hidden rounded-xl sm:rounded-2xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-4 sm:p-7 shadow-xs">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10.5px] sm:text-[11px] font-bold text-emerald-400">
                 <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Dubai Market Live · RERA Verified
               </span>
               <span className="text-muted-foreground">•</span>
-              <span className="text-xs text-muted-foreground">
-                {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+              <span className="text-[11px] sm:text-xs text-muted-foreground">
+                {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
+            <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
               {(() => {
                 const hour = new Date().getHours();
                 const g = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
                 return `${g}, ${userName ? userName : "Property Consultant"}`;
               })()}
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
+            <p className="text-[11px] sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
               Welcome to your daily deal desk. You have <span className="font-semibold text-foreground">4 priority client follow-ups</span> and <span className="font-semibold text-foreground">AED 14.8M</span> in active negotiations.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               asChild
-              className="h-9 rounded-xl text-xs font-semibold border-border gap-1.5"
+              className="h-8 sm:h-9 rounded-xl text-[11px] sm:text-xs font-semibold border-border gap-1.5"
             >
               <Link to="/app/deals">
                 <Banknote className="size-3.5 text-amber-400" />
@@ -215,7 +215,7 @@ When are you free today for a quick 2-minute overview?`;
               variant="outline"
               size="sm"
               asChild
-              className="h-9 rounded-xl text-xs font-semibold border-border gap-1.5"
+              className="h-8 sm:h-9 rounded-xl text-[11px] sm:text-xs font-semibold border-border gap-1.5"
             >
               <Link to="/app/offplan">
                 <Compass className="size-3.5 text-primary" />
@@ -226,7 +226,7 @@ When are you free today for a quick 2-minute overview?`;
             <Button
               size="sm"
               onClick={() => setNewLeadOpen(true)}
-              className="h-9 rounded-xl text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 shadow-sm"
+              className="h-8 sm:h-9 rounded-xl text-[11px] sm:text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 shadow-sm"
             >
               <Plus className="size-3.5" />
               <span>Log New Buyer</span>
@@ -235,69 +235,73 @@ When are you free today for a quick 2-minute overview?`;
         </div>
       </section>
 
-      {/* ═══ 2. TOP 3 ESSENTIAL METRICS (MINIMALIST & CRISP) ═══ */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* ═══ 2. TOP 3 ESSENTIAL METRICS (2-COL ON PHONE, CRISP & COMPACT) ═══ */}
+      <section className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
         {/* Card 1: Projected Commission */}
-        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-5 shadow-sm hover:border-amber-500/50 hover:-translate-y-0.5 transition-all duration-300">
+        <div className="group rounded-xl sm:rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-3.5 sm:p-5 shadow-xs hover:border-amber-500/50 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300">Projected Commission</span>
-            <div className="size-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Banknote size={16} />
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-300 truncate">Projected Comm.</span>
+            <div className="size-7 sm:size-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <Banknote size={15} />
             </div>
           </div>
-          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-1.5 text-xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
             AED 94.5K
           </p>
-          <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">October Target: 63%</span>
-            <span className="font-semibold text-emerald-400">+18% vs last month</span>
+          <div className="mt-1.5 flex items-center justify-between text-[10px] sm:text-xs">
+            <span className="text-muted-foreground">Target: 63%</span>
+            <span className="font-semibold text-emerald-400">+18% vs mo</span>
           </div>
-          <div className="mt-2.5 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+          <div className="mt-2 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
             <div className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full" style={{ width: "63%" }} />
           </div>
         </div>
 
         {/* Card 2: Active Pipeline Volume */}
-        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-5 shadow-sm hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300">
+        <div className="group rounded-xl sm:rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-3.5 sm:p-5 shadow-xs hover:border-primary/50 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-300">Active Pipeline</span>
-            <div className="size-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-              <TrendingUp size={16} />
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cyan-300 truncate">Active Pipeline</span>
+            <div className="size-7 sm:size-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+              <TrendingUp size={15} />
             </div>
           </div>
-          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-1.5 text-xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
             AED 14.8M
           </p>
-          <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Across 6 buyer deals</span>
-            <span className="font-semibold text-cyan-400">Avg. 1.8M / deal</span>
+          <div className="mt-1.5 flex items-center justify-between text-[10px] sm:text-xs">
+            <span className="text-muted-foreground">6 buyer deals</span>
+            <span className="font-semibold text-cyan-400">Avg. 1.8M</span>
           </div>
         </div>
 
-        {/* Card 3: Priority Follow-Ups */}
-        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-5 shadow-sm hover:border-rose-500/50 hover:-translate-y-0.5 transition-all duration-300">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-rose-300">Due Today</span>
-            <div className="size-8 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
-              <Flame size={16} />
+        {/* Card 3: Priority Follow-Ups (Full width on mobile 2-col layout) */}
+        <div className="col-span-2 sm:col-span-1 group rounded-xl sm:rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-3.5 sm:p-5 shadow-xs hover:border-rose-500/50 transition-all duration-300 flex sm:block items-center justify-between">
+          <div>
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-300">Due Today</span>
+              <span className="text-muted-foreground sm:hidden">•</span>
+              <span className="text-[10px] text-muted-foreground sm:hidden">2 Waiting on SPA</span>
+            </div>
+            <p className="mt-0.5 sm:mt-1.5 text-xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+              4 Priority
+            </p>
+            <div className="hidden sm:flex mt-1.5 items-center justify-between text-xs">
+              <span className="text-muted-foreground">2 Waiting on SPA</span>
+              <span className="font-semibold text-rose-400">High Conversion</span>
             </div>
           </div>
-          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
-            4 Priority
-          </p>
-          <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">2 Waiting on SPA</span>
-            <span className="font-semibold text-rose-400">High Conversion</span>
+          <div className="size-8 sm:size-8 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+            <Flame size={16} />
           </div>
         </div>
       </section>
 
-      {/* ═══ 3. CLEAN SEGMENTED NAVIGATION (SIDEBAR-INSPIRED) ═══ */}
-      <div className="flex items-center justify-between border-b border-border/60 pb-3">
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary/50 border border-border/60">
+      {/* ═══ 3. CLEAN SEGMENTED NAVIGATION (SIDEBAR-INSPIRED, SCROLLABLE ON MOBILE) ═══ */}
+      <div className="flex items-center justify-between border-b border-border/60 pb-2.5 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-secondary/50 border border-border/60 max-w-full overflow-x-auto shrink-0">
           {[
-            { id: "queue", label: "Priority Action Queue", icon: Zap, badge: `${filteredLeads.length}` },
-            { id: "inventory", label: "Featured Allocations", icon: Compass },
+            { id: "queue", label: "Priority Queue", icon: Zap, badge: `${filteredLeads.length}` },
+            { id: "inventory", label: "Allocations", icon: Compass },
             { id: "targets", label: "Target & Bonus", icon: Target },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -306,16 +310,16 @@ When are you free today for a quick 2-minute overview?`;
               <button
                 key={tab.id}
                 onClick={() => setDashboardTab(tab.id as typeof dashboardTab)}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 ${
                   active
                     ? "bg-card text-foreground shadow-sm border border-border"
                     : "text-muted-foreground hover:text-foreground hover:bg-card/40"
                 }`}
               >
-                <Icon size={14} className={active ? "text-primary" : "text-muted-foreground"} />
+                <Icon size={13} className={active ? "text-primary" : "text-muted-foreground"} />
                 <span>{tab.label}</span>
                 {tab.badge && (
-                  <span className="rounded-full bg-primary/15 border border-primary/30 px-1.5 py-0.2 text-[10px] text-primary font-mono">
+                  <span className="rounded-full bg-primary/15 border border-primary/30 px-1.5 py-0.2 text-[9px] text-primary font-mono">
                     {tab.badge}
                   </span>
                 )}

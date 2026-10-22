@@ -196,14 +196,19 @@ export function Hero() {
             </motion.p>
 
             {/* Action Buttons */}
-            <motion.div variants={actionVariants} className="d-hero-buttons">
+            <motion.div variants={actionVariants} className="d-hero-buttons flex flex-wrap items-center justify-center gap-2.5">
               <Magnetic className="d-button d-button-white" asChild>
                 <Link to="/signup">
                   Start free <ArrowIcon />
                 </Link>
               </Magnetic>
+              <Button asChild className="d-button d-button-glass border-amber-400/50 text-amber-300 font-bold hover:bg-amber-500/10">
+                <Link to="/login">
+                  <span>Sign In ↗</span>
+                </Link>
+              </Button>
               <Button className="d-button d-button-glass" onClick={() => setTour(true)}>
-                <Play size={14} fill="currentColor" /> Explore the workspace
+                <Play size={14} fill="currentColor" /> Explore workspace
               </Button>
             </motion.div>
 
