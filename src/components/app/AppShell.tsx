@@ -5,7 +5,7 @@ import {
   Building2, CalendarClock, ChevronsLeft, ChevronsRight, Construction, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
-  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X,
+  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X, RotateCw,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -13,7 +13,7 @@ import { AiChat } from "./AiChat";
 import { AddMenu, Notifications, ThemeToggle, useTheme } from "./ShellExtras";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { detectRole, getStoredRole, clearStoredRole, fullSignOut, type DealOSRole } from "@/lib/auth-role";
+import { detectRole, getStoredRole, setStoredRole, setActiveEmail, clearStoredRole, fullSignOut, type DealOSRole } from "@/lib/auth-role";
 
 type ShellCtx = { clientMode: boolean; openAi: () => void };
 const Ctx = createContext<ShellCtx>({ clientMode: false, openAi: () => {} });
@@ -459,6 +459,36 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                   <button
                     type="button"
                     role="menuitem"
+                    className="a-user-menu-item"
+                    onClick={() => {
+                      setUserMenu(false);
+                      if (role === "company") {
+                        setStoredRole("agent");
+                        setActiveEmail("nihalshaikh0906@gmail.com");
+                        toast.info("Switched to Broker Desk (nihalshaikh0906@gmail.com)");
+                        window.location.href = "/app";
+                      } else {
+                        setStoredRole("company");
+                        setActiveEmail("driplab26@gmail.com");
+                        toast.info("Switched to Agency Owner (driplab26@gmail.com)");
+                        window.location.href = "/owner-dashboard";
+                      }
+                    }}
+                  >
+                    <RotateCw size={15} className="shrink-0 text-amber-400" />
+                    <div className="flex flex-col text-left min-w-0">
+                      <span className="font-semibold text-xs text-foreground">
+                        {role === "company" ? "Switch to Broker Desk" : "Switch to Owner Overwatch"}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground truncate">
+                        {role === "company" ? "nihalshaikh0906@gmail.com" : "driplab26@gmail.com"}
+                      </span>
+                    </div>
+                  </button>
+                  <div className="a-user-menu-divider" />
+                  <button
+                    type="button"
+                    role="menuitem"
                     className="a-user-menu-item a-user-menu-logout"
                     onClick={() => void signOut()}
                   >
@@ -547,6 +577,12 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 </>
               )}
               <span className="truncate max-w-[130px] lg:max-w-none">{routeMeta.title}</span>
+            </div>
+
+            {/* DLD / RERA Compliance License Pill */}
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-secondary/50 border border-border/50 text-[11px] font-bold text-foreground shrink-0">
+              <ShieldCheck size={13} className="text-emerald-500 shrink-0" />
+              <span>{role === "company" ? "DLD ORN-28941 · Agency Principal" : "RERA BRN-54109 · Licensed Broker"}</span>
             </div>
 
             <form

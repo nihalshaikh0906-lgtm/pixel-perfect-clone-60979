@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   CalendarDays, MapPin, MessageCircle, Phone, Video, Building2,
   Clock, CheckCircle2, XCircle, ArrowUpRight, Plus, ExternalLink,
-  ShieldCheck, User, Users, ChevronRight, Check
+  ShieldCheck, User, Users, ChevronRight, Check, CalendarPlus
 } from "lucide-react";
 import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
@@ -127,9 +127,36 @@ function Page() {
 
   const handleWhatsAppConfirmation = (e: React.MouseEvent, appt: Appointment) => {
     e.stopPropagation();
+    const cleanNum = appt.clientPhone.replace(/\D/g, "");
     const text = `Hello ${appt.client.split(" ")[0]}, confirming your appointment for *${appt.property}* (${appt.kind}) on *${appt.date}* at *${appt.time}*.\n📍 Location: ${appt.location}\n${appt.gatePass ? `🔑 Access Gate Pass: ${appt.gatePass}\n` : ""}🗺️ Google Maps: ${appt.googleMapsUrl}\nBroker attending: ${appt.agent}. See you then!`;
-    window.open(`https://wa.me/${appt.clientPhone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`WhatsApp confirmation sent to ${appt.client}`);
+    const url = `https://web.whatsapp.com/send?phone=${cleanNum}&text=${encodeURIComponent(text)}`;
+    try {
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      if (!opened || opened.closed || typeof opened.closed === "undefined") {
+        void navigator.clipboard.writeText(url);
+        toast.info("WhatsApp Web link copied to clipboard! Paste it into a new tab.", { duration: 5000 });
+      } else {
+        toast.success(`WhatsApp confirmation opened for ${appt.client}`);
+      }
+    } catch {
+      void navigator.clipboard.writeText(url);
+      toast.info("WhatsApp link copied to clipboard!");
+    }
+  };
+
+  const handleGoogleCalendarSync = (e: React.MouseEvent, appt: Appointment) => {
+    e.stopPropagation();
+    const now = new Date();
+    const startIso = now.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    const endIso = new Date(now.getTime() + 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "");
+    
+    const title = `DealOS Viewing: ${appt.property} with ${appt.client}`;
+    const details = `Dubai Real Estate Viewing Inspection\nClient: ${appt.client} (${appt.clientPhone})\nProperty: ${appt.property}\nFormat: ${appt.kind}\nTime: ${appt.time} (${appt.date})\nLocation: ${appt.location}\n${appt.gatePass ? `Developer Gate Pass: ${appt.gatePass}\n` : ""}Google Maps: ${appt.googleMapsUrl}\nLead Broker: ${appt.agent}`;
+    
+    const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startIso}/${endIso}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(appt.location)}`;
+    
+    window.open(calUrl, "_blank", "noopener,noreferrer");
+    toast.success("Opening Google Calendar template… Click 'Save' to sync!");
   };
 
   const markCompleted = (e: React.MouseEvent, id: string) => {
@@ -285,6 +312,16 @@ function Page() {
             >
               <button
                 type="button"
+                onClick={(e) => handleGoogleCalendarSync(e, appt)}
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs transition-all"
+                title="Sync appointment to Google Calendar"
+              >
+                <CalendarPlus size={13} className="text-amber-400" />
+                <span>Google Calendar</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={(e) => handleWhatsAppConfirmation(e, appt)}
                 className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
                 title="Send WhatsApp confirmation"
@@ -357,9 +394,17 @@ function Page() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/60">
+            <div className="flex flex-wrap items-center justify-end gap-2.5 pt-4 border-t border-border/60">
               <Button variant="outline" onClick={() => setSelectedAppt(null)} className="rounded-xl text-xs">
                 Close
+              </Button>
+              <Button
+                variant="outline"
+                onClick={(e) => handleGoogleCalendarSync(e, selectedAppt)}
+                className="rounded-xl text-xs font-bold gap-1.5 border-border hover:bg-secondary text-foreground"
+              >
+                <CalendarPlus size={14} className="text-amber-400" />
+                <span>Add to Google Calendar</span>
               </Button>
               <Button
                 onClick={(e) => {
