@@ -129,7 +129,7 @@ export function Hero() {
   const copyY = useTransform(scrollYProgress, [0, 0.4], [0, reduce ? 0 : -80]);
 
   return (
-    <section className={`d-hero ${reduce ? 'd-reduced' : ''}`} id="hero" data-theme="dark" ref={ref}>
+    <section className={`d-hero ${reduce ? 'd-reduced' : ''}`} id="hero" data-theme="light" ref={ref}>
       <div className="d-hero-sticky">
         <img
           className="d-hero-photo"
@@ -137,7 +137,7 @@ export function Hero() {
           width={1920}
           height={1024}
           fetchPriority="high"
-          alt="Dubai waterfront and Burj Khalifa at blue hour"
+          alt="Dubai waterfront and Burj Khalifa"
         />
         <div className="d-hero-tint" />
         <motion.div className="d-hero-copy" style={{ opacity: copyO, y: copyY }}>
@@ -149,18 +149,18 @@ export function Hero() {
             animate="visible"
           >
             {/* Top Pill / Badge */}
-            <motion.p variants={pillVariants} className="d-glass-pill inline-flex items-center gap-2">
-              <span className="size-2 rounded-full bg-emerald-400 inline-block animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-              <strong className="font-bold tracking-tight text-white">DealOS</strong>
-              <span className="text-white/40 font-light mx-1">/</span>
-              <span className="uppercase text-[11px] font-semibold tracking-[0.14em] text-white/80">
+            <motion.p variants={pillVariants} className="d-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/90 border border-sand shadow-xs text-foreground">
+              <span className="size-2 rounded-full bg-emerald-500 inline-block animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              <strong className="font-bold tracking-tight text-foreground">DealOS</strong>
+              <span className="text-muted-foreground/40 font-light mx-1">/</span>
+              <span className="uppercase text-[11px] font-bold tracking-[0.14em] text-primary">
                 THE DUBAI BROKER OPERATING SYSTEM
               </span>
             </motion.p>
 
             {/* Main Headline */}
             <motion.h1
-              className="font-display tracking-tight text-white my-3"
+              className="font-display tracking-tight text-foreground my-3"
               aria-label="The Operating System Built on Dubai Data."
             >
               <span className="block overflow-hidden">
@@ -168,18 +168,18 @@ export function Hero() {
                   <motion.span
                     key={i}
                     variants={wordVariants}
-                    className="inline-block mr-[0.24em] last:mr-0 will-change-transform"
+                    className="inline-block mr-[0.24em] last:mr-0 text-foreground will-change-transform"
                   >
                     {word}
                   </motion.span>
                 ))}
               </span>
-              <span className="block overflow-hidden text-[#3B82F6]">
+              <span className="block overflow-hidden text-primary">
                 {['Built', 'on', 'Dubai', 'Data.'].map((word, i) => (
                   <motion.span
                     key={i}
                     variants={wordVariants}
-                    className="inline-block mr-[0.24em] last:mr-0 text-[#3B82F6] will-change-transform"
+                    className="inline-block mr-[0.24em] last:mr-0 text-primary will-change-transform"
                   >
                     {word}
                   </motion.span>
@@ -190,36 +190,36 @@ export function Hero() {
             {/* Subtitle */}
             <motion.p
               variants={subVariants}
-              className="d-hero-sub text-base sm:text-lg max-w-2xl mx-auto leading-relaxed text-white/80"
+              className="d-hero-sub text-base sm:text-lg max-w-2xl mx-auto leading-relaxed text-muted-foreground"
             >
               Client WhatsApp briefs, sourced off-plan allocations and agency commission ledgers — in one high-velocity cockpit.
             </motion.p>
 
             {/* Action Buttons */}
             <motion.div variants={actionVariants} className="d-hero-buttons flex flex-wrap items-center justify-center gap-2.5">
-              <Magnetic className="d-button d-button-white" asChild>
+              <Magnetic className="d-button d-button-primary" asChild>
                 <Link to="/signup">
                   Start free <ArrowIcon />
                 </Link>
               </Magnetic>
-              <Button asChild className="d-button d-button-glass border-amber-400/50 text-amber-300 font-bold hover:bg-amber-500/10">
+              <Button asChild className="d-button d-button-outline border-amber-500/50 text-foreground font-bold hover:bg-amber-500/10 hover:border-amber-500">
                 <Link to="/login">
                   <span>Sign In ↗</span>
                 </Link>
               </Button>
-              <Button className="d-button d-button-glass" onClick={() => setTour(true)}>
-                <Play size={14} fill="currentColor" /> Explore workspace
+              <Button className="d-button d-button-outline" onClick={() => setTour(true)}>
+                <Play size={14} fill="currentColor" className="text-primary" /> Explore workspace
               </Button>
             </motion.div>
 
             {/* Trust Proof */}
-            <motion.div variants={actionVariants} className="d-trust">
+            <motion.div variants={actionVariants} className="d-trust text-muted-foreground">
               <div className="d-avatar-stack">
                 {['SA', 'AK', 'MR', 'JN'].map((v) => (
-                  <span key={v}>{v}</span>
+                  <span key={v} className="bg-white text-primary border-sand">{v}</span>
                 ))}
               </div>
-              <span>Enterprise-Grade Real Estate CRM</span>
+              <span className="text-muted-foreground font-semibold">Enterprise-Grade Real Estate CRM</span>
             </motion.div>
           </motion.div>
         </motion.div>

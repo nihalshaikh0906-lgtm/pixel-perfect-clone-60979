@@ -162,29 +162,29 @@ export function CTA() {
   const waUrl = `https://wa.me/971500000000?text=${waText}`;
 
   return (
-    <Scene id="cta" transition="circle" dark>
+    <Scene id="cta" transition="circle">
       <div className="d-cta">
-        <img src={skyline} alt="Dubai skyline" loading="lazy" width={1920} height={1024} />
+        <img src={skyline} alt="Dubai skyline" loading="lazy" width={1920} height={1024} className="opacity-15" />
         <div className="d-cta-tint" />
         <GlassTiles compact />
         <div className="d-cta-content max-w-2xl mx-auto px-4">
-          <span className="d-glass-pill">
+          <span className="d-pill">
             <Sparkles size={13} /> Exclusive Dubai Agency Access
           </span>
           <RevealText>Stop lead leakage./Own your deal data.</RevealText>
-          <p className="mt-2 text-sm sm:text-base text-zinc-300">
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground">
             Equip your property consultants with live Dubai inventory, instant WhatsApp dossiers, and real-time agency overwatch.
           </p>
 
           {/* Booking Method Selector Tabs */}
-          <div className="mt-6 flex items-center justify-center gap-2 p-1 rounded-2xl bg-white/5 border border-white/10 max-w-md mx-auto">
+          <div className="mt-6 flex items-center justify-center gap-2 p-1 rounded-2xl bg-secondary/80 border border-border max-w-md mx-auto">
             <button
               type="button"
               onClick={() => setBookingMode('form')}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 bookingMode === 'form'
-                  ? 'bg-amber-400 text-black shadow-md'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <span>⚡ Quick Callback (30s)</span>
@@ -194,8 +194,8 @@ export function CTA() {
               onClick={() => setBookingMode('calendly')}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 bookingMode === 'calendly'
-                  ? 'bg-amber-400 text-black shadow-md'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Calendar size={13} />
@@ -204,13 +204,13 @@ export function CTA() {
           </div>
 
           {bookingMode === 'calendly' ? (
-            <div className="mt-4 flex flex-col items-center gap-4 text-center bg-black/60 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-white/10 shadow-2xl animate-in fade-in duration-200">
-              <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-300 flex items-center justify-center mx-auto border border-amber-400/30">
+            <div className="mt-4 flex flex-col items-center gap-4 text-center bg-card/95 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-border shadow-xl animate-in fade-in duration-200">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto border border-primary/20">
                 <Video size={22} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Schedule 15-Min Executive Walkthrough</h3>
-                <p className="text-xs text-zinc-400 mt-1 max-w-md">
+                <h3 className="text-lg font-bold text-foreground">Schedule 15-Min Executive Walkthrough</h3>
+                <p className="text-xs text-muted-foreground mt-1 max-w-md">
                   Choose a convenient time on our live calendar. A DealOS Dubai Partner will demonstrate the live agency overwatch cockpit and inventory sync.
                 </p>
               </div>
@@ -219,22 +219,22 @@ export function CTA() {
                 href={calendlyUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3.5 px-6 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-black hover:opacity-95 shadow-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full py-3.5 px-6 rounded-xl font-bold text-sm bg-primary hover:bg-primary/90 text-white shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <Calendar size={16} />
                 <span>Open Live Calendar on Calendly ↗</span>
               </a>
 
-              <div className="flex items-center gap-2 text-xs text-zinc-400 pt-1">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
                 <Clock size={13} />
                 <span>Available Sunday – Thursday · 10:00 AM – 7:00 PM GST</span>
               </div>
             </div>
           ) : !done ? (
-            <form className="mt-4 flex flex-col gap-3 text-left bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-2xl border border-white/10 shadow-2xl animate-in fade-in duration-200" onSubmit={handleSubmit}>
+            <form className="mt-4 flex flex-col gap-3 text-left bg-card/95 backdrop-blur-md p-5 sm:p-6 rounded-2xl border border-border shadow-xl animate-in fade-in duration-200" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-name">
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block" htmlFor="demo-name">
                     Full Name
                   </label>
                   <input
@@ -243,11 +243,11 @@ export function CTA() {
                     placeholder="e.g. Adam Sterling"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                    className="w-full rounded-xl bg-background border border-border px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-hidden focus:border-primary transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-agency">
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block" htmlFor="demo-agency">
                     Agency / Brokerage
                   </label>
                   <input
@@ -256,14 +256,14 @@ export function CTA() {
                     placeholder="e.g. Apex Luxury Properties"
                     value={agency}
                     onChange={(e) => setAgency(e.target.value)}
-                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                    className="w-full rounded-xl bg-background border border-border px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-hidden focus:border-primary transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-email">
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block" htmlFor="demo-email">
                     Work Email *
                   </label>
                   <input
@@ -274,11 +274,11 @@ export function CTA() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                    className="w-full rounded-xl bg-background border border-border px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-hidden focus:border-primary transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1 block" htmlFor="demo-phone">
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block" htmlFor="demo-phone">
                     WhatsApp Number *
                   </label>
                   <input
@@ -288,30 +288,30 @@ export function CTA() {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded-xl bg-white/5 border border-white/15 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-400/80 transition-all"
+                    className="w-full rounded-xl bg-background border border-border px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-hidden focus:border-primary transition-all"
                   />
                 </div>
               </div>
 
               <div className="flex items-center gap-4 py-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Your Role:</span>
-                <label className="flex items-center gap-1.5 text-xs text-zinc-200 cursor-pointer">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Your Role:</span>
+                <label className="flex items-center gap-1.5 text-xs text-foreground cursor-pointer">
                   <input
                     type="radio"
                     name="role"
                     checked={role === 'owner'}
                     onChange={() => setRole('owner')}
-                    className="accent-amber-400"
+                    className="accent-primary"
                   />
                   <span>🏢 Agency Owner / MD</span>
                 </label>
-                <label className="flex items-center gap-1.5 text-xs text-zinc-200 cursor-pointer">
+                <label className="flex items-center gap-1.5 text-xs text-foreground cursor-pointer">
                   <input
                     type="radio"
                     name="role"
                     checked={role === 'broker'}
                     onChange={() => setRole('broker')}
-                    className="accent-amber-400"
+                    className="accent-primary"
                   />
                   <span>👤 Licensed Broker</span>
                 </label>
@@ -320,7 +320,7 @@ export function CTA() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-black hover:opacity-95 shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                className="mt-2 w-full py-3 px-4 rounded-xl font-bold text-sm bg-primary hover:bg-primary/90 text-white shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -333,19 +333,19 @@ export function CTA() {
                   </>
                 )}
               </button>
-              <p className="text-center text-[11px] text-zinc-400 mt-1">
+              <p className="text-center text-[11px] text-muted-foreground mt-1">
                 🔒 Data protected under UAE Federal Decree-Law No. 45/2021. No spam, ever.
               </p>
             </form>
           ) : (
-            <div className="mt-6 bg-black/80 backdrop-blur-xl p-6 sm:p-8 rounded-2xl border border-emerald-500/40 text-center space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-              <div className="size-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/40">
+            <div className="mt-6 bg-card/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl border border-emerald-500/30 text-center space-y-4 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+              <div className="size-12 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/30">
                 <Check size={24} />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white">Access Request Confirmed!</h3>
-                <p className="text-xs sm:text-sm text-zinc-300 mt-1">
-                  Thank you, <span className="font-semibold text-white">{name || 'Director'}</span>. Your priority request for <span className="font-semibold text-white">{agency || 'your agency'}</span> has been received by our Dubai desk.
+                <h3 className="text-lg sm:text-xl font-bold text-foreground">Access Request Confirmed!</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                  Thank you, <span className="font-semibold text-foreground">{name || 'Director'}</span>. Your priority request for <span className="font-semibold text-foreground">{agency || 'your agency'}</span> has been received by our Dubai desk.
                 </p>
               </div>
 
@@ -356,7 +356,7 @@ export function CTA() {
                     setSimulatedWaOpened(!simulatedWaOpened);
                     toast.success("Founder WhatsApp preview opened (in-page simulation)");
                   }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
                 >
                   <MessageCircle size={16} />
                   <span>{simulatedWaOpened ? "Hide WhatsApp Simulation" : "Preview Founder WhatsApp Desk"}</span>
@@ -365,7 +365,7 @@ export function CTA() {
                   href={calendlyUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs uppercase tracking-wider shadow-lg transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all"
                 >
                   <Calendar size={16} />
                   <span>Or Pick Time on Calendly ↗</span>
@@ -379,7 +379,7 @@ export function CTA() {
                     initial={{ opacity: 0, y: 10, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                    className="p-4 rounded-2xl bg-[#0B141A] border border-emerald-500/30 text-xs text-white space-y-2 text-left shadow-2xl mt-3 animate-in fade-in"
+                    className="p-4 rounded-2xl bg-slate-900 border border-emerald-500/30 text-xs text-white space-y-2 text-left shadow-2xl mt-3 animate-in fade-in"
                   >
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">
                       <div className="flex items-center gap-2">
@@ -419,7 +419,7 @@ export function CTA() {
                 <button
                   type="button"
                   onClick={() => setDone(false)}
-                  className="text-xs text-zinc-400 hover:text-white underline cursor-pointer"
+                  className="text-xs text-muted-foreground hover:text-foreground underline cursor-pointer"
                 >
                   Submit Another Request
                 </button>
