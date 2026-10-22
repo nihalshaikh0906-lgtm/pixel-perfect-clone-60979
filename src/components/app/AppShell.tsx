@@ -5,7 +5,7 @@ import {
   Building2, CalendarClock, ChevronsLeft, ChevronsRight, Construction, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
-  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X, RotateCw,
+  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -455,44 +455,6 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                       </Link>
                     </>
                   )}
-                  <div className="a-user-menu-divider" />
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="a-user-menu-item"
-                    onClick={() => {
-                      setUserMenu(false);
-                      const currentEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
-                      const isNihal = currentEmail === "nihalshaikh0906@gmail.com";
-                      if (role === "company") {
-                        setStoredRole("agent");
-                        const brokerEmail = "nihalshaikh0906@gmail.com";
-                        setActiveEmail(brokerEmail);
-                        toast.info(`Switched to Broker Desk (${brokerEmail})`);
-                        window.location.href = "/app";
-                      } else {
-                        setStoredRole("company");
-                        const ownerEmail = isNihal ? "nihalshaikh0906@gmail.com" : "driplab26@gmail.com";
-                        setActiveEmail(ownerEmail);
-                        toast.info(`Switched to Agency Owner (${ownerEmail})`);
-                        window.location.href = "/owner-dashboard";
-                      }
-                    }}
-                  >
-                    <RotateCw size={15} className="shrink-0 text-amber-400" />
-                    <div className="flex flex-col text-left min-w-0">
-                      <span className="font-semibold text-xs text-foreground">
-                        {role === "company" ? "Switch to Broker Desk" : "Switch to Owner Overwatch"}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground truncate">
-                        {role === "company"
-                          ? "nihalshaikh0906@gmail.com (Broker Desk)"
-                          : ((typeof window !== "undefined" && localStorage.getItem("dealos_active_email")?.toLowerCase().trim() === "nihalshaikh0906@gmail.com")
-                              ? "nihalshaikh0906@gmail.com (Agency Owner)"
-                              : "driplab26@gmail.com (Agency Owner)")}
-                      </span>
-                    </div>
-                  </button>
                   <div className="a-user-menu-divider" />
                   <button
                     type="button"
