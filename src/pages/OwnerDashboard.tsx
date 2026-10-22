@@ -1298,7 +1298,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 key={lead.id}
                 className="rounded-2xl border border-border/80 bg-secondary/30 hover:bg-secondary/50 p-4 transition-all flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-xs"
               >
-                <div className="space-y-1 min-w-[240px]">
+                <div className="space-y-1 min-w-0 lg:min-w-[240px]">
                   <div className="flex items-center gap-2">
                     <h4 className="font-extrabold text-sm text-foreground">{lead.clientName}</h4>
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border font-mono ${lead.stageColor}`}>
@@ -1637,7 +1637,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 key={voucher.id}
                 className="rounded-2xl border border-border/80 bg-secondary/30 hover:bg-secondary/50 p-4 transition-all flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-xs"
               >
-                <div className="space-y-1 min-w-[220px]">
+                <div className="space-y-1 min-w-0 lg:min-w-[220px]">
                   <div className="flex items-center gap-2">
                     <strong className="text-foreground text-sm">{voucher.developer}</strong>
                     <span className="text-xs text-muted-foreground font-mono">{voucher.voucherNumber}</span>
@@ -1811,7 +1811,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               className="rounded-2xl border border-border/80 bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50 p-4 transition-all duration-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-sm"
             >
               {/* Identity & Rank */}
-              <div className="flex items-center gap-4 min-w-[240px]">
+              <div className="flex items-center gap-4 min-w-0 lg:min-w-[240px]">
                 <div className="relative flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary border border-border/80 font-display font-black text-base text-foreground shadow-sm">
                   {broker.avatar}
                   <span className="size-2.5 rounded-full bg-emerald-500 absolute -top-1 -right-1 border-2 border-card" />

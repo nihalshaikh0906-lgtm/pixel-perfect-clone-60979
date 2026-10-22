@@ -123,14 +123,18 @@
   .au-form-wrap{min-height:auto;padding:40px 4px 8px}
   .dauth.is-leaving .au-grid{grid-template-columns:1fr}
 }
+@media(max-width:767px){
+  .au-panel{display:none}
+  .au-form-wrap{min-height:auto;padding:12px 0}
+  .dauth{padding:14px}
+}
 @media(max-width:480px){
-  .dauth{padding:12px 20px}
-  .au-panel{margin:0 -8px}
-  .au-form h1{font-size:34px}
-  .au-input input{height:52px}
-  .au-btn{height:52px}
-  .au-headline{font-size:28px}
-  .au-sec{padding:56px 0}
+  .dauth{padding:12px}
+  .au-form h1{font-size:28px}
+  .au-input input{height:50px}
+  .au-btn{height:50px}
+  .au-headline{font-size:26px}
+  .au-sec{padding:40px 0}
 }
 @media(prefers-reduced-motion:reduce){
   .dauth *,.dauth *::before,.dauth *::after{animation:none!important;transition:none!important}

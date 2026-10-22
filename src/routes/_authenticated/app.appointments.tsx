@@ -242,7 +242,7 @@ function Page() {
             className="group cursor-pointer rounded-2xl border border-border/80 bg-card hover:border-primary/60 hover:shadow-md p-5 sm:p-6 transition-all duration-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"
           >
             {/* Time & Kind Badge (Left) */}
-            <div className="flex items-center gap-4 min-w-[220px]">
+            <div className="flex items-center gap-4 min-w-0 lg:min-w-[220px]">
               <div className="text-center p-3 rounded-2xl bg-secondary/70 border border-border/80 min-w-[85px] shadow-sm">
                 <p className="text-xl sm:text-2xl font-black text-foreground font-mono leading-none font-display">
                   {appt.time}

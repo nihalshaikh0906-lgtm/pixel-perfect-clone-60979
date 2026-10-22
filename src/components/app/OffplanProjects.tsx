@@ -378,7 +378,7 @@ export function OffplanProjects({
             className="group relative min-h-[85vh] lg:h-[calc(100vh-6.5rem)] rounded-3xl border border-border/80 bg-card overflow-hidden shadow-xl flex flex-col lg:flex-row transition-all"
           >
             {/* ═══ LEFT SIDE: THE BIG CINEMATIC IMAGE MONOLITH (COVERS FULL LEFT) ═══ */}
-            <div className="relative lg:w-7/12 h-96 lg:h-full overflow-hidden bg-secondary">
+            <div className="relative lg:w-7/12 h-64 sm:h-80 lg:h-full overflow-hidden bg-secondary">
               <img
                 src={project.coverImage}
                 alt={project.name}

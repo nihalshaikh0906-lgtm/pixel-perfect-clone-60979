@@ -221,7 +221,7 @@ function Page() {
             className="group rounded-2xl border border-border/80 bg-card hover:border-primary/60 hover:shadow-md p-4 sm:p-5 transition-all duration-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
           >
             {/* Identity & Status Badge (Left) */}
-            <div className="flex items-center gap-4 min-w-[240px]">
+            <div className="flex items-center gap-4 min-w-0 lg:min-w-[240px]">
               <div className="size-13 rounded-2xl bg-secondary border border-border/80 flex items-center justify-center font-display font-black text-lg text-foreground shadow-sm">
                 {(task.lead.split(" ")[0]?.[0] || "L")}{(task.lead.split(" ")[1]?.[0] || "")}
               </div>

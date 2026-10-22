@@ -322,7 +322,7 @@ function Page() {
               className="group cursor-pointer rounded-2xl border border-border/80 bg-card hover:border-primary/60 hover:shadow-md p-4 sm:p-5 transition-all duration-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
             >
               {/* Property & Unit Identity */}
-              <div className="flex items-center gap-4 min-w-[280px]">
+              <div className="flex items-center gap-4 min-w-0 lg:min-w-[280px]">
                 <div className="size-13 rounded-2xl bg-secondary border border-border/80 flex items-center justify-center text-primary font-bold shrink-0 shadow-sm">
                   <Building2 size={22} />
                 </div>
