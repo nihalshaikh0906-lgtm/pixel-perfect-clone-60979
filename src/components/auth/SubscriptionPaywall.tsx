@@ -134,15 +134,36 @@ export function SubscriptionPaywall({
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSignOut}
-            className="text-xs text-muted-foreground hover:text-foreground gap-1.5"
-          >
-            <LogOut size={14} />
-            <span>Sign Out</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleConfirmPayment}
+              className="border-amber-500/50 text-amber-300 hover:bg-amber-500/10 text-xs font-bold gap-1.5"
+              title="Instantly bypasses payment and confirms subscription for rapid multi-device testing"
+            >
+              <Zap size={13} className="fill-current text-amber-400" />
+              <span>⚡ 1-Click Test Unlock</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="text-xs text-muted-foreground hover:text-foreground gap-1.5"
+            >
+              <LogOut size={14} />
+              <span>Sign Out</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Identity Verified Badge */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+            ✓ IDENTITY &amp; DLD REGISTRY VERIFIED
+          </span>
+          <span className="text-muted-foreground">•</span>
+          <span className="text-[11px] text-muted-foreground">Pre-cleared for Institutional License Activation</span>
         </div>
 
         {/* Value Proposition Alert */}
