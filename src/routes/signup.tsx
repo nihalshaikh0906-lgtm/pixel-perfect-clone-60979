@@ -85,7 +85,11 @@ function SignupPage() {
     setLeaving(true);
     await new Promise((r) => setTimeout(r, 400));
     await router.invalidate();
-    void router.navigate({ to: "/app/ai-assistant", replace: true });
+    void router.navigate({
+      to: "/verifying",
+      search: { role: "broker", email: f.email.trim() },
+      replace: true,
+    });
   }
 
   return (

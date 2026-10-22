@@ -713,3 +713,33 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* ═══ 60 FPS HARDWARE COMPOSITOR ENGINE & SMOOTH SCROLL ACCELERATION ═══ */
+.dapp {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+}
+
+.a-top {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.a-side {
+  transform: translateZ(0);
+  will-change: transform, width;
+}
+
+.a-card {
+  contain: layout style;
+}
+
+.a-nav,
+.a-content,
+.a-table-wrap,
+.a-pipe {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+

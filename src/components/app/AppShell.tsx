@@ -600,11 +600,11 @@ export function AppShell({ children, userName, initials, agency }: { children: R
 
           {/* Full Screen Main Content with Live Ambient Background */}
           <main className="a-content relative">
-            {/* ═══ LUXURY LANDING-PAGE LIVE AMBIENT BACKGROUND ANIMATION ═══ */}
-            <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10" aria-hidden="true">
-              <div className="absolute -top-40 -left-40 w-[650px] h-[650px] rounded-full bg-gradient-to-br from-primary/12 via-indigo-500/10 to-transparent blur-3xl animate-pulse duration-[8000ms]" />
-              <div className="absolute top-1/4 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-amber-500/8 via-rose-500/6 to-transparent blur-3xl animate-pulse duration-[10000ms]" />
-              <div className="absolute bottom-10 left-1/4 w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-cyan-500/8 via-primary/6 to-transparent blur-3xl animate-pulse duration-[12000ms]" />
+            {/* ═══ 60 FPS HARDWARE-ACCELERATED AMBIENT GLOW (ZERO CONTINUOUS REPAINT) ═══ */}
+            <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10 opacity-70 will-change-transform" aria-hidden="true">
+              <div className="absolute -top-36 -left-36 size-[550px] rounded-full bg-gradient-to-br from-primary/8 via-indigo-500/4 to-transparent blur-2xl" />
+              <div className="absolute top-1/3 -right-36 size-[500px] rounded-full bg-gradient-to-bl from-amber-500/5 via-rose-500/3 to-transparent blur-2xl" />
+              <div className="absolute -bottom-36 left-1/4 size-[550px] rounded-full bg-gradient-to-tr from-cyan-500/5 via-primary/3 to-transparent blur-2xl" />
             </div>
 
             {clientMode && (

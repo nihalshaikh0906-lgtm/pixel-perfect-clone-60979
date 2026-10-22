@@ -21,6 +21,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as VerifyingRouteImport } from './routes/verifying'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
@@ -138,6 +139,11 @@ const SignupRoute = SignupRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyingRoute = VerifyingRouteImport.update({
+  id: '/verifying',
+  path: '/verifying',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -470,6 +476,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/verifying': typeof VerifyingRoute
   '/welcome': typeof WelcomeRoute
   '/whatsapp': typeof WhatsappRoute
   '/agreements': typeof AuthenticatedAgreementsRoute
@@ -541,6 +548,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/verifying': typeof VerifyingRoute
   '/welcome': typeof WelcomeRoute
   '/whatsapp': typeof WhatsappRoute
   '/agreements': typeof AuthenticatedAgreementsRoute
@@ -614,6 +622,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/verifying': typeof VerifyingRoute
   '/welcome': typeof WelcomeRoute
   '/whatsapp': typeof WhatsappRoute
   '/_authenticated/agreements': typeof AuthenticatedAgreementsRoute
@@ -689,6 +698,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/verifying'
     | '/welcome'
     | '/whatsapp'
     | '/agreements'
@@ -760,6 +770,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/verifying'
     | '/welcome'
     | '/whatsapp'
     | '/agreements'
@@ -832,6 +843,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/verifying'
     | '/welcome'
     | '/whatsapp'
     | '/_authenticated/agreements'
@@ -906,6 +918,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
+  VerifyingRoute: typeof VerifyingRoute
   WelcomeRoute: typeof WelcomeRoute
   WhatsappRoute: typeof WhatsappRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -1000,6 +1013,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verifying': {
+      id: '/verifying'
+      path: '/verifying'
+      fullPath: '/verifying'
+      preLoaderRoute: typeof VerifyingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/welcome': {
@@ -1551,6 +1571,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
+  VerifyingRoute: VerifyingRoute,
   WelcomeRoute: WelcomeRoute,
   WhatsappRoute: WhatsappRoute,
   ApiChatRoute: ApiChatRoute,

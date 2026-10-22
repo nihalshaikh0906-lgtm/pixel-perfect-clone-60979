@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { AuthShell, Logo } from "@/components/auth/AuthShell";
@@ -321,6 +321,23 @@ function LoginPage() {
             <span>🏢</span> Demo as Agency Owner
           </button>
         </div>
+      </div>
+
+      <div className="mt-4 p-3.5 rounded-2xl bg-primary/10 border border-primary/25 text-center space-y-1">
+        <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-primary">
+          <Zap size={14} className="fill-current" />
+          <span>Awaiting Verification or New Registration?</span>
+        </div>
+        <p className="text-[11px] text-muted-foreground">
+          Run the automated 30-second DLD &amp; WhatsApp approval check to get verified instantly:
+        </p>
+        <Link
+          to="/verifying"
+          search={{ role: role === "company" ? "owner" : "broker", email: email.trim() || undefined }}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-primary underline hover:text-primary/80 pt-1"
+        >
+          <span>Open 30-Second Automated Approval Gateway →</span>
+        </Link>
       </div>
 
       <div className="au-alt">

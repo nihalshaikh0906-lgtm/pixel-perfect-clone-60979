@@ -79,8 +79,12 @@ export function JoinAgencyPage() {
 
       toast.success(`Welcome to ${agencyDisplayName}! Your broker seat is active.`, { id: "join-seat" });
       setTimeout(() => {
-        void navigate({ to: "/app", replace: true });
-      }, 1000);
+        void navigate({
+          to: "/verifying",
+          search: { role: "broker", email: email.trim() },
+          replace: true,
+        });
+      }, 800);
     } catch (err: any) {
       toast.error(err.message || "Failed to activate seat", { id: "join-seat" });
       setLoading(false);

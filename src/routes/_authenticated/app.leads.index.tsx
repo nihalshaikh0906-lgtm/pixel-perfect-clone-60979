@@ -83,14 +83,7 @@ function Inbox() {
   const openLead = (l: Lead) => void navigate({ to: "/app/leads/$id", params: { id: l.id } });
 
   return (
-    <div className="relative w-full space-y-7 pb-24 animate-in fade-in-50 duration-300">
-      {/* ═══ LUXURY LANDING-PAGE LIVE AMBIENT BACKGROUND ANIMATION ═══ */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10" aria-hidden="true">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-primary/12 via-violet-500/10 to-transparent blur-3xl animate-pulse duration-[7000ms]" />
-        <div className="absolute top-1/4 -right-32 w-[550px] h-[550px] rounded-full bg-gradient-to-bl from-blue-500/10 via-cyan-500/8 to-transparent blur-3xl animate-pulse duration-[9000ms]" />
-        <div className="absolute bottom-10 left-1/3 w-[650px] h-[650px] rounded-full bg-gradient-to-tr from-purple-500/8 via-primary/6 to-transparent blur-3xl" />
-      </div>
-
+    <div className="relative w-full space-y-7 pb-24 animate-in fade-in-50 duration-200">
       {/* ═══ CLEAN EXECUTIVE HEADER ═══ */}
       <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-card/85 backdrop-blur-xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
