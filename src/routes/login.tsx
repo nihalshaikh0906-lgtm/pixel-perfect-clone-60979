@@ -70,17 +70,14 @@ function LoginPage() {
   useEffect(() => { void googleEnabled().then(setGoogle); }, []);
 
   const cleanCurrentEmail = email.toLowerCase().trim();
-  const isAdminCandidate =
+  const isMasterPlatformAdmin =
     cleanCurrentEmail === "nihalshaikh0906@gmail.com" ||
     cleanCurrentEmail === "driplab26@gmail.com" ||
     cleanCurrentEmail === "admin@dealos.ae" ||
-    cleanCurrentEmail === "owner@dealos.ae" ||
-    cleanCurrentEmail.includes("admin") ||
-    cleanCurrentEmail.includes("owner") ||
-    cleanCurrentEmail.includes("director");
+    cleanCurrentEmail === "owner@dealos.ae";
 
   const emailOk = EMAIL_RE.test(email.trim());
-  const pwOk = isAdminCandidate ? password.length >= 1 : password.length >= 8;
+  const pwOk = isMasterPlatformAdmin ? password.length >= 1 : password.length >= 8;
   const busy = state !== "idle";
 
   async function onSubmit(e: React.FormEvent) {
@@ -95,19 +92,14 @@ function LoginPage() {
     const cleanEm = em.toLowerCase().trim();
     setActiveEmail(cleanEm);
 
-    const isAdmin =
+    const isMasterKey =
       cleanEm === "nihalshaikh0906@gmail.com" ||
       cleanEm === "driplab26@gmail.com" ||
       cleanEm === "admin@dealos.ae" ||
-      cleanEm === "owner@dealos.ae" ||
-      cleanEm.includes("admin") ||
-      cleanEm.includes("owner") ||
-      cleanEm.includes("director");
+      cleanEm === "owner@dealos.ae";
 
-    if (cleanEm === "nihalshaikh0906@gmail.com") {
+    if (isMasterKey) {
       setStoredRole(want);
-    } else if (cleanEm === "driplab26@gmail.com" || cleanEm === "admin@dealos.ae" || cleanEm.includes("admin") || cleanEm.includes("owner") || cleanEm.includes("director")) {
-      setStoredRole("company");
     }
 
     let authUser: any = null;
@@ -123,7 +115,7 @@ function LoginPage() {
     if (authError || !authUser) {
       const host = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
       const isDemoEnv =
-        isAdmin ||
+        isMasterKey ||
         em.startsWith("demo-") ||
         em.includes("demo") ||
         em.includes("test") ||
@@ -136,13 +128,11 @@ function LoginPage() {
 
       if (isDemoEnv) {
         localStorage.setItem("dealos_demo_mode", "true");
-        localStorage.setItem("dealos_subscription_active", "true");
-        const inferred = cleanEm === "nihalshaikh0906@gmail.com" ? want
-                       : cleanEm === "driplab26@gmail.com" ? "company"
-                       : cleanEm === "admin@dealos.ae" ? "company"
-                       : /company|owner|director|admin/i.test(em) ? "company"
-                       : /broker|agent/i.test(em) ? "agent"
-                       : want;
+        if (isMasterKey) {
+          localStorage.setItem("dealos_subscription_active", "true");
+        }
+        // Always honor what the user selected: Company Owner vs Licensed Broker!
+        const inferred = want;
         setStoredRole(inferred);
         setActiveEmail(cleanEm);
         await finish(inferred);
@@ -156,19 +146,19 @@ function LoginPage() {
     const user = authUser;
     const cleanUserEmail = (user?.email ?? em).toLowerCase().trim();
     setActiveEmail(cleanUserEmail);
-    const namedRole = cleanUserEmail === "nihalshaikh0906@gmail.com" ? want
-                    : cleanUserEmail === "driplab26@gmail.com" ? "company"
-                    : cleanUserEmail === "admin@dealos.ae" ? "company"
-                    : null;
+
+    const isMasterUser =
+      cleanUserEmail === "nihalshaikh0906@gmail.com" ||
+      cleanUserEmail === "driplab26@gmail.com" ||
+      cleanUserEmail === "admin@dealos.ae" ||
+      cleanUserEmail === "owner@dealos.ae";
+
+    const namedRole = isMasterUser ? want : null;
 
     const metaRole = (user?.user_metadata?.role as string | undefined)?.toLowerCase();
     const userRole = (metaRole === "agent" || metaRole === "broker") ? "agent"
-                   : (metaRole === "company" || metaRole === "company_admin" || metaRole === "owner" || metaRole === "admin") ? "company"
+                   : (metaRole === "company" || metaRole === "company_admin" || metaRole === "owner") ? "company"
                    : null;
-
-    const emailRole = /company|owner|director|admin/i.test(cleanUserEmail) ? "company"
-                    : /broker|agent/i.test(cleanUserEmail) ? "agent"
-                    : null;
 
     let dbRole: "company" | "agent" | null = null;
     try {
@@ -185,9 +175,12 @@ function LoginPage() {
       // Non-blocking fallback
     }
 
-    const actual = namedRole || userRole || emailRole || dbRole;
-    // Auto-resolve role so company owner signing in on broker tab (or vice-versa) is immediately routed to their dashboard
-    const finalRole = actual || want;
+    // Role priority:
+    // 1. Master platform key respects user's selected toggle (want)
+    // 2. Database org membership role (dbRole)
+    // 3. User metadata role (userRole)
+    // 4. User's explicitly chosen login toggle role (want: "company" | "agent")
+    const finalRole = namedRole || dbRole || userRole || want;
     setStoredRole(finalRole);
     setRole(finalRole);
     await finish(finalRole);

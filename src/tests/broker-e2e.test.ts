@@ -999,18 +999,20 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(isSubActive(randomUserEmail)).toBe(true);
     });
 
-    it("resolves named-account roles correctly without relying on ambiguous metadata", () => {
+    it("resolves named-account roles correctly and respects user-requested role for broker accounts with admin in email", () => {
       function resolveAccountRole(email: string, requestedRole?: "company" | "agent"): "company" | "agent" {
         const clean = email.toLowerCase().trim();
-        if (clean === "driplab26@gmail.com" || clean === "owner@dealos.ae" || clean === "admin@dealos.ae") return "company";
+        if (clean === "driplab26@gmail.com" || clean === "owner@dealos.ae" || clean === "admin@dealos.ae") return requestedRole || "company";
         if (clean === "nihalshaikh0906@gmail.com") return requestedRole || "agent";
-        if (clean.includes("owner") || clean.includes("company") || clean.includes("admin") || clean.includes("director")) return "company";
-        return "agent";
+        return requestedRole || "agent";
       }
 
       expect(resolveAccountRole("driplab26@gmail.com")).toBe("company");
       expect(resolveAccountRole("admin@dealos.ae")).toBe("company");
-      expect(resolveAccountRole("superadmin@agency.ae")).toBe("company");
+      // Customer broker with 'admin' in email correctly resolves to agent (not hijacked)
+      expect(resolveAccountRole("broker-admin@agency.ae", "agent")).toBe("agent");
+      // Customer company owner with 'admin' in email correctly resolves to company
+      expect(resolveAccountRole("admin.director@agency.ae", "company")).toBe("company");
       expect(resolveAccountRole("nihalshaikh0906@gmail.com", "company")).toBe("company");
       expect(resolveAccountRole("nihalshaikh0906@gmail.com", "agent")).toBe("agent");
     });

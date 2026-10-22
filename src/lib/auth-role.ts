@@ -66,9 +66,11 @@ export async function detectRole(): Promise<DealOSRole> {
     setStoredRole(desiredRole);
     return desiredRole;
   }
-  if (activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae" || activeEmail === "admin@dealos.ae" || activeEmail?.includes("admin")) {
-    setStoredRole("company");
-    return "company";
+  // 2. Specific DealOS Executive Owner/Admin accounts (support dual access based on stored toggle)
+  if (activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae" || activeEmail === "admin@dealos.ae") {
+    const desiredRole: DealOSRole = stored === "agent" ? "agent" : "company";
+    setStoredRole(desiredRole);
+    return desiredRole;
   }
 
   try {
@@ -82,31 +84,14 @@ export async function detectRole(): Promise<DealOSRole> {
         setActiveEmail(cleanEmail);
         return desiredRole;
       }
-      if (cleanEmail === "driplab26@gmail.com" || cleanEmail === "owner@dealos.ae" || cleanEmail === "admin@dealos.ae" || cleanEmail.includes("admin")) {
-        setStoredRole("company");
+      if (cleanEmail === "driplab26@gmail.com" || cleanEmail === "owner@dealos.ae" || cleanEmail === "admin@dealos.ae") {
+        const desiredRole: DealOSRole = stored === "agent" ? "agent" : "company";
+        setStoredRole(desiredRole);
         setActiveEmail(cleanEmail);
-        return "company";
+        return desiredRole;
       }
 
-      const metaRole = (user.user_metadata?.role as string | undefined)?.toLowerCase();
-      if (metaRole === "agent" || metaRole === "broker") {
-        setStoredRole("agent");
-        return "agent";
-      }
-      if (metaRole === "company" || metaRole === "company_admin" || metaRole === "owner" || metaRole === "admin") {
-        setStoredRole("company");
-        return "company";
-      }
-
-      if (cleanEmail.includes("agent") || cleanEmail.includes("broker")) {
-        setStoredRole("agent");
-        return "agent";
-      }
-      if (cleanEmail.includes("company") || cleanEmail.includes("owner") || cleanEmail.includes("director") || cleanEmail.includes("admin")) {
-        setStoredRole("company");
-        return "company";
-      }
-
+      // Check database membership role first
       const { data: mem } = await (supabase as unknown as { from: (t: string) => any })
         .from("org_members")
         .select("role")
@@ -121,10 +106,22 @@ export async function detectRole(): Promise<DealOSRole> {
         setStoredRole("company");
         return "company";
       }
+
+      // Check Supabase user metadata role
+      const metaRole = (user.user_metadata?.role as string | undefined)?.toLowerCase();
+      if (metaRole === "agent" || metaRole === "broker") {
+        setStoredRole("agent");
+        return "agent";
+      }
+      if (metaRole === "company" || metaRole === "company_admin" || metaRole === "owner" || metaRole === "admin") {
+        setStoredRole("company");
+        return "company";
+      }
     }
   } catch {
     // Network fallback
   }
 
+  // If no DB/meta role is found, strictly respect what the user selected (stored: Broker vs Company)
   return stored ?? "agent";
 }

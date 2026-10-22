@@ -27,9 +27,6 @@ export function isWhitelistedAccount(email?: string | null): boolean {
     clean === "admin@dealos.ae" ||
     clean === "owner@dealos.ae" ||
     clean === "broker@dealos.ae" ||
-    clean.includes("admin") ||
-    clean.includes("owner") ||
-    clean.includes("director") ||
     clean.startsWith("demo-") ||
     clean.includes("test-")
   );

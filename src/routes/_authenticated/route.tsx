@@ -16,14 +16,21 @@ export const Route = createFileRoute("/_authenticated")({
     if (data?.user) {
       const cleanEmail = (data.user.email ?? "").toLowerCase().trim();
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
-      const isAdmin = cleanEmail === "nihalshaikh0906@gmail.com" || cleanEmail === "driplab26@gmail.com" || cleanEmail === "admin@dealos.ae" || cleanEmail.includes("admin");
-      if (isAdmin) {
-        const isOwner = cleanEmail !== "nihalshaikh0906@gmail.com" || storedRole === "company";
+      const isMasterAdmin =
+        cleanEmail === "nihalshaikh0906@gmail.com" ||
+        cleanEmail === "driplab26@gmail.com" ||
+        cleanEmail === "admin@dealos.ae" ||
+        cleanEmail === "owner@dealos.ae";
+
+      if (isMasterAdmin) {
+        const isOwner = storedRole === "company";
         const name = cleanEmail === "nihalshaikh0906@gmail.com"
           ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
           : cleanEmail === "driplab26@gmail.com"
           ? "DealOS Principal (Executive Owner)"
-          : "DealOS Master Admin";
+          : cleanEmail === "admin@dealos.ae"
+          ? (isOwner ? "DealOS Master Admin (Owner Cockpit)" : "DealOS Master Admin (Broker Desk)")
+          : "DealOS Owner";
         return {
           user: {
             ...data.user,
@@ -40,16 +47,16 @@ export const Route = createFileRoute("/_authenticated")({
     }
 
     const cachedActiveEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
-    const isCachedAdmin =
+    const isCachedMasterAdmin =
       cachedActiveEmail === "nihalshaikh0906@gmail.com" ||
       cachedActiveEmail === "driplab26@gmail.com" ||
       cachedActiveEmail === "admin@dealos.ae" ||
-      (cachedActiveEmail && cachedActiveEmail.includes("admin"));
+      cachedActiveEmail === "owner@dealos.ae";
 
     // Allow testing & verification in Lovable preview, test runners, or demo/admin mode
     const isDemoMode =
       typeof window !== "undefined" &&
-      (isCachedAdmin ||
+      (isCachedMasterAdmin ||
         localStorage.getItem("dealos_demo_mode") === "true" ||
         window.location.search.includes("demo=true") ||
         window.location.hostname.includes("lovable") ||
@@ -63,16 +70,17 @@ export const Route = createFileRoute("/_authenticated")({
       const activeEmail = cachedActiveEmail;
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
 
-      const isOwner = storedRole === "company" || (activeEmail === "driplab26@gmail.com" && storedRole !== "agent") || activeEmail === "admin@dealos.ae" || (activeEmail?.includes("admin") && storedRole !== "agent");
-      const isAdminKey = activeEmail === "nihalshaikh0906@gmail.com" || activeEmail === "admin@dealos.ae" || activeEmail?.includes("admin") || activeEmail === "driplab26@gmail.com";
+      // Honor the user's selected role (storedRole === 'company' vs 'agent')
+      const isOwner = storedRole === "company";
+      const isAdminKey = isCachedMasterAdmin;
 
       const adminFullName = activeEmail === "nihalshaikh0906@gmail.com"
         ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
         : activeEmail === "driplab26@gmail.com"
         ? "DealOS Principal (Executive Owner)"
-        : activeEmail === "admin@dealos.ae" || activeEmail?.includes("admin")
-        ? "DealOS Master Admin"
-        : (isOwner ? "DealOS Agency Owner" : "Nihal Shaikh");
+        : activeEmail === "admin@dealos.ae"
+        ? (isOwner ? "DealOS Master Admin (Owner Cockpit)" : "DealOS Master Admin (Broker Desk)")
+        : (isOwner ? "DealOS Agency Owner" : "DealOS Licensed Broker");
 
       return {
         user: {
