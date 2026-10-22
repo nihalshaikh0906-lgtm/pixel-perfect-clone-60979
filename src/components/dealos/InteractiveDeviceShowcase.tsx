@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
+import { LogoMark } from "@/components/Logo";
 
 // Tactile acoustic WhatsApp confirmation chime
 function playWhatsAppChime() {
@@ -152,13 +153,26 @@ export function InteractiveDeviceShowcase() {
           </span>
         </motion.div>
 
-        {/* 3D Hardware Frame */}
+        {/* 3D iMac Device Frame */}
         <motion.div
           style={{ rotateX, rotateY }}
-          className="w-full max-w-5xl rounded-[32px] p-3 sm:p-4 bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-950 border border-white/20 shadow-[0_30px_100px_rgba(0,0,0,0.5)] transition-transform duration-200 ease-out"
+          className="w-full max-w-5xl flex flex-col items-center transition-transform duration-200 ease-out"
         >
-          {/* Inner Display Screen */}
-          <div className="rounded-[24px] bg-[#0F1424] text-white overflow-hidden border border-white/10 shadow-inner flex flex-col min-h-[580px]">
+          {/* iMac Enclosure with Precision Aluminum Edge */}
+          <div className="w-full rounded-[28px] sm:rounded-[36px] p-2.5 sm:p-3.5 bg-gradient-to-b from-zinc-300 via-zinc-400 to-zinc-500 dark:from-zinc-700 dark:via-zinc-800 dark:to-zinc-900 border border-white/40 dark:border-white/15 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.1)] overflow-hidden">
+            {/* Inner Black Bezel + FaceTime HD Camera */}
+            <div className="rounded-[20px] sm:rounded-[26px] bg-[#0A0D18] overflow-hidden border border-black/80 shadow-2xl flex flex-col">
+              {/* iMac Top Bezel Camera Dot */}
+              <div className="h-4 sm:h-5 bg-black flex items-center justify-center gap-2 select-none pointer-events-none">
+                <span className="size-1 rounded-full bg-zinc-850 border border-zinc-700/50" />
+                <span className="size-1.5 rounded-full bg-zinc-950 border border-zinc-700/80 flex items-center justify-center shadow-inner">
+                  <span className="size-0.5 rounded-full bg-emerald-400/90 animate-pulse" />
+                </span>
+                <span className="size-1 rounded-full bg-zinc-850" />
+              </div>
+
+              {/* Inner Retina Display Screen */}
+              <div className="rounded-none bg-[#0F1424] text-white overflow-hidden flex flex-col min-h-[560px]">
             {/* Top Display Header & Mode Switcher */}
             <div className="bg-[#141A33]/90 border-b border-white/10 p-3 sm:p-4 flex flex-col md:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -703,8 +717,47 @@ export function InteractiveDeviceShowcase() {
               </div>
             </div>
           </div>
-        </motion.div>
-      </div>
-    </section>
-  );
+
+          {/* ═══ The Iconic iMac Lower Chin with DealOS Logo ═══ */}
+            <div className="relative h-14 sm:h-16 bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-750 dark:to-zinc-800 border-t border-black/10 dark:border-white/10 flex items-center justify-center px-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
+              {/* Subtle Brushed Aluminum Highlight */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-transparent to-black/10 pointer-events-none" />
+
+              {/* Centered Metallic DealOS Emblem */}
+              <div className="relative z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 shadow-xs backdrop-blur-xs">
+                <LogoMark size={22} variant="dark" />
+                <span className="font-extrabold text-sm sm:text-base tracking-tight text-zinc-800 dark:text-zinc-100 font-display">
+                  Deal<span className="text-primary font-black">OS</span>
+                </span>
+                <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-bold ml-0.5 px-1.5 py-0.2 rounded bg-black/5 dark:bg-white/10">
+                  Studio
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ iMac Anodized Aluminum Desktop Stand & Drop Shadow ═══ */}
+        <div className="relative flex flex-col items-center w-full select-none pointer-events-none -mt-0.5">
+          {/* Stand Stem / Neck Hinge */}
+          <div
+            className="w-28 sm:w-36 h-12 sm:h-14 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 dark:from-zinc-700 dark:via-zinc-800 dark:to-zinc-850 border-x border-black/15 dark:border-white/10 shadow-lg relative flex items-center justify-center"
+            style={{
+              clipPath: "polygon(14% 0%, 86% 0%, 100% 100%, 0% 100%)",
+            }}
+          >
+            {/* Cable pass-through opening */}
+            <div className="size-4 sm:size-5 rounded-full bg-zinc-600/40 dark:bg-black/50 border border-black/20 dark:border-white/10 shadow-inner" />
+          </div>
+
+          {/* Flat Desktop Pedestal Foot */}
+          <div className="w-52 sm:w-72 h-3 sm:h-3.5 rounded-full bg-gradient-to-r from-zinc-300 via-zinc-100 to-zinc-300 dark:from-zinc-700 dark:via-zinc-600 dark:to-zinc-700 border border-white/50 dark:border-white/15 shadow-[0_4px_14px_rgba(0,0,0,0.25)]" />
+
+          {/* Tabletop Reflection Cast Shadow */}
+          <div className="w-72 sm:w-[420px] h-4 bg-black/35 blur-lg rounded-full mt-0.5" />
+        </div>
+      </motion.div>
+    </div>
+  </section>
+);
 }
