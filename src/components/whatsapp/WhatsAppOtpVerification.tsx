@@ -16,6 +16,7 @@ import {
   Clock,
   Mail,
   Copy,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -185,12 +186,41 @@ export function WhatsAppOtpVerification() {
     toast.info("Previous WhatsApp number disconnected. Enter your new phone number to link it.");
   };
 
-  const handleTestEcho = () => {
+  const handleTestEcho = (mode: "web" | "app" | "copy" = "web") => {
     if (!verifiedPhone) return;
     const cleanNum = verifiedPhone.replace(/\D/g, "");
-    const msg = `DealOS WhatsApp Verification Confirmation: Your phone number is verified and active on the platform.`;
-    window.open(`https://wa.me/${cleanNum}?text=${encodeURIComponent(msg)}`, "_blank");
-    toast.success("Opened WhatsApp test confirmation chat!");
+    const msg = `DealOS WhatsApp Verification Confirmation: Your phone number is verified and active on DealOS.`;
+
+    if (mode === "copy") {
+      const shareUrl = `https://web.whatsapp.com/send?phone=${cleanNum}&text=${encodeURIComponent(msg)}`;
+      void navigator.clipboard?.writeText(shareUrl);
+      toast.success("WhatsApp link copied to clipboard! Paste in any tab or browser.", { icon: "📋" });
+      return;
+    }
+
+    // web.whatsapp.com avoids Safari's native protocol error ("Safari cannot open the page")
+    const targetUrl = mode === "web"
+      ? `https://web.whatsapp.com/send?phone=${cleanNum}&text=${encodeURIComponent(msg)}`
+      : `https://wa.me/${cleanNum}?text=${encodeURIComponent(msg)}`;
+
+    try {
+      const win = window.open(targetUrl, "_blank", "noopener,noreferrer");
+      if (!win) {
+        // Pop-up was blocked (common inside Lovable iframe or strict Safari settings)
+        void navigator.clipboard?.writeText(targetUrl);
+        toast.info("Browser blocked pop-up. WhatsApp link copied to clipboard!", {
+          action: {
+            label: "Open Directly",
+            onClick: () => { window.location.href = targetUrl; },
+          },
+        });
+      } else {
+        toast.success("Opening WhatsApp Web chat...", { icon: "💬" });
+      }
+    } catch {
+      void navigator.clipboard?.writeText(targetUrl);
+      toast.info("WhatsApp link copied to clipboard!");
+    }
   };
 
   return (
@@ -224,15 +254,27 @@ export function WhatsAppOtpVerification() {
         </div>
 
         {step === "verified" && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleTestEcho}
-            className="h-9 rounded-xl text-xs font-bold gap-1.5 border-border hover:border-emerald-500/40 text-foreground cursor-pointer"
-          >
-            <Send size={13} className="text-emerald-400" />
-            <span>Test WhatsApp Chat</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleTestEcho("copy")}
+              className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-border hover:border-emerald-500/40 text-foreground cursor-pointer"
+              title="Copy WhatsApp chat link"
+            >
+              <Copy size={13} className="text-emerald-400" />
+              <span className="hidden sm:inline">Copy Link</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleTestEcho("web")}
+              className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 border-border hover:border-emerald-500/40 text-foreground cursor-pointer"
+            >
+              <ExternalLink size={13} className="text-emerald-400" />
+              <span>Test WhatsApp Web</span>
+            </Button>
+          </div>
         )}
       </div>
 
@@ -446,15 +488,45 @@ export function WhatsAppOtpVerification() {
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReset}
-              className="h-9 px-3.5 rounded-xl text-xs font-semibold border-border hover:bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
-            >
-              <Edit2 size={12} className="mr-1.5" />
-              <span>Change Number</span>
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleTestEcho("copy")}
+                className="h-9 px-3 rounded-xl text-xs font-semibold border-border hover:bg-secondary text-muted-foreground hover:text-foreground cursor-pointer gap-1.5"
+                title="Copy WhatsApp chat link to clipboard"
+              >
+                <Copy size={13} />
+                <span>Copy Link</span>
+              </Button>
+
+              <Button
+                size="sm"
+                onClick={() => handleTestEcho("web")}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white gap-1.5 shadow-sm cursor-pointer"
+              >
+                <ExternalLink size={13} />
+                <span>Test WhatsApp Chat</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReset}
+                className="h-9 px-3.5 rounded-xl text-xs font-semibold border-border hover:bg-secondary text-muted-foreground hover:text-foreground cursor-pointer gap-1.5"
+              >
+                <Edit2 size={12} />
+                <span>Change Number</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Safari & Browser Helper Notice */}
+          <div className="rounded-xl bg-secondary/30 border border-border/60 px-3.5 py-2 text-[11px] text-muted-foreground flex items-center justify-between gap-2">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={13} className="text-emerald-400 shrink-0" />
+              <span><strong>Safari Compatibility:</strong> Targets secure WhatsApp Web (<code className="font-mono text-[10px] bg-secondary px-1 py-0.5 rounded">web.whatsapp.com</code>) to prevent native desktop protocol errors.</span>
+            </span>
           </div>
 
           {/* Active Features Info */}
