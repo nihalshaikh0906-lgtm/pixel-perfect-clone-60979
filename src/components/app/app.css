@@ -55,6 +55,12 @@
 .a-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:14px;color:var(--a-ink)}
 .a-search kbd{font-size:11px;border:1px solid var(--a-line);border-radius:6px;padding:1px 6px;color:var(--a-ink-2);font-family:inherit}
 .a-search:focus-within{border-color:var(--a-gold);box-shadow:0 0 0 3px var(--a-gold-tint)}
+.a-back-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 12px;border-radius:12px;background:var(--a-card);border:1px solid var(--a-line);color:var(--a-ink);font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;transition:background .15s,border-color .15s,transform .15s;user-select:none;-webkit-tap-highlight-color:transparent}
+.a-back-btn:hover{background:var(--a-cream);border-color:var(--a-gold)}
+.a-back-btn:active{transform:scale(0.97)}
+.a-back-btn svg{transition:transform .15s}
+.a-back-btn:hover svg{transform:translateX(-2px)}
+.a-route-pill{white-space:nowrap}
 .a-top-actions{margin-left:auto;display:flex;gap:10px}
 .a-content{width:100%;max-width:100%;margin:0;padding:24px 32px;display:flex;flex-direction:column;gap:20px;flex:1}
 
@@ -573,4 +579,137 @@ button.a-lcard{width:100%;background:none;border:0;border-bottom:1px solid var(-
 }
 .a-side.owner-side-white .a-user-text small {
   color: #64748b !important;
+}
+
+/* ═══ MULTI-DEVICE RESPONSIVENESS & MOBILE FLUIDITY ═══ */
+
+/* Dark mode for back button & route pill */
+.dapp.a-dark .a-back-btn {
+  background: #1e2238;
+  border-color: #2b3050;
+  color: #f1f3f9;
+}
+.dapp.a-dark .a-back-btn:hover {
+  background: #272c4a;
+  border-color: #3b426f;
+}
+.dapp.a-dark .a-route-pill {
+  background: rgba(30, 34, 56, 0.7);
+  border-color: #2b3050;
+  color: #f1f3f9;
+}
+
+/* Tablet & iPad layout tuning (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .dapp .a-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .dapp .a-row3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .dapp .a-row3 > :last-child {
+    grid-column: span 2;
+  }
+  .dapp .a-content {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+  .dapp .a-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Phone layout tuning (<= 640px) */
+@media (max-width: 640px) {
+  .dapp .a-top {
+    gap: 8px;
+    padding: 10px 14px;
+  }
+  .dapp .a-back-btn {
+    height: 38px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+  .dapp .a-route-pill {
+    display: none !important;
+  }
+  .dapp .a-search {
+    height: 38px;
+    padding: 0 10px;
+    min-width: 0;
+  }
+  .dapp .a-search input {
+    font-size: 13px;
+  }
+  .dapp .a-top-actions {
+    gap: 6px;
+  }
+  .dapp .a-top-actions .a-btn {
+    height: 38px;
+  }
+  .dapp .a-content {
+    padding: 16px 12px;
+    gap: 14px;
+  }
+  .dapp .a-kpis {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .dapp .a-row3 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .dapp .a-card {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+}
+
+/* Extra small phones (<= 420px) */
+@media (max-width: 420px) {
+  .dapp .a-top {
+    gap: 6px;
+    padding: 8px 10px;
+  }
+  .dapp .a-back-btn {
+    padding: 0 8px;
+  }
+  .dapp .a-back-btn .a-back-text {
+    display: none;
+  }
+  .dapp .a-search {
+    padding: 0 8px;
+  }
+}
+
+/* Mobile & Touch Animation Optimization: ultra-light, snappy, zero stutter */
+@media (hover: none) or (max-width: 767px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dapp .a-lift:hover {
+    transform: none !important;
+    box-shadow: var(--a-shadow) !important;
+  }
+  .dapp .a-btn:hover {
+    transform: none !important;
+  }
+  .dapp .a-back-btn:hover {
+    transform: none !important;
+  }
+  .dapp .a-fade {
+    animation-duration: 0.2s !important;
+  }
+  .dapp .a-slide {
+    animation-duration: 0.2s !important;
+  }
+  .dapp .a-nav,
+  .dapp .a-content,
+  .dapp .a-table-wrap,
+  .dapp .a-pipe {
+    -webkit-overflow-scrolling: touch;
+  }
 }

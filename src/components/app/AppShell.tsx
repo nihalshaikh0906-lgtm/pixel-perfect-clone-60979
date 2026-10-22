@@ -5,7 +5,7 @@ import {
   Building2, CalendarClock, ChevronsLeft, ChevronsRight, Construction, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
-  Video, DollarSign, Layers, Crown, Megaphone,
+  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -203,6 +203,42 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     setTooltip(null);
   };
 
+  const isRootDashboard = pathname === "/app" || pathname === "/app/" || pathname === "/owner-dashboard";
+
+  const getRouteMeta = (path: string): { title: string; parent?: string } => {
+    if (path === "/app" || path === "/app/") return { title: "Broker Cockpit" };
+    if (path.startsWith("/owner-dashboard")) return { title: "Executive Overwatch" };
+    if (path.startsWith("/app/leads/")) return { title: "Lead Dossier", parent: "Leads" };
+    if (path.startsWith("/app/leads")) return { title: "Leads Inbox" };
+    if (path.startsWith("/app/project/")) return { title: "Project Dossier", parent: "Offplan" };
+    if (path.startsWith("/app/deal-room/")) return { title: "Client Deal Room", parent: "Deals" };
+    if (path.startsWith("/app/offplan")) return { title: "Offplan Catalog" };
+    if (path.startsWith("/app/listings")) return { title: "Ready Property" };
+    if (path.startsWith("/app/rentals")) return { title: "Rentals" };
+    if (path.startsWith("/app/deals")) return { title: "Deals Pipeline" };
+    if (path.startsWith("/app/appointments")) return { title: "Appointments" };
+    if (path.startsWith("/app/follow-ups")) return { title: "Follow-ups" };
+    if (path.startsWith("/app/settings")) return { title: "Broker Settings" };
+    if (path.startsWith("/app/ai-assistant")) return { title: "AI Copilot" };
+    if (path.startsWith("/app/my-account")) return { title: "My Profile" };
+    if (path.startsWith("/app/users")) return { title: "Team & RERA Users" };
+    if (path.startsWith("/app/reports")) return { title: "Reports" };
+    if (path.startsWith("/app/agreements")) return { title: "DLD Agreements" };
+    if (path.startsWith("/app/tenancies")) return { title: "Tenancy Contracts" };
+    if (path.startsWith("/app/activity-logs")) return { title: "Activity Logs" };
+    return { title: "Workspace" };
+  };
+
+  const routeMeta = getRouteMeta(pathname);
+
+  const handleGoBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+    } else {
+      void navigate({ to: isRootDashboard ? "/welcome" : (role === "company" ? "/owner-dashboard" : "/app") });
+    }
+  };
+
   return (
     <Ctx.Provider value={{ clientMode, openAi: () => setAi(true) }}>
       <div className={`dapp ${theme.dark ? "a-dark" : ""}`}>
@@ -235,7 +271,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             {!collapsed && (
               <button
                 type="button"
-                className="a-collapse-mini"
+                className="a-collapse-mini hidden md:inline-flex"
                 onClick={() => setCollapsed(true)}
                 title="Collapse to icon rail"
                 aria-label="Collapse sidebar"
@@ -243,6 +279,15 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 <ChevronsLeft size={16} />
               </button>
             )}
+            <button
+              type="button"
+              className="a-collapse-mini md:hidden"
+              onClick={() => setDrawer(false)}
+              title="Close navigation"
+              aria-label="Close navigation"
+            >
+              <X size={18} />
+            </button>
           </div>
 
           {/* Persona Switcher Pill */}
@@ -313,6 +358,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     to={it.to}
                     className={`a-link ${active(it) ? "active" : ""}`}
                     aria-current={active(it) ? "page" : undefined}
+                    onClick={() => setDrawer(false)}
                     onMouseEnter={(e) => handleMouseEnter(e, it)}
                     onMouseLeave={handleMouseLeave}
                   >
@@ -479,6 +525,29 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             >
               <Menu size={18} />
             </button>
+
+            {/* Universal Back Button for Phones, iPads & PCs */}
+            <button
+              type="button"
+              onClick={handleGoBack}
+              className="a-back-btn"
+              aria-label="Go back"
+              title="Go back to previous page"
+            >
+              <ChevronLeft size={16} className="text-primary shrink-0" />
+              <span className="a-back-text">Back</span>
+            </button>
+
+            {/* Adaptive Route Meta Pill */}
+            <div className="a-route-pill hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-secondary/60 border border-border/60 text-xs font-semibold text-foreground shrink-0">
+              {routeMeta.parent && (
+                <>
+                  <span className="text-muted-foreground text-[11px]">{routeMeta.parent}</span>
+                  <span className="text-muted-foreground/40 font-light text-[10px]">/</span>
+                </>
+              )}
+              <span className="truncate max-w-[130px] lg:max-w-none">{routeMeta.title}</span>
+            </div>
 
             <form
               className="a-search"
