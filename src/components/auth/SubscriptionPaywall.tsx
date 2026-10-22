@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Logo } from "./AuthShell";
 
 export const WHITELISTED_TEST_EMAILS = [
+  "driplab26@gmail.com",        // Owner Executive Account
   "nihalshaikh0906@gmail.com",   // Licensed Broker Account
   "owner@dealos.ae",
   "broker@dealos.ae",
@@ -19,6 +20,7 @@ export function isWhitelistedAccount(email?: string | null): boolean {
   const clean = email.trim().toLowerCase();
   return (
     WHITELISTED_TEST_EMAILS.includes(clean) ||
+    clean.includes("driplab") ||
     clean.includes("nihal") ||
     clean.includes("dealos") ||
     clean.startsWith("demo-") ||

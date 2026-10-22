@@ -95,29 +95,20 @@ export function AppShell({ children, userName, initials, agency }: { children: R
 
   const ownerGroups: { title: string; items: Item[] }[] = [
     {
-      title: "COMPANY OVERWATCH",
+      title: "OVERWATCH",
       items: [
-        { label: "Executive Cockpit", desc: "Agency Overwatch, GMV & Speed to Lead", to: "/owner-dashboard", icon: Home, exact: true },
-        { label: "Broker Leaderboard", desc: "12 Licensed Agents, Response Times & Quotas", to: "/owner-dashboard#brokers", icon: Users },
-        { label: "Deals Stages Radar", desc: "Inbound Leads, Viewings, Form F & Vouchers", to: "/owner-dashboard#pipeline", icon: Layers },
-        { label: "Reels & Marketing ROI", desc: "Viral Video Lead Gen & 36.8x ROAS Attribution", to: "/owner-dashboard#reels", icon: Video },
+        { label: "Executive Cockpit", desc: "Agency Overwatch & Speed to Lead", to: "/owner-dashboard", icon: Home, exact: true },
+        { label: "Broker Leaderboard", desc: "12 Licensed Agents & Quotas", to: "/owner-dashboard#brokers", icon: Users },
+        { label: "Deals Stages Radar", desc: "Inbound Leads, Pipeline & Form F", to: "/owner-dashboard#pipeline", icon: Layers },
       ],
     },
     {
-      title: "TEAM & GOVERNANCE",
+      title: "GOVERNANCE",
       items: [
-        { label: "Manage Users & Team", desc: "12 Licensed Agents, RERA BRN & Access", to: "/app/users", icon: Users, badge: 12 },
+        { label: "Manage Users & Team", desc: "12 Licensed Agents & RERA Access", to: "/app/users", icon: Users, badge: 12 },
         { label: "Developer Debt", desc: "Danube & Emaar Overdue Commission Ledger", to: "/owner-dashboard#vouchers", icon: DollarSign },
-        { label: "Owner AI Mastermind", desc: "Executive Decisions & Cashflow Recovery", to: "/owner-dashboard#mastermind", icon: Sparkles },
-        { label: "Agency Audit Trail", desc: "Real-time Compliance & Audit Trail", to: "/app/activity-logs", icon: Activity, adminOnly: true },
-      ],
-    },
-    {
-      title: "OWNER EXECUTIVE PORTAL",
-      items: [
-        { label: "Owner Account", desc: "ORN-28941, DLD License & Agency Stamp", to: "/app/my-account?role=owner", icon: Crown },
-        { label: "Agency Settings", desc: "DLD Trakheesi, SLA Routing & Security", to: "/app/settings?role=owner", icon: Settings },
-        { label: "Platform Overview", desc: "Platform Architecture & DLD Version", to: "/app/about", icon: Info },
+        { label: "Owner AI Mastermind", desc: "Executive Decisions & Cashflow", to: "/owner-dashboard#mastermind", icon: Sparkles },
+        { label: "Agency Settings", desc: "DLD License & Governance", to: "/app/settings?role=owner", icon: Settings },
       ],
     },
   ];
@@ -219,7 +210,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
 
         {/* ═══ GEMINI-STYLE SIDEBAR RAIL ═══ */}
         <aside
-          className={`a-side ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`}
+          className={`a-side ${role === "company" || isOwnerRoute ? "owner-side-white" : ""} ${collapsed ? "collapsed" : ""} ${drawer ? "open" : ""}`}
           aria-label="Workspace navigation"
         >
           {/* Top Logo Button: Toggles the entire sidebar like Gemini */}
@@ -266,12 +257,12 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                   <span className="text-[10px] text-primary/80 font-bold tracking-wider uppercase">Licensed Agent</span>
                 </div>
               ) : (
-                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2 text-xs flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <Crown size={14} className="text-amber-400 shrink-0" />
-                    <span className="font-extrabold text-[11px] text-amber-300 truncate">Owner Cockpit</span>
+                <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-2.5 text-xs flex items-center justify-between">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Crown size={15} className="text-slate-800 shrink-0" />
+                    <span className="font-bold text-[11.5px] text-slate-800 truncate">Agency Owner</span>
                   </div>
-                  <span className="text-[10px] text-amber-300/80 font-bold tracking-wider uppercase">Agency Owner</span>
+                  <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">Executive</span>
                 </div>
               )}
             </div>
@@ -295,7 +286,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 </div>
               ) : (
                 <div
-                  className="size-8 rounded-xl flex items-center justify-center bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                  className="size-8 rounded-xl flex items-center justify-center bg-slate-100 text-slate-800 border border-slate-200"
                   title="Owner Cockpit Mode · Agency Owner"
                   onMouseEnter={(e) =>
                     handleMouseEnter(e, {

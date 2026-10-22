@@ -31,14 +31,14 @@ export const Route = createFileRoute("/_authenticated")({
       const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
 
-      const isBroker = activeEmail === "nihalshaikh0906@gmail.com" || storedRole === "agent";
-      const isOwner = !isBroker && storedRole === "company";
+      const isOwner = activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae" || storedRole === "company";
+      const isBroker = activeEmail === "nihalshaikh0906@gmail.com" || (storedRole === "agent" && !isOwner);
 
       return {
         user: {
           id: isOwner ? "demo-owner-user-1" : "demo-broker-user-1",
           email: isOwner
-            ? (activeEmail || "owner@dealos.ae")
+            ? (activeEmail || "driplab26@gmail.com")
             : "nihalshaikh0906@gmail.com",
           user_metadata: {
             full_name: isOwner ? "DealOS Agency Owner" : "Nihal Shaikh",

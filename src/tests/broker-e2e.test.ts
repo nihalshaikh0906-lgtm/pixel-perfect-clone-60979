@@ -381,6 +381,16 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(targetRoute).toBe("/app");
     });
 
+    it("ensures driplab26@gmail.com strictly resolves to 'company' (Owner Account)", async () => {
+      setActiveEmail("driplab26@gmail.com");
+      const role = await detectRole();
+      expect(role).toBe("company");
+      expect(getStoredRole()).toBe("company");
+
+      const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
+      expect(targetRoute).toBe("/owner-dashboard");
+    });
+
     it("ensures owner@dealos.ae strictly resolves to 'company'", async () => {
       setActiveEmail("owner@dealos.ae");
       setStoredRole("company");
@@ -956,12 +966,12 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   // ═══════════════════════════════════════════════════════════
   describe("Workflow 15: Subscription Gate & Test Accounts Whitelist", () => {
     it("whitelists owner and broker test accounts with zero paywall lock", () => {
-      const ownerTestEmail = "owner@dealos.ae";
+      const ownerTestEmail = "driplab26@gmail.com";
       const brokerTestEmail = "nihalshaikh0906@gmail.com";
       const randomUserEmail = "newbroker@randomagency.ae";
 
       function isWhitelisted(email: string) {
-        const list = ["owner@dealos.ae", "nihalshaikh0906@gmail.com", "demo-owner@dealos.ae", "demo-agent@dealos.ae"];
+        const list = ["driplab26@gmail.com", "owner@dealos.ae", "nihalshaikh0906@gmail.com", "demo-owner@dealos.ae", "demo-agent@dealos.ae"];
         return list.includes(email.toLowerCase().trim());
       }
 
@@ -988,13 +998,13 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
     it("resolves named-account roles correctly without relying on ambiguous metadata", () => {
       function resolveAccountRole(email: string): "company" | "agent" {
         const clean = email.toLowerCase().trim();
-        if (clean === "owner@dealos.ae") return "company";
+        if (clean === "driplab26@gmail.com" || clean === "owner@dealos.ae") return "company";
         if (clean === "nihalshaikh0906@gmail.com") return "agent";
         if (clean.includes("owner") || clean.includes("company")) return "company";
         return "agent";
       }
 
-      expect(resolveAccountRole("owner@dealos.ae")).toBe("company");
+      expect(resolveAccountRole("driplab26@gmail.com")).toBe("company");
       expect(resolveAccountRole("nihalshaikh0906@gmail.com")).toBe("agent");
     });
   });

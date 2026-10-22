@@ -86,6 +86,8 @@ function LoginPage() {
     setActiveEmail(cleanEm);
     if (cleanEm === "nihalshaikh0906@gmail.com") {
       setStoredRole("agent");
+    } else if (cleanEm === "driplab26@gmail.com") {
+      setStoredRole("company");
     }
 
     const { data: auth, error: err } = await supabase.auth.signInWithPassword({ email: em, password: pw });
@@ -104,7 +106,8 @@ function LoginPage() {
 
       if (isDemoEnv) {
         localStorage.setItem("dealos_demo_mode", "true");
-        const inferred = cleanEm === "nihalshaikh0906@gmail.com" ? "agent"
+        const inferred = cleanEm === "driplab26@gmail.com" ? "company"
+                       : cleanEm === "nihalshaikh0906@gmail.com" ? "agent"
                        : /company|owner|director/i.test(em) ? "company"
                        : /broker|agent/i.test(em) ? "agent"
                        : want;
@@ -120,7 +123,9 @@ function LoginPage() {
     const user = auth.user;
     const cleanUserEmail = (user?.email ?? em).toLowerCase().trim();
     setActiveEmail(cleanUserEmail);
-    const namedRole = cleanUserEmail === "nihalshaikh0906@gmail.com" ? "agent" : null;
+    const namedRole = cleanUserEmail === "driplab26@gmail.com" ? "company"
+                    : cleanUserEmail === "nihalshaikh0906@gmail.com" ? "agent"
+                    : null;
 
     const metaRole = (user?.user_metadata?.role as string | undefined)?.toLowerCase();
     const userRole = (metaRole === "agent" || metaRole === "broker") ? "agent"
