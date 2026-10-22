@@ -198,48 +198,35 @@
 .dealos .d-tabs>button.active,.dealos .d-mini-chat>div{color:var(--d-gold-text)}
 .dealos .d-kpi-label>span.d-positive{color:#16A34A!important}.dealos .d-kpi-label>span.d-negative{color:#E5484D!important}
 .dealos .d-dashboard-heading h3 span{color:var(--d-gold-text)}
-/* Hero intro — plays once per session; [data-intro=done] removes every intro animation */
-.dealos{--it:1;--ie:cubic-bezier(.22,1,.36,1)}
-@media(max-width:767px){.dealos{--it:.8}}
+/* Hero intro — fast entrance */
+.dealos{--it:.5;--ie:cubic-bezier(.16,1,.3,1)}
+@media(max-width:767px){.dealos{--it:.4}}
 .d-word{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.1em;margin-bottom:-.1em}.d-word>span{display:inline-block}
 .d-period{display:inline-block}
 .d-sub-line{display:inline}
-@keyframes d-i-bg{from{opacity:0;scale:1.04}}
-@keyframes d-i-down{from{opacity:0;translate:0 -16px}}
+@keyframes d-i-bg{from{opacity:0;scale:1.03}}
+@keyframes d-i-down{from{opacity:0;translate:0 -12px}}
 @keyframes d-i-up{from{opacity:0;translate:0 var(--d,10px)}}
-@keyframes d-i-word{from{opacity:0;translate:0 100%;filter:blur(6px)}}
+@keyframes d-i-word{from{opacity:0;translate:0 100%;filter:blur(4px)}}
 @keyframes d-i-pop{from{opacity:0;scale:0}}
 @keyframes d-i-scale{from{opacity:0;scale:var(--s,.9)}}
 @keyframes d-i-fade{from{opacity:0}}
 @keyframes d-i-sweep{from{translate:-120% 0}to{translate:220% 0}}
 @keyframes d-i-nudge{0%,100%{translate:0 0}50%{translate:4px 0}}
-.dealos[data-intro=full] .d-hero-photo{animation:d-i-bg calc(1.2s*var(--it)) var(--ie) both}
-.dealos[data-intro=full] .d-navbar .d-brand{animation:d-i-down calc(.6s*var(--it)) var(--ie) calc(.15s*var(--it)) both}
-.dealos[data-intro=full] .d-navbar nav>*{animation:d-i-down calc(.6s*var(--it)) var(--ie) calc(var(--nd,.2s)*var(--it)) both}
-.dealos[data-intro=full] .d-navbar nav>:nth-child(2){--nd:.25s}.dealos[data-intro=full] .d-navbar nav>:nth-child(3){--nd:.3s}.dealos[data-intro=full] .d-navbar nav>:nth-child(4){--nd:.35s}.dealos[data-intro=full] .d-navbar nav>:nth-child(5){--nd:.4s}
-.dealos[data-intro=full] .d-navbar .d-login,.dealos[data-intro=full] .d-navbar .d-mobile-menu-button{animation:d-i-down calc(.6s*var(--it)) var(--ie) calc(.45s*var(--it)) both}
-.dealos[data-intro=full] .d-navbar .d-magnetic{animation:d-i-down calc(.6s*var(--it)) var(--ie) calc(.5s*var(--it)) both}
-.dealos[data-intro=full] .d-hero .d-glass-pill{position:relative;overflow:hidden;animation:d-i-up calc(.6s*var(--it)) var(--ie) calc(.4s*var(--it)) both}
-.dealos[data-intro=full] .d-hero .d-glass-pill::after{content:"";position:absolute;inset:0;width:45%;background:linear-gradient(100deg,transparent,color-mix(in srgb,var(--silk) 35%,transparent),transparent);translate:-120% 0;animation:d-i-sweep calc(.9s*var(--it)) var(--ie) calc(1.05s*var(--it)) both;pointer-events:none}
-.dealos[data-intro=full] .d-hero .d-word>span{animation:d-i-word calc(.8s*var(--it)) var(--ie) calc(var(--dl)*var(--it)) both}
-.dealos[data-intro=full] .d-hero .d-period{animation:d-i-pop calc(.4s*var(--it)) var(--ie) calc(1.6s*var(--it)) both}
-.dealos[data-intro=full] .d-hero .d-sub-line{display:inline-block;--d:12px;animation:d-i-up calc(.6s*var(--it)) var(--ie) calc(1.4s*var(--it)) both}
-.dealos[data-intro=full] .d-hero .d-sub-2{animation-delay:calc(1.52s*var(--it))}
-.dealos[data-intro=full] .d-hero-buttons>*{--d:14px;animation:d-i-up calc(.6s*var(--it)) var(--ie) calc(1.8s*var(--it)) both}
-.dealos[data-intro=full] .d-hero-buttons>:nth-child(2){animation-delay:calc(1.9s*var(--it))}
-.dealos[data-intro=full] .d-hero .d-button-white svg{animation:d-i-nudge .5s var(--ie) calc(2.45s*var(--it)) both}
-.dealos[data-intro=full] .d-avatar-stack span{--s:.8;animation:d-i-scale calc(.5s*var(--it)) var(--ie) calc(var(--ad,2.05s)*var(--it)) both}
-.dealos[data-intro=full] .d-avatar-stack span:nth-child(2){--ad:2.11s}.dealos[data-intro=full] .d-avatar-stack span:nth-child(3){--ad:2.17s}.dealos[data-intro=full] .d-avatar-stack span:nth-child(4){--ad:2.23s}
-.dealos[data-intro=full] .d-trust>span:last-child{animation:d-i-fade calc(.5s*var(--it)) var(--ie) calc(2.35s*var(--it)) both}
-.dealos[data-intro=full] .d-hero .d-glass-tile{animation:d-i-scale calc(.6s*var(--it)) var(--ie) calc(var(--td,2.1s)*var(--it)) both,d-tile-float 7s ease-in-out infinite}
-.dealos[data-intro=full] .d-glass-tile.tile-1{--td:2.17s}.dealos[data-intro=full] .d-glass-tile.tile-2{--td:2.24s}.dealos[data-intro=full] .d-glass-tile.tile-3{--td:2.31s}.dealos[data-intro=full] .d-glass-tile.tile-4{--td:2.38s}.dealos[data-intro=full] .d-glass-tile.tile-5{--td:2.45s}.dealos[data-intro=full] .d-glass-tile.tile-6{--td:2.52s}.dealos[data-intro=full] .d-glass-tile.tile-7{--td:2.59s}
-.dealos[data-intro=full] .d-hero-dashboard{--d:40px;animation:d-i-up calc(.9s*var(--it)) var(--ie) calc(2.3s*var(--it)) both}
-.dealos[data-intro=quick] .d-hero-photo,.dealos[data-intro=quick] .d-navbar>*,.dealos[data-intro=quick] .d-hero-text,.dealos[data-intro=quick] .d-hero-dashboard{animation:d-i-fade .4s var(--ie) both}
-.dealos[data-intro=quick] .d-hero .d-glass-tile{animation:d-i-fade .4s var(--ie) both,d-tile-float 7s ease-in-out infinite}
+.dealos[data-intro=full] .d-hero-photo{animation:d-i-bg calc(.7s*var(--it)) var(--ie) both}
+.dealos[data-intro=full] .d-navbar .d-brand{animation:d-i-down calc(.4s*var(--it)) var(--ie) calc(.05s*var(--it)) both}
+.dealos[data-intro=full] .d-navbar nav>*{animation:d-i-down calc(.4s*var(--it)) var(--ie) calc(var(--nd,.08s)*var(--it)) both}
+.dealos[data-intro=full] .d-navbar nav>:nth-child(2){--nd:.1s}.dealos[data-intro=full] .d-navbar nav>:nth-child(3){--nd:.12s}.dealos[data-intro=full] .d-navbar nav>:nth-child(4){--nd:.14s}.dealos[data-intro=full] .d-navbar nav>:nth-child(5){--nd:.16s}
+.dealos[data-intro=full] .d-navbar .d-login,.dealos[data-intro=full] .d-navbar .d-mobile-menu-button{animation:d-i-down calc(.4s*var(--it)) var(--ie) calc(.18s*var(--it)) both}
+.dealos[data-intro=full] .d-navbar .d-magnetic{animation:d-i-down calc(.4s*var(--it)) var(--ie) calc(.2s*var(--it)) both}
+.dealos[data-intro=full] .d-hero .d-glass-tile{animation:d-i-scale calc(.5s*var(--it)) var(--ie) calc(var(--td,.25s)*var(--it)) both,d-tile-float 7s ease-in-out infinite}
+.dealos[data-intro=full] .d-glass-tile.tile-1{--td:.28s}.dealos[data-intro=full] .d-glass-tile.tile-2{--td:.31s}.dealos[data-intro=full] .d-glass-tile.tile-3{--td:.34s}.dealos[data-intro=full] .d-glass-tile.tile-4{--td:.37s}.dealos[data-intro=full] .d-glass-tile.tile-5{--td:.4s}.dealos[data-intro=full] .d-glass-tile.tile-6{--td:.43s}.dealos[data-intro=full] .d-glass-tile.tile-7{--td:.46s}
+.dealos[data-intro=full] .d-hero-dashboard{--d:24px;animation:d-i-up calc(.6s*var(--it)) var(--ie) calc(.25s*var(--it)) both}
+.dealos[data-intro=quick] .d-hero-photo,.dealos[data-intro=quick] .d-navbar>*,.dealos[data-intro=quick] .d-hero-dashboard{animation:d-i-fade .25s var(--ie) both}
+.dealos[data-intro=quick] .d-hero .d-glass-tile{animation:d-i-fade .25s var(--ie) both,d-tile-float 7s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){
-.dealos[data-intro=full] .d-hero-photo,.dealos[data-intro=full] .d-navbar>*,.dealos[data-intro=full] .d-hero-text,.dealos[data-intro=full] .d-hero-dashboard,.dealos[data-intro=full] .d-hero .d-glass-tile,.dealos[data-intro=quick] .d-hero .d-glass-tile{animation:d-i-fade .3s ease both!important}
-.dealos[data-intro=full] .d-navbar *,.dealos[data-intro=full] .d-hero-text *{animation:none!important}
-.dealos[data-intro=full] .d-hero .d-glass-pill::after{display:none}}
+.dealos[data-intro=full] .d-hero-photo,.dealos[data-intro=full] .d-navbar>*,.dealos[data-intro=full] .d-hero-dashboard,.dealos[data-intro=full] .d-hero .d-glass-tile,.dealos[data-intro=quick] .d-hero .d-glass-tile{animation:d-i-fade .2s ease both!important}
+.dealos[data-intro=full] .d-navbar *{animation:none!important}}
 /* Pricing — single DealOS Pro plan */
 .d-pr{--pr-strike:#8A90A8}
 .d-pr-toggle{position:relative;display:inline-grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:32px;padding:6px;border-radius:999px;background:var(--d-white);border:1px solid var(--d-border);box-shadow:var(--d-shadow-sm);width:min(640px,100%)}
