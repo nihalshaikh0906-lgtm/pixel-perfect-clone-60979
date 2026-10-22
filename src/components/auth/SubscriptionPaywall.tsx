@@ -10,10 +10,7 @@ export const SUPER_ADMIN_KEY_EMAIL = "nihalshaikh0906@gmail.com";
 
 export const WHITELISTED_TEST_EMAILS = [
   SUPER_ADMIN_KEY_EMAIL,       // Super Admin Master Key Account (100% Free Access)
-  "driplab26@gmail.com",        // Owner Executive Account
-  "admin@dealos.ae",            // Master Admin Account
-  "owner@dealos.ae",
-  "broker@dealos.ae",
+  "admin@dealos.ae",            // Master Admin Account (100% Free Access)
   "demo-owner@dealos.ae",
   "demo-agent@dealos.ae",
 ];
@@ -23,10 +20,7 @@ export function isWhitelistedAccount(email?: string | null): boolean {
   const clean = email.trim().toLowerCase();
   return (
     clean === SUPER_ADMIN_KEY_EMAIL ||
-    clean === "driplab26@gmail.com" ||
     clean === "admin@dealos.ae" ||
-    clean === "owner@dealos.ae" ||
-    clean === "broker@dealos.ae" ||
     clean.startsWith("demo-") ||
     clean.includes("test-")
   );

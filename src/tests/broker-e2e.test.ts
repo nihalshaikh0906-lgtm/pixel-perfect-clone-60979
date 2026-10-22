@@ -385,8 +385,9 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(brokerTargetRoute).toBe("/app");
     });
 
-    it("ensures driplab26@gmail.com strictly resolves to 'company' (Owner Account)", async () => {
-      setActiveEmail("driplab26@gmail.com");
+    it("ensures admin@dealos.ae strictly resolves to 'company' (Owner Cockpit)", async () => {
+      setActiveEmail("admin@dealos.ae");
+      setStoredRole("company");
       const role = await detectRole();
       expect(role).toBe("company");
       expect(getStoredRole()).toBe("company");
@@ -395,20 +396,20 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(targetRoute).toBe("/owner-dashboard");
     });
 
-    it("ensures owner@dealos.ae strictly resolves to 'company'", async () => {
-      setActiveEmail("owner@dealos.ae");
-      setStoredRole("company");
+    it("ensures admin@dealos.ae can toggle to broker agent desk", async () => {
+      setActiveEmail("admin@dealos.ae");
+      setStoredRole("agent");
       const role = await detectRole();
-      expect(role).toBe("company");
-      expect(getStoredRole()).toBe("company");
+      expect(role).toBe("agent");
+      expect(getStoredRole()).toBe("agent");
 
       const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
-      expect(targetRoute).toBe("/owner-dashboard");
+      expect(targetRoute).toBe("/app");
     });
 
     it("clears all tokens, role and active email upon fullSignOut()", async () => {
       setStoredRole("company");
-      setActiveEmail("owner@dealos.ae");
+      setActiveEmail("admin@dealos.ae");
       localStorage.setItem("dealos_demo_mode", "true");
       localStorage.setItem("sb-test-auth-token", "jwt-token");
 
@@ -970,12 +971,12 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   // ═══════════════════════════════════════════════════════════
   describe("Workflow 15: Subscription Gate & Test Accounts Whitelist", () => {
     it("whitelists owner and broker test accounts with zero paywall lock", () => {
-      const ownerTestEmail = "driplab26@gmail.com";
+      const ownerTestEmail = "admin@dealos.ae";
       const brokerTestEmail = "nihalshaikh0906@gmail.com";
       const randomUserEmail = "newbroker@randomagency.ae";
 
       function isWhitelisted(email: string) {
-        const list = ["driplab26@gmail.com", "owner@dealos.ae", "nihalshaikh0906@gmail.com", "demo-owner@dealos.ae", "demo-agent@dealos.ae"];
+        const list = ["admin@dealos.ae", "nihalshaikh0906@gmail.com", "demo-owner@dealos.ae", "demo-agent@dealos.ae"];
         return list.includes(email.toLowerCase().trim());
       }
 
@@ -1002,12 +1003,11 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
     it("resolves named-account roles correctly and respects user-requested role for broker accounts with admin in email", () => {
       function resolveAccountRole(email: string, requestedRole?: "company" | "agent"): "company" | "agent" {
         const clean = email.toLowerCase().trim();
-        if (clean === "driplab26@gmail.com" || clean === "owner@dealos.ae" || clean === "admin@dealos.ae") return requestedRole || "company";
+        if (clean === "admin@dealos.ae") return requestedRole || "company";
         if (clean === "nihalshaikh0906@gmail.com") return requestedRole || "agent";
         return requestedRole || "agent";
       }
 
-      expect(resolveAccountRole("driplab26@gmail.com")).toBe("company");
       expect(resolveAccountRole("admin@dealos.ae")).toBe("company");
       // Customer broker with 'admin' in email correctly resolves to agent (not hijacked)
       expect(resolveAccountRole("broker-admin@agency.ae", "agent")).toBe("agent");

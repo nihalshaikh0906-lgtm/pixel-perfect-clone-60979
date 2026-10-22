@@ -18,19 +18,13 @@ export const Route = createFileRoute("/_authenticated")({
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
       const isMasterAdmin =
         cleanEmail === "nihalshaikh0906@gmail.com" ||
-        cleanEmail === "driplab26@gmail.com" ||
-        cleanEmail === "admin@dealos.ae" ||
-        cleanEmail === "owner@dealos.ae";
+        cleanEmail === "admin@dealos.ae";
 
       if (isMasterAdmin) {
         const isOwner = storedRole === "company";
         const name = cleanEmail === "nihalshaikh0906@gmail.com"
           ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
-          : cleanEmail === "driplab26@gmail.com"
-          ? "DealOS Principal (Executive Owner)"
-          : cleanEmail === "admin@dealos.ae"
-          ? (isOwner ? "DealOS Master Admin (Owner Cockpit)" : "DealOS Master Admin (Broker Desk)")
-          : "DealOS Owner";
+          : (isOwner ? "DealOS Master Admin (Owner Cockpit)" : "DealOS Master Admin (Broker Desk)");
         return {
           user: {
             ...data.user,
@@ -49,9 +43,7 @@ export const Route = createFileRoute("/_authenticated")({
     const cachedActiveEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
     const isCachedMasterAdmin =
       cachedActiveEmail === "nihalshaikh0906@gmail.com" ||
-      cachedActiveEmail === "driplab26@gmail.com" ||
-      cachedActiveEmail === "admin@dealos.ae" ||
-      cachedActiveEmail === "owner@dealos.ae";
+      cachedActiveEmail === "admin@dealos.ae";
 
     // Allow testing & verification in Lovable preview, test runners, or demo/admin mode
     const isDemoMode =
@@ -76,8 +68,6 @@ export const Route = createFileRoute("/_authenticated")({
 
       const adminFullName = activeEmail === "nihalshaikh0906@gmail.com"
         ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
-        : activeEmail === "driplab26@gmail.com"
-        ? "DealOS Principal (Executive Owner)"
         : activeEmail === "admin@dealos.ae"
         ? (isOwner ? "DealOS Master Admin (Owner Cockpit)" : "DealOS Master Admin (Broker Desk)")
         : (isOwner ? "DealOS Agency Owner" : "DealOS Licensed Broker");
@@ -85,7 +75,7 @@ export const Route = createFileRoute("/_authenticated")({
       return {
         user: {
           id: isOwner ? "master-owner-user-1" : "master-broker-user-1",
-          email: activeEmail || (isOwner ? "driplab26@gmail.com" : "nihalshaikh0906@gmail.com"),
+          email: activeEmail || (isOwner ? "admin@dealos.ae" : "nihalshaikh0906@gmail.com"),
           user_metadata: {
             full_name: adminFullName,
             role: isOwner ? "company" : "agent",

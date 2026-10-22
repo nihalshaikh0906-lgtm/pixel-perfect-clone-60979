@@ -72,9 +72,7 @@ function LoginPage() {
   const cleanCurrentEmail = email.toLowerCase().trim();
   const isMasterPlatformAdmin =
     cleanCurrentEmail === "nihalshaikh0906@gmail.com" ||
-    cleanCurrentEmail === "driplab26@gmail.com" ||
-    cleanCurrentEmail === "admin@dealos.ae" ||
-    cleanCurrentEmail === "owner@dealos.ae";
+    cleanCurrentEmail === "admin@dealos.ae";
 
   const emailOk = EMAIL_RE.test(email.trim());
   const pwOk = isMasterPlatformAdmin ? password.length >= 1 : password.length >= 8;
@@ -94,9 +92,7 @@ function LoginPage() {
 
     const isMasterKey =
       cleanEm === "nihalshaikh0906@gmail.com" ||
-      cleanEm === "driplab26@gmail.com" ||
-      cleanEm === "admin@dealos.ae" ||
-      cleanEm === "owner@dealos.ae";
+      cleanEm === "admin@dealos.ae";
 
     if (isMasterKey) {
       setStoredRole(want);
@@ -149,9 +145,7 @@ function LoginPage() {
 
     const isMasterUser =
       cleanUserEmail === "nihalshaikh0906@gmail.com" ||
-      cleanUserEmail === "driplab26@gmail.com" ||
-      cleanUserEmail === "admin@dealos.ae" ||
-      cleanUserEmail === "owner@dealos.ae";
+      cleanUserEmail === "admin@dealos.ae";
 
     const namedRole = isMasterUser ? want : null;
 

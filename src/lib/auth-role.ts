@@ -60,14 +60,8 @@ export async function detectRole(): Promise<DealOSRole> {
   const stored = getStoredRole();
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
 
-  // 1. Super Admin Master Key: nihalshaikh0906@gmail.com has universal access to BOTH Owner and Broker CRM
-  if (activeEmail === "nihalshaikh0906@gmail.com") {
-    const desiredRole: DealOSRole = stored === "company" ? "company" : stored === "agent" ? "agent" : "company";
-    setStoredRole(desiredRole);
-    return desiredRole;
-  }
-  // 2. Specific DealOS Executive Owner/Admin accounts (support dual access based on stored toggle)
-  if (activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae" || activeEmail === "admin@dealos.ae") {
+  // Super Admin Master Keys: nihalshaikh0906@gmail.com & admin@dealos.ae have universal access to BOTH Owner Cockpit and Broker Desk
+  if (activeEmail === "nihalshaikh0906@gmail.com" || activeEmail === "admin@dealos.ae") {
     const desiredRole: DealOSRole = stored === "agent" ? "agent" : "company";
     setStoredRole(desiredRole);
     return desiredRole;
@@ -78,13 +72,7 @@ export async function detectRole(): Promise<DealOSRole> {
     const user = data?.user;
     if (user) {
       const cleanEmail = (user.email ?? "").toLowerCase().trim();
-      if (cleanEmail === "nihalshaikh0906@gmail.com") {
-        const desiredRole: DealOSRole = stored === "company" ? "company" : stored === "agent" ? "agent" : "company";
-        setStoredRole(desiredRole);
-        setActiveEmail(cleanEmail);
-        return desiredRole;
-      }
-      if (cleanEmail === "driplab26@gmail.com" || cleanEmail === "owner@dealos.ae" || cleanEmail === "admin@dealos.ae") {
+      if (cleanEmail === "nihalshaikh0906@gmail.com" || cleanEmail === "admin@dealos.ae") {
         const desiredRole: DealOSRole = stored === "agent" ? "agent" : "company";
         setStoredRole(desiredRole);
         setActiveEmail(cleanEmail);

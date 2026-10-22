@@ -106,12 +106,12 @@ export function VerifyingPage() {
   // Role: owner vs broker
   const [selectedRole, setSelectedRole] = useState<"owner" | "broker">(() => {
     if (searchRole) return searchRole;
-    if (searchEmail?.toLowerCase() === "driplab26@gmail.com") return "owner";
+    if (searchEmail?.toLowerCase() === "admin@dealos.ae") return "owner";
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("dealos_role");
       if (stored === "company") return "owner";
       const activeEm = localStorage.getItem("dealos_active_email");
-      if (activeEm?.toLowerCase() === "driplab26@gmail.com") return "owner";
+      if (activeEm?.toLowerCase() === "admin@dealos.ae") return "owner";
     }
     return "broker";
   });
@@ -121,10 +121,10 @@ export function VerifyingPage() {
     if (typeof window !== "undefined") {
       return (
         localStorage.getItem("dealos_active_email") ||
-        (selectedRole === "owner" ? "driplab26@gmail.com" : "nihalshaikh0906@gmail.com")
+        (selectedRole === "owner" ? "admin@dealos.ae" : "nihalshaikh0906@gmail.com")
       );
     }
-    return selectedRole === "owner" ? "driplab26@gmail.com" : "nihalshaikh0906@gmail.com";
+    return selectedRole === "owner" ? "admin@dealos.ae" : "nihalshaikh0906@gmail.com";
   });
 
   // Verification timer state
@@ -391,7 +391,7 @@ export function VerifyingPage() {
                   type="button"
                   onClick={() => {
                     setSelectedRole("owner");
-                    setActiveEmail("driplab26@gmail.com");
+                    setActiveEmail("admin@dealos.ae");
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     selectedRole === "owner" ? "bg-amber-500 text-zinc-950" : "text-zinc-400 hover:text-white"
