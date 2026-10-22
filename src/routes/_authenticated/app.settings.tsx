@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import {
   Settings, DollarSign, Users, Sparkles, MessageCircle, ShieldCheck,
   Check, RotateCcw, Building2, User, Phone, Send, ExternalLink,
-  Target, Clock, Bell, Crown, RefreshCw, Lock, Zap, CheckCircle2
+  Target, Clock, Bell, Crown, RefreshCw, Lock, Zap, CheckCircle2, Copy
 } from "lucide-react";
 import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
@@ -92,9 +92,32 @@ export function SettingsPage() {
       toast.error("Please enter a valid phone number first.");
       return;
     }
-    const url = `https://wa.me/${cleanNum}?text=${encodeURIComponent(whatsappGreeting)}`;
-    window.open(url, "_blank");
-    toast.success("Test WhatsApp dispatch opened!");
+    const url = `https://web.whatsapp.com/send?phone=${cleanNum}&text=${encodeURIComponent(whatsappGreeting)}`;
+    try {
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      if (!opened || opened.closed || typeof opened.closed === "undefined") {
+        void navigator.clipboard.writeText(url);
+        toast.info("WhatsApp Web link copied to clipboard! Paste it into a new tab.", {
+          duration: 6000,
+        });
+      } else {
+        toast.success("Opening WhatsApp Web in a new tab…");
+      }
+    } catch {
+      void navigator.clipboard.writeText(url);
+      toast.info("WhatsApp Web link copied to clipboard! Paste it into a new tab.");
+    }
+  };
+
+  const copyWhatsAppLink = () => {
+    const cleanNum = (viewTab === "broker" ? brokerPhone : agencyWhatsapp).replace(/[^0-9]/g, "");
+    if (!cleanNum) {
+      toast.error("Please enter a valid phone number first.");
+      return;
+    }
+    const url = `https://web.whatsapp.com/send?phone=${cleanNum}&text=${encodeURIComponent(whatsappGreeting)}`;
+    void navigator.clipboard.writeText(url);
+    toast.success("WhatsApp Web URL copied to clipboard!");
   };
 
   return (
@@ -448,10 +471,16 @@ export function SettingsPage() {
                 />
               </div>
 
-              <Button variant="outline" size="sm" onClick={testWhatsAppDispatch} className="h-9 rounded-xl text-xs font-bold gap-1.5">
-                <Send size={13} />
-                <span>Test WhatsApp Dispatch</span>
-              </Button>
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <Button variant="outline" size="sm" onClick={testWhatsAppDispatch} className="h-9 rounded-xl text-xs font-bold gap-1.5">
+                  <Send size={13} />
+                  <span>Test WhatsApp Dispatch</span>
+                </Button>
+                <Button variant="outline" size="sm" onClick={copyWhatsAppLink} className="h-9 rounded-xl text-xs font-bold gap-1.5">
+                  <Copy size={13} />
+                  <span>Copy Web Link</span>
+                </Button>
+              </div>
             </div>
           </section>
 
