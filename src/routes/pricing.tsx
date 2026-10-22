@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, ArrowRight, MessageCircle, Landmark, ShieldCheck } from "lucide-react";
+import { Check, ArrowRight, MessageCircle, Landmark, ShieldCheck, LogIn } from "lucide-react";
 
 import { Eyebrow, meta, PublicLayout } from "@/components/public/PublicLayout";
 import { PLANS, aedPrice } from "@/lib/pricing";
@@ -32,9 +32,22 @@ function PricingPage() {
         <p className="mx-auto mt-5 max-w-2xl text-[16px] text-muted-foreground">
           Built exclusively for Dubai property consultants and agency owners. Close one additional off-plan or secondary transaction and your DealOS subscription pays for itself dozens of times over.
         </p>
-        <p className="mt-6 inline-block rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-400">
-          ✨ Official Launch Offer · 50% Savings Applied
-        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <p className="inline-block rounded-full border border-amber-500/50 bg-amber-500/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-400">
+            ✨ Official Launch Offer · 50% Savings Applied
+          </p>
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="rounded-full border-amber-500/40 bg-secondary/80 px-4 text-xs font-bold text-amber-400 hover:bg-amber-500/10 hover:border-amber-400 gap-1.5 shadow-xs"
+          >
+            <Link to="/login" search={{ mode: undefined }}>
+              <LogIn size={13} />
+              <span>Already a Member? Sign In ↗</span>
+            </Link>
+          </Button>
+        </div>
 
         <div className="mt-14 grid gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
           {PLANS.map((p) => (

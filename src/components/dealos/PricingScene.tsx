@@ -13,6 +13,7 @@ import {
   Lock,
   MessageCircle,
   Zap,
+  LogIn,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_PLAN, PLANS, PLAN_FEATURES, aedPrice, type PlanId } from '@/lib/pricing';
@@ -104,6 +105,19 @@ export function Pricing() {
                 </button>
               ))}
             </div>
+
+            {/* Mobile portrait quick login link */}
+            <div className="pt-3.5 sm:hidden flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+              <span>Already have an account?</span>
+              <Link
+                to="/login"
+                search={{ mode: undefined }}
+                className="font-bold text-amber-500 hover:text-amber-400 inline-flex items-center gap-1 underline underline-offset-4"
+              >
+                <span>Log In to Workspace</span>
+                <span>↗</span>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -183,6 +197,18 @@ export function Pricing() {
                   <Link to="/signup" search={{ plan: plan.id }}>
                     <span>Get Started Now</span>
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+
+                {/* Mobile & Portrait Member Login Button */}
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full h-11 rounded-xl text-xs font-bold border-amber-500/40 bg-secondary/60 hover:bg-secondary text-foreground hover:border-amber-400 hover:text-amber-400 gap-2 transition-all shadow-xs"
+                >
+                  <Link to="/login" search={{ mode: undefined }}>
+                    <LogIn size={15} className="text-amber-500" />
+                    <span>Already have a license? Sign In to DealOS ↗</span>
                   </Link>
                 </Button>
 
