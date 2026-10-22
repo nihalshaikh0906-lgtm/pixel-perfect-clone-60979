@@ -498,4 +498,23 @@
     border-radius: 16px !important;
     overflow: hidden !important;
   }
+
+  /* 6. Declutter Mobile Scenes & Cards */
+  .dealos .d-scene-inner {
+    padding: 56px 0 !important;
+  }
+  .dealos .d-section-heading {
+    margin-bottom: 24px !important;
+  }
+  .dealos .d-tool-card,
+  .dealos [data-tool-card] {
+    min-height: 230px !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding-bottom: 22px !important;
+  }
+  .dealos .d-bento {
+    gap: 14px !important;
+  }
 }
+

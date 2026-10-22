@@ -21,7 +21,172 @@ function PortalPreview() {
  }, [visible, playing, reduce]);
  return <div ref={ref} className="d-portal-status"><Building2 size={24}/><span>Marina listing<small>Simulated sync preview</small></span><Button variant="ghost" size="icon" aria-label="Toggle portal sync preview" aria-pressed={playing} onClick={() => setPlaying(v => !v)} title={playing ? 'Pause preview' : 'Play preview'}>{playing ? <span aria-hidden>Ⅱ</span> : <Play size={14}/>}</Button><AnimatePresence mode="wait"><motion.b key={phase} initial={{opacity:0,y:reduce?0:5}} animate={{opacity:1,y:0}} exit={{opacity:0}} className={phase===2?'d-positive':'d-muted'}>{phase===2?<><Check size={14}/> Synced</>:phase===1?'Syncing':'Draft'}</motion.b></AnimatePresence></div>;
 }
-export function Tools(){return <Scene id="tools"><div className="d-container"><div className="d-section-heading"><span className="d-pill">Your unfair advantage</span><RevealText>Powerful tools./Real estate success.</RevealText><p>Everything a broker needs, built around real Dubai data.</p></div><div className="d-bento"><Rise className="d-bento-wide"><TiltCard className="d-tool-card"><div className="d-tool-graphic d-lead-flow"><div>{[MessageCircle,Globe,Mail,Users].map((Icon,i)=><span key={i}><Icon size={18}/></span>)}</div><span className="d-flow-line"/><span className="d-flow-node"><Sparkles/> DealOS</span><span className="d-flow-line"/><span className="d-flow-end"><KeyRound/></span></div><h3>Capture every lead.</h3><p>Route leads instantly to the right agent.</p><span className="d-demo-tag">Connected-channel concept</span></TiltCard></Rise><Rise className="d-bento-medium" delay={.1}><TiltCard className="d-tool-card"><div className="d-portal-chips"><span>Property Finder</span><span>Bayut</span><span>Dubizzle</span><ArrowRight/><span className="d-chip">{'</> API'}</span></div><PortalPreview/><h3>Portal sync.</h3><p>One listing. A connected marketplace.</p></TiltCard></Rise><Rise><TiltCard className="d-tool-card"><div className="d-mini-chat"><p>Best 3BR townhouse under 2M?</p><div><Sparkles size={15}/><span>Let’s narrow your shortlist.<small>Payment plans. Location. Your client’s priorities.</small></span></div><div className="d-mini-unit"><Building2/><span>Ready for your next question.</span></div></div><h3>AI on every page.</h3><p>A second brain for every conversation.</p></TiltCard></Rise><Rise delay={.1}><TiltCard className="d-tool-card"><Calculator/><h3>Smart calculators.</h3><p>The numbers that move a deal forward.</p></TiltCard></Rise><Rise delay={.2}><TiltCard className="d-tool-card"><div className="d-target"><svg viewBox="0 0 140 140"><circle cx="70" cy="70" r="57" className="d-target-track"/><motion.circle cx="70" cy="70" r="57" className="d-target-progress" initial={{pathLength:0}} whileInView={{pathLength:.76}} transition={{duration:1.6}}/></svg><div><Target size={20}/><strong>76%</strong><small>Monthly target</small></div></div><h3>Commission tracker.</h3><p>Your work. Your progress. Your reward.</p></TiltCard></Rise><Rise className="d-bento-medium"><TiltCard className="d-tool-card"><div className="d-deck-thumbnails">{[0,1,2].map(i=><div key={i}><img src={skyline} alt="Dubai client deck preview" loading="lazy" width={1920} height={1024}/><span>{['The opportunity','The details','The next step'][i]}</span><div/></div>)}</div><h3>1-click client decks.</h3><p>A polished presentation, with your name on it.</p></TiltCard></Rise><Rise className="d-bento-wide"><TiltCard className="d-tool-card"><Satellite/><h3>Satellite progress.</h3><p>A clearer view of what’s taking shape.</p></TiltCard></Rise></div></div></Scene>;}
+const brokerTools = [
+  {
+    category: "OFF-PLAN",
+    title: "Deal Finder",
+    description: "1,355+ UAE projects with published payment plans, handover and sale status.",
+    badge: "1,355+ Projects",
+    icon: Building2,
+  },
+  {
+    category: "READY",
+    title: "Ready Properties",
+    description: "Your own listings, verified title deeds, statuses, and bulk actions.",
+    badge: "Verified Deeds",
+    icon: KeyRound,
+  },
+  {
+    category: "DEALS",
+    title: "Deals & Commission",
+    description: "Track EOI to commission paid, per agent and milestone.",
+    badge: "Automated Splits",
+    icon: Target,
+  },
+  {
+    category: "INTELLIGENCE",
+    title: "AI Copilot",
+    description: "A second brain for every client objection and contract comparison.",
+    badge: "Instant Intel",
+    icon: Sparkles,
+  },
+  {
+    category: "DISTRIBUTION",
+    title: "Portal Sync",
+    description: "One listing, instant sync across Property Finder, Bayut, and Dubizzle.",
+    badge: "1-Click Multi-post",
+    icon: Globe,
+  },
+  {
+    category: "PRESENTATION",
+    title: "1-Click Client Decks",
+    description: "Polished branded investor decks generated in 10 seconds.",
+    badge: "White-label PDF",
+    icon: FileText,
+  },
+  {
+    category: "ESCROW",
+    title: "Satellite Progress",
+    description: "DLD construction audit and verified drone satellite timeline.",
+    badge: "Milestone Audit",
+    icon: Users,
+  },
+];
+
+export function Tools() {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, clientWidth } = scrollRef.current;
+    const idx = Math.round(scrollLeft / (clientWidth * 0.8));
+    setActiveIdx(Math.min(Math.max(idx, 0), brokerTools.length - 1));
+  };
+
+  return (
+    <Scene id="tools">
+      <div className="d-container">
+        {/* Section Heading */}
+        <div className="d-section-heading text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+          <span className="d-pill text-xs font-bold tracking-wider uppercase text-primary bg-primary/10 px-3 py-1 rounded-full inline-block mb-3">
+            EVERYTHING A BROKER NEEDS
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground font-display">
+            Seven tools, one login.
+          </h2>
+          <p className="hidden md:block text-sm text-muted-foreground mt-2">
+            Hover to pause the carousel.
+          </p>
+          <p className="block md:hidden text-xs text-muted-foreground mt-2 font-medium">
+            Swipe to explore all 7 broker tools · Built for UAE Real Estate
+          </p>
+        </div>
+
+        {/* Carousel / Cards Track */}
+        <div className="relative">
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 pt-1 px-4 sm:px-0 no-scrollbar snap-x snap-mandatory scroll-smooth"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            {brokerTools.map((t, i) => {
+              const Icon = t.icon;
+              return (
+                <div
+                  key={t.title}
+                  className="w-[82vw] max-w-[320px] sm:w-[310px] shrink-0 snap-center rounded-2xl sm:rounded-3xl p-5 sm:p-6 bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                  style={{ minHeight: "230px", height: "auto" }}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <Icon size={20} />
+                      </div>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-secondary border border-border text-muted-foreground">
+                        {t.badge}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-bold tracking-wider uppercase text-primary block mb-1">
+                        {t.category}
+                      </span>
+                      <h3 className="text-lg font-bold text-foreground font-display">
+                        {t.title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-3 break-words">
+                    {t.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Mobile Swipe Dot Indicators */}
+          <div className="flex sm:hidden justify-center items-center gap-1.5 mt-4">
+            {brokerTools.map((_, i) => (
+              <span
+                key={i}
+                className={`transition-all rounded-full ${
+                  activeIdx === i
+                    ? "w-5 h-1.5 bg-primary"
+                    : "w-1.5 h-1.5 bg-muted-foreground/30"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ═══ TRY IT YOURSELF: CALCULATOR ═══ */}
+        <div className="mt-14 sm:mt-20 pt-10 border-t border-border/60">
+          <div className="text-center max-w-xl mx-auto mb-6">
+            <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-primary block mb-1">
+              TRY IT YOURSELF
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-bold text-foreground font-display">
+              What does a purchase really cost?
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">
+              Live mortgage &amp; DLD 4% transaction fee calculator with real-time breakdowns.
+            </p>
+          </div>
+
+          <div className="max-w-lg mx-auto p-5 sm:p-7 rounded-2xl sm:rounded-3xl bg-card border border-border/80 shadow-md">
+            <Calculator />
+          </div>
+        </div>
+      </div>
+    </Scene>
+  );
+}
 const workflowStages = [
  { name: 'Capture', icon: Users, title: 'Every enquiry, in one place.', actions: ['Capture leads', 'Qualify lead', 'Assign agent'] },
  { name: 'Connect', icon: MessageCircle, title: 'Keep the conversation moving.', actions: ['Follow up', 'Schedule viewing', 'Share brochure'] },

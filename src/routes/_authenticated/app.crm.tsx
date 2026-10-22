@@ -242,7 +242,138 @@ function CrmPage() {
         <button className={`a-btn ${tab === "bin" ? "a-btn-gold" : ""}`} onClick={() => setTab("bin")}><Trash2 size={14} /> Bin ({bin.length})</button>
       </div>
 
-      <div className="a-card" style={{ overflowX: "auto", padding: 0 }}>
+      {/* ═══ MOBILE LEADS CARD FEED (< 768px) ═══ */}
+      <div className="block md:hidden space-y-3">
+        {rows.map((l) => (
+          <div
+            key={l.id}
+            className="rounded-2xl p-4 bg-card border border-border/80 shadow-xs space-y-3 transition-all"
+          >
+            {/* Header: Name, Priority, Match */}
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <button
+                  type="button"
+                  className="font-bold text-sm text-foreground hover:text-primary text-left cursor-pointer"
+                  onClick={() => setOpen(open === l.id ? null : l.id)}
+                >
+                  {l.name}
+                </button>
+                {l.phone && (
+                  <a
+                    href={`tel:${l.phone}`}
+                    className="text-xs text-muted-foreground block mt-0.5 hover:underline"
+                  >
+                    {l.phone}
+                  </a>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                    l.priority === "hot"
+                      ? "bg-red-500/20 text-red-500"
+                      : "bg-blue-500/20 text-blue-500"
+                  }`}
+                >
+                  {l.priority}
+                </span>
+                {l.matched_unit && (
+                  <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-mono font-bold text-amber-500">
+                    {l.match_score}%
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Matched Unit */}
+            {l.matched_unit ? (
+              <div className="text-xs font-medium text-foreground bg-secondary/50 rounded-xl px-2.5 py-1.5 border border-border/50 flex items-center gap-1.5">
+                <Sparkles size={12} className="text-amber-500 shrink-0" />
+                <span className="truncate">{l.matched_unit}</span>
+              </div>
+            ) : null}
+
+            {/* Stage Selector & Channel */}
+            <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/50 text-xs">
+              <span className="text-[11px] text-muted-foreground font-medium">
+                Via {l.source}
+              </span>
+              <select
+                className="a-in text-xs py-1 px-2 rounded-lg bg-secondary border border-border text-foreground font-semibold"
+                value={l.stage}
+                disabled={tab === "bin"}
+                onChange={(e) => update(l.id, { stage: e.target.value }, "Stage updated")}
+              >
+                {["new", "contacted", "qualified", "viewing", "offer", "won", "lost"].map((s) => (
+                  <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 pt-1">
+              {tab === "active" ? (
+                <>
+                  {l.phone && (
+                    <a
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:bg-emerald-500/25 transition-all shadow-xs"
+                      href={`https://wa.me/${l.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <MessageCircle size={14} className="text-emerald-500" />
+                      <span>WhatsApp Pitch</span>
+                    </a>
+                  )}
+                  <button
+                    className="p-2 rounded-xl border border-border bg-secondary hover:bg-destructive/15 text-muted-foreground hover:text-destructive transition-all"
+                    aria-label="Move to bin"
+                    onClick={() => update(l.id, { deleted_at: new Date().toISOString() }, "Moved to bin")}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="flex-1 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded-xl bg-secondary border border-border text-xs font-semibold"
+                    onClick={() => update(l.id, { deleted_at: null }, "Restored")}
+                  >
+                    <RotateCcw size={13} /> Restore
+                  </button>
+                  {isAdmin && (
+                    <button
+                      className="py-1.5 px-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold"
+                      onClick={() => purge(l.id)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Expandable AI profile on tap */}
+            {open === l.id && (
+              <div className="rounded-xl p-3 bg-secondary/40 border border-border/70 space-y-2 text-xs">
+                <p><strong>AI Strategic Profile:</strong> {l.ai_summary ?? "—"}</p>
+                <p className="text-amber-500 dark:text-amber-400 font-medium">
+                  <strong>Recommended Next Action:</strong> Send 1-click WhatsApp investor deck with post-handover payment schedule. Estimated closing: 78%.
+                </p>
+                {(msgs.data ?? []).map((m) => (
+                  <p key={m.id} className="text-muted-foreground">
+                    <strong className="capitalize text-foreground">{m.sender}:</strong> {m.body}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* ═══ DESKTOP & TABLET LEADS TABLE (>= 768px) ═══ */}
+      <div className="hidden md:block a-card" style={{ overflowX: "auto", padding: 0 }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ textAlign: "left", borderBottom: "1px solid var(--border)" }}>

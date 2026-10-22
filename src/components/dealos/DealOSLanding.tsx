@@ -58,5 +58,16 @@ export function DealOSLanding(){const reduce=useReducedMotion();const {scrollYPr
       </Link>
     </Button>
   </div>
-) : null}<aside className={`d-dot-nav ${dark?'on-dark':''}`} aria-label="Scene navigation">{scenes.map(name=><Button key={name} variant="ghost" className={active===name?'active':''} aria-label={`Go to ${name}`} aria-current={active===name?'step':undefined} onClick={()=>go(name.toLowerCase())}><span/>{active===name?<small>{name}</small>:null}</Button>)}</aside><LandingScenes/></main>;
+) : null}<aside className={`d-dot-nav ${dark?'on-dark':''}`} aria-label="Scene navigation">{scenes.map(name=><Button key={name} variant="ghost" className={active===name?'active':''} aria-label={`Go to ${name}`} aria-current={active===name?'step':undefined} onClick={()=>go(name.toLowerCase())}><span/>{active===name?<small>{name}</small>:null}</Button>)}</aside>
+{scrolled && (
+  <Link
+    to="/login"
+    search={{ mode: undefined }}
+    className="sm:hidden fixed bottom-5 right-4 z-50 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shadow-xl shadow-amber-500/30 border border-amber-300 active:scale-95 transition-all"
+    aria-label="Sign In to DealOS"
+  >
+    <span>Sign In ↗</span>
+  </Link>
+)}
+<LandingScenes/></main>;
 }
