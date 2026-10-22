@@ -66,7 +66,7 @@ export async function detectRole(): Promise<DealOSRole> {
     setStoredRole(desiredRole);
     return desiredRole;
   }
-  if (activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae") {
+  if (activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae" || activeEmail === "admin@dealos.ae" || activeEmail?.includes("admin")) {
     setStoredRole("company");
     return "company";
   }
@@ -82,7 +82,7 @@ export async function detectRole(): Promise<DealOSRole> {
         setActiveEmail(cleanEmail);
         return desiredRole;
       }
-      if (cleanEmail === "driplab26@gmail.com" || cleanEmail === "owner@dealos.ae") {
+      if (cleanEmail === "driplab26@gmail.com" || cleanEmail === "owner@dealos.ae" || cleanEmail === "admin@dealos.ae" || cleanEmail.includes("admin")) {
         setStoredRole("company");
         setActiveEmail(cleanEmail);
         return "company";

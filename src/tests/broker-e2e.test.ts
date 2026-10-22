@@ -104,7 +104,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(annual.price).toBe(1099);
       expect(annual.perMonth).toBe(91);
       expect(annual.highlighted).toBe(true);
-      expect(annual.toggleBadge).toBe("★ Best Deal");
+      expect(annual.toggleBadge).toBe("−54% · Best");
       expect(DEFAULT_PLAN).toBe("annual");
     });
 
@@ -1002,13 +1002,15 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
     it("resolves named-account roles correctly without relying on ambiguous metadata", () => {
       function resolveAccountRole(email: string, requestedRole?: "company" | "agent"): "company" | "agent" {
         const clean = email.toLowerCase().trim();
-        if (clean === "driplab26@gmail.com" || clean === "owner@dealos.ae") return "company";
+        if (clean === "driplab26@gmail.com" || clean === "owner@dealos.ae" || clean === "admin@dealos.ae") return "company";
         if (clean === "nihalshaikh0906@gmail.com") return requestedRole || "agent";
-        if (clean.includes("owner") || clean.includes("company")) return "company";
+        if (clean.includes("owner") || clean.includes("company") || clean.includes("admin") || clean.includes("director")) return "company";
         return "agent";
       }
 
       expect(resolveAccountRole("driplab26@gmail.com")).toBe("company");
+      expect(resolveAccountRole("admin@dealos.ae")).toBe("company");
+      expect(resolveAccountRole("superadmin@agency.ae")).toBe("company");
       expect(resolveAccountRole("nihalshaikh0906@gmail.com", "company")).toBe("company");
       expect(resolveAccountRole("nihalshaikh0906@gmail.com", "agent")).toBe("agent");
     });

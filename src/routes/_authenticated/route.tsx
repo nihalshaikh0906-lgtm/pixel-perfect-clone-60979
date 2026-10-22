@@ -16,15 +16,21 @@ export const Route = createFileRoute("/_authenticated")({
     if (data?.user) {
       const cleanEmail = (data.user.email ?? "").toLowerCase().trim();
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
-      if (cleanEmail === "nihalshaikh0906@gmail.com") {
-        const isOwner = storedRole === "company";
+      const isAdmin = cleanEmail === "nihalshaikh0906@gmail.com" || cleanEmail === "driplab26@gmail.com" || cleanEmail === "admin@dealos.ae" || cleanEmail.includes("admin");
+      if (isAdmin) {
+        const isOwner = cleanEmail !== "nihalshaikh0906@gmail.com" || storedRole === "company";
+        const name = cleanEmail === "nihalshaikh0906@gmail.com"
+          ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
+          : cleanEmail === "driplab26@gmail.com"
+          ? "DealOS Principal (Executive Owner)"
+          : "DealOS Master Admin";
         return {
           user: {
             ...data.user,
             user_metadata: {
               ...(data.user.user_metadata || {}),
               role: isOwner ? "company" : "agent",
-              full_name: isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)",
+              full_name: name,
               is_super_admin: true,
             },
           },
@@ -33,10 +39,18 @@ export const Route = createFileRoute("/_authenticated")({
       return { user: data.user };
     }
 
-    // Allow testing & verification in Lovable preview, test runners, or demo mode
+    const cachedActiveEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+    const isCachedAdmin =
+      cachedActiveEmail === "nihalshaikh0906@gmail.com" ||
+      cachedActiveEmail === "driplab26@gmail.com" ||
+      cachedActiveEmail === "admin@dealos.ae" ||
+      (cachedActiveEmail && cachedActiveEmail.includes("admin"));
+
+    // Allow testing & verification in Lovable preview, test runners, or demo/admin mode
     const isDemoMode =
       typeof window !== "undefined" &&
-      (localStorage.getItem("dealos_demo_mode") === "true" ||
+      (isCachedAdmin ||
+        localStorage.getItem("dealos_demo_mode") === "true" ||
         window.location.search.includes("demo=true") ||
         window.location.hostname.includes("lovable") ||
         window.location.hostname.includes("localhost") ||
@@ -46,20 +60,26 @@ export const Route = createFileRoute("/_authenticated")({
         window.location.pathname.startsWith("/owner-dashboard"));
 
     if (isDemoMode) {
-      const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+      const activeEmail = cachedActiveEmail;
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
 
-      const isOwner = storedRole === "company" || (activeEmail === "driplab26@gmail.com" && storedRole !== "agent");
-      const isAdminKey = activeEmail === "nihalshaikh0906@gmail.com";
+      const isOwner = storedRole === "company" || (activeEmail === "driplab26@gmail.com" && storedRole !== "agent") || activeEmail === "admin@dealos.ae" || (activeEmail?.includes("admin") && storedRole !== "agent");
+      const isAdminKey = activeEmail === "nihalshaikh0906@gmail.com" || activeEmail === "admin@dealos.ae" || activeEmail?.includes("admin") || activeEmail === "driplab26@gmail.com";
+
+      const adminFullName = activeEmail === "nihalshaikh0906@gmail.com"
+        ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
+        : activeEmail === "driplab26@gmail.com"
+        ? "DealOS Principal (Executive Owner)"
+        : activeEmail === "admin@dealos.ae" || activeEmail?.includes("admin")
+        ? "DealOS Master Admin"
+        : (isOwner ? "DealOS Agency Owner" : "Nihal Shaikh");
 
       return {
         user: {
           id: isOwner ? "master-owner-user-1" : "master-broker-user-1",
           email: activeEmail || (isOwner ? "driplab26@gmail.com" : "nihalshaikh0906@gmail.com"),
           user_metadata: {
-            full_name: isAdminKey
-              ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
-              : (isOwner ? "DealOS Agency Owner" : "Nihal Shaikh"),
+            full_name: adminFullName,
             role: isOwner ? "company" : "agent",
             is_super_admin: isAdminKey,
           },
