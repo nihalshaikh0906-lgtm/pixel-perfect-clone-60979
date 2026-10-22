@@ -85,7 +85,7 @@ function LoginPage() {
     const cleanEm = em.toLowerCase().trim();
     setActiveEmail(cleanEm);
     if (cleanEm === "nihalshaikh0906@gmail.com") {
-      setStoredRole("agent");
+      setStoredRole(want);
     } else if (cleanEm === "driplab26@gmail.com") {
       setStoredRole("company");
     }
@@ -106,8 +106,8 @@ function LoginPage() {
 
       if (isDemoEnv) {
         localStorage.setItem("dealos_demo_mode", "true");
-        const inferred = cleanEm === "driplab26@gmail.com" ? "company"
-                       : cleanEm === "nihalshaikh0906@gmail.com" ? "agent"
+        const inferred = cleanEm === "nihalshaikh0906@gmail.com" ? want
+                       : cleanEm === "driplab26@gmail.com" ? "company"
                        : /company|owner|director/i.test(em) ? "company"
                        : /broker|agent/i.test(em) ? "agent"
                        : want;
@@ -123,8 +123,8 @@ function LoginPage() {
     const user = auth.user;
     const cleanUserEmail = (user?.email ?? em).toLowerCase().trim();
     setActiveEmail(cleanUserEmail);
-    const namedRole = cleanUserEmail === "driplab26@gmail.com" ? "company"
-                    : cleanUserEmail === "nihalshaikh0906@gmail.com" ? "agent"
+    const namedRole = cleanUserEmail === "nihalshaikh0906@gmail.com" ? want
+                    : cleanUserEmail === "driplab26@gmail.com" ? "company"
                     : null;
 
     const metaRole = (user?.user_metadata?.role as string | undefined)?.toLowerCase();

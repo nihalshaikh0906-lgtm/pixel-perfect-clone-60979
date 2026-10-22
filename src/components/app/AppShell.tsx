@@ -462,15 +462,19 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     className="a-user-menu-item"
                     onClick={() => {
                       setUserMenu(false);
+                      const currentEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
+                      const isNihal = currentEmail === "nihalshaikh0906@gmail.com";
                       if (role === "company") {
                         setStoredRole("agent");
-                        setActiveEmail("nihalshaikh0906@gmail.com");
-                        toast.info("Switched to Broker Desk (nihalshaikh0906@gmail.com)");
+                        const brokerEmail = "nihalshaikh0906@gmail.com";
+                        setActiveEmail(brokerEmail);
+                        toast.info(`Switched to Broker Desk (${brokerEmail})`);
                         window.location.href = "/app";
                       } else {
                         setStoredRole("company");
-                        setActiveEmail("driplab26@gmail.com");
-                        toast.info("Switched to Agency Owner (driplab26@gmail.com)");
+                        const ownerEmail = isNihal ? "nihalshaikh0906@gmail.com" : "driplab26@gmail.com";
+                        setActiveEmail(ownerEmail);
+                        toast.info(`Switched to Agency Owner (${ownerEmail})`);
                         window.location.href = "/owner-dashboard";
                       }
                     }}
@@ -481,7 +485,11 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                         {role === "company" ? "Switch to Broker Desk" : "Switch to Owner Overwatch"}
                       </span>
                       <span className="text-[10px] text-muted-foreground truncate">
-                        {role === "company" ? "nihalshaikh0906@gmail.com" : "driplab26@gmail.com"}
+                        {role === "company"
+                          ? "nihalshaikh0906@gmail.com (Broker Desk)"
+                          : ((typeof window !== "undefined" && localStorage.getItem("dealos_active_email")?.toLowerCase().trim() === "nihalshaikh0906@gmail.com")
+                              ? "nihalshaikh0906@gmail.com (Agency Owner)"
+                              : "driplab26@gmail.com (Agency Owner)")}
                       </span>
                     </div>
                   </button>

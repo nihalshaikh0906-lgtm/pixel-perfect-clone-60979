@@ -13,7 +13,25 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     await enforceRemember();
     const { data } = await supabase.auth.getUser();
-    if (data?.user) return { user: data.user };
+    if (data?.user) {
+      const cleanEmail = (data.user.email ?? "").toLowerCase().trim();
+      const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
+      if (cleanEmail === "nihalshaikh0906@gmail.com") {
+        const isOwner = storedRole === "company";
+        return {
+          user: {
+            ...data.user,
+            user_metadata: {
+              ...(data.user.user_metadata || {}),
+              role: isOwner ? "company" : "agent",
+              full_name: isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)",
+              is_super_admin: true,
+            },
+          },
+        };
+      }
+      return { user: data.user };
+    }
 
     // Allow testing & verification in Lovable preview, test runners, or demo mode
     const isDemoMode =
@@ -31,18 +49,19 @@ export const Route = createFileRoute("/_authenticated")({
       const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
       const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
 
-      const isOwner = activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae" || storedRole === "company";
-      const isBroker = activeEmail === "nihalshaikh0906@gmail.com" || (storedRole === "agent" && !isOwner);
+      const isOwner = storedRole === "company" || (activeEmail === "driplab26@gmail.com" && storedRole !== "agent");
+      const isAdminKey = activeEmail === "nihalshaikh0906@gmail.com";
 
       return {
         user: {
-          id: isOwner ? "demo-owner-user-1" : "demo-broker-user-1",
-          email: isOwner
-            ? (activeEmail || "driplab26@gmail.com")
-            : "nihalshaikh0906@gmail.com",
+          id: isOwner ? "master-owner-user-1" : "master-broker-user-1",
+          email: activeEmail || (isOwner ? "driplab26@gmail.com" : "nihalshaikh0906@gmail.com"),
           user_metadata: {
-            full_name: isOwner ? "DealOS Agency Owner" : "Nihal Shaikh",
+            full_name: isAdminKey
+              ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
+              : (isOwner ? "DealOS Agency Owner" : "Nihal Shaikh"),
             role: isOwner ? "company" : "agent",
+            is_super_admin: isAdminKey,
           },
         },
       };

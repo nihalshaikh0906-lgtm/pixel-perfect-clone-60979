@@ -6,9 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Logo } from "./AuthShell";
 
+export const SUPER_ADMIN_KEY_EMAIL = "nihalshaikh0906@gmail.com";
+
 export const WHITELISTED_TEST_EMAILS = [
+  SUPER_ADMIN_KEY_EMAIL,       // Super Admin Master Key Account (100% Free Access)
   "driplab26@gmail.com",        // Owner Executive Account
-  "nihalshaikh0906@gmail.com",   // Licensed Broker Account
   "owner@dealos.ae",
   "broker@dealos.ae",
   "demo-owner@dealos.ae",
@@ -16,13 +18,13 @@ export const WHITELISTED_TEST_EMAILS = [
 ];
 
 export function isWhitelistedAccount(email?: string | null): boolean {
-  if (!email) return true;
+  if (!email) return false;
   const clean = email.trim().toLowerCase();
   return (
-    WHITELISTED_TEST_EMAILS.includes(clean) ||
-    clean.includes("driplab") ||
-    clean.includes("nihal") ||
-    clean.includes("dealos") ||
+    clean === SUPER_ADMIN_KEY_EMAIL ||
+    clean === "driplab26@gmail.com" ||
+    clean === "owner@dealos.ae" ||
+    clean === "broker@dealos.ae" ||
     clean.startsWith("demo-") ||
     clean.includes("test-")
   );
@@ -32,21 +34,15 @@ export function isSubscriptionActive(email?: string | null): boolean {
   if (isWhitelistedAccount(email)) return true;
   if (typeof window === "undefined") return true;
 
-  const host = window.location.hostname.toLowerCase();
-  if (
-    host.includes("lovable") ||
-    host.includes("localhost") ||
-    host.includes("127.0.0.1") ||
-    host.includes("vercel.app") ||
-    localStorage.getItem("dealos_demo_mode") === "true" ||
-    localStorage.getItem("dealos_subscription_active") === "true"
-  ) {
-    return true;
-  }
-
+  // Check user-specific payment status
   if (email) {
     const key = `dealos_subscription_active_${email.toLowerCase().trim()}`;
     if (localStorage.getItem(key) === "true") return true;
+  }
+
+  // Check global subscription flag
+  if (localStorage.getItem("dealos_subscription_active") === "true") {
+    return true;
   }
 
   return false;

@@ -60,10 +60,11 @@ export async function detectRole(): Promise<DealOSRole> {
   const stored = getStoredRole();
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
 
-  // 1. Explicit named accounts always take strict precedence
+  // 1. Super Admin Master Key: nihalshaikh0906@gmail.com has universal access to BOTH Owner and Broker CRM
   if (activeEmail === "nihalshaikh0906@gmail.com") {
-    setStoredRole("agent");
-    return "agent";
+    const desiredRole: DealOSRole = stored === "company" ? "company" : stored === "agent" ? "agent" : "company";
+    setStoredRole(desiredRole);
+    return desiredRole;
   }
   if (activeEmail === "driplab26@gmail.com" || activeEmail === "owner@dealos.ae") {
     setStoredRole("company");
@@ -76,9 +77,10 @@ export async function detectRole(): Promise<DealOSRole> {
     if (user) {
       const cleanEmail = (user.email ?? "").toLowerCase().trim();
       if (cleanEmail === "nihalshaikh0906@gmail.com") {
-        setStoredRole("agent");
+        const desiredRole: DealOSRole = stored === "company" ? "company" : stored === "agent" ? "agent" : "company";
+        setStoredRole(desiredRole);
         setActiveEmail(cleanEmail);
-        return "agent";
+        return desiredRole;
       }
       if (cleanEmail === "driplab26@gmail.com" || cleanEmail === "owner@dealos.ae") {
         setStoredRole("company");

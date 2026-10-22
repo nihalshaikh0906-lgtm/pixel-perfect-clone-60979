@@ -363,22 +363,26 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(targetRoute).toBe("/owner-dashboard");
     });
 
-    it("ensures nihalshaikh0906@gmail.com strictly resolves to 'agent' even if role was cached as 'company'", async () => {
-      // Simulate leftover owner session cache
-      setStoredRole("company");
-      expect(getStoredRole()).toBe("company");
-
-      // Set active broker email
+    it("ensures nihalshaikh0906@gmail.com functions as Super Admin Master Key with dual Owner and Broker CRM access and zero mixups", async () => {
+      // Set active admin master key email
       setActiveEmail("nihalshaikh0906@gmail.com");
       expect(getActiveEmail()).toBe("nihalshaikh0906@gmail.com");
 
-      // detectRole must override and enforce 'agent'
-      const role = await detectRole();
-      expect(role).toBe("agent");
-      expect(getStoredRole()).toBe("agent");
+      // 1. When accessing Company Owner CRM
+      setStoredRole("company");
+      expect(getStoredRole()).toBe("company");
+      const ownerRole = await detectRole();
+      expect(ownerRole).toBe("company");
+      const ownerTargetRoute = ownerRole === "company" ? "/owner-dashboard" : "/app";
+      expect(ownerTargetRoute).toBe("/owner-dashboard");
 
-      const targetRoute = role === "company" ? "/owner-dashboard" : "/app";
-      expect(targetRoute).toBe("/app");
+      // 2. When accessing Licensed Broker CRM
+      setStoredRole("agent");
+      expect(getStoredRole()).toBe("agent");
+      const brokerRole = await detectRole();
+      expect(brokerRole).toBe("agent");
+      const brokerTargetRoute = brokerRole === "company" ? "/owner-dashboard" : "/app";
+      expect(brokerTargetRoute).toBe("/app");
     });
 
     it("ensures driplab26@gmail.com strictly resolves to 'company' (Owner Account)", async () => {
@@ -996,16 +1000,17 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
     });
 
     it("resolves named-account roles correctly without relying on ambiguous metadata", () => {
-      function resolveAccountRole(email: string): "company" | "agent" {
+      function resolveAccountRole(email: string, requestedRole?: "company" | "agent"): "company" | "agent" {
         const clean = email.toLowerCase().trim();
         if (clean === "driplab26@gmail.com" || clean === "owner@dealos.ae") return "company";
-        if (clean === "nihalshaikh0906@gmail.com") return "agent";
+        if (clean === "nihalshaikh0906@gmail.com") return requestedRole || "agent";
         if (clean.includes("owner") || clean.includes("company")) return "company";
         return "agent";
       }
 
       expect(resolveAccountRole("driplab26@gmail.com")).toBe("company");
-      expect(resolveAccountRole("nihalshaikh0906@gmail.com")).toBe("agent");
+      expect(resolveAccountRole("nihalshaikh0906@gmail.com", "company")).toBe("company");
+      expect(resolveAccountRole("nihalshaikh0906@gmail.com", "agent")).toBe("agent");
     });
   });
 });
