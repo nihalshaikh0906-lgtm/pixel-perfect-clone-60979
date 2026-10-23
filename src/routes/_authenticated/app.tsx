@@ -6,16 +6,16 @@ import { detectRole } from "@/lib/auth-role";
 export const Route = createFileRoute("/_authenticated/app")({
   beforeLoad: async ({ location }) => {
     const role = await detectRole();
+    const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+    const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
+    
+    // Super Admins have universal unrestricted access to all broker & app routes
+    if (isMasterAdmin) return;
+
     if (role === "company") {
-      const allowedOwnerPaths = [
-        "/app/settings",
-        "/app/users",
-        "/app/activity-logs",
-        "/app/my-account",
-        "/app/about",
-      ];
-      const isAllowed = allowedOwnerPaths.some((p) => location.pathname.startsWith(p));
-      if (!isAllowed) {
+      // If company owner navigates to root /app or /app/, direct to owner cockpit
+      // but allow full access to all inventory, deals, leads, and governance sub-routes
+      if (location.pathname === "/app" || location.pathname === "/app/") {
         throw redirect({ to: "/owner-dashboard", replace: true });
       }
     }

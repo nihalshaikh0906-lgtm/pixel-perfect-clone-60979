@@ -74,6 +74,8 @@ export function AppShell({ children, userName, initials, agency }: { children: R
 
   const isOwnerRoute = pathname === "/owner-dashboard" || pathname.startsWith("/owner-dashboard");
   const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? (isOwnerRoute ? "company" : "agent"));
+  const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
+  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
 
   useEffect(() => {
     void detectRole().then((r) => setRole(r));
@@ -100,6 +102,24 @@ export function AppShell({ children, userName, initials, agency }: { children: R
         { label: "Executive Cockpit", desc: "Agency Overwatch & Speed to Lead", to: "/owner-dashboard", icon: Home, exact: true },
         { label: "Broker Leaderboard", desc: "12 Licensed Agents & Quotas", to: "/owner-dashboard#brokers", icon: Users },
         { label: "Deals Stages Radar", desc: "Inbound Leads, Pipeline & Form F", to: "/owner-dashboard#pipeline", icon: Layers },
+      ],
+    },
+    {
+      title: "INVENTORY & ASSETS",
+      items: [
+        { label: "Offplan Catalog", desc: "1,355+ Verified UAE Developments & Escrow", to: "/app/offplan", icon: Construction },
+        { label: "Ready Property", desc: "Secondary Resales & Handed-over Units", to: "/app/listings", icon: Building2 },
+        { label: "Rentals", desc: "Ejari Tenancies & Leasehold Listings", to: "/app/rentals", icon: Key },
+      ],
+    },
+    {
+      title: "TRANSACTIONS & PIPELINE",
+      items: [
+        { label: "Agency Deals", desc: "Closed Sales Pipeline & Buyer Milestones", to: "/app/deals", icon: Handshake },
+        { label: "Leads Inbox", desc: "All Agency Leads & Inbound Inquiries", to: "/app/leads", icon: Inbox },
+        { label: "Agreements", desc: "DLD Form A/B/F & Official PDF Contracts", to: "/app/agreements", icon: FileSignature },
+        { label: "Tenancies", desc: "Active Lease Contracts & Ejari Renewals", to: "/app/tenancies", icon: KeyRound },
+        { label: "Agency Reports", desc: "Financial GMV & Broker Performance", to: "/app/reports", icon: LineChart },
       ],
     },
     {
@@ -453,6 +473,42 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                           <span className="text-[10px] text-muted-foreground truncate">WhatsApp API, Goals & Keys</span>
                         </div>
                       </Link>
+                    </>
+                  )}
+                  {isMasterAdmin && (
+                    <>
+                      <div className="a-user-menu-divider" />
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="a-user-menu-item"
+                        onClick={() => {
+                          setUserMenu(false);
+                          if (role === "company") {
+                            setStoredRole("agent");
+                            setRole("agent");
+                            setExecutiveMode(false);
+                            toast.info("Switched to Broker Desk (Universal Admin)");
+                            void navigate({ to: "/app" });
+                          } else {
+                            setStoredRole("company");
+                            setRole("company");
+                            setExecutiveMode(true);
+                            toast.info("Switched to Owner Cockpit (Universal Admin)");
+                            void navigate({ to: "/owner-dashboard" });
+                          }
+                        }}
+                      >
+                        <Crown size={15} className="shrink-0 text-amber-500" />
+                        <div className="flex flex-col text-left min-w-0">
+                          <span className="font-semibold text-xs text-foreground">
+                            {role === "company" ? "Switch to Broker Desk" : "Switch to Owner Cockpit"}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground truncate">
+                            {role === "company" ? "Open Daily Broker Deal Desk" : "Open Agency Executive Overwatch"}
+                          </span>
+                        </div>
+                      </button>
                     </>
                   )}
                   <div className="a-user-menu-divider" />

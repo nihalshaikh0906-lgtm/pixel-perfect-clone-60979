@@ -20,6 +20,10 @@ import { detectRole, getStoredRole, type DealOSRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   beforeLoad: async () => {
+    const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+    const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
+    if (isMasterAdmin) return;
+
     const role = await detectRole();
     if (role === "company") {
       throw redirect({ to: "/owner-dashboard", replace: true });
@@ -59,6 +63,9 @@ function HomePage() {
   const navigate = Route.useNavigate();
   const context = Route.useRouteContext();
   const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? "agent");
+  const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
+
   const [userName, setUserName] = useState<string | undefined>(() => {
     const raw = String(context.user?.user_metadata?.full_name ?? context.user?.email?.split("@")[0] ?? "");
     const first = (raw.split(/[\s._-]+/)[0] ?? "").replace(/\d+/g, "");
@@ -68,7 +75,7 @@ function HomePage() {
   useEffect(() => {
     void detectRole().then((r) => {
       setRole(r);
-      if (r === "company") {
+      if (!isMasterAdmin && r === "company") {
         void navigate({ to: "/owner-dashboard", replace: true });
       }
     });
@@ -79,9 +86,9 @@ function HomePage() {
       const first = (raw.split(/[\s._-]+/)[0] ?? "").replace(/\d+/g, "");
       if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1).toLowerCase());
     });
-  }, [navigate]);
+  }, [navigate, isMasterAdmin]);
 
-  if (role === "company") return null;
+  if (!isMasterAdmin && role === "company") return null;
   return <BrokerCockpit userName={userName} />;
 }
 

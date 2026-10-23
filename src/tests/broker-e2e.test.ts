@@ -421,20 +421,42 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(localStorage.getItem("sb-test-auth-token")).toBeNull();
     });
 
-    it("blocks broker from owner-dashboard route and redirects to /app", () => {
+    it("blocks broker from owner-dashboard route unless master admin", () => {
       const brokerRole: DealOSRole = "agent";
-      function guardOwnerDashboard(role: DealOSRole) {
+      function guardOwnerDashboard(role: DealOSRole, email?: string) {
+        const isMaster = email === "admin@dealos.ae" || email === "nihalshaikh0906@gmail.com";
+        if (isMaster) return { allow: true };
         if (role !== "company") {
           return { redirect: "/app" };
         }
         return { allow: true };
       }
 
-      const brokerAttempt = guardOwnerDashboard(brokerRole);
+      const brokerAttempt = guardOwnerDashboard(brokerRole, "broker@company.ae");
       expect(brokerAttempt).toEqual({ redirect: "/app" });
 
       const ownerAttempt = guardOwnerDashboard("company");
       expect(ownerAttempt).toEqual({ allow: true });
+
+      // Master admin has unrestricted access to owner dashboard regardless of role mode
+      expect(guardOwnerDashboard("agent", "admin@dealos.ae")).toEqual({ allow: true });
+      expect(guardOwnerDashboard("agent", "nihalshaikh0906@gmail.com")).toEqual({ allow: true });
+    });
+
+    it("verifies master admin has universal access to all app inventory and deals subroutes", () => {
+      function guardAppRoute(pathname: string, role: DealOSRole, email?: string) {
+        const isMaster = email === "admin@dealos.ae" || email === "nihalshaikh0906@gmail.com";
+        if (isMaster) return { allow: true };
+        if (role === "company" && (pathname === "/app" || pathname === "/app/")) {
+          return { redirect: "/owner-dashboard" };
+        }
+        return { allow: true };
+      }
+
+      expect(guardAppRoute("/app/offplan", "company", "admin@dealos.ae")).toEqual({ allow: true });
+      expect(guardAppRoute("/app/deals", "company", "nihalshaikh0906@gmail.com")).toEqual({ allow: true });
+      expect(guardAppRoute("/app/leads", "company", "admin@dealos.ae")).toEqual({ allow: true });
+      expect(guardAppRoute("/app", "company", "owner@regular-agency.ae")).toEqual({ redirect: "/owner-dashboard" });
     });
 
     it("verifies company owner topbar hides broker-only import tools and client presentation mode", () => {

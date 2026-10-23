@@ -9,6 +9,10 @@ import { detectRole, getStoredRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated/owner-dashboard")({
   beforeLoad: async () => {
+    const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+    const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
+    if (isMasterAdmin) return;
+
     const role = await detectRole();
     if (role !== "company") {
       throw redirect({ to: "/app", replace: true });
@@ -45,14 +49,16 @@ function OwnerDashboardPage() {
   const { page } = Route.useSearch();
   const navigate = Route.useNavigate();
   const role = getStoredRole();
+  const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
 
   useEffect(() => {
-    if (role !== "company") {
+    if (!isMasterAdmin && role !== "company") {
       void navigate({ to: "/app", replace: true });
     }
-  }, [role, navigate]);
+  }, [role, navigate, isMasterAdmin]);
 
-  if (role !== "company") return null;
+  if (!isMasterAdmin && role !== "company") return null;
 
   const { user } = Route.useRouteContext();
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
