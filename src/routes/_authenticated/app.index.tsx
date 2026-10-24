@@ -242,70 +242,70 @@ When are you free today for a quick 2-minute overview?`;
         </div>
       </section>
 
-      {/* ═══ 2. TOP 3 ESSENTIAL METRICS (2-COL ON PHONE, CRISP & COMPACT) ═══ */}
-      <section className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
+      {/* ═══ 2. TOP 3 ESSENTIAL METRICS (2-COL ON PHONE, CRISP & SPACIOUS) ═══ */}
+      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
         {/* Card 1: Projected Commission */}
-        <div className="group rounded-xl sm:rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-3.5 sm:p-5 shadow-xs hover:border-amber-500/50 transition-all duration-300">
+        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-4 sm:p-5 shadow-xs hover:border-amber-500/50 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-300 truncate">Projected Comm.</span>
-            <div className="size-7 sm:size-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-              <Banknote size={15} />
+            <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-amber-300 truncate">Projected Comm.</span>
+            <div className="size-8 sm:size-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <Banknote size={16} />
             </div>
           </div>
-          <p className="mt-1.5 text-xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
             AED 94.5K
           </p>
-          <div className="mt-1.5 flex items-center justify-between text-[10px] sm:text-xs">
+          <div className="mt-2 flex items-center justify-between text-xs sm:text-[13px]">
             <span className="text-muted-foreground">Target: 63%</span>
             <span className="font-semibold text-emerald-400">+18% vs mo</span>
           </div>
-          <div className="mt-2 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+          <div className="mt-2.5 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
             <div className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full" style={{ width: "63%" }} />
           </div>
         </div>
 
         {/* Card 2: Active Pipeline Volume */}
-        <div className="group rounded-xl sm:rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-3.5 sm:p-5 shadow-xs hover:border-primary/50 transition-all duration-300">
+        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-4 sm:p-5 shadow-xs hover:border-primary/50 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cyan-300 truncate">Active Pipeline</span>
-            <div className="size-7 sm:size-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
-              <TrendingUp size={15} />
+            <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-cyan-300 truncate">Active Pipeline</span>
+            <div className="size-8 sm:size-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+              <TrendingUp size={16} />
             </div>
           </div>
-          <p className="mt-1.5 text-xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
             AED 14.8M
           </p>
-          <div className="mt-1.5 flex items-center justify-between text-[10px] sm:text-xs">
+          <div className="mt-2 flex items-center justify-between text-xs sm:text-[13px]">
             <span className="text-muted-foreground">6 buyer deals</span>
             <span className="font-semibold text-cyan-400">Avg. 1.8M</span>
           </div>
         </div>
 
         {/* Card 3: Priority Follow-Ups (Full width on mobile 2-col layout) */}
-        <div className="col-span-2 sm:col-span-1 group rounded-xl sm:rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-3.5 sm:p-5 shadow-xs hover:border-rose-500/50 transition-all duration-300 flex sm:block items-center justify-between">
+        <div className="col-span-2 sm:col-span-1 group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-4 sm:p-5 shadow-xs hover:border-rose-500/50 transition-all duration-300 flex sm:block items-center justify-between">
           <div>
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-300">Due Today</span>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-rose-300">Due Today</span>
               <span className="text-muted-foreground sm:hidden">•</span>
-              <span className="text-[10px] text-muted-foreground sm:hidden">2 Waiting on SPA</span>
+              <span className="text-xs text-muted-foreground sm:hidden">2 Waiting on SPA</span>
             </div>
-            <p className="mt-0.5 sm:mt-1.5 text-xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+            <p className="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
               4 Priority
             </p>
-            <div className="hidden sm:flex mt-1.5 items-center justify-between text-xs">
+            <div className="hidden sm:flex mt-2 items-center justify-between text-xs sm:text-[13px]">
               <span className="text-muted-foreground">2 Waiting on SPA</span>
               <span className="font-semibold text-rose-400">High Conversion</span>
             </div>
           </div>
-          <div className="size-8 sm:size-8 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
-            <Flame size={16} />
+          <div className="size-9 sm:size-9 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+            <Flame size={17} />
           </div>
         </div>
       </section>
 
-      {/* ═══ 3. CLEAN SEGMENTED NAVIGATION (SIDEBAR-INSPIRED, SCROLLABLE ON MOBILE) ═══ */}
-      <div className="flex items-center justify-between border-b border-border/60 pb-2.5 overflow-x-auto no-scrollbar">
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-secondary/50 border border-border/60 max-w-full overflow-x-auto shrink-0">
+      {/* ═══ 3. CLEAN SEGMENTED NAVIGATION (GENEROUS SPACING & FONT SIZE) ═══ */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-secondary/60 border border-border/70 max-w-full overflow-x-auto shrink-0 shadow-xs">
           {[
             { id: "queue", label: "Priority Queue", icon: Zap, badge: `${filteredLeads.length}` },
             { id: "inventory", label: "Allocations", icon: Compass },
@@ -317,16 +317,16 @@ When are you free today for a quick 2-minute overview?`;
               <button
                 key={tab.id}
                 onClick={() => setDashboardTab(tab.id as typeof dashboardTab)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 ${
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all duration-200 shrink-0 cursor-pointer ${
                   active
-                    ? "bg-card text-foreground shadow-sm border border-border"
+                    ? "bg-card text-foreground shadow-sm border border-border/80 ring-1 ring-border/50"
                     : "text-muted-foreground hover:text-foreground hover:bg-card/40"
                 }`}
               >
-                <Icon size={13} className={active ? "text-primary" : "text-muted-foreground"} />
+                <Icon size={15} className={active ? "text-primary" : "text-muted-foreground"} />
                 <span>{tab.label}</span>
                 {tab.badge && (
-                  <span className="rounded-full bg-primary/15 border border-primary/30 px-1.5 py-0.2 text-[9px] text-primary font-mono">
+                  <span className="rounded-full bg-primary/15 border border-primary/30 px-2 py-0.5 text-[10px] text-primary font-mono font-bold">
                     {tab.badge}
                   </span>
                 )}
@@ -336,7 +336,7 @@ When are you free today for a quick 2-minute overview?`;
         </div>
 
         {dashboardTab === "queue" && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2 overflow-x-auto">
             {[
               { id: "urgent", label: "Due Today" },
               { id: "hot", label: "Hot (70+)" },
@@ -346,10 +346,10 @@ When are you free today for a quick 2-minute overview?`;
               <button
                 key={st.id}
                 onClick={() => setActiveTab(st.id as typeof activeTab)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs sm:text-[13px] font-semibold transition-all cursor-pointer ${
                   activeTab === st.id
-                    ? "bg-secondary text-foreground font-bold"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-secondary text-foreground font-bold border border-border shadow-xs"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                 }`}
               >
                 {st.label}
@@ -365,26 +365,26 @@ When are you free today for a quick 2-minute overview?`;
           {filteredLeads.map((l) => (
             <div
               key={l.id}
-              className="group rounded-2xl border border-border/80 bg-card p-4 sm:p-5 hover:border-primary/50 transition-all duration-200 shadow-sm space-y-3"
+              className="group rounded-2xl border border-border/80 bg-card p-4 sm:p-6 hover:border-primary/50 transition-all duration-200 shadow-sm space-y-3.5"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 {/* Investor Identity */}
                 <div className="flex items-center gap-3.5">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-secondary font-display font-extrabold text-foreground text-sm">
+                  <div className="flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary font-display font-extrabold text-foreground text-sm sm:text-base shadow-xs">
                     {l.initials}
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-sm text-foreground">{l.name}</h3>
-                      <span className="text-xs text-muted-foreground">({l.country})</span>
-                      <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.2 text-[10px] font-bold text-amber-300">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-extrabold text-sm sm:text-base text-foreground font-display">{l.name}</h3>
+                      <span className="text-xs sm:text-[13px] text-muted-foreground">({l.country})</span>
+                      <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 text-xs font-bold font-mono text-amber-300">
                         Score {l.score}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-xs sm:text-[13px] text-muted-foreground mt-1 flex flex-wrap items-center gap-1.5">
                       <span>{l.beds === 0 ? "Studio" : `${l.beds} BR`} in <strong className="text-foreground">{l.area}</strong></span>
-                      <span className="mx-1.5">•</span>
-                      <span className="font-mono font-bold text-foreground">{formatAed(l.budget)}</span>
+                      <span className="text-muted-foreground/60">•</span>
+                      <span className="font-mono font-extrabold text-foreground">{formatAed(l.budget)}</span>
                     </p>
                   </div>
                 </div>
@@ -394,7 +394,7 @@ When are you free today for a quick 2-minute overview?`;
                   <select
                     value={l.stage}
                     onChange={(e) => handleStageChange(l.id, e.target.value as Lead["stage"])}
-                    className="bg-secondary text-foreground text-xs rounded-lg px-2.5 py-1.5 border border-border focus:outline-none focus:border-primary cursor-pointer font-medium"
+                    className="bg-secondary text-foreground text-xs sm:text-[13px] rounded-xl px-3 py-2 border border-border focus:outline-none focus:border-primary cursor-pointer font-bold shadow-xs"
                   >
                     {["Qualified", "Viewing", "Offer", "EOI / booking", "Won"].map((st) => (
                       <option key={st} value={st}>
@@ -406,41 +406,41 @@ When are you free today for a quick 2-minute overview?`;
               </div>
 
               {/* Requirement Context Note */}
-              <p className="text-xs text-muted-foreground bg-secondary/30 rounded-xl p-2.5 italic border border-border/40">
+              <p className="text-xs sm:text-[13px] text-muted-foreground bg-secondary/35 rounded-xl p-3 sm:p-3.5 italic border border-border/50 leading-relaxed">
                 "{l.message}"
               </p>
 
               {/* Action Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-border/40">
-                <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  <Clock size={13} className="text-amber-400" />
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-1.5 border-t border-border/50">
+                <span className="text-xs sm:text-[13px] text-muted-foreground flex items-center gap-1.5">
+                  <Clock size={14} className="text-amber-400" />
                   <span>Next: <strong className="text-foreground">{l.task}</strong></span>
                 </span>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                   <a
                     href={`tel:${l.phone.replace(/\s/g, "")}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/60 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary transition-colors"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-secondary/70 hover:bg-secondary h-9 sm:h-10 px-3.5 sm:px-4 text-xs sm:text-[13px] font-bold text-foreground transition-all shadow-xs cursor-pointer"
                   >
-                    <Phone className="size-3 text-muted-foreground" />
+                    <Phone className="size-3.5 text-muted-foreground" />
                     <span>Call</span>
                   </a>
 
                   <button
                     type="button"
                     onClick={() => handleWhatsApp(l)}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 h-9 sm:h-10 px-3.5 sm:px-4 text-xs sm:text-[13px] font-bold text-emerald-400 transition-all shadow-xs cursor-pointer"
                   >
-                    <MessageSquare className="size-3" />
+                    <MessageSquare className="size-3.5" />
                     <span>WhatsApp Pitch</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setQuickPitchModal(l)}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-primary/10 hover:bg-primary/20 h-9 sm:h-10 px-3.5 sm:px-4 text-xs sm:text-[13px] font-bold text-primary transition-all shadow-xs cursor-pointer"
                   >
-                    <Sparkles className="size-3" />
+                    <Sparkles className="size-3.5" />
                     <span>Match Property</span>
                   </button>
                 </div>

@@ -475,24 +475,24 @@ export function OffplanProjects({
                 </div>
 
                 {/* Payment Plan Milestone Flow (Not Basic Box) */}
-                <div className="rounded-2xl bg-secondary/40 border border-border/70 p-4 space-y-3">
-                  <div className="flex items-center justify-between text-xs font-bold text-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <CreditCard size={14} className="text-primary" />
+                <div className="rounded-2xl bg-secondary/40 border border-border/70 p-4 sm:p-5 space-y-3.5">
+                  <div className="flex items-center justify-between text-sm font-bold text-foreground">
+                    <span className="flex items-center gap-2">
+                      <CreditCard size={15} className="text-primary" />
                       <span>Payment Plan Structure</span>
                     </span>
-                    <span className="text-emerald-400 font-mono text-[11px]">
+                    <span className="text-emerald-400 font-mono text-xs font-bold">
                       {project.isPhpp ? "Post-Handover Available" : "Escrow Construction Linked"}
                     </span>
                   </div>
 
-                  <p className="text-xs font-semibold text-foreground/90">
+                  <p className="text-xs sm:text-sm font-semibold text-foreground/90 leading-relaxed">
                     {project.paymentPlanHeadline}
                   </p>
 
-                  <div className="space-y-1.5 pt-1">
+                  <div className="space-y-2 pt-1 border-t border-border/50">
                     {project.planMilestones.map((m, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div key={i} className="flex items-center justify-between text-xs sm:text-[13px] text-muted-foreground">
                         <span>{m.milestone}</span>
                         <span className="font-mono font-bold text-foreground">{m.percent}</span>
                       </div>
@@ -501,35 +501,35 @@ export function OffplanProjects({
                 </div>
 
                 {/* Key Metrics Ribbon */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-xl bg-secondary/30 border border-border/60 p-3 space-y-0.5">
-                    <span className="text-muted-foreground uppercase text-[10px] font-bold">Configurations</span>
-                    <p className="font-bold text-foreground truncate">{project.bedrooms}</p>
-                    <p className="text-[11px] text-muted-foreground">{project.sizeSqft}</p>
+                <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+                  <div className="rounded-2xl bg-secondary/30 border border-border/60 p-3.5 space-y-1">
+                    <span className="text-muted-foreground uppercase text-xs font-bold block">Configurations</span>
+                    <p className="font-extrabold text-foreground text-sm truncate">{project.bedrooms}</p>
+                    <p className="text-xs text-muted-foreground">{project.sizeSqft}</p>
                   </div>
 
-                  <div className="rounded-xl bg-secondary/30 border border-border/60 p-3 space-y-0.5">
-                    <span className="text-muted-foreground uppercase text-[10px] font-bold">Transit & Metro</span>
-                    <p className="font-bold text-foreground truncate">{project.metroInfo}</p>
-                    <p className="text-[11px] text-muted-foreground">High Capital Growth</p>
+                  <div className="rounded-2xl bg-secondary/30 border border-border/60 p-3.5 space-y-1">
+                    <span className="text-muted-foreground uppercase text-xs font-bold block">Transit &amp; Metro</span>
+                    <p className="font-extrabold text-foreground text-sm truncate">{project.metroInfo}</p>
+                    <p className="text-xs text-muted-foreground">High Capital Growth</p>
                   </div>
                 </div>
 
                 {/* Narrative Overview */}
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                   {project.description}
                 </p>
 
                 {/* Verified Amenities Tags */}
-                <div className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <div className="space-y-2.5">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground block">
                     Signature Amenities
                   </span>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {project.amenities.map((amenity) => (
                       <span
                         key={amenity}
-                        className="rounded-full bg-secondary border border-border px-2.5 py-0.5 text-[11px] font-medium text-foreground"
+                        className="rounded-full bg-secondary/80 border border-border px-3 py-1 text-xs font-semibold text-foreground shadow-xs"
                       >
                         ✓ {amenity}
                       </span>
@@ -542,22 +542,22 @@ export function OffplanProjects({
               <div className="pt-4 border-t border-border/60 space-y-2.5">
                 <Button
                   onClick={() => handleShareWhatsApp(project)}
-                  className="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-2 shadow-sm transition-all"
+                  className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm gap-2 shadow-sm transition-all cursor-pointer"
                 >
-                  <MessageCircle size={15} />
+                  <MessageCircle size={16} />
                   <span>Share 1-Click Dossier to WhatsApp Client</span>
                 </Button>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2.5">
                   <Button
                     variant="outline"
                     onClick={() => {
                       setActiveModalProject(project);
                       setModalTab("floorplan");
                     }}
-                    className="flex-1 h-10 rounded-2xl border-border text-xs font-bold gap-1.5 text-foreground hover:bg-secondary"
+                    className="flex-1 h-11 rounded-2xl border-border text-xs sm:text-[13px] font-bold gap-1.5 text-foreground hover:bg-secondary cursor-pointer"
                   >
-                    <Layers size={14} className="text-primary" />
+                    <Layers size={15} className="text-primary" />
                     <span>Floor Plans</span>
                   </Button>
 

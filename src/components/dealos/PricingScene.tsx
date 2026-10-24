@@ -17,6 +17,8 @@ import {
   RotateCcw,
   CheckCircle2,
   Loader2,
+  CreditCard,
+  ChevronRight,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -29,6 +31,7 @@ import {
 } from '@/lib/pricing';
 import { RevealText, Scene } from './primitives';
 import { CorporateInvoiceModal } from '@/components/pricing/CorporateInvoiceModal';
+import { PaymentMethodsModal } from '@/components/pricing/PaymentMethodsModal';
 import { Button } from '@/components/ui/button';
 
 function RollingPrice({ value }: { value: number }) {
@@ -79,8 +82,9 @@ export function Pricing() {
   const [isVerified, setIsVerified] = useState(false);
   const [quoteCode, setQuoteCode] = useState('DEALOS-AGY-8492');
 
-  // Corporate Invoice Modal state
+  // Corporate Invoice & Payment Modals state
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [showPaymentMethodsModal, setShowPaymentMethodsModal] = useState(false);
   const [invoicePrefill, setInvoicePrefill] = useState({
     agencyName: '',
     contactName: '',
@@ -347,129 +351,146 @@ export function Pricing() {
                   </p>
                 </div>
 
-                {/* Payment Methods Badges */}
-                <div className="space-y-2 pt-2 border-t border-border/60">
-                  <span className="text-[10px] uppercase font-mono font-bold text-muted-foreground block">
-                    Accepted Payment Methods
-                  </span>
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold text-foreground">
-                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Apple Pay</span>
-                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Google Pay</span>
-                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Visa</span>
-                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">Mastercard</span>
-                    <span className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-mono">AMEX</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 pt-1">
-                    <Lock size={11} className="text-muted-foreground" />
-                    <span>Secure encrypted checkout · Plus 5% UAE VAT</span>
-                  </p>
-                </div>
-
-                {/* UAE Corporate Bank Transfer Callout */}
-                <div className="p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 text-xs space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-bold text-foreground">
-                      <Landmark size={14} className="text-amber-500" />
-                      <span>Paying by UAE Corporate Bank Transfer?</span>
+                {/* Sleek Payment Options Trigger (Clean, Uncluttered, Opens Dedicated Modal) */}
+                <div className="pt-3 border-t border-border/70 space-y-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowPaymentMethodsModal(true)}
+                    className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-secondary/50 hover:bg-secondary border border-border/70 hover:border-border transition-all text-left cursor-pointer group shadow-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="size-9 rounded-xl bg-background border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors shadow-xs shrink-0">
+                        <CreditCard size={17} />
+                      </div>
+                      <div>
+                        <div className="text-xs sm:text-[13px] font-bold text-foreground flex items-center gap-2">
+                          <span>Accepted Payment Methods</span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
+                            Central Bank 3D Secure
+                          </span>
+                        </div>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+                          Cards (Visa, MC, AMEX), Apple/Google Pay, UAE Bank Wire
+                        </p>
+                      </div>
                     </div>
+                    <div className="flex items-center gap-1 text-xs font-bold text-amber-500 group-hover:translate-x-0.5 transition-transform shrink-0">
+                      <span>View</span>
+                      <ChevronRight size={15} />
+                    </div>
+                  </button>
+
+                  <div className="flex items-center justify-between text-[11px] sm:text-xs text-muted-foreground px-1 pt-0.5">
+                    <span className="flex items-center gap-1.5">
+                      <Lock size={12} className="text-muted-foreground" />
+                      <span>256-bit encrypted checkout</span>
+                    </span>
                     <button
                       type="button"
-                      onClick={() => setShowInvoiceModal(true)}
-                      className="text-[11px] font-bold text-amber-500 hover:underline cursor-pointer"
+                      onClick={() => {
+                        setInvoicePrefill({
+                          agencyName: '',
+                          contactName: '',
+                          email: '',
+                          phone: '+971 ',
+                          plan: `Solo Broker (${plan.label} · AED ${plan.price})`,
+                          billing: 'annual',
+                        });
+                        setShowInvoiceModal(true);
+                      }}
+                      className="font-semibold text-amber-500 hover:underline cursor-pointer flex items-center gap-1"
                     >
-                      Proforma Invoice ↗
+                      <Landmark size={12} />
+                      <span>Bank Wire Proforma ↗</span>
                     </button>
                   </div>
-                  <p className="text-[11px] text-muted-foreground">
-                    Request an official UAE tax invoice with our Emirates NBD or Wio Bank IBAN.
-                  </p>
                 </div>
               </div>
 
               {/* ── RIGHT COLUMN: STRUCTURED FEATURES & CAPABILITIES (7 Cols) ── */}
               <div className="lg:col-span-7 space-y-6 lg:border-l lg:border-border/60 lg:pl-10">
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-500">
                     Included in Every License
                   </span>
-                  <h4 className="text-lg font-bold text-foreground font-display">
+                  <h4 className="text-lg sm:text-xl font-bold text-foreground font-display">
                     Everything you need to source, pitch, and close Dubai property
                   </h4>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                     Zero tiered feature gates. You get the complete institutional suite from day one:
                   </p>
                 </div>
 
                 {/* Structured Feature Categories Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-secondary/25 border border-border/70 space-y-2 hover:border-border transition-all">
+                    <div className="flex items-center gap-2.5 text-foreground font-bold text-sm">
                       <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                        <Check size={12} />
+                        <Check size={13} />
                       </div>
                       <span>1,355+ Off-Plan Registry</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground pl-7">
+                    <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
                       Official UAE catalog with verified payment plans, milestones, and unit inventory.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-secondary/25 border border-border/70 space-y-2 hover:border-border transition-all">
+                    <div className="flex items-center gap-2.5 text-foreground font-bold text-sm">
                       <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                        <Check size={12} />
+                        <Check size={13} />
                       </div>
                       <span>DLD Market Context</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground pl-7">
+                    <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
                       DLD market context with verified transaction sources and sample sizes.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-secondary/25 border border-border/70 space-y-2 hover:border-border transition-all">
+                    <div className="flex items-center gap-2.5 text-foreground font-bold text-sm">
                       <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                        <Check size={12} />
+                        <Check size={13} />
                       </div>
                       <span>1-Click WhatsApp Pitch</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground pl-7">
+                    <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
                       Instant tailored investor scripts formatted for WhatsApp with payment plan breakdowns.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-secondary/25 border border-border/70 space-y-2 hover:border-border transition-all">
+                    <div className="flex items-center gap-2.5 text-foreground font-bold text-sm">
                       <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                        <Check size={12} />
+                        <Check size={13} />
                       </div>
                       <span>Voice Note Capture</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground pl-7">
+                    <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
                       AI transcribes client voice notes &amp; drive-time audio directly into CRM lead dossiers.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-secondary/25 border border-border/70 space-y-2 hover:border-border transition-all">
+                    <div className="flex items-center gap-2.5 text-foreground font-bold text-sm">
                       <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                        <Check size={12} />
+                        <Check size={13} />
                       </div>
                       <span>Bespoke Investor Dossiers</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground pl-7">
+                    <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
                       Prioritized speed-to-lead queue (Hot, Warm, Follow-ups) with client criteria matching.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-secondary/20 border border-border/60 space-y-1.5">
-                    <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-secondary/25 border border-border/70 space-y-2 hover:border-border transition-all">
+                    <div className="flex items-center gap-2.5 text-foreground font-bold text-sm">
                       <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                        <Check size={12} />
+                        <Check size={13} />
                       </div>
                       <span>Client Presentation Mode</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground pl-7">
+                    <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
                       100% white-label client view that hides agency internal commission margins during live meetings.
                     </p>
                   </div>
@@ -924,6 +945,23 @@ export function Pricing() {
         initialEmail={invoicePrefill.email}
         initialPhone={invoicePrefill.phone}
         initialBillingCycle={invoicePrefill.billing}
+      />
+
+      {/* Payment Methods Breakdown Modal */}
+      <PaymentMethodsModal
+        isOpen={showPaymentMethodsModal}
+        onClose={() => setShowPaymentMethodsModal(false)}
+        onOpenBankWireInvoice={() => {
+          setInvoicePrefill({
+            agencyName: planType === 'agency' ? agencyName : '',
+            contactName: planType === 'agency' ? contactName : '',
+            email: planType === 'agency' ? agencyEmail : '',
+            phone: planType === 'agency' ? agencyPhone : '+971 ',
+            plan: `Solo Broker (${plan.label} · AED ${plan.price})`,
+            billing: 'annual',
+          });
+          setShowInvoiceModal(true);
+        }}
       />
     </Scene>
   );
