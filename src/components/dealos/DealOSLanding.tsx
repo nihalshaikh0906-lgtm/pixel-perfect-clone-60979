@@ -9,15 +9,66 @@ import { InteractiveDeviceShowcase } from './InteractiveDeviceShowcase';
 import { Product, Insights } from './ProductScenes';
 import { Integrations, Tools, Workflow, Modes } from './ToolsScenes';
 import { Proof, Pricing, CTA, Footer } from './FinalScenes';
+import { DemoBookingModal } from './DemoBookingModal';
 import { Magnetic } from './primitives';
+import { Sparkles, Video } from 'lucide-react';
+
 const scenes=['Hero','Product','Insights','Integrations','Tools','Workflow','Modes','Proof','Pricing','CTA'];
-const LandingScenes = memo(function LandingScenes() { return <><Hero/><InteractiveDeviceShowcase/><Product/><Insights/><Integrations/><Tools/><Workflow/><Modes/><Proof/><Pricing/><CTA/><Footer/></>; });
+
+const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: () => void }) {
+  return (
+    <>
+      <Hero />
+      <InteractiveDeviceShowcase />
+
+      {/* ═══ HIGH-CONVERTING EARLY DEMO & WALKTHROUGH BANNER (ACCESSIBLE EARLY) ═══ */}
+      <section className="relative z-10 -mt-6 sm:-mt-10 mb-14 px-4 max-w-4xl mx-auto">
+        <div className="rounded-3xl border border-primary/30 bg-gradient-to-r from-card via-card to-primary/5 p-6 sm:p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6 backdrop-blur-xl">
+          <div className="space-y-1.5 text-center sm:text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <Sparkles size={13} />
+              <span>Live 1-on-1 Walkthrough</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-foreground font-display">
+              Want a personalized demo for your brokerage?
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
+              See how DealOS syncs 1,355+ off-plan projects, automates speed-to-lead, and tracks broker splits.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
+            <Button
+              type="button"
+              onClick={onOpenDemo}
+              className="w-full sm:w-auto h-12 px-6 rounded-2xl text-xs sm:text-sm font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 gap-2 cursor-pointer"
+            >
+              <Video size={16} />
+              <span>Book 15-Min Demo ↗</span>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <Product />
+      <Insights />
+      <Integrations />
+      <Tools />
+      <Workflow />
+      <Modes />
+      <Proof />
+      <Pricing />
+      <CTA />
+      <Footer />
+    </>
+  );
+});
 export function DealOSLanding() {
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState('Hero');
   const [menu, setMenu] = useState(false);
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [intro, setIntro] = useState<'full' | 'quick' | 'done'>('full');
 
   useEffect(() => {
@@ -89,7 +140,7 @@ export function DealOSLanding() {
               Login <span>↗</span>
             </Link>
           </Button>
-          <Magnetic className="d-button d-button-primary" onClick={() => go('cta')}>
+          <Magnetic className="d-button d-button-primary cursor-pointer" onClick={() => setDemoModalOpen(true)}>
             Book a demo <span>↗</span>
           </Magnetic>
           <Button
@@ -127,14 +178,28 @@ export function DealOSLanding() {
               </Button>
             ))}
           </div>
-          <Button
-            asChild
-            className="w-full h-10 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm"
-          >
-            <Link to="/login" search={{ mode: undefined }}>
-              <span>Sign In to DealOS Workspace ↗</span>
-            </Link>
-          </Button>
+          <div className="space-y-2 w-full">
+            <Button
+              type="button"
+              onClick={() => {
+                setMenu(false);
+                setDemoModalOpen(true);
+              }}
+              className="w-full h-11 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm gap-1.5 cursor-pointer"
+            >
+              <Video size={15} />
+              <span>Book Live Demo Walkthrough ↗</span>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="w-full h-10 rounded-xl text-xs font-bold border-border/80 text-foreground"
+            >
+              <Link to="/login" search={{ mode: undefined }}>
+                <span>Sign In to DealOS Workspace ↗</span>
+              </Link>
+            </Button>
+          </div>
         </div>
       ) : null}
       <aside className="d-dot-nav" aria-label="Scene navigation">
@@ -153,16 +218,33 @@ export function DealOSLanding() {
         ))}
       </aside>
       {scrolled && (
-        <Link
-          to="/login"
-          search={{ mode: undefined }}
-          className="sm:hidden fixed bottom-5 right-4 z-50 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shadow-xl shadow-amber-500/30 border border-amber-300 active:scale-95 transition-all"
-          aria-label="Sign In to DealOS"
-        >
-          <span>Sign In ↗</span>
-        </Link>
+        <div className="sm:hidden fixed bottom-5 right-4 z-50 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setDemoModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-xl border border-primary/40 active:scale-95 transition-all cursor-pointer"
+            aria-label="Book Demo"
+          >
+            <Video size={13} />
+            <span>Book Demo ↗</span>
+          </button>
+          <Link
+            to="/login"
+            search={{ mode: undefined }}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shadow-xl shadow-amber-500/30 border border-amber-300 active:scale-95 transition-all"
+            aria-label="Sign In to DealOS"
+          >
+            <span>Sign In ↗</span>
+          </Link>
+        </div>
       )}
-      <LandingScenes />
+      <LandingScenes onOpenDemo={() => setDemoModalOpen(true)} />
+
+      {/* 1-Click Universal Demo Booking Modal */}
+      <DemoBookingModal
+        isOpen={demoModalOpen}
+        onClose={() => setDemoModalOpen(false)}
+      />
     </main>
   );
 }

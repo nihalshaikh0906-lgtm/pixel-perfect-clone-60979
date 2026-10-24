@@ -117,6 +117,16 @@ export function Tools() {
           >
             {brokerTools.map((t, i) => {
               const Icon = t.icon;
+              const colors = [
+                { bg: "bg-blue-500/10", border: "border-blue-500/30", text: "text-blue-500", badge: "bg-blue-500/10 text-blue-500 dark:text-blue-400 border-blue-500/30" },
+                { bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-500", badge: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/30" },
+                { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-500", badge: "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/30" },
+                { bg: "bg-purple-500/10", border: "border-purple-500/30", text: "text-purple-500", badge: "bg-purple-500/10 text-purple-500 dark:text-purple-400 border-purple-500/30" },
+                { bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-500", badge: "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border-cyan-500/30" },
+                { bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-500", badge: "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/30" },
+                { bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-500", badge: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border-indigo-500/30" },
+              ][i % 7];
+
               return (
                 <div
                   key={t.title}
@@ -125,18 +135,18 @@ export function Tools() {
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                        <Icon size={20} />
+                      <div className={`size-11 rounded-2xl ${colors.bg} ${colors.text} border ${colors.border} flex items-center justify-center shrink-0 shadow-xs`}>
+                        <Icon size={21} />
                       </div>
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-secondary border border-border text-muted-foreground">
+                      <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${colors.badge}`}>
                         {t.badge}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[11px] font-bold tracking-wider uppercase text-primary block mb-1">
+                      <span className={`text-[11px] font-extrabold tracking-wider uppercase ${colors.text} block mb-1`}>
                         {t.category}
                       </span>
-                      <h3 className="text-lg font-bold text-foreground font-display">
+                      <h3 className="text-xl font-bold text-foreground font-display tracking-tight">
                         {t.title}
                       </h3>
                     </div>

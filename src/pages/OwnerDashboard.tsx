@@ -1803,85 +1803,166 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
           </div>
         </div>
 
-        {/* The Leaderboard List */}
-        <div className="space-y-3">
-          {filteredBrokers.map((broker, idx) => (
-            <div
-              key={broker.id}
-              className="rounded-2xl border border-border/80 bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50 p-4 transition-all duration-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-sm"
-            >
-              {/* Identity & Rank */}
-              <div className="flex items-center gap-4 min-w-0 lg:min-w-[240px]">
-                <div className="relative flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary border border-border/80 font-display font-black text-base text-foreground shadow-sm">
-                  {broker.avatar}
-                  <span className="size-2.5 rounded-full bg-emerald-500 absolute -top-1 -right-1 border-2 border-card" />
+        {/* ═══ MOBILE-FIRST TOP 3 PODIUM (EXCITING & PICTORIAL) ═══ */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+          {filteredBrokers.slice(0, 3).map((topBroker, i) => {
+            const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+            const medalColor =
+              i === 0
+                ? "border-amber-500/60 bg-gradient-to-b from-amber-500/15 via-card to-card text-amber-400 ring-1 ring-amber-500/30"
+                : i === 1
+                ? "border-slate-300/50 bg-gradient-to-b from-slate-400/10 via-card to-card text-slate-300"
+                : "border-amber-700/40 bg-gradient-to-b from-amber-700/10 via-card to-card text-amber-600";
+            return (
+              <div
+                key={topBroker.id}
+                className={`rounded-2xl border p-3 sm:p-4 text-center space-y-2 relative shadow-md transition-all hover:scale-[1.02] ${medalColor}`}
+              >
+                <div className="relative mx-auto size-12 sm:size-14 rounded-2xl bg-secondary border border-border flex items-center justify-center font-display font-black text-sm sm:text-base text-foreground shadow-sm">
+                  {topBroker.avatar}
+                  <span className="absolute -top-2 -right-2 text-lg sm:text-xl drop-shadow-sm">
+                    {medal}
+                  </span>
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-xs sm:text-sm text-foreground truncate">
+                    {topBroker.name}
+                  </h4>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-mono truncate">
+                    {topBroker.role.split(" ")[0]}
+                  </p>
+                </div>
+                <div className="pt-1 border-t border-border/40">
+                  <p className="text-xs sm:text-sm font-black font-mono text-emerald-400">
+                    {topBroker.closedVolumeFormatted}
+                  </p>
+                  <span className="text-[10px] text-muted-foreground font-semibold">
+                    {topBroker.dealsClosed} closed
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* The Detailed Leaderboard List */}
+        <div className="space-y-3 sm:space-y-3.5">
+          {filteredBrokers.map((broker, idx) => {
+            const quotaPercent = Math.min(Math.round((broker.closedVolumeAed / 12000000) * 100), 160);
+            const isTop3 = idx < 3;
+            const rankBadge = idx === 0 ? "🥇 #1" : idx === 1 ? "🥈 #2" : idx === 2 ? "🥉 #3" : `#${idx + 1}`;
+
+            return (
+              <div
+                key={broker.id}
+                className={`rounded-2xl border transition-all duration-200 p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 shadow-sm hover:shadow-md ${
+                  idx === 0
+                    ? "border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-card to-card hover:border-amber-500"
+                    : "border-border/80 bg-secondary/25 hover:border-primary/50 hover:bg-secondary/40"
+                }`}
+              >
+                {/* Identity & Rank */}
+                <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 lg:min-w-[260px]">
+                  <div className="relative flex size-12 sm:size-14 shrink-0 items-center justify-center rounded-2xl bg-secondary border border-border/80 font-display font-black text-base text-foreground shadow-sm">
+                    {broker.avatar}
+                    <span className="size-3 rounded-full bg-emerald-500 absolute -top-1 -right-1 border-2 border-card" />
+                    {isTop3 && (
+                      <span className="absolute -bottom-1.5 -left-1.5 size-5 rounded-full bg-background border border-border shadow-xs flex items-center justify-center text-[10px]">
+                        {idx === 0 ? "👑" : idx === 1 ? "⭐" : "✨"}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-secondary border border-border text-xs font-mono font-bold text-foreground">
+                        {rankBadge}
+                      </span>
+                      <h3 className="font-extrabold text-sm sm:text-base text-foreground font-display truncate">
+                        {broker.name}
+                      </h3>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border font-mono ${broker.tierColor}`}>
+                        {broker.tier}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-mono flex items-center gap-1.5 truncate">
+                      <span>{broker.role}</span>
+                      <span className="opacity-40">•</span>
+                      <span>{broker.reraNumber}</span>
+                    </p>
+                  </div>
                 </div>
 
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-extrabold text-base text-foreground font-display">
-                      #{idx + 1} {broker.name}
-                    </h3>
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border font-mono ${broker.tierColor}`}>
-                      {broker.tier}
+                {/* Pictorial Progress Bar & Volume Quota */}
+                <div className="flex-1 lg:px-6 lg:border-l lg:border-r lg:border-border/60 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-muted-foreground uppercase text-[11px] tracking-wider">
+                      Quota Pace: <strong className="text-foreground">{quotaPercent}%</strong>
+                    </span>
+                    <span className="font-mono font-extrabold text-emerald-400 text-sm">
+                      {broker.closedVolumeFormatted}
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground font-mono">
-                    {broker.role} · {broker.reraNumber}
-                  </p>
+
+                  <div className="h-2 w-full rounded-full bg-secondary overflow-hidden border border-border/40">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${
+                        idx === 0
+                          ? "bg-gradient-to-r from-amber-500 via-primary to-emerald-400"
+                          : quotaPercent >= 100
+                          ? "bg-gradient-to-r from-primary to-emerald-400"
+                          : "bg-primary"
+                      }`}
+                      style={{ width: `${Math.min(quotaPercent, 100)}%` }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 text-xs pt-0.5">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block">Deals Won</span>
+                      <strong className="text-foreground">{broker.dealsClosed} closed</strong>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block">Speed-to-Lead</span>
+                      <strong className={broker.speedToLeadMins > 10 ? "text-rose-400" : "text-emerald-400"}>
+                        {broker.speedToLeadMins}m {broker.speedToLeadMins < 3 ? "⚡" : ""}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block">Active In-Flight</span>
+                      <strong className="text-foreground">{broker.activeDealsCount} pipeline</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1-Click Direct Action Buttons (Generous Touch Targets) */}
+                <div className="flex items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-border/50">
+                  <button
+                    type="button"
+                    onClick={() => handleCoachBroker(broker)}
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold text-xs transition-all shadow-xs cursor-pointer"
+                    title={`Direct WhatsApp to ${broker.name}`}
+                  >
+                    <MessageCircle size={15} />
+                    <span>{broker.tier === "Needs Coaching" ? "Coach" : "Praise"}</span>
+                  </button>
+
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setLeadFilterBroker(broker.id);
+                      document.getElementById("leads-overwatch")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="flex-1 sm:flex-none h-10 px-4 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm gap-1.5 cursor-pointer"
+                    title={`Inspect ${broker.name}'s assigned leadbox`}
+                  >
+                    <span>Leadbox</span>
+                    <ArrowUpRight size={14} />
+                  </Button>
                 </div>
               </div>
-
-              {/* Performance Metrics Cluster (No Financial cut) */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs flex-1 lg:px-6 lg:border-l lg:border-r lg:border-border/60">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Closed Volume</span>
-                  <p className="text-sm font-extrabold font-mono text-foreground">{broker.closedVolumeFormatted}</p>
-                  <span className="text-[10px] text-muted-foreground">({broker.dealsClosed} closed deals)</span>
-                </div>
-
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Speed to Lead</span>
-                  <p className={`text-sm font-extrabold font-mono ${broker.speedToLeadMins > 10 ? "text-rose-400" : "text-emerald-400"}`}>
-                    {broker.speedToLeadMins} mins
-                  </p>
-                  <span className="text-[10px] text-muted-foreground">{broker.speedToLeadMins < 5 ? "⚡ Instant" : "⚠️ Delayed"}</span>
-                </div>
-
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground">Active Deals</span>
-                  <p className="text-sm font-extrabold font-mono text-foreground">{broker.activeDealsCount} in flight</p>
-                  <span className="text-[10px] text-muted-foreground">DLD Form F/Viewings</span>
-                </div>
-              </div>
-
-              {/* 1-Click Direct Management Triggers */}
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => handleCoachBroker(broker)}
-                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs shadow-sm transition-all cursor-pointer"
-                  title={`Direct WhatsApp to ${broker.name} (${broker.phone}) · Logs in DealOS`}
-                >
-                  <MessageCircle size={14} className="text-emerald-500" />
-                  <span>{broker.tier === "Needs Coaching" ? "Coach Agent" : "Congratulate"}</span>
-                </button>
-
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setLeadFilterBroker(broker.id);
-                    document.getElementById("leads-overwatch")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="h-9 px-3.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm gap-1"
-                  title={`Inspect ${broker.name}'s assigned leadbox`}
-                >
-                  <span>Leadbox</span>
-                  <ArrowUpRight size={13} />
-                </Button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

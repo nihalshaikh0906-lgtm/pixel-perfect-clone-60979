@@ -281,7 +281,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               onMouseLeave={handleMouseLeave}
             >
               <LogoMark size={28} />
-              {!collapsed && (
+              {(!collapsed || drawer) && (
                 <div className="a-brand-text flex items-center gap-2">
                   <span className="logo-word font-extrabold text-base text-slate-900">Deal<span className="text-slate-900 font-black">OS</span></span>
                   <span className="a-demo text-[10px] uppercase font-bold tracking-wider">PRO</span>
@@ -311,7 +311,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
           </div>
 
           {/* Persona Switcher Pill */}
-          {!collapsed && (
+          {(!collapsed || drawer) && (
             <div className="px-3 py-2 border-b border-border/50">
               {role === "agent" ? (
                 <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-2.5 text-xs flex items-center justify-between">
@@ -333,7 +333,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
             </div>
           )}
 
-          {collapsed && (
+          {(collapsed && !drawer) && (
             <div className="flex justify-center py-2 border-b border-border/40">
               {role === "agent" ? (
                 <div
@@ -371,7 +371,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
           <nav className="a-nav">
             {visibleGroups.map((g) => (
               <div className="a-group" key={g.title}>
-                {!collapsed && <p>{g.title}</p>}
+                {(!collapsed || drawer) && <p>{g.title}</p>}
                 {g.items.map((it) => (
                   <Link
                     key={it.to}
@@ -383,8 +383,8 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                     onMouseLeave={handleMouseLeave}
                   >
                     <it.icon size={19} className="shrink-0" />
-                    {!collapsed && <span className="truncate">{it.label}</span>}
-                    {!collapsed && it.badge ? <span className="a-badge num">{it.badge}</span> : null}
+                    {(!collapsed || drawer) && <span className="truncate">{it.label}</span>}
+                    {(!collapsed || drawer) && it.badge ? <span className="a-badge num">{it.badge}</span> : null}
                   </Link>
                 ))}
               </div>
@@ -534,7 +534,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 onMouseLeave={handleMouseLeave}
               >
                 <span className="a-avatar">{initials}</span>
-                {!collapsed && (
+                {(!collapsed || drawer) && (
                   <span className="a-user-text">
                     <b>{userName}</b>
                     <small>{role === "company" ? "Owner" : "Broker"} · {agency}</small>
@@ -657,6 +657,27 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               {role === "agent" && <AddMenu />}
               <Notifications />
               <ThemeToggle {...theme} />
+
+              {/* Direct Settings Quick-Access Button */}
+              <Link
+                to={role === "company" ? "/app/settings?role=owner" : "/app/settings"}
+                className="a-btn a-btn-line inline-flex items-center justify-center p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+                title="Settings"
+                aria-label="Settings"
+              >
+                <Settings size={16} />
+              </Link>
+
+              {/* Direct Logout Quick-Access Button */}
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="a-btn a-btn-line inline-flex items-center justify-center p-2 rounded-xl text-rose-500/80 hover:text-rose-500 hover:bg-rose-500/10 border-rose-500/20 transition-all"
+                title="Log out of DealOS"
+                aria-label="Log out"
+              >
+                <LogOut size={16} />
+              </button>
             </div>
           </header>
 

@@ -5,7 +5,7 @@ import {
   Sparkles, Plus, Mic, Send, Paperclip, User, Building2, Users, FileText,
   X, Check, ArrowRight, RefreshCw, Copy, CheckCheck,
   ChevronDown, Flame, ShieldCheck, Zap, MessageSquare, Clock,
-  Search, PanelLeft, ArrowUpRight
+  Search, PanelLeft, ArrowUpRight, LineChart, Calculator
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
@@ -190,7 +190,7 @@ I've processed your query: **"${prompt}"**
   });
 
   return (
-    <div className="relative flex h-[calc(100vh-80px)] w-full overflow-hidden bg-background">
+    <div className="relative flex h-[calc(100dvh-70px)] sm:h-[calc(100vh-80px)] w-full overflow-hidden bg-background">
       {/* Hidden File Input */}
       <input
         type="file"
@@ -272,17 +272,24 @@ I've processed your query: **"${prompt}"**
 
         {/* ═══ SCENARIO A: PURE ZEN CENTER FLOATING SCREEN (NO MESSAGES) ═══ */}
         {messages.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-4 max-w-3xl mx-auto w-full relative">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 max-w-3xl mx-auto w-full relative pb-16 sm:pb-0 overflow-y-auto">
             {/* Ambient Radial Glow */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="size-96 rounded-full bg-primary/5 blur-3xl opacity-70" />
             </div>
 
             {/* Center Greeting */}
-            <div className="text-center mb-8 relative z-10 space-y-2">
-              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground font-display">
+            <div className="text-center mb-6 relative z-10 space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold font-mono bg-primary/10 text-primary border border-primary/20 shadow-xs mb-1">
+                <Sparkles size={12} className="text-amber-400" />
+                <span>DEALOS MASTERMIND · DUBAI COPILOT</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground font-display">
                 Your move, {userName}!
               </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
+                Dubai off-plan matching, 1% payment plans, DLD yields, and 1-click investor pitches.
+              </p>
             </div>
 
             {/* ═══ CENTER FLOATING INPUT CAPSULE BAR (EXACTLY LIKE GEMINI) ═══ */}
@@ -369,6 +376,93 @@ I've processed your query: **"${prompt}"**
                 </div>
               </div>
             </div>
+
+            {/* ═══ PICTORIAL VIBRANT QUICK-ACTION PROMPTS (SOLVES SCREENSHOT ISSUES) ═══ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl mt-5 px-1 relative z-10">
+              <button
+                type="button"
+                onClick={() => {
+                  setInput("Match off-plan 1BR and 2BR in DLRC or JVC under AED 1.2M with 1% monthly payment plan");
+                }}
+                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-amber-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
+              >
+                <div className="size-9 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Building2 size={17} />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-xs font-bold text-foreground">Off-Plan Matcher</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-500 px-1.5 py-0.2 rounded-full">Top Pick</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                    Find 1BR in DLRC or JVC under AED 1.2M with 1% monthly plan
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setInput("Calculate 60/40 payment plan vs post-handover ROI for an investor cash buyer");
+                }}
+                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-blue-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
+              >
+                <div className="size-9 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Zap size={17} />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-xs font-bold text-foreground">Payment Plan ROI</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider bg-blue-500/15 text-blue-500 px-1.5 py-0.2 rounded-full">Financial</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                    Compare 60/40 vs 1% monthly plan cash-flow & handover yield
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setInput("Compare 5-year capital appreciation & rental yield: Business Bay vs Dubai Hills");
+                }}
+                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-emerald-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
+              >
+                <div className="size-9 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <ShieldCheck size={17} />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-xs font-bold text-foreground">DLD Yield Radar</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-500 px-1.5 py-0.2 rounded-full">DLD Data</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                    Compare capital appreciation & net rental yields across districts
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setInput("Draft a high-converting 1-click WhatsApp pitch for high-net-worth investor lead");
+                }}
+                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-purple-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
+              >
+                <div className="size-9 rounded-xl bg-purple-500/10 border border-purple-500/25 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <MessageSquare size={17} />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-xs font-bold text-foreground">WhatsApp Pitcher</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider bg-purple-500/15 text-purple-500 px-1.5 py-0.2 rounded-full">Pitch</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                    Generate tailored Dubai off-plan WhatsApp script for HNWI
+                  </p>
+                </div>
+              </button>
+            </div>
           </div>
         ) : (
           /* ═══ SCENARIO B: ACTIVE FULL-SCREEN CONVERSATION STREAM ═══ */
@@ -452,7 +546,7 @@ I've processed your query: **"${prompt}"**
             </div>
 
             {/* DOCKED BOTTOM CENTER INPUT CAPSULE */}
-            <div className="p-4 border-t border-border/60 bg-card/60 backdrop-blur-md shrink-0">
+            <div className="p-3 pb-24 sm:p-4 border-t border-border/60 bg-card/80 backdrop-blur-md shrink-0">
               <div className="max-w-2xl mx-auto w-full">
                 {attachments.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-2 px-1">

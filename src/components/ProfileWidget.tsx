@@ -28,7 +28,7 @@ export function ProfileWidget() {
   }
   return (
     <>
-      <div className="fixed bottom-6 left-6 z-50 flex items-center gap-3 rounded-full border border-border bg-card/90 p-2 pr-4 shadow-md backdrop-blur-md">
+      <div className="fixed bottom-6 left-6 z-50 hidden sm:flex items-center gap-3 rounded-full border border-border bg-card/90 p-2 pr-4 shadow-md backdrop-blur-md">
       <button
         type="button"
         onClick={() => setOpen(true)}

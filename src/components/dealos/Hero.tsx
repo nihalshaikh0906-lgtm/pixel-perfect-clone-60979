@@ -1,4 +1,4 @@
-import { Building2, ChartNoAxesCombined, ChevronRight, KeyRound, MapPin, MessageCircle, Percent, Play, Sparkles, Users } from 'lucide-react';
+import { Building2, ChartNoAxesCombined, ChevronRight, KeyRound, MapPin, MessageCircle, Percent, Play, Sparkles, Users, Video } from 'lucide-react';
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import skyline from '@/assets/dealos-dubai.jpg';
 import { Dashboard } from './Dashboard';
 import { Magnetic } from './primitives';
+import { DemoBookingModal } from './DemoBookingModal';
 
 export const tileIcons = [Users, Building2, MapPin, Sparkles, Percent, KeyRound, ChartNoAxesCombined, MessageCircle];
 
@@ -78,6 +79,7 @@ export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const [tour, setTour] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
   const dashRef = useRef<HTMLDivElement>(null);
   const fitRef = useRef({ y: 0, s: 1 });
@@ -202,6 +204,14 @@ export function Hero() {
                   Start free <ArrowIcon />
                 </Link>
               </Magnetic>
+              <Button
+                type="button"
+                className="d-button d-button-outline border-primary/50 text-foreground font-bold hover:bg-primary/10 hover:border-primary gap-1.5 cursor-pointer"
+                onClick={() => setDemoOpen(true)}
+              >
+                <Video size={14} className="text-primary" />
+                <span>Book Live Demo ↗</span>
+              </Button>
               <Button asChild className="d-button d-button-outline border-amber-500/50 text-foreground font-bold hover:bg-amber-500/10 hover:border-amber-500">
                 <Link to="/login">
                   <span>Sign In ↗</span>
@@ -243,6 +253,7 @@ export function Hero() {
           <p>Explore the connected broker workspace.</p>
         </DialogContent>
       </Dialog>
+      <DemoBookingModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
     </section>
   );
 }
