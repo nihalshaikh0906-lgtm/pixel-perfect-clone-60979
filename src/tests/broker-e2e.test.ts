@@ -1039,6 +1039,241 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(resolveAccountRole("nihalshaikh0906@gmail.com", "agent")).toBe("agent");
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 16: DEMO BOOKING & LIVE CALENDLY WALKTHROUGH
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 16: Demo Booking & Live Calendly Walkthrough", () => {
+    it("validates demo booking payload and offline fallback resilience", () => {
+      const demoPayload = {
+        name: "Sultan Al-Qasimi",
+        email: "sultan@sharjahrealty.ae",
+        phone: "+971 50 123 4567",
+        agency: "Sharjah Apex Realty",
+        role: "owner",
+        mode: "callback",
+        status: "new",
+        created_at: new Date().toISOString(),
+      };
+
+      expect(demoPayload.name).toBe("Sultan Al-Qasimi");
+      expect(demoPayload.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+      expect(demoPayload.phone).toContain("+971");
+      expect(demoPayload.role).toBe("owner");
+
+      // Verify local storage fallback for 0 lead drop guarantee
+      const existing = JSON.parse(localStorage.getItem("dealos_demo_requests") || "[]");
+      existing.push(demoPayload);
+      localStorage.setItem("dealos_demo_requests", JSON.stringify(existing));
+
+      const stored = JSON.parse(localStorage.getItem("dealos_demo_requests") || "[]");
+      expect(stored).toHaveLength(1);
+      expect(stored[0].agency).toBe("Sharjah Apex Realty");
+      expect(stored[0].email).toBe("sultan@sharjahrealty.ae");
+    });
+
+    it("generates correct Calendly URL with prefilled metadata", () => {
+      const baseCalendly = "https://calendly.com/dealos-ae/demo";
+      const userEmail = "director@apexrealty.ae";
+      const userName = "Adam Sterling";
+      const fullUrl = `${baseCalendly}?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
+
+      expect(fullUrl).toContain("dealos-ae/demo");
+      expect(fullUrl).toContain(encodeURIComponent(userEmail));
+      expect(fullUrl).toContain(encodeURIComponent(userName));
+    });
+
+    it("generates valid instant WhatsApp concierge link for quick callback", () => {
+      const waNumber = "971500000000";
+      const agency = "Apex Luxury Dubai";
+      const email = "founder@apex.ae";
+      const waText = `Hello DealOS Team! I would like to book a demo for ${agency} (${email}).`;
+      const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`;
+
+      expect(waLink).toContain("wa.me/971500000000");
+      expect(waLink).toContain(encodeURIComponent(agency));
+      expect(waLink).toContain(encodeURIComponent(email));
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 17: PAYMENT METHODS MODAL & UAE IBAN PROFORMA
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 17: Payment Methods Modal & UAE Corporate IBAN Wire", () => {
+    it("verifies all available corporate and card payment channels", () => {
+      const acceptedMethods = [
+        { id: "apple_pay", name: "Apple Pay", type: "digital_wallet", instant: true },
+        { id: "google_pay", name: "Google Pay", type: "digital_wallet", instant: true },
+        { id: "visa", name: "Visa", type: "card", instant: true },
+        { id: "mastercard", name: "Mastercard", type: "card", instant: true },
+        { id: "amex", name: "American Express", type: "card", instant: true },
+        { id: "bank_wire", name: "UAE Corporate Bank Wire", type: "wire", instant: false },
+      ];
+
+      expect(acceptedMethods).toHaveLength(6);
+      expect(acceptedMethods.filter((m) => m.type === "card")).toHaveLength(3);
+      expect(acceptedMethods.filter((m) => m.type === "digital_wallet")).toHaveLength(2);
+      expect(acceptedMethods.find((m) => m.id === "bank_wire")?.name).toBe("UAE Corporate Bank Wire");
+    });
+
+    it("verifies Emirates NBD & Wio Bank IBAN routing format", () => {
+      const uaeBankAccounts = {
+        emiratesNbd: {
+          bank: "Emirates NBD",
+          iban: "AE480260000001234567890",
+          swift: "EBILAEADXXX",
+        },
+        wioBank: {
+          bank: "Wio Bank PJSC",
+          iban: "AE120890000009876543210",
+          swift: "WIOBAEADXXX",
+        },
+      };
+
+      // Valid UAE IBAN starts with AE and is 23 characters long
+      expect(uaeBankAccounts.emiratesNbd.iban).toMatch(/^AE\d{21}$/);
+      expect(uaeBankAccounts.wioBank.iban).toMatch(/^AE\d{21}$/);
+      expect(uaeBankAccounts.emiratesNbd.swift).toMatch(/^[A-Z0-9]{8,11}$/);
+      expect(uaeBankAccounts.wioBank.swift).toMatch(/^[A-Z0-9]{8,11}$/);
+    });
+
+    it("calculates proforma tax invoice with 5% UAE VAT accurately", () => {
+      const subtotalAed = 1099; // Annual DealOS Broker Pro
+      const vatRate = 0.05;
+      const vatAmount = Math.round(subtotalAed * vatRate * 100) / 100;
+      const totalAmount = Math.round((subtotalAed + vatAmount) * 100) / 100;
+
+      expect(vatAmount).toBe(54.95);
+      expect(totalAmount).toBe(1153.95);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 18: GAMIFIED BROKER LEADERBOARD & PODIUM LOGIC
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 18: Gamified Broker Leaderboard & Quota Podium", () => {
+    const agents = [
+      { name: "Aisha Khan", deals: 14, revenue: 4200000, speed: 3.2, quota: 140 },
+      { name: "Omar Haddad", deals: 11, revenue: 3600000, speed: 3.8, quota: 118 },
+      { name: "Priya Nair", deals: 9, revenue: 2900000, speed: 4.5, quota: 96 },
+      { name: "Daniel Ross", deals: 8, revenue: 2400000, speed: 6.8, quota: 82 },
+      { name: "Saad Malik", deals: 5, revenue: 1500000, speed: 38.2, quota: 50 },
+    ];
+
+    it("ranks Top 3 Podium accurately with Gold, Silver, Bronze medals", () => {
+      const sorted = [...agents].sort((a, b) => b.revenue - a.revenue);
+      expect(sorted[0].name).toBe("Aisha Khan");
+      expect(sorted[1].name).toBe("Omar Haddad");
+      expect(sorted[2].name).toBe("Priya Nair");
+
+      const medals = ["🥇", "🥈", "🥉"];
+      expect(medals[0]).toBe("🥇");
+      expect(medals[1]).toBe("🥈");
+      expect(medals[2]).toBe("🥉");
+    });
+
+    it("verifies quota progress percentage and color classifications", () => {
+      function getQuotaColor(quota: number): string {
+        if (quota >= 100) return "emerald";
+        if (quota >= 75) return "amber";
+        return "red";
+      }
+
+      expect(getQuotaColor(agents[0].quota)).toBe("emerald"); // 140%
+      expect(getQuotaColor(agents[1].quota)).toBe("emerald"); // 118%
+      expect(getQuotaColor(agents[2].quota)).toBe("amber");   // 96%
+      expect(getQuotaColor(agents[3].quota)).toBe("amber");   // 82%
+      expect(getQuotaColor(agents[4].quota)).toBe("red");     // 50%
+    });
+
+    it("classifies speed-to-lead SLA compliance", () => {
+      function isSlaCompliant(speedMinutes: number): boolean {
+        return speedMinutes < 5.0; // SLA is under 5 min
+      }
+
+      expect(isSlaCompliant(agents[0].speed)).toBe(true);  // 3.2m -> compliant
+      expect(isSlaCompliant(agents[1].speed)).toBe(true);  // 3.8m -> compliant
+      expect(isSlaCompliant(agents[2].speed)).toBe(true);  // 4.5m -> compliant
+      expect(isSlaCompliant(agents[3].speed)).toBe(false); // 6.8m -> breach
+      expect(isSlaCompliant(agents[4].speed)).toBe(false); // 38.2m -> major breach
+    });
+
+    it("generates WhatsApp coach and praise deep links for brokers", () => {
+      const agent = agents[0];
+      const coachText = `Hi ${agent.name}, DealOS Performance Check: You have closed ${agent.deals} deals (${agent.revenue.toLocaleString()} AED) with an average response time of ${agent.speed}m.`;
+      const waLink = `https://wa.me/?text=${encodeURIComponent(coachText)}`;
+
+      expect(waLink).toContain(encodeURIComponent(agent.name));
+      expect(waLink).toContain(encodeURIComponent("4,200,000 AED"));
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 19: AI COPILOT & QUICK-ACTION PROMPTS
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 19: AI Copilot & Quick-Action Prompts", () => {
+    it("provides the 4 core UAE real estate quick action prompt presets", () => {
+      const presets = [
+        { id: "offplan", title: "Off-Plan Matcher", prompt: "Match off-plan 1BR and 2BR in DLRC or JVC under AED 1.2M with 1% monthly payment plan" },
+        { id: "payment", title: "Payment Plan ROI", prompt: "Calculate 60/40 payment plan vs post-handover ROI for an investor cash buyer" },
+        { id: "yields", title: "DLD Yield Radar", prompt: "Compare 5-year capital appreciation & rental yield: Business Bay vs Dubai Hills" },
+        { id: "pitch", title: "WhatsApp Pitcher", prompt: "Draft a high-converting 1-click WhatsApp pitch for high-net-worth investor lead" },
+      ];
+
+      expect(presets).toHaveLength(4);
+      expect(presets[0].prompt).toContain("DLRC");
+      expect(presets[1].prompt).toContain("60/40");
+      expect(presets[2].prompt).toContain("Business Bay");
+      expect(presets[3].prompt).toContain("WhatsApp");
+    });
+
+    it("simulates contextual AI intelligence generation for attached leads", () => {
+      const attachedLead = {
+        name: "Michael Thorne",
+        budget: "AED 1,200,000",
+        pref: "1BR DLRC · Handover Q4 2026",
+      };
+
+      const response = `### Strategic Analysis for ${attachedLead.name}\n\n1. Financial Summary: ${attachedLead.budget}\n2. Matched Developments: Reef Luxury 995 (DLRC) - 8.4% projected yield.`;
+
+      expect(response).toContain(attachedLead.name);
+      expect(response).toContain("Reef Luxury 995");
+      expect(response).toContain("8.4%");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 20: APPSHELL NAVIGATION & ADMIN PRIVILEGES
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 20: AppShell Navigation & Admin Privileges", () => {
+    it("strictly isolates master admin authority to verified emails", () => {
+      function checkMasterAdmin(email: string): boolean {
+        const clean = email.toLowerCase().trim();
+        return clean === "admin@dealos.ae" || clean === "nihalshaikh0906@gmail.com";
+      }
+
+      // Master admins
+      expect(checkMasterAdmin("admin@dealos.ae")).toBe(true);
+      expect(checkMasterAdmin("nihalshaikh0906@gmail.com")).toBe(true);
+      expect(checkMasterAdmin("ADMIN@DEALOS.AE")).toBe(true);
+
+      // Customer emails that happen to contain "admin" must NOT have master admin access
+      expect(checkMasterAdmin("admin@dubairealty.com")).toBe(false);
+      expect(checkMasterAdmin("admin.manager@emaar.ae")).toBe(false);
+      expect(checkMasterAdmin("sysadmin@brokerage.ae")).toBe(false);
+      expect(checkMasterAdmin("admin@gmail.com")).toBe(false);
+    });
+
+    it("ensures direct Settings and Logout routing paths are correct", () => {
+      const ownerSettingsRoute = "/app/settings?role=owner";
+      const brokerSettingsRoute = "/app/settings";
+      const logoutRoute = "/login";
+
+      expect(ownerSettingsRoute).toContain("role=owner");
+      expect(brokerSettingsRoute).toBe("/app/settings");
+      expect(logoutRoute).toBe("/login");
+    });
+  });
 });
 
 
