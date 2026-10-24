@@ -1041,17 +1041,17 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   });
 
   // ═══════════════════════════════════════════════════════════
-  // WORKFLOW 16: DEMO BOOKING & LIVE CALENDLY WALKTHROUGH
+  // WORKFLOW 16: STREAMLINED DEMO BOOKING & REQUEST CONFIRMATION
   // ═══════════════════════════════════════════════════════════
-  describe("Workflow 16: Demo Booking & Live Calendly Walkthrough", () => {
-    it("validates demo booking payload and offline fallback resilience", () => {
+  describe("Workflow 16: Streamlined Demo Booking & Request Confirmation", () => {
+    it("validates direct demo booking submission and offline fallback resilience", () => {
       const demoPayload = {
         name: "Sultan Al-Qasimi",
         email: "sultan@sharjahrealty.ae",
         phone: "+971 50 123 4567",
         agency: "Sharjah Apex Realty",
         role: "owner",
-        mode: "callback",
+        team_size: "1–5 agents",
         status: "new",
         created_at: new Date().toISOString(),
       };
@@ -1060,6 +1060,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(demoPayload.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
       expect(demoPayload.phone).toContain("+971");
       expect(demoPayload.role).toBe("owner");
+      expect(demoPayload.team_size).toBe("1–5 agents");
 
       // Verify local storage fallback for 0 lead drop guarantee
       const existing = JSON.parse(localStorage.getItem("dealos_demo_requests") || "[]");
@@ -1070,29 +1071,22 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(stored).toHaveLength(1);
       expect(stored[0].agency).toBe("Sharjah Apex Realty");
       expect(stored[0].email).toBe("sultan@sharjahrealty.ae");
+      expect(stored[0].phone).toBe("+971 50 123 4567");
     });
 
-    it("generates correct Calendly URL with prefilled metadata", () => {
-      const baseCalendly = "https://calendly.com/dealos-ae/demo";
-      const userEmail = "director@apexrealty.ae";
-      const userName = "Adam Sterling";
-      const fullUrl = `${baseCalendly}?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
+    it("formats the executive confirmation message for direct contact", () => {
+      const brokerLead = {
+        name: "Tariq Al Mansoor",
+        phone: "+971 50 839 2104",
+        agency: "Apex Luxury Properties",
+      };
 
-      expect(fullUrl).toContain("dealos-ae/demo");
-      expect(fullUrl).toContain(encodeURIComponent(userEmail));
-      expect(fullUrl).toContain(encodeURIComponent(userName));
-    });
+      const confirmationMessage = `Thank you, ${brokerLead.name}! Your demo request for ${brokerLead.agency} has been received. Our team will contact you directly via WhatsApp or phone at ${brokerLead.phone} to conduct your live personalized demo.`;
 
-    it("generates valid instant WhatsApp concierge link for quick callback", () => {
-      const waNumber = "971500000000";
-      const agency = "Apex Luxury Dubai";
-      const email = "founder@apex.ae";
-      const waText = `Hello DealOS Team! I would like to book a demo for ${agency} (${email}).`;
-      const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`;
-
-      expect(waLink).toContain("wa.me/971500000000");
-      expect(waLink).toContain(encodeURIComponent(agency));
-      expect(waLink).toContain(encodeURIComponent(email));
+      expect(confirmationMessage).toContain(brokerLead.name);
+      expect(confirmationMessage).toContain(brokerLead.agency);
+      expect(confirmationMessage).toContain(brokerLead.phone);
+      expect(confirmationMessage).toContain("contact you directly via WhatsApp or phone");
     });
   });
 

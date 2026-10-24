@@ -1,17 +1,15 @@
 import { useState } from "react";
 import {
   X,
-  Calendar,
   Sparkles,
   Phone,
   Mail,
   Building2,
   Users,
   CheckCircle2,
-  Video,
   ArrowRight,
   ShieldCheck,
-  Clock,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -23,7 +21,6 @@ interface DemoBookingModalProps {
 }
 
 export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
-  const [bookingMode, setBookingMode] = useState<"callback" | "zoom">("callback");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("+971 ");
@@ -31,10 +28,6 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
   const [teamSize, setTeamSize] = useState("1–5 agents");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-
-  const calendlyUrl =
-    (import.meta as unknown as { env: Record<string, string> }).env?.VITE_CALENDLY_URL ||
-    "https://calendly.com/dealos-ae/demo";
 
   if (!isOpen) return null;
 
@@ -72,7 +65,15 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
 
     setLoading(false);
     setDone(true);
-    toast.success("Executive Demo Booked! Our Dubai advisory desk will reach out via WhatsApp.");
+    toast.success("Demo request sent! We will contact you directly to schedule your demo.");
+  };
+
+  const handleReset = () => {
+    setDone(false);
+    setName("");
+    setEmail("");
+    setPhone("+971 ");
+    setAgency("");
   };
 
   return (
@@ -81,7 +82,7 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-xl bg-card border border-border/80 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto"
+        className="relative w-full max-w-lg bg-card border border-border/80 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -89,16 +90,16 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-primary/10 text-primary border border-primary/20">
-                <Sparkles size={13} />
-                Private Agency Walkthrough
+                <Sparkles size={13} className="text-amber-400" />
+                Live 1-on-1 Walkthrough
               </span>
-              <span className="text-xs text-muted-foreground font-mono">· RERA Verified</span>
+              <span className="text-xs text-muted-foreground font-mono">· RERA Compliant</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-foreground font-display tracking-tight">
-              Book a DealOS Executive Demo
+              Book a DealOS Demo
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Experience the live Dubai off-plan catalog, AI copilot, and broker overwatch.
+              Experience the 1,355+ Dubai off-plan catalog, AI copilot, and broker overwatch desk.
             </p>
           </div>
 
@@ -112,57 +113,65 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
           </button>
         </div>
 
-        {/* Tab Selector */}
-        <div className="flex items-center p-1 rounded-2xl bg-secondary/70 border border-border/70 gap-1.5">
-          <button
-            type="button"
-            onClick={() => setBookingMode("callback")}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              bookingMode === "callback"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <span>⚡ Quick Callback (30s)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setBookingMode("zoom")}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              bookingMode === "zoom"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Video size={14} />
-            <span>📅 Live Zoom (15m)</span>
-          </button>
-        </div>
-
         {done ? (
-          <div className="text-center py-8 space-y-4 animate-in fade-in-50">
-            <div className="size-14 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/30">
-              <CheckCircle2 size={32} />
+          /* ═══ ELEGANT SUCCESS STATE (REQUEST SENT) ═══ */
+          <div className="text-center py-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="size-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/30 shadow-md">
+              <CheckCircle2 size={36} />
             </div>
-            <div className="space-y-1">
-              <h3 className="text-xl font-bold text-foreground">Walkthrough Confirmed!</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto">
-                Thank you, <strong className="text-foreground">{name || "Partner"}</strong>. Our Dubai team has received your request and will connect via WhatsApp at{" "}
-                <strong className="text-foreground">{phone}</strong>.
+
+            <div className="space-y-1.5">
+              <span className="inline-block text-[11px] font-bold font-mono uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                Request Sent Successfully
+              </span>
+              <h3 className="text-2xl font-black text-foreground font-display">
+                Demo Request Received!
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                Thank you, <strong className="text-foreground">{name || "Partner"}</strong>. We have received your demo request. Our team will review your agency profile and contact you directly via WhatsApp or phone at{" "}
+                <strong className="text-foreground font-mono">{phone}</strong> to schedule and conduct your live demo.
               </p>
             </div>
-            <Button
-              type="button"
-              onClick={onClose}
-              className="h-11 px-6 rounded-xl font-bold text-xs sm:text-sm bg-secondary text-foreground hover:bg-secondary/80"
-            >
-              Close Window
-            </Button>
+
+            {/* Recap Card */}
+            <div className="p-4 rounded-2xl bg-secondary/50 border border-border/70 text-left text-xs space-y-2">
+              <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">Contact</span>
+                <span className="font-semibold text-foreground">{name || "Broker"} · {email}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                <span className="text-muted-foreground">WhatsApp / Phone</span>
+                <span className="font-mono font-bold text-foreground">{phone}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Brokerage / Team</span>
+                <span className="font-semibold text-foreground">{agency || "Licensed Brokerage"} ({teamSize})</span>
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
+              <Button
+                type="button"
+                onClick={onClose}
+                className="w-full h-11 rounded-xl font-bold text-xs sm:text-sm bg-primary text-primary-foreground hover:bg-primary/90 shadow-md cursor-pointer"
+              >
+                Done
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleReset}
+                className="w-full h-11 rounded-xl font-bold text-xs bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                Book for another agency
+              </Button>
+            </div>
           </div>
-        ) : bookingMode === "callback" ? (
+        ) : (
+          /* ═══ CLEAN, DIRECT BOOKING FORM ═══ */
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-foreground block">Full Name</label>
+              <label className="text-xs font-bold text-foreground block">Full Name *</label>
               <input
                 type="text"
                 required
@@ -175,7 +184,7 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground block">Work Email</label>
+                <label className="text-xs font-bold text-foreground block">Work Email *</label>
                 <input
                   type="email"
                   required
@@ -187,7 +196,7 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground block">WhatsApp / Phone</label>
+                <label className="text-xs font-bold text-foreground block">WhatsApp / Phone *</label>
                 <input
                   type="tel"
                   required
@@ -206,7 +215,7 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
                   type="text"
                   value={agency}
                   onChange={(e) => setAgency(e.target.value)}
-                  placeholder="e.g. Luxury Realty Dubai"
+                  placeholder="e.g. Apex Luxury Properties"
                   className="w-full h-11 px-3.5 rounded-xl border border-border/80 bg-secondary/30 text-xs sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
               </div>
@@ -229,38 +238,16 @@ export function DemoBookingModal({ isOpen, onClose }: DemoBookingModalProps) {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl text-xs sm:text-sm font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-lg shadow-primary/20 mt-2 cursor-pointer"
+              className="w-full h-12 rounded-xl text-xs sm:text-sm font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-lg shadow-primary/20 mt-2 cursor-pointer transition-all active:scale-[0.99]"
             >
-              <span>{loading ? "Scheduling..." : "Request Live Demo Walkthrough ➔"}</span>
+              <span>{loading ? "Transmitting Request..." : "Book Demo Walkthrough ➔"}</span>
             </Button>
 
-            <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
+            <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5 pt-1">
               <ShieldCheck size={13} className="text-emerald-500" />
-              <span>Zero obligation · 100% confidential Dubai agency consultation</span>
+              <span>We will contact you via WhatsApp / phone to conduct your live demo</span>
             </p>
           </form>
-        ) : (
-          <div className="text-center py-6 space-y-4">
-            <div className="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto border border-primary/20">
-              <Calendar size={22} />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-base sm:text-lg font-bold text-foreground">
-                Book a Direct 15-Minute Zoom Call
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto">
-                Pick an available time on our live calendar with our Dubai operations team.
-              </p>
-            </div>
-            <a
-              href={calendlyUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl font-extrabold text-xs sm:text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
-            >
-              <span>Open Live Calendar ↗</span>
-            </a>
-          </div>
         )}
       </div>
     </div>

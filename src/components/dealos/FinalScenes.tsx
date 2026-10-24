@@ -169,68 +169,14 @@ export function CTA() {
         <GlassTiles compact />
         <div className="d-cta-content max-w-2xl mx-auto px-4">
           <span className="d-pill">
-            <Sparkles size={13} /> Exclusive Dubai Agency Access
+            <Sparkles size={13} className="text-amber-400" /> Exclusive Dubai Agency Access
           </span>
           <RevealText>Stop lead leakage./Own your deal data.</RevealText>
           <p className="mt-2 text-sm sm:text-base text-muted-foreground">
             Equip your property consultants with live Dubai inventory, instant WhatsApp dossiers, and real-time agency overwatch.
           </p>
 
-          {/* Booking Method Selector Tabs */}
-          <div className="mt-6 flex items-center justify-center gap-2 p-1 rounded-2xl bg-secondary/80 border border-border max-w-md mx-auto">
-            <button
-              type="button"
-              onClick={() => setBookingMode('form')}
-              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                bookingMode === 'form'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span>⚡ Quick Callback (30s)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setBookingMode('calendly')}
-              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                bookingMode === 'calendly'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Calendar size={13} />
-              <span>📅 Book Live Zoom</span>
-            </button>
-          </div>
-
-          {bookingMode === 'calendly' ? (
-            <div className="mt-4 flex flex-col items-center gap-4 text-center bg-card/95 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-border shadow-xl animate-in fade-in duration-200">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto border border-primary/20">
-                <Video size={22} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-foreground">Schedule 15-Min Executive Walkthrough</h3>
-                <p className="text-xs text-muted-foreground mt-1 max-w-md">
-                  Choose a convenient time on our live calendar. A DealOS Dubai Partner will demonstrate the live agency overwatch cockpit and inventory sync.
-                </p>
-              </div>
-
-              <a
-                href={calendlyUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-3.5 px-6 rounded-xl font-bold text-sm bg-primary hover:bg-primary/90 text-white shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
-              >
-                <Calendar size={16} />
-                <span>Open Live Calendar on Calendly ↗</span>
-              </a>
-
-              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                <Clock size={13} />
-                <span>Available Sunday – Thursday · 10:00 AM – 7:00 PM GST</span>
-              </div>
-            </div>
-          ) : !done ? (
+          {!done ? (
             <form className="mt-4 flex flex-col gap-3 text-left bg-card/95 backdrop-blur-md p-5 sm:p-6 rounded-2xl border border-border shadow-xl animate-in fade-in duration-200" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -320,108 +266,63 @@ export function CTA() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 w-full py-3 px-4 rounded-xl font-bold text-sm bg-primary hover:bg-primary/90 text-white shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                className="mt-2 w-full py-3.5 px-4 rounded-xl font-bold text-sm bg-primary hover:bg-primary/90 text-white shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-[0.99]"
               >
                 {loading ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" /> Transmitting Request…
+                    <Loader2 size={16} className="animate-spin" /> Submitting Request…
                   </>
                 ) : (
                   <>
-                    <span>Request Executive Agency Walkthrough</span>
+                    <span>Book Demo Walkthrough</span>
                     <ArrowRight size={16} />
                   </>
                 )}
               </button>
               <p className="text-center text-[11px] text-muted-foreground mt-1">
-                🔒 Data protected under UAE Federal Decree-Law No. 45/2021. No spam, ever.
+                🔒 Data protected under UAE Federal Decree-Law No. 45/2021. We will contact you for the demo.
               </p>
             </form>
           ) : (
-            <div className="mt-6 bg-card/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl border border-emerald-500/30 text-center space-y-4 shadow-xl animate-in fade-in zoom-in-95 duration-200">
-              <div className="size-12 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/30">
-                <Check size={24} />
+            <div className="mt-6 bg-card/95 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-emerald-500/30 text-center space-y-4 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+              <div className="size-16 rounded-full bg-emerald-500/10 text-emerald-500 mx-auto flex items-center justify-center border border-emerald-500/30 shadow-md">
+                <Check size={32} />
               </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-foreground">Access Request Confirmed!</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Thank you, <span className="font-semibold text-foreground">{name || 'Director'}</span>. Your priority request for <span className="font-semibold text-foreground">{agency || 'your agency'}</span> has been received by our Dubai desk.
+              <div className="space-y-1.5">
+                <span className="inline-block text-[11px] font-bold font-mono uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                  Request Sent Successfully
+                </span>
+                <h3 className="text-2xl font-black text-foreground font-display">
+                  Demo Request Received!
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                  Thank you, <strong className="text-foreground">{name || 'Partner'}</strong>. Your demo request for <strong className="text-foreground">{agency || 'your brokerage'}</strong> has been received by our Dubai desk. We will review your profile and contact you directly via WhatsApp or phone at <strong className="text-foreground font-mono">{phone}</strong> to conduct your live personalized demo.
                 </p>
               </div>
 
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSimulatedWaOpened(!simulatedWaOpened);
-                    toast.success("Founder WhatsApp preview opened (in-page simulation)");
-                  }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
-                >
-                  <MessageCircle size={16} />
-                  <span>{simulatedWaOpened ? "Hide WhatsApp Simulation" : "Preview Founder WhatsApp Desk"}</span>
-                </button>
-                <a
-                  href={calendlyUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all"
-                >
-                  <Calendar size={16} />
-                  <span>Or Pick Time on Calendly ↗</span>
-                </a>
+              {/* Recap Card */}
+              <div className="p-4 rounded-2xl bg-secondary/50 border border-border/70 text-left text-xs space-y-2 max-w-md mx-auto">
+                <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                  <span className="text-muted-foreground">Contact</span>
+                  <span className="font-semibold text-foreground">{name || "Broker"} · {email}</span>
+                </div>
+                <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                  <span className="text-muted-foreground">WhatsApp / Phone</span>
+                  <span className="font-mono font-bold text-foreground">{phone}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Brokerage / Role</span>
+                  <span className="font-semibold text-foreground">{agency || "Licensed Brokerage"} ({role === 'owner' ? 'Owner / MD' : 'Broker'})</span>
+                </div>
               </div>
 
-              {/* Dynamic In-Page Simulated WhatsApp Chat Bubble */}
-              <AnimatePresence>
-                {simulatedWaOpened && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                    className="p-4 rounded-2xl bg-slate-900 border border-emerald-500/30 text-xs text-white space-y-2 text-left shadow-2xl mt-3 animate-in fade-in"
-                  >
-                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-[11px] font-mono text-emerald-400 font-bold">
-                          Founder Direct WhatsApp Desk · +971 50 000 0000
-                        </span>
-                      </div>
-                      <span className="text-[10px] font-mono text-zinc-400">Dubai GST</span>
-                    </div>
-
-                    <div className="bg-[#005c4b]/35 p-3 rounded-xl border border-emerald-500/20 space-y-1.5">
-                      <p className="text-zinc-100 text-[11px] leading-relaxed">
-                        "Hello DealOS Team! I just submitted an agency access request for {email || 'my brokerage'} ({agency || 'Dubai Agency'}). Can you provide a walkthrough of the Owner Cockpit and Broker Desk?"
-                      </p>
-                      <div className="flex items-center justify-between pt-1">
-                        <span className="text-[10px] text-zinc-300">
-                          Status: In-Page Dynamic Effect
-                        </span>
-                        <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
-                          Simulated Delivery <CheckCheck size={14} className="text-emerald-400 inline" />
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1 text-[10px] text-zinc-400">
-                      <span>🔒 Simulated preview · Device WhatsApp app not opened</span>
-                      <span className="text-zinc-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[10px] font-mono">
-                        Viewable Draft (Clipboard writing disabled)
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className="pt-2">
+              <div className="pt-2 flex justify-center">
                 <button
                   type="button"
                   onClick={() => setDone(false)}
-                  className="text-xs text-muted-foreground hover:text-foreground underline cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl font-bold text-xs bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground cursor-pointer transition-all"
                 >
-                  Submit Another Request
+                  Submit another demo request
                 </button>
               </div>
             </div>
