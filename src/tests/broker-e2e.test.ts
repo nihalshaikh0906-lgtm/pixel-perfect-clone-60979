@@ -1287,9 +1287,9 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   });
 
   // ═══════════════════════════════════════════════════════════
-  // WORKFLOW 21: 7-DAY UNIVERSAL TESTING ACCOUNT (dealostesting.com)
+  // WORKFLOW 21: 10-DAY UNIVERSAL TESTING ACCOUNT (dealostesting.com)
   // ═══════════════════════════════════════════════════════════
-  describe("Workflow 21: 7-Day Universal Testing Account & Expiry Guarantee", () => {
+  describe("Workflow 21: 10-Day Universal Testing Account & Expiry Guarantee", () => {
     it("validates dealostesting.com credentials and matching password", async () => {
       const { isTestingAccount, isTestingAccountValid, TESTING_EMAIL, TESTING_PASSWORD, getTestingAccountRemainingDays } = await import("@/lib/testing-account");
       const { isWhitelistedAccount, isSubscriptionActive } = await import("@/components/auth/SubscriptionPaywall");
@@ -1303,14 +1303,14 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(TESTING_PASSWORD).toBe("Rko8786!");
       expect(isTestingAccountValid("dealostesting.com")).toBe(true);
       expect(getTestingAccountRemainingDays()).toBeGreaterThan(0);
-      expect(getTestingAccountRemainingDays()).toBeLessThanOrEqual(7);
+      expect(getTestingAccountRemainingDays()).toBeLessThanOrEqual(11);
 
       // Verify paywall whitelisting
       expect(isWhitelistedAccount("dealostesting.com")).toBe(true);
       expect(isSubscriptionActive("dealostesting.com")).toBe(true);
     });
 
-    it("verifies testing account automatically becomes invalid after 7 days", async () => {
+    it("verifies testing account automatically becomes invalid after 10 days", async () => {
       const { TESTING_EXPIRY_TIMESTAMP } = await import("@/lib/testing-account");
 
       function simulateAccountValidity(timestamp: number): boolean {
@@ -1325,8 +1325,8 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       const day5 = new Date("2026-10-30T12:00:00+04:00").getTime();
       expect(simulateAccountValidity(day5)).toBe(true);
 
-      // Invalid after 7-day expiration (Nov 2, 2026)
-      const postExpiry = new Date("2026-11-02T00:00:01+04:00").getTime();
+      // Invalid after 10-day expiration (Nov 6, 2026)
+      const postExpiry = new Date("2026-11-06T00:00:01+04:00").getTime();
       expect(simulateAccountValidity(postExpiry)).toBe(false);
     });
   });
@@ -1446,13 +1446,13 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   // ═══════════════════════════════════════════════════════════
   // WORKFLOW 24: 1-CLICK DEMO BUTTONS & 30+ SAMPLE DATA
   // ═══════════════════════════════════════════════════════════
-  describe("Workflow 24: 1-Click Demo As Broker & As Owner with 30+ Sample Data & Nov 2 Expiry Guarantee", () => {
-    it("verifies 1-click demo buttons remain active through November 2, 2026", async () => {
+  describe("Workflow 24: 1-Click Demo As Broker & As Owner with 30+ Sample Data & Nov 5 Expiry Guarantee", () => {
+    it("verifies 1-click demo buttons remain active through November 5, 2026", async () => {
       const { isDemoButtonsActive, getDemoButtonsRemainingDays, DEMO_BUTTONS_EXPIRY_TIMESTAMP } = await import("@/lib/testing-account");
       expect(isDemoButtonsActive()).toBe(true);
-      expect(DEMO_BUTTONS_EXPIRY_TIMESTAMP).toBe(new Date("2026-11-02T23:59:59+04:00").getTime());
+      expect(DEMO_BUTTONS_EXPIRY_TIMESTAMP).toBe(new Date("2026-11-05T23:59:59+04:00").getTime());
       expect(getDemoButtonsRemainingDays()).toBeGreaterThanOrEqual(1);
-      expect(getDemoButtonsRemainingDays()).toBeLessThanOrEqual(8);
+      expect(getDemoButtonsRemainingDays()).toBeLessThanOrEqual(11);
     });
 
     it("verifies both Broker and Owner have at least 30 rich sample items across all datasets", async () => {
@@ -1524,11 +1524,12 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   // WORKFLOW 26: REAL REGISTERED USER OTP LOGIN & DEMO SEPARATION
   // ═══════════════════════════════════════════════════════════
   describe("Workflow 26: Real Registered Account Separation & Free Access Period", () => {
-    it("confirms free access until 1 Nov 2026 is fully active without payment lock", () => {
+    it("confirms 10-day free access until 5 Nov 2026 is fully active without payment lock", () => {
       expect(isFreeAccessActive()).toBe(true);
       const expiryDate = new Date(FREE_ACCESS_UNTIL_TIMESTAMP);
       expect(expiryDate.getFullYear()).toBe(2026);
       expect(expiryDate.getMonth()).toBe(10); // November is index 10
+      expect(expiryDate.getDate()).toBe(5);
 
       // Regular tester email has full active subscription during free period
       expect(isSubscriptionActive("tester@agency.ae")).toBe(true);

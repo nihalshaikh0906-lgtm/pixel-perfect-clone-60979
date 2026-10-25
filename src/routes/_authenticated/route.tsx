@@ -105,11 +105,11 @@ function AuthedLayout() {
           <span className="text-center sm:text-left text-[11px] sm:text-xs">
             {isDemo ? (
               <>
-                <strong>✦ Demo Mode Active:</strong> 30+ Sample Items Loaded (<strong>{role === "company" ? "Owner Cockpit" : "Broker Desk"}</strong>) · Free Access until 1 Nov 2026
+                <strong>✦ Demo Mode Active:</strong> 30+ Sample Items Loaded (<strong>{role === "company" ? "Owner Cockpit" : "Broker Desk"}</strong>) · 10 Days Free Access until 5 Nov 2026
               </>
             ) : (
               <>
-                <strong>✦ Free Access Active:</strong> Full platform unlocked · Software will need paid subscription from 1 Nov 2026
+                <strong>✦ 10-Day Free Access Active:</strong> Full platform unlocked · Software will need paid subscription from 5 Nov 2026
               </>
             )}
           </span>

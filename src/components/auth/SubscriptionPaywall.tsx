@@ -16,13 +16,19 @@ export const WHITELISTED_TEST_EMAILS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FREE UNLIMITED PLATFORM ACCESS UNTIL NOVEMBER 1, 2026
-// Free for all users to test, review, and demo. Activates paywall after Nov 1.
+// FREE UNLIMITED PLATFORM ACCESS FOR 10 DAYS UNTIL NOVEMBER 5, 2026
+// Free for all users to test, review, and demo. Activates paywall after Nov 5.
 // ═══════════════════════════════════════════════════════════════════════════
-export const FREE_ACCESS_UNTIL_TIMESTAMP = new Date("2026-11-01T23:59:59+04:00").getTime();
+export const FREE_ACCESS_UNTIL_TIMESTAMP = new Date("2026-11-05T23:59:59+04:00").getTime();
 
 export function isFreeAccessActive(): boolean {
   return Date.now() <= FREE_ACCESS_UNTIL_TIMESTAMP;
+}
+
+export function getFreeAccessRemainingDays(): number {
+  const diff = FREE_ACCESS_UNTIL_TIMESTAMP - Date.now();
+  if (diff <= 0) return 0;
+  return Math.max(1, Math.min(10, Math.ceil(diff / (1000 * 60 * 60 * 24))));
 }
 
 export const OPEN_ACCESS_DEMO_7D = true;
@@ -43,7 +49,7 @@ export function isWhitelistedAccount(email?: string | null): boolean {
 }
 
 export function isSubscriptionActive(email?: string | null): boolean {
-  // Free for all users without payment until 1 Nov 2026
+  // Free for all users without payment until 5 Nov 2026 (10 Days Free Access)
   if (isFreeAccessActive()) return true;
   if (OPEN_ACCESS_DEMO_24H) return true;
   if (isWhitelistedAccount(email)) return true;

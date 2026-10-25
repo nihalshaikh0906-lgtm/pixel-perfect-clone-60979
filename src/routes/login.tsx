@@ -345,7 +345,7 @@ function LoginPage() {
         </div>
       </div>
 
-      {/* 2 Primary Demo Buttons (Active through Nov 2, 2026) */}
+      {/* 2 Primary Demo Buttons (Active 10 Days through Nov 5, 2026) */}
       <div className="space-y-3 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Button 1: Demo as Broker */}
@@ -397,7 +397,7 @@ function LoginPage() {
 
         <div className="text-center">
           <span className="text-[11px] font-semibold text-muted-foreground">
-            ✦ 1-Click Access Active · 30+ Sample Items Loaded · Valid through Nov 2, 2026
+            ✦ 10 Days Free Access Active · 30+ Sample Items Loaded · Valid through Nov 5, 2026
           </span>
         </div>
       </div>
@@ -499,7 +499,7 @@ function LoginPage() {
 
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                   <span>✦ Everyday login with emailed 6-digit code</span>
-                  <span className="text-emerald-500 font-semibold">Free until 1 Nov</span>
+                  <span className="text-emerald-500 font-semibold">10 Days Free until 5 Nov</span>
                 </div>
 
                 <button
@@ -649,7 +649,7 @@ function LoginPage() {
       </div>
 
       <div className="au-alt mt-4">
-        <span>New agency? <Link to="/signup" className="au-link">Register new account (Free until 1 Nov 2026)</Link></span>
+        <span>New agency? <Link to="/signup" className="au-link">Register new account (10 Days Free until 5 Nov 2026)</Link></span>
       </div>
 
       <div className="text-center text-[11px] text-muted-foreground/80 mt-6 pt-4 border-t border-border/50">

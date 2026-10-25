@@ -187,7 +187,7 @@ export function VerifyingPage() {
       localStorage.setItem("dealos_role", selectedRole === "owner" ? "company" : "agent");
     }
 
-    toast.success("✓ Identity Verified! Free Access Active until 1 Nov 2026", {
+    toast.success("✓ Identity Verified! 10 Days Free Access Active until 5 Nov 2026", {
       description: `Launching your ${selectedRole === "owner" ? "Executive Owner Overwatch" : "Broker Cockpit"}...`,
       duration: 3000,
     });
