@@ -192,45 +192,51 @@ export function Pricing() {
           {planType === 'broker' && (
             <div className="pt-3">
               <div
-                className="d-pr-toggle inline-grid grid-cols-4 p-1.5 rounded-full bg-secondary/80 border border-border shadow-sm max-w-xl w-full mx-auto relative"
+                className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-1.5 p-1.5 rounded-2xl sm:rounded-full bg-secondary/80 border border-border shadow-sm max-w-xl w-full mx-auto relative"
                 role="radiogroup"
                 aria-label="Billing period"
-                style={{ ['--i' as string]: idx }}
               >
-                <span className="d-pr-indicator" aria-hidden />
-                {PLANS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={p.id === id}
-                    className={`flex flex-col items-center justify-center py-2 px-3 rounded-full text-xs font-bold transition-all relative z-10 cursor-pointer ${
-                      p.id === id ? 'active text-white' : 'text-foreground hover:text-foreground/80'
-                    }`}
-                    onClick={() => setId(p.id)}
-                  >
-                    <span>{p.label}</span>
-                    {p.toggleBadge ? (
-                      <small className={`text-[10px] font-mono font-bold mt-0.5 ${p.id === id ? 'text-white' : 'text-amber-500'}`}>
-                        {p.toggleBadge}
+                {PLANS.map((p) => {
+                  const discount = Math.round((1 - p.price / p.originalPrice) * 100);
+                  const isSelected = p.id === id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      className={`flex flex-col items-center justify-center py-2.5 px-3 rounded-xl sm:rounded-full text-xs font-bold transition-all relative z-10 cursor-pointer min-h-[46px] ${
+                        isSelected
+                          ? 'bg-primary text-primary-foreground shadow-md'
+                          : 'text-foreground hover:bg-secondary/70'
+                      }`}
+                      onClick={() => setId(p.id)}
+                    >
+                      <span>{p.label}</span>
+                      <small className={`text-[10px] font-mono font-bold mt-0.5 ${isSelected ? 'text-white/90' : 'text-emerald-500'}`}>
+                        −{discount}%
                       </small>
-                    ) : (
-                      <small className="text-[10px] opacity-0">_</small>
-                    )}
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Mobile portrait quick login link */}
-              <div className="pt-3 sm:hidden flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                <span>Already have an account?</span>
+              <div className="pt-3 sm:hidden flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <span>Already have a license?</span>
                 <Link
                   to="/login"
                   search={{ mode: undefined }}
-                  className="font-bold text-amber-500 hover:text-amber-400 inline-flex items-center gap-1 underline underline-offset-4"
+                  className="font-bold text-primary hover:underline inline-flex items-center gap-1"
                 >
-                  <span>Log In to Workspace</span>
-                  <span>↗</span>
+                  <span>Sign In ↗</span>
+                </Link>
+                <span>·</span>
+                <Link
+                  to="/demo"
+                  className="font-bold text-emerald-400 hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Try Live Demo ⚡</span>
                 </Link>
               </div>
             </div>
@@ -241,31 +247,31 @@ export function Pricing() {
         {/* VIEW A: INDIVIDUAL BROKER PRO PLAN                          */}
         {/* ══════════════════════════════════════════════════════════ */}
         {planType === 'broker' && (
-          <div className="mt-8 rounded-3xl border border-border/80 bg-card/95 backdrop-blur-2xl shadow-2xl p-6 sm:p-10 lg:p-12 relative overflow-hidden">
+          <div className="mt-8 rounded-3xl sm:rounded-[36px] border border-border/80 bg-card/95 backdrop-blur-2xl shadow-2xl p-6 sm:p-10 lg:p-12 relative overflow-hidden">
             {/* Top subtle ambient gradient accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-primary to-emerald-400" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-emerald-400 to-primary" />
 
             {/* Dynamic Badge reflecting the active plan's discount */}
-            <div className="absolute top-4 right-6 sm:top-6 sm:right-8">
+            <div className="absolute top-4 right-4 sm:top-6 sm:right-8">
               <span
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-extrabold uppercase tracking-wider shadow-md ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-mono font-extrabold uppercase tracking-wider shadow-sm ${
                   plan.id === 'annual'
-                    ? 'bg-amber-500 text-black'
+                    ? 'bg-primary text-primary-foreground shadow-primary/20'
                     : plan.id === 'semiannual'
-                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                    ? 'bg-primary/15 text-primary border border-primary/30'
                     : plan.id === 'quarterly'
-                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
-                    : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                    ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+                    : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                 }`}
               >
                 <Sparkles size={12} />
                 {plan.id === 'annual'
-                  ? '★ Best Value · 54% Off'
+                  ? `★ Best Value · ${discountPercent}% Off`
                   : plan.id === 'semiannual'
-                  ? '★ Semiannual Saver · 47% Off'
+                  ? `★ Semiannual Saver · ${discountPercent}% Off`
                   : plan.id === 'quarterly'
-                  ? '★ Quarterly Pick · 42% Off'
-                  : '★ Launch Rate · 35% Off'}
+                  ? `★ Quarterly Pick · ${discountPercent}% Off`
+                  : `★ Launch Rate · ${discountPercent}% Off`}
               </span>
             </div>
 
@@ -274,10 +280,10 @@ export function Pricing() {
               <div className="lg:col-span-5 space-y-6">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
                       Individual Broker License
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                       Instant Access
                     </span>
                   </div>
@@ -290,17 +296,17 @@ export function Pricing() {
                 </div>
 
                 {/* Price Display */}
-                <div className="p-5 rounded-2xl bg-secondary/40 border border-border/60 space-y-2">
-                  <div className="flex items-baseline gap-2">
+                <div className="p-5 sm:p-6 rounded-2xl bg-secondary/50 border border-border/70 space-y-2.5">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <s className="text-sm font-semibold text-muted-foreground line-through">
                       {aedPrice(plan.originalPrice)}
                     </s>
                     <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                      Save {aedPrice(savingsAmount)} · {discountPercent}% off
+                      Save {discountPercent}% · {aedPrice(savingsAmount)}
                     </span>
                   </div>
 
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-baseline gap-2 flex-wrap">
                     <strong className="text-4xl sm:text-5xl font-black text-foreground font-display tracking-tight">
                       <RollingPrice value={plan.price} />
                     </strong>
@@ -321,11 +327,11 @@ export function Pricing() {
                   </p>
                 </div>
 
-                {/* CTA Button */}
-                <div className="space-y-2.5">
+                {/* CTA Buttons */}
+                <div className="space-y-3">
                   <Button
                     asChild
-                    className="w-full h-12 rounded-xl text-sm font-extrabold bg-gradient-to-r from-primary to-primary/90 hover:opacity-95 text-primary-foreground shadow-lg shadow-primary/25 gap-2 transition-all group"
+                    className="w-full h-12 rounded-xl text-sm font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 gap-2 transition-all group"
                   >
                     <Link to="/signup" search={{ plan: plan.id }}>
                       <span>Get Started Now</span>
@@ -333,25 +339,37 @@ export function Pricing() {
                     </Link>
                   </Button>
 
-                  {/* Mobile & Portrait Member Login Button */}
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full h-11 rounded-xl text-xs font-bold border-amber-500/40 bg-secondary/60 hover:bg-secondary text-foreground hover:border-amber-400 hover:text-amber-400 gap-2 transition-all shadow-xs"
-                  >
-                    <Link to="/login" search={{ mode: undefined }}>
-                      <LogIn size={15} className="text-amber-500" />
-                      <span>Already have a license? Sign In to DealOS ↗</span>
-                    </Link>
-                  </Button>
+                  {/* Secondary Member Links & Demo Bypass */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full h-10 rounded-xl text-xs font-bold border-border bg-secondary/60 hover:bg-secondary text-foreground gap-1.5 transition-all shadow-xs"
+                    >
+                      <Link to="/login" search={{ mode: undefined }}>
+                        <LogIn size={14} className="text-primary" />
+                        <span>Sign In ↗</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full h-10 rounded-xl text-xs font-bold border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 gap-1.5 transition-all shadow-xs"
+                    >
+                      <Link to="/demo">
+                        <Zap size={14} className="text-emerald-400" />
+                        <span>Try Live Demo ⚡</span>
+                      </Link>
+                    </Button>
+                  </div>
 
                   <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
                     <ShieldCheck size={13} className="text-emerald-500" />
-                    <span>Instant digital activation · Cancel anytime</span>
+                    <span>Instant digital activation · Plus 5% UAE VAT · Cancel anytime</span>
                   </p>
                 </div>
 
-                {/* Sleek Payment Options Trigger (Clean, Uncluttered, Opens Dedicated Modal) */}
+                {/* Sleek Payment Options Trigger */}
                 <div className="pt-3 border-t border-border/70 space-y-2.5">
                   <button
                     type="button"
@@ -366,15 +384,15 @@ export function Pricing() {
                         <div className="text-xs sm:text-[13px] font-bold text-foreground flex items-center gap-2">
                           <span>Accepted Payment Methods</span>
                           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-                            Central Bank 3D Secure
+                            3D Secure
                           </span>
                         </div>
                         <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                          Cards (Visa, MC, AMEX), Apple/Google Pay, UAE Bank Wire
+                          Cards (Visa, MC, AMEX), Apple/Google Pay, Lemon Squeezy, UAE Wire
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-xs font-bold text-amber-500 group-hover:translate-x-0.5 transition-transform shrink-0">
+                    <div className="flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-0.5 transition-transform shrink-0">
                       <span>View</span>
                       <ChevronRight size={15} />
                     </div>

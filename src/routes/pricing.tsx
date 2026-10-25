@@ -138,11 +138,21 @@ function PricingPage() {
             asChild
             size="sm"
             variant="outline"
-            className="hidden sm:inline-flex rounded-full border-amber-500/40 bg-secondary/80 px-4 text-xs font-bold text-amber-400 hover:bg-amber-500/10 hover:border-amber-400 gap-1.5 shadow-xs"
+            className="hidden sm:inline-flex rounded-full border-border bg-secondary/80 px-4 text-xs font-bold text-foreground hover:bg-secondary gap-1.5 shadow-xs"
           >
             <Link to="/login" search={{ mode: undefined }}>
-              <LogIn size={13} />
+              <LogIn size={13} className="text-primary" />
               <span>Sign In ↗</span>
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            size="sm"
+            className="inline-flex rounded-full bg-emerald-500 hover:bg-emerald-600 text-white px-4 text-xs font-extrabold gap-1.5 shadow-sm"
+          >
+            <Link to="/demo">
+              <span>Try Live Demo ⚡</span>
             </Link>
           </Button>
         </div>
@@ -160,12 +170,12 @@ function PricingPage() {
                     key={p.id}
                     className={`relative flex flex-col rounded-2xl border bg-card/90 p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 ${
                       p.highlighted
-                        ? "border-amber-500 ring-2 ring-amber-500/20 shadow-xl"
+                        ? "border-primary ring-2 ring-primary/20 shadow-xl"
                         : "border-border/80"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-400">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
                         {p.label} Plan
                       </p>
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
@@ -186,26 +196,26 @@ function PricingPage() {
                       {p.months > 1 ? `${aedPrice(p.perMonth)} / month` : "Flexible monthly billing"}
                     </p>
                     <p className="mt-5 text-[13px] text-muted-foreground">{p.savingLabel}</p>
-                    <ul className="mt-5 flex-1 space-y-2.5 text-[13px] text-zinc-300">
+                    <ul className="mt-5 flex-1 space-y-2.5 text-[13px] text-muted-foreground">
                       <li className="flex gap-2">
-                        <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                        <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
                         <span>34,850+ verified units &amp; 1,355+ projects</span>
                       </li>
                       <li className="flex gap-2">
-                        <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                        <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
                         <span>DLD transaction metrics &amp; yield maps</span>
                       </li>
                       <li className="flex gap-2">
-                        <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                        <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
                         <span>Instant 1-tap WhatsApp pitch scripts</span>
                       </li>
                       <li className="flex gap-2">
-                        <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                        <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
                         <span>1-click client PDF dossiers with your logo</span>
                       </li>
                       {p.months >= 6 && (
-                        <li className="flex gap-2 font-semibold text-white">
-                          <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400" />
+                        <li className="flex gap-2 font-semibold text-foreground">
+                          <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
                           <span>Priority concierge support &amp; training</span>
                         </li>
                       )}
@@ -215,8 +225,8 @@ function PricingPage() {
                       search={{ plan: p.id }}
                       className={`mt-6 rounded-xl py-3 px-4 text-center text-[11px] font-bold uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-1.5 ${
                         p.highlighted
-                          ? "bg-amber-400 text-black hover:bg-amber-300 shadow-md"
-                          : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+                          : "bg-secondary text-foreground hover:bg-secondary/80 border border-border"
                       }`}
                     >
                       <span>{p.buttonLabel}</span>

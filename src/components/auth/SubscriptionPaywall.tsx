@@ -16,10 +16,10 @@ export const WHITELISTED_TEST_EMAILS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// OPTION 1: Real-workspace protections remain active.
-// Bypass occurs strictly via "Try Live Demo" (dealos_demo_mode = "true").
+// OPEN DEMO ACCESS: Demo button gives everyone access till user says stop.
+// Set to true: Active open access. Set to false: Re-locks payment firewall.
 // ═══════════════════════════════════════════════════════════════════════════
-export const OPEN_ACCESS_DEMO_24H = false;
+export const OPEN_ACCESS_DEMO_24H = true;
 
 export function isWhitelistedAccount(email?: string | null): boolean {
   if (!email) return false;

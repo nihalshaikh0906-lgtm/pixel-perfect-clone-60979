@@ -15,12 +15,16 @@ import { DemoBookingModal } from './DemoBookingModal';
 import { Magnetic } from './primitives';
 import { Sparkles, Video } from 'lucide-react';
 
+import { CockpitDemoSection, SeeTheBrokerHeader } from './CockpitDemoSection';
+
 const scenes=['Hero','Product','Insights','Integrations','Tools','Workflow','Modes','Proof','Pricing','CTA'];
 
 const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: () => void }) {
   return (
     <>
       <Hero />
+      <CockpitDemoSection />
+      <SeeTheBrokerHeader />
       <LiveDubaiPulse />
       <InteractiveDeviceShowcase />
 
