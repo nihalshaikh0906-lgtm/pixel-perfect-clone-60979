@@ -65,53 +65,39 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
         <aside className="au-panel au-panel-executive" aria-label="DealOS Platform">
           <div className="au-panel-top">
             <Link to="/welcome" className="au-panel-brand" aria-label="DealOS home">
-              <LogoMark size={64} variant="dark" />
+              <LogoMark size={56} variant="dark" />
               <div>
                 <span className="au-brand-title">DealOS</span>
-                <span className="au-brand-tag">Dubai Real Estate Operating System</span>
+                <span className="au-brand-tag">Institutional Real Estate Platform</span>
               </div>
             </Link>
           </div>
 
           <div className="au-panel-body">
-            <h2 className="au-exec-headline">
-              The operating system for <span className="au-exec-gold">Dubai real estate</span>.
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-mono font-bold mb-4">
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>SECURE ACCESS PORTAL</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
+              Institutional Gateway for <span className="text-amber-400">Dubai Real Estate</span>.
             </h2>
-            <p className="au-exec-desc">
-              Unifying 1,355+ off-plan developments, DLD escrow registries, investor dossiers, and automated unified contracts.
+            <p className="text-xs sm:text-sm text-zinc-400 mt-2 leading-relaxed">
+              Direct access to live agency pipeline, DLD escrow verification, investor lead triage, and executive commission governance.
             </p>
 
-            <div className="au-exec-features">
-              <div className="au-exec-feat">
-                <span className="au-feat-icon">🏛️</span>
-                <div>
-                  <b>1,355+ Verified UAE Off-Plan Projects</b>
-                  <p>Direct DLD escrow status, live unit tiers, and official brochure specs.</p>
-                </div>
+            <div className="mt-8 space-y-3 border-t border-zinc-800/80 pt-6">
+              <div className="flex items-center justify-between text-xs text-zinc-400 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                <span className="font-semibold text-zinc-300">Live DLD Inventory</span>
+                <span className="font-mono font-bold text-emerald-400">34,850+ Units</span>
               </div>
-
-              <div className="au-exec-feat">
-                <span className="au-feat-icon">🎯</span>
-                <div>
-                  <b>AI Lead Dossier &amp; Matching</b>
-                  <p>Full-screen investor profiles with direct unit matching and WhatsApp copilot.</p>
-                </div>
+              <div className="flex items-center justify-between text-xs text-zinc-400 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                <span className="font-semibold text-zinc-300">Escrow Security</span>
+                <span className="font-mono font-bold text-emerald-400">RERA Verified</span>
               </div>
-
-              <div className="au-exec-feat">
-                <span className="au-feat-icon">📜</span>
-                <div>
-                  <b>DLD Unified Form A / B / F &amp; Ejari</b>
-                  <p>Compliant digital contracts and automated legal tenancy generation.</p>
-                </div>
-              </div>
-
-              <div className="au-exec-feat">
-                <span className="au-feat-icon">💼</span>
-                <div>
-                  <b>Developer Commission Drawdown</b>
-                  <p>Real-time voucher milestone tracking and institutional payout audit.</p>
-                </div>
+              <div className="flex items-center justify-between text-xs text-zinc-400 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                <span className="font-semibold text-zinc-300">Active Testrun Mode</span>
+                <span className="font-mono font-bold text-amber-400">Open Access Active</span>
               </div>
             </div>
           </div>

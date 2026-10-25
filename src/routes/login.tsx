@@ -274,138 +274,142 @@ function LoginPage() {
 
       {/* 2 Primary Demo Buttons (Active until Nov 2, 2026) */}
       <div className="space-y-3 mb-6">
-        <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-left">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="text-xs font-bold text-emerald-400">
-              ✦ Instant 1-Click Access Active
-            </span>
-          </div>
-          <span className="text-[11px] font-semibold text-emerald-400/90">
-            Valid through Nov 2, 2026
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Button 1: Demo as Broker */}
+          <button
+            type="button"
+            onClick={() => void loginAsDemo("agent")}
+            disabled={busy}
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-primary/10 to-emerald-500/10 border-2 border-emerald-500/40 hover:border-emerald-500 hover:from-emerald-500/25 transition-all shadow-sm group cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl">👤</span>
+              <div className="text-left">
+                <div className="text-sm font-extrabold text-foreground group-hover:text-emerald-400 transition-colors">
+                  Demo as Broker
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  Instant Broker Desk
+                </div>
+              </div>
+            </div>
+            <div className="size-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              {busy ? <Loader2 size={14} className="au-spin" /> : <ArrowRight size={14} />}
+            </div>
+          </button>
+
+          {/* Button 2: Demo as Owner */}
+          <button
+            type="button"
+            onClick={() => void loginAsDemo("company")}
+            disabled={busy}
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-primary/10 to-amber-500/10 border-2 border-amber-500/40 hover:border-amber-500 hover:from-amber-500/25 transition-all shadow-sm group cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl">🏢</span>
+              <div className="text-left">
+                <div className="text-sm font-extrabold text-foreground group-hover:text-amber-400 transition-colors">
+                  Demo as Owner
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  Executive Cockpit
+                </div>
+              </div>
+            </div>
+            <div className="size-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+              {busy ? <Loader2 size={14} className="au-spin" /> : <ArrowRight size={14} />}
+            </div>
+          </button>
+        </div>
+
+        <div className="text-center">
+          <span className="text-[11px] font-semibold text-muted-foreground">
+            ✦ 1-Click Access Active · 30+ Sample Items Loaded · Valid through Nov 2, 2026
           </span>
         </div>
-
-        {/* Button 1: Demo as Broker */}
-        <button
-          type="button"
-          onClick={() => void loginAsDemo("agent")}
-          disabled={busy}
-          className="w-full text-left p-4 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-primary/10 to-emerald-500/10 border-2 border-emerald-500/40 hover:border-emerald-500 hover:from-emerald-500/25 hover:to-emerald-500/15 transition-all shadow-md group cursor-pointer relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">👤</span>
-                <span className="text-base font-extrabold text-foreground group-hover:text-emerald-400 transition-colors">
-                  Demo as Broker
-                </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  1-Click Entry
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed m-0">
-                Loaded with <strong>1,000+ Dubai Leads</strong>, <strong>32 Active Deals</strong>, <strong>32 Luxury Properties</strong>, and live AI Copilot.
-              </p>
-            </div>
-            <div className="size-9 rounded-xl bg-emerald-500/20 group-hover:bg-emerald-500 text-emerald-400 group-hover:text-black flex items-center justify-center shrink-0 transition-all">
-              {busy ? <Loader2 size={18} className="au-spin" /> : <ArrowRight size={18} />}
-            </div>
-          </div>
-        </button>
-
-        {/* Button 2: Demo as Owner */}
-        <button
-          type="button"
-          onClick={() => void loginAsDemo("company")}
-          disabled={busy}
-          className="w-full text-left p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-primary/10 to-amber-500/10 border-2 border-amber-500/40 hover:border-amber-500 hover:from-amber-500/25 hover:to-amber-500/15 transition-all shadow-md group cursor-pointer relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">🏢</span>
-                <span className="text-base font-extrabold text-foreground group-hover:text-amber-400 transition-colors">
-                  Demo as Owner
-                </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  1-Click Entry
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed m-0">
-                Loaded with <strong>32 Licensed Brokers Roster</strong>, <strong>32 Live Closed Deals</strong>, Escrow Payouts &amp; Executive Overwatch.
-              </p>
-            </div>
-            <div className="size-9 rounded-xl bg-amber-500/20 group-hover:bg-amber-500 text-amber-400 group-hover:text-black flex items-center justify-center shrink-0 transition-all">
-              {busy ? <Loader2 size={18} className="au-spin" /> : <ArrowRight size={18} />}
-            </div>
-          </div>
-        </button>
       </div>
 
-      {/* Discreet Accordion for Standard Email Sign-In */}
-      <div className="pt-2 border-t border-border/50 text-center">
-        <button
-          type="button"
-          onClick={() => setShowEmailLogin((v) => !v)}
-          className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 transition-colors cursor-pointer py-1"
-        >
-          <span>{showEmailLogin ? "Hide email sign-in" : "Have agency email credentials? Sign in here"}</span>
-          {showEmailLogin ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </button>
-      </div>
-
-      {showEmailLogin && (
-        <div className="mt-4 space-y-4">
-          <div className="au-roles" role="radiogroup" aria-label="Login type">
-            {([
-              ["agent", "👤 Licensed Broker", "Agent workspace"],
-              ["company", "🏢 Agency Owner", "Executive cockpit"]
-            ] as const).map(([k, t, d]) => (
-              <button
-                key={k}
-                type="button"
-                role="radio"
-                aria-checked={role === k}
-                className={`au-role ${role === k ? "on" : ""}`}
-                onClick={() => {
-                  setRole(k);
-                  setStoredRole(k);
-                  setMismatch(null);
-                }}
-              >
-                <b>{t}</b>
-                <small>{d}</small>
-              </button>
-            ))}
-          </div>
-
-          <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
-            <Field
-              id="email" label="Work Email Address" type="email" autoComplete="email" placeholder={role === "company" ? "director@agency.ae" : "broker@agency.ae"}
-              value={email} onChange={(v) => { setEmail(v); setError(null); }} disabled={busy}
-              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-              ok={touched.email && emailOk}
-              error={touched.email && email && !emailOk ? "That doesn’t look like an email address." : null}
-            />
-            <PasswordField
-              id="password" label="Password" autoComplete="current-password" placeholder="••••••••"
-              value={password} onChange={(v) => { setPassword(v); setError(null); }} disabled={busy}
-              onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-              error={touched.password && password && !pwOk ? "Password must be at least 8 characters." : null}
-            />
-            <div className="au-row">
-              <CheckBox id="remember" checked={remember} onChange={setRem}>Remember this browser</CheckBox>
-              <button type="button" className="au-link" aria-expanded={forgot} onClick={() => { setForgot((v) => !v); setResetEmail((r) => r || email); }}>Forgot password?</button>
-            </div>
-
-            <button type="submit" className={`au-btn au-btn-ink ${state === "success" ? "success" : ""}`} disabled={!emailOk || !pwOk || busy}>
-              {state === "loading" ? <><Loader2 size={18} className="au-spin" /> Authenticating…</> : state === "success" ? <><Check size={18} /> Welcome back</> : `Sign In as ${role === "company" ? "Company Owner" : "Broker Agent"}`}
-            </button>
-            {error ? <p className="au-msg bad" role="alert" style={{ margin: 0 }}>{error}</p> : null}
-          </form>
+      {/* Full Institutional Login Form */}
+      <div className="space-y-4 pt-4 border-t border-border/60">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-foreground">Sign In to Existing Account</span>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail("dealostesting.com");
+              setPassword("Rko8786!");
+              toast.info("Filled universal testing account credentials");
+            }}
+            className="text-[11px] font-semibold text-primary hover:underline cursor-pointer"
+          >
+            ⚡ Quick-fill 7-day testrun
+          </button>
         </div>
-      )}
+
+        <div className="au-roles" role="radiogroup" aria-label="Login type">
+          {([
+            ["agent", "👤 Licensed Broker", "Agent workspace"],
+            ["company", "🏢 Agency Owner", "Executive cockpit"]
+          ] as const).map(([k, t, d]) => (
+            <button
+              key={k}
+              type="button"
+              role="radio"
+              aria-checked={role === k}
+              className={`au-role ${role === k ? "on" : ""}`}
+              onClick={() => {
+                setRole(k);
+                setStoredRole(k);
+                setMismatch(null);
+              }}
+            >
+              <b>{t}</b>
+              <small>{d}</small>
+            </button>
+          ))}
+        </div>
+
+        <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
+          <Field
+            id="email" label="Work Email Address" type="email" autoComplete="email" placeholder={role === "company" ? "director@agency.ae" : "broker@agency.ae"}
+            value={email} onChange={(v) => { setEmail(v); setError(null); }} disabled={busy}
+            onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+            ok={touched.email && emailOk}
+            error={touched.email && email && !emailOk ? "That doesn’t look like an email address." : null}
+          />
+          <PasswordField
+            id="password" label="Password" autoComplete="current-password" placeholder="••••••••"
+            value={password} onChange={(v) => { setPassword(v); setError(null); }} disabled={busy}
+            onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+            error={touched.password && password && !pwOk ? "Password must be at least 8 characters." : null}
+          />
+          <div className="au-row">
+            <CheckBox id="remember" checked={remember} onChange={setRem}>Remember this browser</CheckBox>
+            <button type="button" className="au-link" aria-expanded={forgot} onClick={() => { setForgot((v) => !v); setResetEmail((r) => r || email); }}>Forgot password?</button>
+          </div>
+
+          {forgot ? (
+            <div className="au-forgot au-shake">
+              {resetState === "sent" ? (
+                <p className="au-msg good" role="status">Check your inbox — we sent a password reset link to {resetEmail.trim()}.</p>
+              ) : (
+                <>
+                  <b>Reset your password</b>
+                  <Field id="reset-email" label="Email" type="email" autoComplete="email" placeholder="you@agency.ae" value={resetEmail} onChange={setResetEmail} error={resetErr} disabled={!forgot} />
+                  <button type="button" className="au-btn au-btn-line" onClick={() => void sendReset()} disabled={!forgot || resetState === "loading"}>
+                    {resetState === "loading" ? <Loader2 size={18} className="au-spin" /> : null} Send reset link
+                  </button>
+                </>
+              )}
+            </div>
+          ) : null}
+
+          <button type="submit" className={`au-btn au-btn-ink ${state === "success" ? "success" : ""}`} disabled={!emailOk || !pwOk || busy}>
+            {state === "loading" ? <><Loader2 size={18} className="au-spin" /> Authenticating…</> : state === "success" ? <><Check size={18} /> Welcome back</> : `Sign In as ${role === "company" ? "Company Owner" : "Broker Agent"}`}
+          </button>
+          {error ? <p className="au-msg bad" role="alert" style={{ margin: 0 }}>{error}</p> : null}
+        </form>
+      </div>
 
       <div className="text-center text-[11px] text-muted-foreground/80 mt-6 pt-4 border-t border-border/50">
         Protected by Dubai Land Department (DLD) &amp; RERA Broker Compliance Protocol · Valid through Nov 2, 2026
