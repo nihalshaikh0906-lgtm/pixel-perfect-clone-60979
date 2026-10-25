@@ -273,7 +273,25 @@ html body .rv,
   --sand: #E6E9F5;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 60fps GPU acceleration layer hints */
+.dealos,
+.d-scene,
+.d-navbar,
+.d-hero-dashboard,
+.d-hero-sticky {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.d-navbar {
+  will-change: height, background-color, transform;
+}
 :root { --bronze: #2A45C8; }
 :root { --gold: #2F6BFF; }
 
