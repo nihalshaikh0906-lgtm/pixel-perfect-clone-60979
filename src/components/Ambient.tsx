@@ -7,11 +7,11 @@ export function Ambient() {
     <>
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div
-          className="d-ambient-orb-1 absolute -left-40 -top-40 size-[650px] rounded-full blur-3xl will-change-[transform,opacity]"
+          className="d-ambient-orb-1 absolute -left-40 -top-40 size-[650px] rounded-full blur-3xl transform-gpu will-change-[transform,opacity]"
           style={{ background: "var(--orb-1)", animation: "orb-drift-a 14s ease-in-out infinite alternate" }}
         />
         <div
-          className="d-ambient-orb-2 absolute -bottom-40 -right-40 size-[650px] rounded-full blur-3xl will-change-[transform,opacity]"
+          className="d-ambient-orb-2 absolute -bottom-40 -right-40 size-[650px] rounded-full blur-3xl transform-gpu will-change-[transform,opacity]"
           style={{ background: "var(--orb-2)", animation: "orb-drift-b 16s ease-in-out infinite alternate" }}
         />
         <div className="absolute inset-0" style={{ backgroundImage: NOISE, opacity: 0.025 }} />

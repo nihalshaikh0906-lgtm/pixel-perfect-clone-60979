@@ -177,15 +177,15 @@
 }
 
 @keyframes orb-drift-a {
-  0% { transform: translate(0, 0) scale(1); opacity: 0.65; }
-  50% { transform: translate(12vw, 8vh) scale(1.15); opacity: 0.88; }
-  100% { transform: translate(6vw, 15vh) scale(1.05); opacity: 0.72; }
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.65; }
+  50% { transform: translate3d(12vw, 8vh, 0) scale(1.15); opacity: 0.88; }
+  100% { transform: translate3d(6vw, 15vh, 0) scale(1.05); opacity: 0.72; }
 }
 
 @keyframes orb-drift-b {
-  0% { transform: translate(0, 0) scale(1); opacity: 0.55; }
-  50% { transform: translate(-10vw, -8vh) scale(1.18); opacity: 0.82; }
-  100% { transform: translate(-5vw, -14vh) scale(1.08); opacity: 0.62; }
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.55; }
+  50% { transform: translate3d(-10vw, -8vh, 0) scale(1.18); opacity: 0.82; }
+  100% { transform: translate3d(-5vw, -14vh, 0) scale(1.08); opacity: 0.62; }
 }
 
 /* Universal selector for background glow orbs across all landing and workspace layouts */
@@ -194,6 +194,8 @@ div[style*="var(--orb-2)"],
 .d-ambient-orb-1,
 .d-ambient-orb-2 {
   will-change: transform, opacity !important;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   pointer-events: none !important;
 }
 

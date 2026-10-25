@@ -124,6 +124,8 @@ function Page() {
   const [buyerName, setBuyerName] = useState("");
   const [buyerPhone, setBuyerPhone] = useState("");
 
+  const overviewNarrative = useMemo(() => cleanOverviewText(data?.project?.overview), [data?.project?.overview]);
+
   if (!data) return null;
   const project = data.project;
   const startingPrice = data.units.find((u) => u.price_aed != null)?.price_aed ?? null;
@@ -181,8 +183,6 @@ function Page() {
     bedFilter === "2" ? twoBedUnits : threeBedUnits;
 
   const amenities = [...new Set((project.amenities ?? []).map((a) => (a ?? "").trim()).filter(Boolean))];
-
-  const overviewNarrative = useMemo(() => cleanOverviewText(project.overview), [project.overview]);
 
   const handleShareWhatsApp = (unit?: UnitRow) => {
     const unitPrice = unit?.price_aed ?? startingPrice;

@@ -259,57 +259,31 @@ export function InteractiveDeviceShowcase() {
 
                   {/* 4 Interactive Feature Switcher Tabs */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-black/40 rounded-xl border border-white/10 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("voice")}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
-                        activeTab === "voice"
-                          ? "bg-emerald-500 text-white shadow-sm"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      <Mic size={12} />
-                      <span>1. WhatsApp Voice</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("dld")}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
-                        activeTab === "dld"
-                          ? "bg-primary text-white shadow-sm"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      <Building2 size={12} />
-                      <span>2. DLD Inventory</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("dealroom")}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
-                        activeTab === "dealroom"
-                          ? "bg-violet-600 text-white shadow-sm"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      <Share2 size={12} />
-                      <span>3. Live Deal Room</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("owner")}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 ${
-                        activeTab === "owner"
-                          ? "bg-primary text-white shadow-sm font-extrabold"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      <DollarSign size={12} />
-                      <span>4. Commission Ledger</span>
-                    </button>
+                    {[
+                      { id: "voice", label: "1. WhatsApp Voice", icon: Mic, activeBg: "bg-emerald-500" },
+                      { id: "dld", label: "2. DLD Inventory", icon: Building2, activeBg: "bg-primary" },
+                      { id: "dealroom", label: "3. Live Deal Room", icon: Share2, activeBg: "bg-violet-600" },
+                      { id: "owner", label: "4. Commission Ledger", icon: DollarSign, activeBg: "bg-primary" },
+                    ].map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setActiveTab(t.id as typeof activeTab)}
+                        className={`relative px-3 py-1.5 rounded-lg font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer z-10 ${
+                          activeTab === t.id ? "text-white" : "text-zinc-400 hover:text-white"
+                        }`}
+                      >
+                        {activeTab === t.id && (
+                          <motion.div
+                            layoutId="deviceShowcaseActiveTabDesktop"
+                            className={`absolute inset-0 rounded-lg ${t.activeBg} shadow-sm -z-10`}
+                            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                          />
+                        )}
+                        <t.icon size={12} />
+                        <span>{t.label}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -856,12 +830,17 @@ export function InteractiveDeviceShowcase() {
                     key={t.id}
                     type="button"
                     onClick={() => setActiveTab(t.id as typeof activeTab)}
-                    className={`py-1.5 px-1 rounded-lg font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-                      activeTab === t.id
-                        ? "bg-primary text-primary-foreground shadow-xs"
-                        : "text-zinc-400 hover:text-white"
+                    className={`relative py-1.5 px-1 rounded-lg font-bold flex flex-col items-center justify-center gap-0.5 transition-colors cursor-pointer z-10 ${
+                      activeTab === t.id ? "text-white" : "text-zinc-400 hover:text-white"
                     }`}
                   >
+                    {activeTab === t.id && (
+                      <motion.div
+                        layoutId="deviceShowcaseActiveTabMobile"
+                        className="absolute inset-0 rounded-lg bg-primary shadow-xs -z-10"
+                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                      />
+                    )}
                     <t.icon size={13} />
                     <span>{t.label}</span>
                   </button>

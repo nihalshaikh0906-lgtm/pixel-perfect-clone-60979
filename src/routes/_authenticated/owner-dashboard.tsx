@@ -52,6 +52,8 @@ function OwnerDashboardPage() {
   const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
   const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
 
+  const { user } = Route.useRouteContext();
+
   useEffect(() => {
     if (!isMasterAdmin && role !== "company") {
       void navigate({ to: "/app", replace: true });
@@ -59,8 +61,6 @@ function OwnerDashboardPage() {
   }, [role, navigate, isMasterAdmin]);
 
   if (!isMasterAdmin && role !== "company") return null;
-
-  const { user } = Route.useRouteContext();
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
   const raw = String(meta["full_name"] ?? meta["name"] ?? user.email?.split("@")[0] ?? "Owner");
   const first = (raw.split(/[\s._-]+/)[0] ?? "Owner").replace(/\d+/g, "") || "Owner";
