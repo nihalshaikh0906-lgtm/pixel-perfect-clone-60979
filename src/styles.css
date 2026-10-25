@@ -261,3 +261,172 @@ div[data-lovable-badge] {
   pointer-events: none !important;
 }
 
+/* ═════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS FIX FOR DEALOS TOOLS / MODULES (PHONE VIEW)
+   Prevents squishing tools into 4 columns on mobile phones (< 768px).
+   Enforces luxury full-width swipeable cards with clear typography.
+   ═════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* 1. Prevent 4-column desktop grid from ever squeezing cards on phone */
+  html body .ld.light .tools-desktop-grid,
+  html body .ld .tools-desktop-grid,
+  html body .tools-desktop-grid,
+  .ld.light .tools-desktop-grid,
+  .ld .tools-desktop-grid,
+  .tools-desktop-grid {
+    display: none !important;
+  }
+
+  /* 2. Show the dedicated swipe carousel with smooth touch snap */
+  html body .ld.light .tools-swipe,
+  html body .ld .tools-swipe,
+  html body .tools-swipe,
+  .ld.light .tools-swipe,
+  .ld .tools-swipe,
+  .tools-swipe {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 14px !important;
+    padding: 16px 20px 24px !important;
+    margin-inline: -16px !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  html body .ld.light .tools-swipe::-webkit-scrollbar,
+  html body .ld .tools-swipe::-webkit-scrollbar,
+  .tools-swipe::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* 3. Luxury full-card size on phone with readable bold typography */
+  html body .ld.light .tool-card,
+  html body .ld .tool-card,
+  html body .tool-card,
+  html body .d-tools-carousel-card,
+  .ld.light .tool-card,
+  .ld .tool-card,
+  .tool-card,
+  .d-tools-carousel-card,
+  [data-tool-card] {
+    flex: 0 0 84vw !important;
+    min-width: 280px !important;
+    max-width: 335px !important;
+    width: 84vw !important;
+    scroll-snap-align: center !important;
+    box-sizing: border-box !important;
+    min-height: 275px !important;
+    height: auto !important;
+    padding: 24px 22px 28px !important;
+    border-radius: 20px !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    background: #ffffff !important;
+    border: 1px solid var(--border, #E6E9F5) !important;
+    box-shadow: 0 4px 20px rgba(20, 26, 51, 0.05) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  /* Dark mode card surface override */
+  html.dark body .ld.light .tool-card,
+  html.dark body .tool-card,
+  html.dark body .d-tools-carousel-card {
+    background: #121629 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* 4. Large bold readable heading & category label */
+  html body .tool-card h3,
+  html body .d-tools-carousel-card h3,
+  .ld.light .tool-card h3 {
+    font-size: 21px !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    margin: 8px 0 !important;
+    letter-spacing: -0.02em !important;
+    color: var(--foreground, #141A33) !important;
+    white-space: normal !important;
+  }
+
+  html.dark body .tool-card h3,
+  html.dark body .d-tools-carousel-card h3 {
+    color: #FFFFFF !important;
+  }
+
+  html body .tool-card p,
+  html body .d-tools-carousel-card p,
+  .ld.light .tool-card p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    color: var(--muted-foreground, #4B5272) !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+  }
+
+  html.dark body .tool-card p,
+  html.dark body .d-tools-carousel-card p {
+    color: rgba(255, 255, 255, 0.72) !important;
+  }
+
+  html body .tool-card .n,
+  html body .d-tools-carousel-card .n,
+  .ld.light .tool-card .n {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--primary, #2F6BFF) !important;
+    display: block !important;
+    margin-top: 14px !important;
+    margin-bottom: 2px !important;
+  }
+
+  html body .tool-card .ic,
+  html body .d-tools-carousel-card .ic {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+    background: rgba(47, 107, 255, 0.1) !important;
+    color: var(--primary, #2F6BFF) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* 5. Center dots navigation indicator */
+  html body .ld.light .tools-dots,
+  html body .ld .tools-dots,
+  html body .tools-dots,
+  .ld.light .tools-dots,
+  .tools-dots {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  html body .tools-dots button,
+  .tools-dots button {
+    height: 8px !important;
+    border-radius: 999px !important;
+    border: none !important;
+    background: var(--border, #E6E9F5) !important;
+    transition: all 0.25s ease !important;
+  }
+
+  html body .tools-dots button.on,
+  .tools-dots button.on {
+    width: 24px !important;
+    background: var(--primary, #2F6BFF) !important;
+  }
+}
+

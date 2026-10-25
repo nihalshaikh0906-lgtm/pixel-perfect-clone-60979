@@ -517,15 +517,36 @@
     overflow: visible !important;
     padding-bottom: 24px !important;
   }
-  .dealos .d-tools-carousel-card {
-    min-height: 285px !important;
+  .dealos .d-tools-carousel-card,
+  .dealos .tool-card,
+  .tool-card,
+  .d-tools-carousel-card {
+    min-height: 275px !important;
     height: auto !important;
     overflow: visible !important;
     padding-bottom: 30px !important;
+    width: 84vw !important;
+    min-width: 280px !important;
+    max-width: 335px !important;
+    flex: 0 0 84vw !important;
+    scroll-snap-align: center !important;
+    box-sizing: border-box !important;
+  }
+  .tools-desktop-grid,
+  .ld.light .tools-desktop-grid {
+    display: none !important;
+  }
+  .tools-swipe,
+  .ld.light .tools-swipe {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 14px !important;
   }
   .dealos .d-bento {
     gap: 14px !important;
   }
 }
+
 
 
