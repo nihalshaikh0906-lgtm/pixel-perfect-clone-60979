@@ -7,7 +7,7 @@
  * - WhatsApp Web fallback
  * 
  * Deep links directly into the native app if installed so the user can send
- * property dossiers, lead pitches, contracts, and updates to clients and agents right away.
+ * property presentations, lead pitches, contracts, and updates to clients and agents right away.
  */
 import { toast } from "sonner";
 

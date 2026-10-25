@@ -89,7 +89,7 @@ export function DriveTimeVoiceTranscriber({
         onError: () => setIsPlaying(false),
       });
 
-      toast.success(`Voice note transcribed & mapped to ${firstName}'s dossier!`, {
+      toast.success(`Voice note transcribed & mapped to ${firstName}'s profile!`, {
         icon: "🎙️",
       });
     }, 1200);
@@ -160,7 +160,7 @@ export function DriveTimeVoiceTranscriber({
       onError: () => setIsPlaying(false),
     });
 
-    toast.success(`Voice note processed and mapped to ${firstName}'s dossier!`, {
+    toast.success(`Voice note processed and mapped to ${firstName}'s profile!`, {
       icon: "🎙️",
     });
   };
@@ -326,7 +326,7 @@ export function DriveTimeVoiceTranscriber({
 
           <div className="flex items-center justify-between pt-1">
             <span className="text-[10px] text-muted-foreground font-mono">
-              Auto-saved to {firstName}'s dossier timeline
+              Auto-saved to {firstName}'s client timeline
             </span>
             <button
               type="button"

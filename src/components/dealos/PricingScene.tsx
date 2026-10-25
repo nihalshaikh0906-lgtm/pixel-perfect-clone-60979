@@ -338,7 +338,7 @@ export function Pricing() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="size-3.5 text-emerald-400 shrink-0" />
-                      <span>1-Tap WhatsApp Pitch &amp; Client Dossiers</span>
+                      <span>1-Tap WhatsApp Pitch &amp; Client Profiles</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="size-3.5 text-emerald-400 shrink-0" />
@@ -517,7 +517,7 @@ export function Pricing() {
                       <span>Voice Note Capture</span>
                     </div>
                     <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
-                      AI transcribes client voice notes &amp; drive-time audio directly into CRM lead dossiers.
+                      AI transcribes client voice notes &amp; drive-time audio directly into CRM lead profiles.
                     </p>
                   </div>
 
@@ -526,7 +526,7 @@ export function Pricing() {
                       <div className="size-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
                         <Check size={13} />
                       </div>
-                      <span>Bespoke Investor Dossiers</span>
+                      <span>Bespoke Investor Profiles</span>
                     </div>
                     <p className="text-xs sm:text-[13px] text-muted-foreground pl-7 leading-relaxed">
                       Prioritized speed-to-lead queue (Hot, Warm, Follow-ups) with client criteria matching.

@@ -25,12 +25,12 @@ function mergeUnits(prev: MatchRow[], add: MatchRow[]) {
 export const Route = createFileRoute("/_authenticated/client/$id")({
   head: () => ({
     meta: [
-      { title: "Client dossier · DealOS" },
+      { title: "Client Profile · DealOS" },
       {
         name: "description",
         content: "Client profile, AI unit recommendations and the Investment Engineer chat.",
       },
-      { property: "og:title", content: "Client dossier · DealOS" },
+      { property: "og:title", content: "Client Profile · DealOS" },
       {
         property: "og:description",
         content: "Client profile, AI unit recommendations and the Investment Engineer chat.",

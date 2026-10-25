@@ -82,7 +82,7 @@ const INITIAL_ALERTS: LiveAlert[] = [
     time: "2 mins ago",
     badge: "Hot Investor",
     badgeColor: "bg-rose-500/15 text-rose-400 border-rose-500/30",
-    actionLabel: "Open Dossier",
+    actionLabel: "Open Client Profile",
     to: "/app/leads",
     read: false,
   },

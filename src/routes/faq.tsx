@@ -6,7 +6,7 @@ export const Route = createFileRoute("/faq")({
   head: () =>
     meta(
       "FAQ · DealOS Dubai Real Estate CRM",
-      "Answers about DealOS workflows, 34,850+ unit inventory, white-label client dossiers, DLD data security, and subscriptions."
+      "Answers about DealOS workflows, 34,850+ unit inventory, white-label client presentations, DLD data security, and subscriptions."
     ),
   component: FaqPage,
 });
@@ -17,7 +17,7 @@ const CATS = [
     items: [
       {
         q: "Does DealOS communicate directly with my property buyers?",
-        a: "No. DealOS operates strictly as your private back-office deal desk and co-pilot. It scores buyer requirements, matches live inventory, and prepares tailored WhatsApp pitches and PDF dossiers for you to review and send directly from your personal communication channels.",
+        a: "No. DealOS operates strictly as your private back-office deal desk and co-pilot. It scores buyer requirements, matches live inventory, and prepares tailored WhatsApp pitches and PDF presentations for you to review and send directly from your personal communication channels.",
       },
       {
         q: "How does the AI synthesize Dubai market data every morning?",
@@ -34,7 +34,7 @@ const CATS = [
     items: [
       {
         q: "Will clients see the DealOS brand on exported brochures?",
-        a: "Never. The document export engine is 100% white-labeled for your agency. You upload your agency logo, ORN, and RERA BRN in Account Settings; all generated payment milestones and property dossiers carry your identity.",
+        a: "Never. The document export engine is 100% white-labeled for your agency. You upload your agency logo, ORN, and RERA BRN in Account Settings; all generated payment milestones and property presentations carry your identity.",
       },
       {
         q: "Can we export developer payment schedules and Form F contracts?",

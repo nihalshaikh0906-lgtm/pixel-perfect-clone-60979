@@ -514,7 +514,7 @@ When are you free today for a quick 2-minute overview?`;
                     className="flex-1 h-8 text-xs font-semibold"
                   >
                     <Link to="/app/project/$id" params={{ id: String(p.id) }}>
-                      <span>View Dossier</span>
+                      <span>View Project</span>
                       <ArrowUpRight className="size-3 ml-1" />
                     </Link>
                   </Button>

@@ -1364,7 +1364,7 @@ export function ReadyInventory({
                 className="rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
               >
                 <MessageCircle size={14} />
-                <span>Share Complete Resale Dossier</span>
+                <span>Share Property Presentation</span>
               </Button>
             </div>
           </DialogContent>

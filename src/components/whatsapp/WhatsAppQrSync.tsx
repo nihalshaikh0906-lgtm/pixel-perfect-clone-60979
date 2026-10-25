@@ -716,7 +716,7 @@ export function WhatsAppQrSync() {
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-xs font-bold">Auto-Transcribe Voice Notes</p>
-                    <p className="text-[10px] text-muted-foreground">Converts incoming investor audio notes into clean text dossier records.</p>
+                    <p className="text-[10px] text-muted-foreground">Converts incoming investor audio notes into clean text client records.</p>
                   </div>
                 </button>
 
@@ -852,7 +852,7 @@ export function WhatsAppQrSync() {
                 </div>
               )}
 
-              {/* Extracted Dossier & Audio Player Result */}
+              {/* Extracted Profile & Audio Player Result */}
               {activeVoiceNote && (
                 <div className="p-5 rounded-2xl bg-card border border-emerald-500/40 space-y-4 shadow-sm animate-in fade-in duration-300">
                   {/* Result Header & Audio Waveform Player Bar */}
@@ -1134,7 +1134,7 @@ export function WhatsAppQrSync() {
                       <th className="py-2 px-3">Requirement</th>
                       <th className="py-2 px-3">Source</th>
                       <th className="py-2 px-3">Status</th>
-                      <th className="py-2 px-3 text-right">Dossier</th>
+                      <th className="py-2 px-3 text-right">Profile</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/40 font-mono">

@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/app/leads/")({
   head: () => ({
     meta: [
       { title: "Leads Inbox — DealOS Workspace" },
-      { name: "description", content: "Executive investor dossier queue sorted by speed-to-lead and conversion probability." },
+      { name: "description", content: "Executive investor queue sorted by speed-to-lead and conversion probability." },
     ],
   }),
   component: Inbox,
@@ -104,7 +104,7 @@ function Inbox() {
               Leads Inbox
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
-              Prioritized by response urgency, budget size, and closing probability. Click any investor to open full-screen dossier.
+              Prioritized by response urgency, budget size, and closing probability. Click any investor to open full client profile.
             </p>
           </div>
 
@@ -226,7 +226,7 @@ function Inbox() {
         </div>
       </div>
 
-      {/* ═══ BESPOKE HORIZONTAL INVESTOR DOSSIER CARDS (NOT SPREADSHEET TABLE) ═══ */}
+      {/* ═══ BESPOKE HORIZONTAL INVESTOR PROFILE CARDS (NOT SPREADSHEET TABLE) ═══ */}
       <div className="space-y-3.5">
         {view.map((l) => {
           const t = timeOf(l);
@@ -333,7 +333,7 @@ function Inbox() {
                   type="button"
                   onClick={() => openLead(l)}
                   className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold text-xs shadow-md shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  title="Open full investor lead dossier"
+                  title="Open full client profile"
                 >
                   <Eye size={14} className="text-white" />
                   <span>Open Lead ↗</span>

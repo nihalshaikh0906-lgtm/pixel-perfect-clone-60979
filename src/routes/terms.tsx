@@ -73,7 +73,7 @@ function Terms() {
           <div>
             <h2 className="text-xl font-bold text-white mb-3">4. Absolute Client Data Ownership</h2>
             <p className="text-zinc-300">
-              <strong className="text-gold">You retain 100% sole, exclusive, and unencumbered ownership of all customer records, investor dossiers, buyer leads, transaction logs, and proprietary listings uploaded to DealOS.</strong> DealOS acquires no title, copyright, or ownership over your brokerage&rsquo;s client data. We will never sell, lease, disclose, or transfer your leads to any third party, portal, or competitor.
+              <strong className="text-gold">You retain 100% sole, exclusive, and unencumbered ownership of all customer records, investor profiles, buyer leads, transaction logs, and proprietary listings uploaded to DealOS.</strong> DealOS acquires no title, copyright, or ownership over your brokerage&rsquo;s client data. We will never sell, lease, disclose, or transfer your leads to any third party, portal, or competitor.
             </p>
           </div>
 

@@ -83,12 +83,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "DealOS · Dubai Real Estate Broker OS & Cockpit" },
       {
         name: "description",
-        content: "Institutional real estate operating system for Dubai brokers and agencies: 34,850+ verified units, lead dossiers, and owner cockpit.",
+        content: "Institutional real estate operating system for Dubai brokers and agencies: 34,850+ verified units, client profiles, and owner cockpit.",
       },
       { property: "og:title", content: "DealOS · Dubai Real Estate Broker OS & Cockpit" },
       {
         property: "og:description",
-        content: "Institutional real estate operating system for Dubai brokers and agencies: 34,850+ verified units, lead dossiers, and owner cockpit.",
+        content: "Institutional real estate operating system for Dubai brokers and agencies: 34,850+ verified units, client profiles, and owner cockpit.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://dealos.ae" },

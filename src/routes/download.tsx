@@ -22,7 +22,7 @@ export const Route = createFileRoute("/download")({
   head: () =>
     meta(
       "Download DealOS Mobile App · iOS, Android & Desktop",
-      "Install DealOS on your iPhone, Android, or Mac. Direct 1-tap installation, offline lead dossiers, and WhatsApp auto-transcription."
+      "Install DealOS on your iPhone, Android, or Mac. Direct 1-tap installation, offline client profiles, and WhatsApp auto-transcription."
     ),
   component: DownloadPage,
 });
@@ -87,7 +87,7 @@ export function DownloadPage() {
             Install Without App Store Wait
           </h3>
           <p className="text-xs text-muted-foreground">
-            Zero App Store downloads required. Instant zero-latency loading with offline cached lead dossiers and push notifications.
+            Zero App Store downloads required. Instant zero-latency loading with offline cached client profiles and push notifications.
           </p>
 
           <Button
@@ -264,7 +264,7 @@ export function DownloadPage() {
               Scan with your iPhone or Android
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Point your phone camera here to open DealOS directly in your mobile browser, complete with full offline dossier synchronization and 1-tap WhatsApp outreach.
+              Point your phone camera here to open DealOS directly in your mobile browser, complete with full offline client synchronization and 1-tap WhatsApp outreach.
             </p>
           </div>
         </div>

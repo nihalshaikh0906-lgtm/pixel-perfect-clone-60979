@@ -235,9 +235,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   const getRouteMeta = (path: string): { title: string; parent?: string } => {
     if (path === "/app" || path === "/app/") return { title: "Broker Cockpit" };
     if (path.startsWith("/owner-dashboard")) return { title: "Executive Overwatch" };
-    if (path.startsWith("/app/leads/")) return { title: "Lead Dossier", parent: "Leads" };
+    if (path.startsWith("/app/leads/")) return { title: "Client Profile", parent: "Leads" };
     if (path.startsWith("/app/leads")) return { title: "Leads Inbox" };
-    if (path.startsWith("/app/project/")) return { title: "Project Dossier", parent: "Offplan" };
+    if (path.startsWith("/app/project/")) return { title: "Project Overview", parent: "Offplan" };
     if (path.startsWith("/app/deal-room/")) return { title: "Client Deal Room", parent: "Deals" };
     if (path.startsWith("/app/offplan")) return { title: "Offplan Catalog" };
     if (path.startsWith("/app/listings")) return { title: "Ready Property" };

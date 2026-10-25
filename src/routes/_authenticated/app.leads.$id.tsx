@@ -21,7 +21,7 @@ import { DriveTimeVoiceTranscriber } from "@/components/leads/DriveTimeVoiceTran
 export const Route = createFileRoute("/_authenticated/app/leads/$id")({
   head: () => ({
     meta: [
-      { title: "Lead Dossier & AI Match — DealOS" },
+      { title: "Client Profile & AI Match — DealOS" },
       { name: "description", content: "Unique executive investor profile, verified matched Dubai units, and dedicated lead AI copilot." },
     ],
   }),
@@ -279,7 +279,7 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-xs text-muted-foreground font-mono">
-            Dossier #{lead.id} · Priority {p} · Dubai DLD Synced
+            Client Profile #{lead.id} · Priority {p} · Dubai DLD Synced
           </span>
         </div>
       </div>

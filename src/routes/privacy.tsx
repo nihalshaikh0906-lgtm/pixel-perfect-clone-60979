@@ -61,7 +61,7 @@ function Privacy() {
                 <strong className="text-white">DealOS as Data Controller:</strong> We act as Data Controller for personal data directly collected from our subscribing agency owners, individual brokers, and website visitors (e.g., account registration details, billing identifiers, RERA Broker Card BRN, Office Registration Number ORN, and inbound demo requests).
               </li>
               <li>
-                <strong className="text-white">DealOS as Data Processor:</strong> For client contacts, buyer dossiers, investor portfolios, passport copies, Title Deed records, Form A/B listings, and lead communication logs entered into your DealOS tenant workspace, your brokerage acts as the Data Controller, and DealOS acts solely as the secure Data Processor processing records under your instruction.
+                <strong className="text-white">DealOS as Data Processor:</strong> For client contacts, buyer profiles, investor portfolios, passport copies, Title Deed records, Form A/B listings, and lead communication logs entered into your DealOS tenant workspace, your brokerage acts as the Data Controller, and DealOS acts solely as the secure Data Processor processing records under your instruction.
               </li>
             </ul>
           </div>

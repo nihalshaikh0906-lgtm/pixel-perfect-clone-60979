@@ -516,7 +516,7 @@ export function PhysicalDealCalculator({
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-mono font-bold text-primary uppercase flex items-center gap-1">
             <Sparkles size={11} className="text-amber-300" />
-            AI FINANCIAL DOSSIER
+            AI FINANCIAL REPORT
           </span>
           <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/15 px-1.5 py-0.2 rounded font-bold">
             Live Brief

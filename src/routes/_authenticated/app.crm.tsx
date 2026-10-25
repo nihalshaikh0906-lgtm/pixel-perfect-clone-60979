@@ -343,12 +343,12 @@ function CrmPage() {
                   {l.phone && (
                     <a
                       className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:bg-emerald-500/25 transition-all shadow-xs cursor-pointer"
-                      href={getWhatsAppNativeUrl(l.phone, `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`)}
+                      href={getWhatsAppNativeUrl(l.phone, `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment presentation on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`)}
                       onClick={(e) => {
                         e.preventDefault();
                         openWhatsApp({
                           phone: l.phone,
-                          text: `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`,
+                          text: `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment presentation on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`,
                           recipientName: l.name,
                         });
                       }}
@@ -473,7 +473,7 @@ function CrmPage() {
                             onClick={() => {
                               openWhatsApp({
                                 phone: l.phone,
-                                text: `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`,
+                                text: `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment presentation on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`,
                                 recipientName: l.name,
                               });
                             }}

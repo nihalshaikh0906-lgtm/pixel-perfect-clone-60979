@@ -173,7 +173,7 @@ export function PropertyPackDrawer({
             <Button variant="outline" onClick={copyPitch}>
               <MessageCircle className="size-4" /> Copy Pitch & WhatsApp
             </Button>
-            <Button variant="outline" onClick={saveToShortlist} disabled={!clientId} title={!clientId ? "Open a saved client dossier to save a shortlist" : undefined}>
+            <Button variant="outline" onClick={saveToShortlist} disabled={!clientId} title={!clientId ? "Open a saved client profile to save a shortlist" : undefined}>
               <Star className="size-4" /> Save to shortlist
             </Button>
           </div>

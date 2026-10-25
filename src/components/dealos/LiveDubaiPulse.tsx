@@ -33,7 +33,7 @@ const PULSE_ITEMS: PulseItem[] = [
   {
     id: "whatsapp",
     category: "SPEED-TO-LEAD DISPATCH",
-    headline: "WhatsApp Investor Dossier Dispatched",
+    headline: "WhatsApp Client Profile Dispatched",
     meta: "2BR Creek Waters (AED 3.85M) · 42s Response Time",
     timeAgo: "1m ago",
     icon: MessageCircle,

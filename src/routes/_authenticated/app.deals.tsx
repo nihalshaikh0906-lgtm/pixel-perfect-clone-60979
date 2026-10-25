@@ -788,7 +788,7 @@ function Page() {
         })}
       </div>
 
-      {/* ═══ 4. BESPOKE HORIZONTAL DEAL DOSSIER CARDS (NON-COLUMN, WIDE & CLEAN) ═══ */}
+      {/* ═══ 4. BESPOKE HORIZONTAL DEAL CARDS (NON-COLUMN, WIDE & CLEAN) ═══ */}
       <div className="space-y-3.5">
         {filteredDeals.map((deal) => {
           const conf = STAGE_CONFIG[deal.stage];
@@ -874,7 +874,7 @@ function Page() {
                   onClick={() => setSelectedDeal(deal)}
                   className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-border bg-secondary/50 hover:bg-secondary text-foreground font-bold text-xs transition-all"
                 >
-                  <span>Dossier</span>
+                  <span>View Deal</span>
                   <ArrowUpRight size={13} className="text-primary" />
                 </button>
               </div>

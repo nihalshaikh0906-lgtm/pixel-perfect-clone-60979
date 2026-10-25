@@ -545,7 +545,7 @@ export function OffplanProjects({
                   className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm gap-2 shadow-sm transition-all cursor-pointer"
                 >
                   <MessageCircle size={16} />
-                  <span>Share 1-Click Dossier to WhatsApp Client</span>
+                  <span>Share Project Overview to WhatsApp</span>
                 </Button>
 
                 <div className="flex gap-2.5">
@@ -719,7 +719,7 @@ export function OffplanProjects({
                 className="rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
               >
                 <MessageCircle size={14} />
-                <span>Share Complete Dossier to WhatsApp Client</span>
+                <span>Share Project Overview to WhatsApp</span>
               </Button>
             </div>
           </DialogContent>

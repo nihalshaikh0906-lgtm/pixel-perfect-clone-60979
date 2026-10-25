@@ -318,7 +318,7 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
                   </span>
                 </span>
                 <p className="text-[10px] text-[#4B5272] font-mono">
-                  DLD Verified Allocation · Client Dossier #{leadId || "demo"}
+                  DLD Verified Allocation · Client Profile #{leadId || "demo"}
                 </p>
               </div>
             </div>
@@ -346,10 +346,10 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
               type="button"
               onClick={handlePrint}
               className="inline-flex items-center gap-1.5 h-8 px-3 rounded-xl border border-[#E6E9F5] bg-white hover:bg-[#F4F6FF] text-xs font-semibold text-[#141A33] transition-all shadow-xs cursor-pointer"
-              title="Print or Save PDF Investment Dossier"
+              title="Print or Save PDF Presentation"
             >
               <Printer size={13} className="text-[#2F6BFF]" />
-              <span className="hidden sm:inline">PDF Dossier</span>
+              <span className="hidden sm:inline">PDF Presentation</span>
             </button>
 
             <button

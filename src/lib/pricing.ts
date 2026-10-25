@@ -71,7 +71,7 @@ export const AGENCY_TIERS: AgencyTier[] = [
     features: [
       "1 Master Admin + 10 Dedicated Broker Desks",
       "Full Dubai off-plan catalog (1,355+ developments)",
-      "Team WhatsApp script library & branded dossiers",
+      "Team WhatsApp script library & branded presentations",
       "Centralized agency lead inbox & tracking",
       "UAE corporate tax invoice & Emirates NBD / Wio IBAN",
     ],

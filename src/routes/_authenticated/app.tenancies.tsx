@@ -277,7 +277,7 @@ function Page() {
         ))}
       </div>
 
-      {/* ═══ 4. BESPOKE HORIZONTAL TENANCY DOSSIER CARDS (NO TABLE) ═══ */}
+      {/* ═══ 4. BESPOKE HORIZONTAL TENANCY CARDS (NO TABLE) ═══ */}
       <div className="space-y-3.5">
         {filtered.map((tenancy) => (
           <div
@@ -373,7 +373,7 @@ function Page() {
                 onClick={() => setSelectedTenancy(tenancy)}
                 className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-border bg-secondary/50 hover:bg-secondary text-foreground font-bold text-xs transition-all"
               >
-                <span>Dossier</span>
+                <span>View Tenancy</span>
                 <ArrowUpRight size={13} className="text-primary" />
               </button>
             </div>

@@ -27,7 +27,7 @@ export async function downloadPdf(content: string, broker: BrokerProfile | null)
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.setTextColor(26, 24, 22);
-    doc.text("PROPERTY DOSSIER", 15, top);
+    doc.text("PROPERTY PRESENTATION", 15, top);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
     doc.setTextColor(142, 116, 83);
@@ -63,14 +63,14 @@ export async function downloadPdf(content: string, broker: BrokerProfile | null)
       doc.text(line, 15, y);
       y += 6;
     }
-    doc.save(`${(company || "Property").replace(/\s+/g, "_")}_Dossier_${Date.now()}.pdf`);
+    doc.save(`${(company || "Property").replace(/\s+/g, "_")}_Presentation_${Date.now()}.pdf`);
   } catch (err) {
     console.error("PDF generation failed:", err);
     toast.error(`PDF export failed: ${(err as Error).message} — downloading as text instead.`);
     const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Property_Dossier_${Date.now()}.txt`;
+    a.download = `Property_Presentation_${Date.now()}.txt`;
     document.body.appendChild(a);
     a.click();
     a.remove();

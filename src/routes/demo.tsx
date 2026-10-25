@@ -149,7 +149,7 @@ function DemoPage() {
               </h3>
 
               <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
-                Experience high-velocity deal execution: triage hot investor leads, auto-match off-plan units with DLD escrow, and send 1-click WhatsApp pitch dossiers.
+                Experience high-velocity deal execution: triage hot investor leads, auto-match off-plan units with DLD escrow, and send 1-click WhatsApp pitch presentations.
               </p>
 
               <div className="mt-6 pt-5 border-t border-border/60 space-y-2.5 text-xs text-muted-foreground">
@@ -166,7 +166,7 @@ function DemoPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Check size={14} className="text-emerald-400 shrink-0" />
-                  <span>1-Click WhatsApp Pitch Scripts &amp; Client Dossiers</span>
+                  <span>1-Click WhatsApp Pitch Scripts &amp; Client Profiles</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check size={14} className="text-emerald-400 shrink-0" />

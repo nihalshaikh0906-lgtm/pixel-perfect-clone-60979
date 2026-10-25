@@ -2034,7 +2034,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                       setLeadDossierModalOpen(true);
                     }}
                     className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-extrabold text-xs shadow-md shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    title="Open full investor lead dossier"
+                    title="Open full client profile"
                   >
                     <Eye size={13} className="text-white" />
                     <span>Open Lead ↗</span>
@@ -3136,7 +3136,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 <div>
                   <DialogTitle className="text-base sm:text-lg font-black text-foreground font-display flex items-center gap-2">
                     <Briefcase size={18} className="text-primary" />
-                    <span>Executive Lead Dossier: {selectedLeadForBrief.clientName}</span>
+                    <span>Client Profile: {selectedLeadForBrief.clientName}</span>
                   </DialogTitle>
                   <p className="text-xs text-muted-foreground mt-0.5 font-mono">
                     {selectedLeadForBrief.nationality} · Currently in {selectedLeadForBrief.assignedBrokerName}'s Leadbox
@@ -3465,7 +3465,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 onClick={() => setLeadDossierModalOpen(false)}
                 className="h-10 px-5 rounded-xl text-xs font-bold w-full sm:w-auto"
               >
-                Close Dossier
+                Close Profile
               </Button>
             </div>
           </DialogContent>

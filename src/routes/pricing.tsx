@@ -246,7 +246,7 @@ function PricingPage() {
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="size-4 shrink-0 text-emerald-400" />
-                    <span>1-Tap WhatsApp Investor Pitches &amp; PDF Dossiers</span>
+                    <span>1-Tap WhatsApp Investor Pitches &amp; PDF Presentations</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="size-4 shrink-0 text-emerald-400" />

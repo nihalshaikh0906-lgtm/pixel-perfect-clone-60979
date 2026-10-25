@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 
 const quotes = [
   ['Saad A.', 'Downtown Dubai', 'Having verified DLD numbers and live off-plan inventory in one client view saves our advisory team 2 hours every single day.'],
-  ['Elena V.', 'Dubai Marina', 'Generating a clean, branded payment plan dossier in 30 seconds while on WhatsApp with an investor closed our last EOI.'],
+  ['Elena V.', 'Dubai Marina', 'Generating a clean, branded payment plan presentation in 30 seconds while on WhatsApp with an investor closed our last EOI.'],
   ['Tariq M.', 'Business Bay', 'The developer debt ledger alone recovered overdue commissions from two master developers that were previously lost in spreadsheets.'],
   ['Marcus B.', 'Palm Jumeirah', 'Client Presentation Mode is brilliant. We can sit with ultra-high-net-worth buyers and share screens without exposing internal splits.'],
   ['Sara H.', 'Dubai Hills', 'Speed to lead has completely transformed our brokerage. Portal inquiries receive structured WhatsApp pitches in under 2 minutes.'],
@@ -173,7 +173,7 @@ export function CTA() {
           </span>
           <RevealText>Stop lead leakage./Own your deal data.</RevealText>
           <p className="mt-2 text-sm sm:text-base text-muted-foreground">
-            Equip your property consultants with live Dubai inventory, instant WhatsApp dossiers, and real-time agency overwatch.
+            Equip your property consultants with live Dubai inventory, instant WhatsApp presentations, and real-time agency overwatch.
           </p>
 
           {!done ? (
