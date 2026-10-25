@@ -156,6 +156,8 @@ export function InteractiveDeviceShowcase() {
         {/* 3D iMac Device Frame */}
         <motion.div
           style={{ rotateX, rotateY }}
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           className="w-full max-w-5xl flex flex-col items-center transition-transform duration-200 ease-out"
         >
           {/* iMac Enclosure with Precision Aluminum Edge */}
@@ -246,7 +248,7 @@ export function InteractiveDeviceShowcase() {
             </div>
 
             {/* Main Interactive Screen Content */}
-            <div className="p-6 sm:p-8 flex-1 bg-gradient-to-b from-[#0F1424] to-[#0A0D18]">
+            <div className="p-4 sm:p-8 flex-1 bg-gradient-to-b from-[#0F1424] to-[#0A0D18]">
               {/* TAB 1: WHATSAPP VOICE INGESTION */}
               {activeTab === "voice" && (
                 <div className="space-y-6 animate-in fade-in duration-300">

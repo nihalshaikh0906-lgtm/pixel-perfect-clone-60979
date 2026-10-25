@@ -30,48 +30,49 @@ const textContainerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.035,
-      delayChildren: 0.02,
+      staggerChildren: 0.05,
+      delayChildren: 0.04,
     },
   },
 };
 
 const pillVariants = {
-  hidden: { opacity: 0, y: -10, scale: 0.95 },
+  hidden: { opacity: 0, y: -12, scale: 0.94 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
 const wordVariants = {
-  hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
+  hidden: { opacity: 0, y: 22, filter: 'blur(6px)' },
   visible: {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
 const subVariants = {
-  hidden: { opacity: 0, y: 10, filter: 'blur(3px)' },
+  hidden: { opacity: 0, y: 14, filter: 'blur(4px)' },
   visible: {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.2 },
   },
 };
 
 const actionVariants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 14, scale: 0.96 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.32 },
   },
 };
 

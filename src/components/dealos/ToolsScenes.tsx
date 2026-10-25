@@ -128,9 +128,11 @@ export function Tools() {
               ][i % 7];
 
               return (
-                <div
+                <motion.div
                   key={t.title}
-                  className="d-tools-carousel-card w-[84vw] max-w-[325px] sm:w-[310px] shrink-0 snap-center rounded-2xl sm:rounded-3xl p-6 sm:p-6 pb-8 bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-visible"
+                  whileHover={{ y: -5, transition: { duration: 0.22, ease: "easeOut" } }}
+                  whileTap={{ scale: 0.98 }}
+                  className="d-tools-carousel-card w-[84vw] max-w-[325px] sm:w-[310px] shrink-0 snap-center rounded-2xl sm:rounded-3xl p-6 sm:p-6 pb-8 bg-card border border-border/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-visible cursor-pointer"
                   style={{ minHeight: "285px", height: "auto" }}
                 >
                   <div className="space-y-3">
@@ -155,7 +157,7 @@ export function Tools() {
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-4 break-words">
                     {t.description}
                   </p>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -211,6 +213,12 @@ export function Workflow() {
  const panel = useRef<HTMLDivElement>(null);
  const visible = useInView(panel);
  const reduce = useReducedMotion();
+ useEffect(() => {
+  if (visible && !running && !complete && step === 0) {
+   const t = setTimeout(() => setRunning(true), 600);
+   return () => clearTimeout(t);
+  }
+ }, [visible]);
  useEffect(() => {
   if (!running || !visible) return;
   const timer = setTimeout(() => {

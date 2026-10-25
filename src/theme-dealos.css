@@ -39,10 +39,12 @@
 .d-navbar,.d-navbar.on-dark{background:rgba(11,14,26,.72)!important;backdrop-filter:blur(16px)!important;border:1px solid rgba(255,255,255,.08)!important;color:#fff!important;box-shadow:none!important}
 .d-navbar .d-nav-link,.d-navbar .d-login{color:#fff!important}
 .d-hero-tint{background:linear-gradient(180deg,rgba(11,14,26,.75),rgba(11,14,26,.92))!important}
-.d-hero::before,.d-hero::after{content:"";position:absolute;width:900px;height:900px;border-radius:50%;filter:blur(40px);opacity:.45;pointer-events:none;z-index:1}
+.d-hero::before,.d-hero::after{content:"";position:absolute;width:900px;height:900px;border-radius:50%;filter:blur(50px);opacity:.42;pointer-events:none;z-index:1}
 .d-hero{position:relative}
-.d-hero::before{background:radial-gradient(circle,#3A64FF,transparent 65%);top:-300px;right:-300px}
-.d-hero::after{background:radial-gradient(circle,#7B4DFF,transparent 65%);bottom:-300px;left:-300px}
+.d-hero::before{background:radial-gradient(circle,#3A64FF,transparent 65%);top:-300px;right:-300px;animation:dHeroGlowA 14s ease-in-out infinite alternate}
+.d-hero::after{background:radial-gradient(circle,#7B4DFF,transparent 65%);bottom:-300px;left:-300px;animation:dHeroGlowB 14s ease-in-out infinite alternate}
+@keyframes dHeroGlowA{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-50px,40px) scale(1.1)}}
+@keyframes dHeroGlowB{0%{transform:translate(0,0) scale(1)}100%{transform:translate(50px,-40px) scale(1.08)}}
 .d-hero-sticky{position:sticky;top:0;z-index:2}
 .d-glass-pill{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#fff!important}
 .d-glass-pill svg:first-child{color:#8AA4FF}

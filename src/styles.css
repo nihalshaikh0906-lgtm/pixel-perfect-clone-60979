@@ -428,5 +428,43 @@ div[data-lovable-badge] {
     width: 24px !important;
     background: var(--primary, #2F6BFF) !important;
   }
+
+  /* 6. Prevent horizontal jitter & overflow on mobile viewports */
+  html, body {
+    overflow-x: clip !important;
+    max-width: 100vw !important;
+    -webkit-text-size-adjust: 100% !important;
+  }
+
+  /* 7. Ensure high readability & comfortable touch targets across all devices */
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* High contrast readable text across light and dark modes */
+  .dealos h1, .dealos h2, .dealos h3, .dealos h4 {
+    letter-spacing: -0.025em !important;
+  }
+
+  .dealos p {
+    line-height: 1.6 !important;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   UNIVERSAL SMOOTH ACCELERATED ANIMATION & HOVER SPRING ENGINE
+   ═════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+  .dealos a, .dealos button, .dealos .d-button {
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease !important;
+  }
+
+  .dealos button:active, .dealos a:active, .dealos .d-button:active {
+    transform: scale(0.98) !important;
+  }
 }
 

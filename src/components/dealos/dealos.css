@@ -31,15 +31,13 @@
 .d-plan.popular::before{animation:none;background:var(--gold)}
 .d-scene-inner{will-change:auto}
 .d-hero{height:140svh}
-.d-orbit,.d-app-logo,.d-quote-track,.d-logo-marquee{animation-play-state:paused}
-.d-scene[data-in-view=true] .d-orbit,.d-scene[data-in-view=true] .d-app-logo,.d-scene[data-in-view=true] .d-quote-track,.d-scene[data-in-view=true] .d-logo-marquee{animation-play-state:running}
+.d-orbit,.d-app-logo,.d-quote-track,.d-logo-marquee{animation-play-state:running}
 .d-quote-track:hover{animation-play-state:paused!important}
-@media(max-width:767px){.d-hero{height:145svh}.d-navbar,.d-demo-form{backdrop-filter:none}.d-navbar{background:var(--silk)}.d-navbar.on-dark{background:var(--silk)}}
-.d-tiles .d-glass-tile{animation:d-tile-float 7s ease-in-out infinite;animation-play-state:paused}
-.d-tiles[data-in-view=true] .d-glass-tile{animation-play-state:running}
+@media(max-width:767px){.d-hero{height:145svh}.d-navbar{background:var(--silk)}.d-navbar.on-dark{background:var(--silk)}}
+.d-tiles .d-glass-tile{animation:d-tile-float 6s ease-in-out infinite;animation-play-state:running}
 .d-tiles .d-glass-tile:nth-child(2n){animation-delay:-3s}
-@keyframes d-tile-float{50%{transform:translateY(-8px)}}
-@media(prefers-reduced-motion:reduce),(pointer:coarse){.d-tiles .d-glass-tile{animation:none}}
+@keyframes d-tile-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(prefers-reduced-motion:reduce){.d-tiles .d-glass-tile{animation:none}}
 
 /* All public scenes stay in the document flow. */
 
