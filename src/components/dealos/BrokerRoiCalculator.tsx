@@ -41,12 +41,12 @@ export function BrokerRoiCalculator({ onOpenDemo }: { onOpenDemo?: () => void })
   return (
     <section className="relative w-full max-w-5xl mx-auto px-4 sm:px-6 my-16 lg:my-24">
       {/* Ambient background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-amber-500/10 via-primary/10 to-transparent blur-[100px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-primary/15 via-[#7B4DFF]/10 to-transparent blur-[100px] rounded-full pointer-events-none -z-10" />
 
       <div className="rounded-[28px] sm:rounded-[36px] border border-border/80 bg-card/90 backdrop-blur-2xl p-6 sm:p-10 shadow-2xl">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3 mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-mono font-bold">
             <SlidersHorizontal size={13} />
             <span>INTERACTIVE VELOCITY &amp; COMMISSION MULTIPLIER</span>
           </div>
@@ -96,7 +96,7 @@ export function BrokerRoiCalculator({ onOpenDemo }: { onOpenDemo?: () => void })
                 <label htmlFor="price-slider" className="text-xs sm:text-sm font-bold text-foreground">
                   Average Deal Value (AED):
                 </label>
-                <span className="text-lg sm:text-xl font-extrabold text-amber-400 font-mono bg-amber-500/10 px-3 py-0.5 rounded-xl border border-amber-500/20">
+                <span className="text-lg sm:text-xl font-extrabold text-primary font-mono bg-primary/10 px-3 py-0.5 rounded-xl border border-primary/20">
                   {formatAED(avgPrice)}
                 </span>
               </div>
@@ -108,7 +108,7 @@ export function BrokerRoiCalculator({ onOpenDemo }: { onOpenDemo?: () => void })
                 step="250000"
                 value={avgPrice}
                 onChange={(e) => setAvgPrice(Number(e.target.value))}
-                className="w-full h-2.5 bg-muted rounded-lg appearance-none cursor-pointer accent-amber-500 focus:outline-none"
+                className="w-full h-2.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary focus:outline-none"
                 style={{ touchAction: "pan-y" }}
               />
               <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
@@ -127,12 +127,12 @@ export function BrokerRoiCalculator({ onOpenDemo }: { onOpenDemo?: () => void })
             </div>
           </div>
 
-          {/* Right Column: Live Dynamic Metrics Output (Ziina Style) */}
+          {/* Right Column: Live Dynamic Metrics Output (DealOS Theme) */}
           <div className="flex flex-col gap-4">
             {/* Metric 1: Additional Annual Commission */}
-            <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent p-6 shadow-xl">
+            <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/15 via-[#7B4DFF]/5 to-transparent p-6 shadow-xl">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span className="text-xs font-mono font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles size={14} />
                   PROJECTED COMMISSION UPLIFT
                 </span>
@@ -185,7 +185,7 @@ export function BrokerRoiCalculator({ onOpenDemo }: { onOpenDemo?: () => void })
             <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
               <Button
                 asChild
-                className="w-full sm:flex-1 h-12 rounded-xl text-xs sm:text-sm font-extrabold bg-amber-400 hover:bg-amber-300 text-black shadow-lg shadow-amber-400/20 gap-2 cursor-pointer"
+                className="w-full sm:flex-1 h-12 rounded-xl text-xs sm:text-sm font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 gap-2 cursor-pointer"
               >
                 <Link to="/signup">
                   <span>Start Free Trial</span>
