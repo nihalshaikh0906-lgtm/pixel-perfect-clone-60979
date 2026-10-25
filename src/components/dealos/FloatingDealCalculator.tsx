@@ -36,6 +36,70 @@ function playKeyClick(type: "num" | "op" | "eq" | "clear") {
   }
 }
 
+export type DubaiFinancials = {
+  propertyPrice: number;
+  dldFee: number;
+  trusteeFee: number;
+  deposit20Pct: number;
+  loanAmount: number;
+  monthlyMortgage: number;
+  brokerCommission2Pct: number;
+  totalCashToClose: number;
+  minimumSalaryRequired: number;
+  agentTakeHomeNet: number;
+};
+
+export function calculateDubaiFinancials(propertyPrice: number): DubaiFinancials {
+  const price = Math.max(0, propertyPrice);
+  const dldFee = Math.round(price * 0.04);
+  const trusteeFee = price > 0 ? 4200 : 0;
+  const deposit20Pct = Math.round(price * 0.20);
+  const loanAmount = Math.max(0, price - deposit20Pct);
+  const monthlyRate = 0.045 / 12;
+  const numPayments = 25 * 12;
+  const monthlyMortgage = loanAmount > 0
+    ? Math.round((loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) / (Math.pow(1 + monthlyRate, numPayments) - 1))
+    : 0;
+  const brokerCommission2Pct = Math.round(price * 0.02);
+  const totalCashToClose = deposit20Pct + dldFee + trusteeFee;
+  const minimumSalaryRequired = monthlyMortgage * 2;
+  const agentTakeHomeNet = Math.round(brokerCommission2Pct / 2);
+
+  return {
+    propertyPrice: price,
+    dldFee,
+    trusteeFee,
+    deposit20Pct,
+    loanAmount,
+    monthlyMortgage,
+    brokerCommission2Pct,
+    totalCashToClose,
+    minimumSalaryRequired,
+    agentTakeHomeNet,
+  };
+}
+
+export function generateDealAiSummary({
+  price,
+  preset,
+}: {
+  price: number;
+  preset: "standard" | "dld" | "mortgage" | "commission";
+}): string {
+  if (price <= 0) {
+    return "🤖 DealOS Copilot: Enter any property purchase price or commission amount to generate an instant institutional financial breakdown.";
+  }
+  const f = calculateDubaiFinancials(price);
+
+  if (preset === "dld" || preset === "standard") {
+    return `🤖 DealOS Copilot: On AED ${f.propertyPrice.toLocaleString()}, DLD transfer fee is AED ${f.dldFee.toLocaleString()} (+AED 4,200 trustee). Total cash-to-close with 20% down payment is AED ${f.totalCashToClose.toLocaleString()}.`;
+  }
+  if (preset === "mortgage") {
+    return `🤖 DealOS Copilot: Loan balance of AED ${f.loanAmount.toLocaleString()} (80% LTV) yields ~AED ${f.monthlyMortgage.toLocaleString()}/mo at 4.5% over 25 yrs. Minimum required monthly salary is AED ${f.minimumSalaryRequired.toLocaleString()}.`;
+  }
+  return `🤖 DealOS Copilot: 2% gross commission is AED ${f.brokerCommission2Pct.toLocaleString()}. On a standard 50/50 broker split, agent take-home is AED ${f.agentTakeHomeNet.toLocaleString()} net.`;
+}
+
 export function PhysicalDealCalculator({
   embedded = false,
   onClose,
@@ -60,18 +124,8 @@ export function PhysicalDealCalculator({
   const currentNumeric = parseFloat(display.replace(/,/g, "")) || 0;
 
   // Real-time Dubai Financial Calculations
-  const dldFee = Math.round(currentNumeric * 0.04);
-  const trusteeFee = 4200; // standard UAE Land Department trustee fee
-  const deposit20Pct = Math.round(currentNumeric * 0.20);
-  const loanAmount = Math.max(0, currentNumeric - deposit20Pct);
-  // 25-year mortgage at 4.5% annual rate
-  const monthlyRate = 0.045 / 12;
-  const numPayments = 25 * 12;
-  const monthlyMortgage = loanAmount > 0
-    ? Math.round((loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) / (Math.pow(1 + monthlyRate, numPayments) - 1))
-    : 0;
-  const brokerCommission2Pct = Math.round(currentNumeric * 0.02);
-  const totalCashToClose = deposit20Pct + dldFee + trusteeFee;
+  const financials = calculateDubaiFinancials(currentNumeric);
+  const { dldFee, deposit20Pct, loanAmount, monthlyMortgage, brokerCommission2Pct, totalCashToClose } = financials;
 
   const handleSoundClick = (type: "num" | "op" | "eq" | "clear") => {
     if (soundEnabled) playKeyClick(type);
@@ -183,18 +237,7 @@ export function PhysicalDealCalculator({
   };
 
   // 2-Liner AI Summary based on calculation
-  const getAiSummary = () => {
-    if (currentNumeric === 0) {
-      return "🤖 DealOS Copilot: Enter any property purchase price or commission amount to generate an instant institutional financial breakdown.";
-    }
-    if (activePreset === "dld" || activePreset === "standard") {
-      return `🤖 DealOS Copilot: On AED ${currentNumeric.toLocaleString()}, DLD transfer fee is AED ${dldFee.toLocaleString()} (+AED 4,200 trustee). Total cash-to-close with 20% down payment is AED ${totalCashToClose.toLocaleString()}.`;
-    }
-    if (activePreset === "mortgage") {
-      return `🤖 DealOS Copilot: Loan balance of AED ${loanAmount.toLocaleString()} (80% LTV) yields ~AED ${monthlyMortgage.toLocaleString()}/mo at 4.5% over 25 yrs. Minimum required monthly salary is AED ${(monthlyMortgage * 2).toLocaleString()}.`;
-    }
-    return `🤖 DealOS Copilot: 2% gross commission is AED ${brokerCommission2Pct.toLocaleString()}. On a standard 50/50 broker split, agent take-home is AED ${(brokerCommission2Pct / 2).toLocaleString()} net.`;
-  };
+  const getAiSummary = () => generateDealAiSummary({ price: currentNumeric, preset: activePreset });
 
   return (
     <div

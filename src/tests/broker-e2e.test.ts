@@ -1318,58 +1318,94 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   // WORKFLOW 22: PHYSICAL DEAL CALCULATOR & AI FINANCIAL BRIEFING
   // ═══════════════════════════════════════════════════════════
   describe("Workflow 22: Physical Deal Calculator & Real-Time Dubai Metrics", () => {
-    it("calculates exact Dubai DLD fee, 20% down payment, mortgage EMI and broker commission", () => {
-      const propertyPrice = 2500000; // Standard AED 2.5M Dubai deal
+    it("executes the actual production calculateDubaiFinancials engine with 100% precision", async () => {
+      const { calculateDubaiFinancials } = await import("@/components/dealos/FloatingDealCalculator");
 
-      const dldFee = Math.round(propertyPrice * 0.04);
-      expect(dldFee).toBe(100000); // 4% DLD
+      const f25M = calculateDubaiFinancials(2500000);
+      expect(f25M.propertyPrice).toBe(2500000);
+      expect(f25M.dldFee).toBe(100000); // 4% DLD
+      expect(f25M.trusteeFee).toBe(4200); // UAE standard trustee
+      expect(f25M.deposit20Pct).toBe(500000); // 20% down payment
+      expect(f25M.loanAmount).toBe(2000000); // 80% loan
+      expect(f25M.monthlyMortgage).toBe(11117); // 25Y @ 4.5%
+      expect(f25M.brokerCommission2Pct).toBe(50000); // 2% broker fee
+      expect(f25M.totalCashToClose).toBe(604200); // 500k + 100k + 4.2k
+      expect(f25M.minimumSalaryRequired).toBe(22234); // 2x EMI
+      expect(f25M.agentTakeHomeNet).toBe(25000); // 50/50 broker split
 
-      const trusteeFee = 4200;
-      const deposit20Pct = Math.round(propertyPrice * 0.20);
-      expect(deposit20Pct).toBe(500000); // 20% deposit
+      // Edge cases: 0 AED
+      const fZero = calculateDubaiFinancials(0);
+      expect(fZero.propertyPrice).toBe(0);
+      expect(fZero.dldFee).toBe(0);
+      expect(fZero.totalCashToClose).toBe(0);
 
-      const totalCashToClose = deposit20Pct + dldFee + trusteeFee;
-      expect(totalCashToClose).toBe(604200); // Total cash required
-
-      const brokerCommission = Math.round(propertyPrice * 0.02);
-      expect(brokerCommission).toBe(50000); // 2% broker commission
-
-      // 25-yr mortgage loan calculations at 4.5% annual interest
-      const loanAmount = propertyPrice - deposit20Pct; // 2,000,000 AED
-      expect(loanAmount).toBe(2000000);
-
-      const monthlyRate = 0.045 / 12;
-      const numPayments = 25 * 12;
-      const monthlyMortgage = Math.round(
-        (loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) /
-        (Math.pow(1 + monthlyRate, numPayments) - 1)
-      );
-      expect(monthlyMortgage).toBe(11117); // ~AED 11,117/month
+      // Luxury AED 10M deal
+      const f10M = calculateDubaiFinancials(10000000);
+      expect(f10M.dldFee).toBe(400000);
+      expect(f10M.brokerCommission2Pct).toBe(200000);
+      expect(f10M.deposit20Pct).toBe(2000000);
     });
 
-    it("verifies AI 2-liner briefing generates contextual strategic narrative", () => {
-      function generateAiSummary(price: number, preset: "dld" | "mortgage" | "commission"): string {
-        const dld = Math.round(price * 0.04);
-        const dep = Math.round(price * 0.20);
-        const comm = Math.round(price * 0.02);
-        const cash = dep + dld + 4200;
+    it("executes the actual production generateDealAiSummary engine for all presets", async () => {
+      const { generateDealAiSummary } = await import("@/components/dealos/FloatingDealCalculator");
 
-        if (preset === "dld") {
-          return `🤖 DealOS Copilot: On AED ${price.toLocaleString()}, DLD transfer fee is AED ${dld.toLocaleString()} (+AED 4,200 trustee). Total cash-to-close with 20% down payment is AED ${cash.toLocaleString()}.`;
-        }
-        if (preset === "commission") {
-          return `🤖 DealOS Copilot: 2% gross commission is AED ${comm.toLocaleString()}. On a standard 50/50 broker split, agent take-home is AED ${(comm / 2).toLocaleString()} net.`;
-        }
-        return `🤖 DealOS Copilot: Loan balance calculated for ${price.toLocaleString()}.`;
-      }
+      // 1. Zero state
+      const zeroSummary = generateDealAiSummary({ price: 0, preset: "dld" });
+      expect(zeroSummary).toContain("Enter any property purchase price");
 
-      const summary = generateAiSummary(2500000, "dld");
-      expect(summary).toContain("DLD transfer fee is AED 100,000");
-      expect(summary).toContain("Total cash-to-close with 20% down payment is AED 604,200");
+      // 2. DLD / Standard preset on AED 2.5M
+      const dldSummary = generateDealAiSummary({ price: 2500000, preset: "dld" });
+      expect(dldSummary).toContain("DealOS Copilot");
+      expect(dldSummary).toContain("AED 2,500,000");
+      expect(dldSummary).toContain("DLD transfer fee is AED 100,000");
+      expect(dldSummary).toContain("+AED 4,200 trustee");
+      expect(dldSummary).toContain("Total cash-to-close with 20% down payment is AED 604,200");
 
-      const commSummary = generateAiSummary(3500000, "commission");
+      // 3. Mortgage preset on AED 2.5M
+      const mortgageSummary = generateDealAiSummary({ price: 2500000, preset: "mortgage" });
+      expect(mortgageSummary).toContain("Loan balance of AED 2,000,000 (80% LTV)");
+      expect(mortgageSummary).toContain("~AED 11,117/mo at 4.5% over 25 yrs");
+      expect(mortgageSummary).toContain("Minimum required monthly salary is AED 22,234");
+
+      // 4. Commission preset on AED 3.5M
+      const commSummary = generateDealAiSummary({ price: 3500000, preset: "commission" });
       expect(commSummary).toContain("2% gross commission is AED 70,000");
       expect(commSummary).toContain("agent take-home is AED 35,000 net");
+    });
+
+    it("verifies the actual Copilot AI getSmartRoleResponse generates verified Dubai narratives", async () => {
+      const { getSmartRoleResponse } = await import("@/routes/_authenticated/app.ai-assistant");
+
+      // Lead Strategic Analysis
+      const testLead = {
+        id: "lead-test",
+        type: "lead" as const,
+        label: "Michael Thorne",
+        sub: "UK Investor · 1BR DLRC · Handover Q4 2026",
+        budget: "AED 1,200,000",
+      };
+      const response = getSmartRoleResponse("Generate dossier", "agent", testLead);
+      expect(response).toContain("Strategic Analysis for Michael Thorne");
+      expect(response).toContain("Reef Luxury 995 (DLRC)");
+      expect(response).toContain("8.4% projected net rental yield");
+      expect(response).toContain("1-Click WhatsApp Pitch");
+
+      // Commission Aging
+      const agingResponse = getSmartRoleResponse("Check commission aging ledger", "company");
+      expect(agingResponse).toContain("Agency Commission Aging Ledger Audit");
+      expect(agingResponse).toContain("Sobha Realty");
+      expect(agingResponse).toContain("Danube Properties");
+
+      // Leaderboard
+      const leaderboardResponse = getSmartRoleResponse("Show broker sales volume leaderboard", "company");
+      expect(leaderboardResponse).toContain("Q4 Broker Sales Production & Velocity Leaderboard");
+      expect(leaderboardResponse).toContain("AED 48,250,000");
+
+      // Escrow Audit
+      const escrowResponse = getSmartRoleResponse("Verify RERA escrow trust accounts", "company");
+      expect(escrowResponse).toContain("RERA Escrow & Off-Plan Trust Account Audit");
+      expect(escrowResponse).toContain("Emirates NBD");
+      expect(escrowResponse).toContain("Mashreq Bank");
     });
   });
 

@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/app/ai-assistant")({
   component: GeminiAssistantPage,
 });
 
-type AttachedItem = {
+export type AttachedItem = {
   id: string;
   type: "lead" | "project" | "agent" | "file";
   label: string;
@@ -52,7 +52,7 @@ const RECENT_CHATS = [
   "Danube vs Sobha Payment Plan Analysis",
 ];
 
-function getSmartRoleResponse(prompt: string, role: "company" | "agent", attachedLead?: AttachedItem): string {
+export function getSmartRoleResponse(prompt: string, role: "company" | "agent", attachedLead?: AttachedItem): string {
   const q = prompt.toLowerCase();
   
   if (attachedLead) {
