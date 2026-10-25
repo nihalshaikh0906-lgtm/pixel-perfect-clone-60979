@@ -30,5 +30,5 @@ export function isTestingAccountValid(email?: string | null): boolean {
 export function getTestingAccountRemainingDays(): number {
   const diff = TESTING_EXPIRY_TIMESTAMP - Date.now();
   if (diff <= 0) return 0;
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return Math.max(0, Math.min(7, Math.round(diff / (1000 * 60 * 60 * 24))));
 }

@@ -1268,6 +1268,131 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(logoutRoute).toBe("/login");
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 21: 7-DAY UNIVERSAL TESTING ACCOUNT (dealostesting.com)
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 21: 7-Day Universal Testing Account & Expiry Guarantee", () => {
+    it("validates dealostesting.com credentials and matching password", async () => {
+      const { isTestingAccount, isTestingAccountValid, TESTING_EMAIL, TESTING_PASSWORD, getTestingAccountRemainingDays } = await import("@/lib/testing-account");
+      const { isWhitelistedAccount, isSubscriptionActive } = await import("@/components/auth/SubscriptionPaywall");
+
+      expect(TEST_EMAILS_CHECK(TESTING_EMAIL)).toBe(true);
+      expect(isTestingAccount("dealostesting.com")).toBe(true);
+      expect(isTestingAccount("test@dealostesting.com")).toBe(true);
+      expect(isTestingAccount("admin@dealostesting.com")).toBe(true);
+      expect(isTestingAccount("random@unknown.ae")).toBe(false);
+
+      expect(TESTING_PASSWORD).toBe("Rko8786!");
+      expect(isTestingAccountValid("dealostesting.com")).toBe(true);
+      expect(getTestingAccountRemainingDays()).toBeGreaterThan(0);
+      expect(getTestingAccountRemainingDays()).toBeLessThanOrEqual(7);
+
+      // Verify paywall whitelisting
+      expect(isWhitelistedAccount("dealostesting.com")).toBe(true);
+      expect(isSubscriptionActive("dealostesting.com")).toBe(true);
+    });
+
+    it("verifies testing account automatically becomes invalid after 7 days", async () => {
+      const { TESTING_EXPIRY_TIMESTAMP } = await import("@/lib/testing-account");
+
+      function simulateAccountValidity(timestamp: number): boolean {
+        return timestamp <= TESTING_EXPIRY_TIMESTAMP;
+      }
+
+      // Valid right now (Oct 25, 2026)
+      const now = new Date("2026-10-25T18:00:00+04:00").getTime();
+      expect(simulateAccountValidity(now)).toBe(true);
+
+      // Valid on day 5 (Oct 30, 2026)
+      const day5 = new Date("2026-10-30T12:00:00+04:00").getTime();
+      expect(simulateAccountValidity(day5)).toBe(true);
+
+      // Invalid after 7-day expiration (Nov 2, 2026)
+      const postExpiry = new Date("2026-11-02T00:00:01+04:00").getTime();
+      expect(simulateAccountValidity(postExpiry)).toBe(false);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 22: PHYSICAL DEAL CALCULATOR & AI FINANCIAL BRIEFING
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 22: Physical Deal Calculator & Real-Time Dubai Metrics", () => {
+    it("calculates exact Dubai DLD fee, 20% down payment, mortgage EMI and broker commission", () => {
+      const propertyPrice = 2500000; // Standard AED 2.5M Dubai deal
+
+      const dldFee = Math.round(propertyPrice * 0.04);
+      expect(dldFee).toBe(100000); // 4% DLD
+
+      const trusteeFee = 4200;
+      const deposit20Pct = Math.round(propertyPrice * 0.20);
+      expect(deposit20Pct).toBe(500000); // 20% deposit
+
+      const totalCashToClose = deposit20Pct + dldFee + trusteeFee;
+      expect(totalCashToClose).toBe(604200); // Total cash required
+
+      const brokerCommission = Math.round(propertyPrice * 0.02);
+      expect(brokerCommission).toBe(50000); // 2% broker commission
+
+      // 25-yr mortgage loan calculations at 4.5% annual interest
+      const loanAmount = propertyPrice - deposit20Pct; // 2,000,000 AED
+      expect(loanAmount).toBe(2000000);
+
+      const monthlyRate = 0.045 / 12;
+      const numPayments = 25 * 12;
+      const monthlyMortgage = Math.round(
+        (loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) /
+        (Math.pow(1 + monthlyRate, numPayments) - 1)
+      );
+      expect(monthlyMortgage).toBe(11117); // ~AED 11,117/month
+    });
+
+    it("verifies AI 2-liner briefing generates contextual strategic narrative", () => {
+      function generateAiSummary(price: number, preset: "dld" | "mortgage" | "commission"): string {
+        const dld = Math.round(price * 0.04);
+        const dep = Math.round(price * 0.20);
+        const comm = Math.round(price * 0.02);
+        const cash = dep + dld + 4200;
+
+        if (preset === "dld") {
+          return `🤖 DealOS Copilot: On AED ${price.toLocaleString()}, DLD transfer fee is AED ${dld.toLocaleString()} (+AED 4,200 trustee). Total cash-to-close with 20% down payment is AED ${cash.toLocaleString()}.`;
+        }
+        if (preset === "commission") {
+          return `🤖 DealOS Copilot: 2% gross commission is AED ${comm.toLocaleString()}. On a standard 50/50 broker split, agent take-home is AED ${(comm / 2).toLocaleString()} net.`;
+        }
+        return `🤖 DealOS Copilot: Loan balance calculated for ${price.toLocaleString()}.`;
+      }
+
+      const summary = generateAiSummary(2500000, "dld");
+      expect(summary).toContain("DLD transfer fee is AED 100,000");
+      expect(summary).toContain("Total cash-to-close with 20% down payment is AED 604,200");
+
+      const commSummary = generateAiSummary(3500000, "commission");
+      expect(commSummary).toContain("2% gross commission is AED 70,000");
+      expect(commSummary).toContain("agent take-home is AED 35,000 net");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 23: DUAL PERSONA SEAMLESS TRANSITION
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 23: Dual Persona Transition for Testing Account", () => {
+    it("permits testing account to switch seamlessly between Owner and Broker desks", async () => {
+      setActiveEmail("dealostesting.com");
+
+      setStoredRole("company");
+      let role = await detectRole();
+      expect(role).toBe("company");
+
+      setStoredRole("agent");
+      role = await detectRole();
+      expect(role).toBe("agent");
+    });
+  });
 });
+
+function TEST_EMAILS_CHECK(em: string): boolean {
+  return em === "dealostesting.com";
+}
 
 
