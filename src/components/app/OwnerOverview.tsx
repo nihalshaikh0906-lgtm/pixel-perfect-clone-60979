@@ -1,6 +1,7 @@
 import { AlertTriangle, Clock, Building, ShieldCheck, Send, CheckCircle2, Award, Trophy, MessageSquare, ChevronRight, Zap } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 const RANGES = ["Last 30 days", "Quarter to date", "Year to date", "Last 12 months"];
 const KPIS = [
@@ -249,17 +250,17 @@ export function OwnerOverview() {
                     </td>
                     <td className="text-foreground">{a.conv}</td>
                     <td className="text-right pr-2">
-                      <a
-                        href={`https://wa.me/?text=${encodeURIComponent(
-                          `Hi ${a.name}, DealOS Performance Check: You have closed ${a.deals} deals (${a.revenue}) with an average response time of ${a.speed}. Keep up the great work!`
-                        )}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-secondary/80 hover:bg-emerald-500/20 hover:text-emerald-400 border border-border/80 transition-all"
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const msg = `Hi ${a.name}, DealOS Performance Check: You have closed ${a.deals} deals (${a.revenue}) with an average response time of ${a.speed}. Keep up the great work!`;
+                          openWhatsApp({ text: msg, recipientName: a.name });
+                        }}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-secondary/80 hover:bg-emerald-500/20 hover:text-emerald-400 border border-border/80 transition-all cursor-pointer"
                       >
                         <MessageSquare size={11} />
                         <span>WhatsApp</span>
-                      </a>
+                      </button>
                     </td>
                   </tr>
                 ))}

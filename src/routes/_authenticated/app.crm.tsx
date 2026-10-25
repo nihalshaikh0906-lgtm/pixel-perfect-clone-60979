@@ -6,6 +6,7 @@ import { Building2, RotateCcw, Trash2, MessageCircle, Mic, Sparkles, CheckCircle
 import { supabase } from "@/integrations/supabase/client";
 import { ImportModal } from "@/components/app/ImportModal";
 import { Button } from "@/components/ui/button";
+import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/_authenticated/app/crm")({
   head: () => ({
@@ -317,10 +318,16 @@ function CrmPage() {
                 <>
                   {l.phone && (
                     <a
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:bg-emerald-500/25 transition-all shadow-xs"
-                      href={`https://wa.me/${l.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`)}`}
-                      target="_blank"
-                      rel="noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:bg-emerald-500/25 transition-all shadow-xs cursor-pointer"
+                      href={getWhatsAppNativeUrl(l.phone, `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        openWhatsApp({
+                          phone: l.phone,
+                          text: `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`,
+                          recipientName: l.name,
+                        });
+                      }}
                     >
                       <MessageCircle size={14} className="text-emerald-500" />
                       <span>WhatsApp Pitch</span>
@@ -436,14 +443,19 @@ function CrmPage() {
                     {tab === "active" ? (
                       <div className="flex items-center gap-2">
                         {l.phone && (
-                          <a
-                            className="a-btn a-btn-line text-xs py-1 px-2.5 flex items-center gap-1 hover:border-emerald-500 hover:text-emerald-400"
-                            href={`https://wa.me/${l.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`)}`}
-                            target="_blank"
-                            rel="noreferrer"
+                          <button
+                            type="button"
+                            className="a-btn a-btn-line text-xs py-1 px-2.5 flex items-center gap-1 hover:border-emerald-500 hover:text-emerald-400 cursor-pointer"
+                            onClick={() => {
+                              openWhatsApp({
+                                phone: l.phone,
+                                text: `Dear ${l.name}, following up regarding your interest in Dubai high-yield investments. I have prepared an exclusive investment dossier on ${l.matched_unit || "Reef 995"} with a 30-month post-handover payment plan. Let me know when you have 5 minutes to review.`,
+                                recipientName: l.name,
+                              });
+                            }}
                           >
                             <MessageCircle size={13} className="text-emerald-400" /> WhatsApp Pitch
-                          </a>
+                          </button>
                         )}
                         <button className="a-btn text-xs py-1 px-2" aria-label="Move to bin" onClick={() => update(l.id, { deleted_at: new Date().toISOString() }, "Moved to bin")}><Trash2 size={13} /></button>
                       </div>

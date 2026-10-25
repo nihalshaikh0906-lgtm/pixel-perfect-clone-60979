@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useShell } from "./AppShell";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export type OffplanProjectDetail = {
   id: string;
@@ -300,8 +301,7 @@ export function OffplanProjects({
 
   const handleShareWhatsApp = (project: OffplanProjectDetail) => {
     const pitch = `🏛️ *${project.name}* by *${project.developer}*\n📍 *Location:* ${project.district}\n💰 *Price:* ${project.priceAed} (${project.priceUsd})\n💳 *Payment Plan:* ${project.paymentPlanHeadline}\n🏗️ *Handover:* ${project.handover}\n📈 *Projected Yield:* ${project.projectedRoi}\n🛡️ *DLD Escrow:* ${project.escrowNumber}\n🗺️ *Location on Maps:* ${project.googleMapsUrl}\n\nWould you like me to reserve a holding unit or send the official PDF brochure and unit floor plans?`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(pitch)}`, "_blank");
-    toast.success(`WhatsApp luxury pitch generated for ${project.name}`);
+    openWhatsApp({ text: pitch, recipientName: project.name });
   };
 
   const scrollToProject = (id: string) => {

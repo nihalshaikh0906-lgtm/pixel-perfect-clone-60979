@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { CsvImporterModal } from "@/components/leads/CsvImporterModal";
+import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
 import {
   ago, formatAed, LEAD_BY_ID, QUEUES, queueCount, queueLeads,
   SOURCES, wants, priorityOf, type Lead, type LeadType, type Queue
@@ -34,10 +35,10 @@ export const Route = createFileRoute("/_authenticated/app/leads/")({
 
 const PAGE = 20;
 
-const waLink = (l: Lead) =>
-  `https://wa.me/${l.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-    `Hi ${l.name.split(" ")[0]}, thanks for your enquiry about ${wants(l)} in ${l.area} (Budget: ${formatAed(l.budget)}). When is a good time for a quick 2-minute overview?`
-  )}`;
+const waMessage = (l: Lead) =>
+  `Hi ${l.name.split(" ")[0]}, thanks for your enquiry about ${wants(l)} in ${l.area} (Budget: ${formatAed(l.budget)}). When is a good time for a quick 2-minute overview?`;
+
+const waLink = (l: Lead) => getWhatsAppNativeUrl(l.phone, waMessage(l));
 
 function timeOf(l: Lead) {
   if (l.followUpDueInHours !== null && l.followUpDueInHours <= 0)
@@ -309,10 +310,12 @@ function Inbox() {
               >
                 <a
                   href={waLink(l)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
-                  title="WhatsApp client"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openWhatsApp({ phone: l.phone, text: waMessage(l), recipientName: l.name });
+                  }}
+                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                  title="Open WhatsApp chat immediately"
                 >
                   <MessageCircle size={14} />
                   <span>WhatsApp</span>

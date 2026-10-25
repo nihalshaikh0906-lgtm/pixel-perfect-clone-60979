@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { openWhatsApp, getWhatsAppNativeUrl, getWhatsAppWebUrl } from "@/lib/whatsapp-send";
 
 const COUNTRY_CODES = [
   { code: "+971", country: "United Arab Emirates", flag: "🇦🇪", digits: 9 },
@@ -188,39 +189,21 @@ export function WhatsAppOtpVerification() {
 
   const handleTestEcho = (mode: "web" | "app" | "copy" = "web") => {
     if (!verifiedPhone) return;
-    const cleanNum = verifiedPhone.replace(/\D/g, "");
     const msg = `DealOS WhatsApp Verification Confirmation: Your phone number is verified and active on DealOS.`;
 
     if (mode === "copy") {
-      const shareUrl = `https://web.whatsapp.com/send?phone=${cleanNum}&text=${encodeURIComponent(msg)}`;
+      const shareUrl = getWhatsAppWebUrl(verifiedPhone, msg);
       void navigator.clipboard?.writeText(shareUrl);
       toast.success("WhatsApp link copied to clipboard! Paste in any tab or browser.", { icon: "📋" });
       return;
     }
 
-    // web.whatsapp.com avoids Safari's native protocol error ("Safari cannot open the page")
-    const targetUrl = mode === "web"
-      ? `https://web.whatsapp.com/send?phone=${cleanNum}&text=${encodeURIComponent(msg)}`
-      : `https://wa.me/${cleanNum}?text=${encodeURIComponent(msg)}`;
-
-    try {
-      const win = window.open(targetUrl, "_blank", "noopener,noreferrer");
-      if (!win) {
-        // Pop-up was blocked (common inside Lovable iframe or strict Safari settings)
-        void navigator.clipboard?.writeText(targetUrl);
-        toast.info("Browser blocked pop-up. WhatsApp link copied to clipboard!", {
-          action: {
-            label: "Open Directly",
-            onClick: () => { window.location.href = targetUrl; },
-          },
-        });
-      } else {
-        toast.success("Opening WhatsApp Web chat...", { icon: "💬" });
-      }
-    } catch {
-      void navigator.clipboard?.writeText(targetUrl);
-      toast.info("WhatsApp link copied to clipboard!");
-    }
+    // Opens ANY installed WhatsApp app (Personal or Business) immediately
+    openWhatsApp({
+      phone: verifiedPhone,
+      text: msg,
+      recipientName: "Verified Device",
+    });
   };
 
   return (
@@ -534,13 +517,13 @@ export function WhatsAppOtpVerification() {
               </div>
               <div>
                 <p className="text-xs uppercase font-mono font-bold text-emerald-400 tracking-wider">
-                  Verified WhatsApp Business Device
+                  Verified WhatsApp Device (Standard &amp; Business Supported)
                 </p>
                 <p className="text-lg font-extrabold text-foreground font-mono tracking-tight">
                   {verifiedPhone}
                 </p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Verified with 6-digit OTP · Active for Inbound Inquiries &amp; Client Pitching ({verifiedAt})
+                  Verified with 6-digit OTP · Active for Inbound Inquiries, WhatsApp Messenger &amp; Business App ({verifiedAt})
                 </p>
               </div>
             </div>

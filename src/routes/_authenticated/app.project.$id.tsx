@@ -15,6 +15,7 @@ import {
 import { projectDetailOptions } from "@/lib/inventory.functions";
 import { mediaUrl, projectGalleryImages } from "@/lib/media";
 import { aed, quarterOf } from "@/lib/format";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 const CLOUDFLARE_R2_DEV = "https://pub-f6d1184c524b460699f4a87f4b1278b0.r2.dev";
 
@@ -199,7 +200,7 @@ function Page() {
 ${window.location.href}
 
 Are you available for a brief call to reserve this allocation?`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    openWhatsApp({ text, recipientName: data.name });
   };
 
   const handleBrochureClick = () => {

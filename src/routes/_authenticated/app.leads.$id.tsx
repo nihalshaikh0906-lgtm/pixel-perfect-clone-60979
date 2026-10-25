@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useShell } from "@/components/app/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { ago, formatAed, LEAD_BY_ID, OPEN_STAGES, priorityOf, wants, type Lead, type Stage } from "@/lib/demo-leads";
+import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DealRoomView } from "../deal-room.$id";
@@ -640,10 +641,12 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
                 </button>
 
                 <a
-                  href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(currentScript)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 transition-all shadow-md"
+                  href={getWhatsAppNativeUrl(cleanPhone, currentScript)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openWhatsApp({ phone: cleanPhone, text: currentScript, recipientName: firstName });
+                  }}
+                  className="h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <MessageCircle size={15} />
                   <span>Send on WhatsApp ↗</span>
@@ -655,7 +658,7 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
                     const origin = typeof window !== "undefined" ? window.location.origin : "https://dealos.ae";
                     const dealRoomUrl = `${origin}/deal-room/${lead.id}`;
                     const dealRoomMsg = `Hi ${firstName}, I've engineered your private Live Deal Room with real-time ROI simulations, unit floor plans, and verified DLD escrow milestones:\n\n${dealRoomUrl}\n\nHave a look and let me know if you would like me to lock in the 48-hour reservation.`;
-                    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(dealRoomMsg)}`, "_blank");
+                    openWhatsApp({ phone: cleanPhone, text: dealRoomMsg, recipientName: firstName });
                   }}
                   className="col-span-2 h-10 rounded-xl bg-gradient-to-r from-primary to-violet-600 hover:brightness-105 text-white font-extrabold text-xs inline-flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
                 >
@@ -728,10 +731,12 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
       {/* ═══ MOBILE FLOATING STICKY ACTION DOCK ═══ */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t border-border/80 z-40 flex items-center gap-2 shadow-2xl">
         <a
-          href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent(currentScript)}`}
-          target="_blank"
-          rel="noreferrer"
-          className="flex-1 h-11 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs inline-flex items-center justify-center gap-2 shadow-lg"
+          href={getWhatsAppNativeUrl(cleanPhone, currentScript)}
+          onClick={(e) => {
+            e.preventDefault();
+            openWhatsApp({ phone: cleanPhone, text: currentScript, recipientName: firstName });
+          }}
+          className="flex-1 h-11 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs inline-flex items-center justify-center gap-2 shadow-lg cursor-pointer"
         >
           <MessageCircle size={16} />
           <span>WhatsApp {firstName} ↗</span>
@@ -779,9 +784,9 @@ ${firstName} has strong purchasing power (**${formatAed(lead.budget)}**) vs ${he
               </Button>
               <Button
                 onClick={() => {
-                  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(currentScript)}`, "_blank");
+                  openWhatsApp({ phone: cleanPhone, text: currentScript, recipientName: firstName });
                 }}
-                className="rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+                className="rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 cursor-pointer"
               >
                 <MessageCircle size={14} />
                 <span>Send Script on WhatsApp</span>

@@ -10,6 +10,7 @@ import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { formatAed } from "@/lib/demo-leads";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/_authenticated/app/deals")({
   head: () => workspaceHead("Deals & Commissions"),
@@ -680,8 +681,7 @@ function Page() {
   const handleWhatsAppBuyer = (e: React.MouseEvent, deal: Deal) => {
     e.stopPropagation();
     const text = `Hi ${deal.buyer.split(" ")[0]}, following up on your property transaction for *${deal.property}* (${deal.unit}) at ${deal.area}. Current status is: *${deal.stage}*. Next milestone: ${deal.nextMilestone}. Please let me know if you need any assistance!`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`WhatsApp message prepared for ${deal.buyer}`);
+    openWhatsApp({ text, recipientName: deal.buyer });
   };
 
   return (

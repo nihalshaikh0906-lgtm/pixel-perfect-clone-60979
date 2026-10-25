@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { aed } from "@/lib/format";
 import { toast } from "sonner";
+import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
 
 // ═══ WEB AUDIO API SYNTHESIZER: MONEY BELL CHIME ═══
 function playMoneyBellChime() {
@@ -1358,7 +1359,7 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
       : `Hi ${broker.name} (${broker.reraNumber}), congratulations from DealOS Agency Overwatch! You've closed ${broker.closedVolumeFormatted} across ${broker.dealsClosed} deals this month. Fantastic momentum!`;
 
     const cleanPhone = broker.phone.replace(/\D/g, "");
-    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+    openWhatsApp({ phone: cleanPhone, text: msg, recipientName: broker.name });
 
     try {
       const logs = JSON.parse(localStorage.getItem("dealos_coaching_logs") || "[]");
@@ -2359,17 +2360,17 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                       <span>Dispatch RERA Claim</span>
                     </Button>
                   ) : (
-                    <a
-                      href={`https://wa.me/971501112233?text=${encodeURIComponent(
-                        `Hi Accounts Department, checking status of voucher ${voucher.voucherNumber} for ${voucher.amountFormatted} on ${voucher.project}. Can you confirm payout date?`
-                      )}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs shadow-xs"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const msg = `Hi Accounts Department, checking status of voucher ${voucher.voucherNumber} for ${voucher.amountFormatted} on ${voucher.project}. Can you confirm payout date?`;
+                        openWhatsApp({ phone: "971501112233", text: msg, recipientName: "Accounts Department" });
+                      }}
+                      className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs shadow-xs cursor-pointer"
                     >
                       <MessageCircle size={14} className="text-emerald-500" />
                       <span>Ping Accounts</span>
-                    </a>
+                    </button>
                   )}
                 </div>
               </div>
@@ -3225,7 +3226,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                   const brokerPhone = selectedLeadForBrief.brokerPhone;
                   const cleanPhone = brokerPhone.replace(/\D/g, "");
                   const msg = `Hi ${brokerName}, checking in regarding lead ${selectedLeadForBrief.clientName} (${selectedLeadForBrief.budgetFormatted} on ${selectedLeadForBrief.projectInterest}). What is the next milestone to lock this deal today?`;
-                  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+                  openWhatsApp({ phone: cleanPhone, text: msg, recipientName: brokerName });
 
                   try {
                     const logs = JSON.parse(localStorage.getItem("dealos_coaching_logs") || "[]");
@@ -3444,17 +3445,19 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             {/* Communication & Workspace Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <a
-                  href={`https://wa.me/${selectedLeadForDossier.brokerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                    `Hi ${selectedLeadForDossier.assignedBrokerName.split(" ")[0]}, following up on lead ${selectedLeadForDossier.clientName} (${selectedLeadForDossier.budgetFormatted} on ${selectedLeadForDossier.projectInterest}). What is the next step to lock this deal today?`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all w-full sm:w-auto"
+                <button
+                  type="button"
+                  onClick={() => {
+                    const brokerName = selectedLeadForDossier.assignedBrokerName;
+                    const brokerPhone = selectedLeadForDossier.brokerPhone;
+                    const msg = `Hi ${brokerName.split(" ")[0]}, following up on lead ${selectedLeadForDossier.clientName} (${selectedLeadForDossier.budgetFormatted} on ${selectedLeadForDossier.projectInterest}). What is the next step to lock this deal today?`;
+                    openWhatsApp({ phone: brokerPhone, text: msg, recipientName: brokerName });
+                  }}
+                  className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all w-full sm:w-auto cursor-pointer"
                 >
                   <MessageCircle size={14} />
                   <span>Message Broker</span>
-                </a>
+                </button>
 
               </div>
 

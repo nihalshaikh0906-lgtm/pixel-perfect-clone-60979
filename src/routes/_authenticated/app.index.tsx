@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { detectRole, getStoredRole, type DealOSRole } from "@/lib/auth-role";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   beforeLoad: async () => {
@@ -146,7 +147,7 @@ function BrokerCockpit({ userName }: { userName?: string }) {
 Following up on your search for a ${l.beds} BR in ${l.area} (Budget: ${formatAed(l.budget)}).
 We just secured exclusive developer allocation with a flexible payment plan.
 When are you free today for a quick 2-minute overview?`;
-    window.open(`https://wa.me/${l.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
+    openWhatsApp({ phone: l.phone, text, recipientName: l.name });
   };
 
   const handleCreateLead = (e: React.FormEvent) => {
@@ -678,10 +679,10 @@ When are you free today for a quick 2-minute overview?`;
 
                 <Button
                   size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1 text-xs"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1 text-xs cursor-pointer"
                   onClick={() => {
                     const text = `Hi ${quickPitchModal?.name.split(" ")[0]}! I just matched your criteria with *${p.name}* in ${p.district}.\nView the official developer deck: ${window.location.origin}/app/project/${p.id}`;
-                    window.open(`https://wa.me/${quickPitchModal?.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
+                    openWhatsApp({ phone: quickPitchModal?.phone, text, recipientName: quickPitchModal?.name });
                     setQuickPitchModal(null);
                   }}
                 >

@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { LEADS, formatAed, type Lead } from "@/lib/demo-leads";
 import { toast } from "sonner";
 import { useShell } from "./AppShell";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export type RentalProperty = {
   id: string;
@@ -241,14 +242,12 @@ export function RentalInventory({
 
   const handleWhatsAppTenant = (lead: Lead, property: RentalProperty) => {
     const text = `Hi ${lead.name.split(" ")[0]}! We just registered a verified tenancy at *${property.tower}* in ${property.district} that matches your rental criteria:\n\n🏡 *Property:* ${property.title}\n💰 *Rent:* ${property.rentFormatted} (${property.cheques})\n❄️ *Chiller:* ${property.chillerFree ? "Free Included" : "Standard"}\n🛋️ *Furnishing:* ${property.furnishing}\n📍 *Maps:* ${property.googleMapsUrl}\n\nWould you like to schedule an Ejari viewing inspection this week?`;
-    window.open(`https://wa.me/${lead.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`WhatsApp match dispatched to ${lead.name}`);
+    openWhatsApp({ phone: lead.phone, text, recipientName: lead.name });
   };
 
   const handleShareListing = (property: RentalProperty) => {
     const text = `Verified Dubai Rental Listing:\n\n*${property.title}*\n📍 Location: ${property.district} (${property.tower})\n💰 Rent: ${property.rentFormatted}\n💳 Terms: ${property.cheques} · ${property.deposit}\n🛋️ Furnishing: ${property.furnishing}\n📐 Size: ${property.bedrooms} BR · ${property.sizeSqft} sq.ft\n🗺️ Google Maps: ${property.googleMapsUrl}\n🛡️ Permit: ${property.ejariPermit}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`Rental brochure copied for ${property.title}`);
+    openWhatsApp({ text, recipientName: property.title });
   };
 
   return (

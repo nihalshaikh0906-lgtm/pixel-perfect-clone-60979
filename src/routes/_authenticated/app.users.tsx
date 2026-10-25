@@ -9,6 +9,7 @@ import {
 import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { Button } from "@/components/ui/button";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/_authenticated/app/users")({
   head: () => workspaceHead("Manage Users & Team · Company Owner"),
@@ -491,9 +492,9 @@ export function ManageUsersPage() {
             onClick={() => {
               const link = `${window.location.origin}/join?agency=Skyline%20Luxury%20Real%20Estate%20LLC&token=sky2026`;
               const msg = `Salam Team, here is the link to activate your broker seat on DealOS under our company license:\n\n${link}`;
-              window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+              openWhatsApp({ text: msg, recipientName: "Team WhatsApp" });
             }}
-            className="h-10 px-4 rounded-xl text-xs font-bold gap-2 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
+            className="h-10 px-4 rounded-xl text-xs font-bold gap-2 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm cursor-pointer"
           >
             <MessageCircle size={14} />
             <span>Share to Team WhatsApp</span>
@@ -763,10 +764,10 @@ export function ManageUsersPage() {
                         <button
                           type="button"
                           onClick={() => {
-                            const clean = u.phone.replace(/[^0-9]/g, "");
-                            window.open(`https://wa.me/${clean}?text=${encodeURIComponent(`Hi ${u.name}, touching base regarding your current pipeline and leadbox pace on DealOS.`)}`, "_blank");
+                            const msg = `Hi ${u.name}, touching base regarding your current pipeline and leadbox pace on DealOS.`;
+                            openWhatsApp({ phone: u.phone, text: msg, recipientName: u.name });
                           }}
-                          className="size-8 rounded-xl border border-border/80 bg-secondary/40 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 flex items-center justify-center transition-all text-muted-foreground"
+                          className="size-8 rounded-xl border border-border/80 bg-secondary/40 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 flex items-center justify-center transition-all text-muted-foreground cursor-pointer"
                           title="Message on WhatsApp"
                         >
                           <MessageCircle size={14} />

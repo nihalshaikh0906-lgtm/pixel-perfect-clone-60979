@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { supabase } from "@/integrations/supabase/client";
 import { aed, beds, quarterOf, sqft } from "@/lib/format";
 import { findTourUrl } from "@/lib/youtube";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 
 type PackDoc = { type: string; name: string | null; url: string | null };
@@ -94,8 +95,7 @@ export function PropertyPackDrawer({
     } catch {
       toast.error("Could not copy the pitch");
     }
-    const phone = (clientPhone ?? "").replace(/[^\d]/g, "");
-    window.open(phone ? `https://wa.me/${phone}` : "https://wa.me/", "_blank", "noopener");
+    openWhatsApp({ phone: clientPhone, text: pitch, recipientName: clientName || "client" });
   }
 
   async function saveToShortlist() {

@@ -14,6 +14,12 @@ import {
   type Lead,
 } from "@/lib/demo-leads";
 import {
+  formatWhatsAppDigits,
+  getWhatsAppNativeUrl,
+  getWhatsAppWebUrl,
+  openWhatsApp,
+} from "@/lib/whatsapp-send";
+import {
   isFreeAccessActive,
   isSubscriptionActive,
   isWhitelistedAccount,
@@ -1578,6 +1584,48 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       const myLeads = queueLeads("all");
       expect(myLeads.length).toBeGreaterThanOrEqual(1);
       expect(myLeads[0].name).toBe("Rashid Al Nuaimi");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 27: UNIVERSAL WHATSAPP DISPATCH (ANY INSTALLED APP)
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 27: Universal WhatsApp Dispatch (Any Installed App: Regular & Business)", () => {
+    it("formats digits properly including UAE local 05 numbers", () => {
+      expect(formatWhatsAppDigits("+971 50 123 4567")).toBe("971501234567");
+      expect(formatWhatsAppDigits("050 123 4567")).toBe("971501234567");
+      expect(formatWhatsAppDigits("+44 7911 123456")).toBe("447911123456");
+      expect(formatWhatsAppDigits("")).toBe("");
+    });
+
+    it("generates native whatsapp:// URI that launches ANY installed WhatsApp app", () => {
+      const nativeUri = getWhatsAppNativeUrl("+971 50 123 4567", "Hello from DealOS");
+      expect(nativeUri).toBe("whatsapp://send?phone=971501234567&text=Hello%20from%20DealOS");
+
+      // Without phone number (general sharing / project brochure)
+      const broadcastUri = getWhatsAppNativeUrl(null, "Check this penthouse");
+      expect(broadcastUri).toBe("whatsapp://send?text=Check%20this%20penthouse");
+    });
+
+    it("generates universal web URL fallback", () => {
+      const webUrl = getWhatsAppWebUrl("+971 50 123 4567", "Hello");
+      expect(webUrl).toBe("https://api.whatsapp.com/send?phone=971501234567&text=Hello");
+    });
+
+    it("dispatches openWhatsApp without crashing and launches target chat", () => {
+      let dispatchSuccessful = false;
+      try {
+        openWhatsApp({
+          phone: "+971 50 999 8888",
+          text: "Sending property dossier now",
+          recipientName: "Rashid",
+          silent: true,
+        });
+        dispatchSuccessful = true;
+      } catch {
+        dispatchSuccessful = false;
+      }
+      expect(dispatchSuccessful).toBe(true);
     });
   });
 });

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { formatAed, LEAD_BY_ID } from "@/lib/demo-leads";
 import { Button } from "@/components/ui/button";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/_authenticated/app/follow-ups")({
   head: () => workspaceHead("Follow-Ups"),
@@ -148,8 +149,7 @@ function Page() {
 
   const handleWhatsApp = (task: Task) => {
     const text = `Hi ${task.lead.split(" ")[0]}, following up regarding your inquiry for ${task.propertyInterest} (Budget: ${formatAed(task.budget)}). I have the updated documentation ready. When is a good time for a quick 2-minute call?`;
-    window.open(`https://wa.me/${task.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`WhatsApp follow-up dispatched to ${task.lead}`);
+    openWhatsApp({ phone: task.phone, text, recipientName: task.lead });
   };
 
   const markCompleted = (id: string) => {

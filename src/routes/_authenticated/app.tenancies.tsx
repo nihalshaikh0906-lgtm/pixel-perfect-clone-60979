@@ -9,6 +9,7 @@ import {
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/_authenticated/app/tenancies")({
   head: () => workspaceHead("Tenancies & Ejari"),
@@ -179,8 +180,7 @@ function Page() {
     const text = t.arrears > 0
       ? `Dear ${t.tenant.split(" ")[0]}, polite reminder from property management regarding pending rent of ${aed(t.arrears)} for ${t.property} (${t.unit}). Please confirm cheque clearance date.`
       : `Dear ${t.tenant.split(" ")[0]}, following up on your tenancy at ${t.property} (${t.unit}). Next scheduled inspection is upcoming. Let us know if you need any maintenance support.`;
-    window.open(`https://wa.me/${t.tenantPhone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`WhatsApp message prepared for ${t.tenant}`);
+    openWhatsApp({ phone: t.tenantPhone, text, recipientName: t.tenant });
   };
 
   return (

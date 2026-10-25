@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { LEAD_BY_ID, type Lead } from "@/lib/demo-leads";
+import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/deal-room/$id")({
   ssr: false,
@@ -397,15 +398,20 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
                 <p className="text-[11px] text-[#4B5272]">{brokerTitle}</p>
                 <p className="text-[10px] font-mono text-[#2F6BFF] font-semibold">{brokerRera}</p>
               </div>
-              <a
-                href={`https://wa.me/${brokerPhone.replace(/\D/g, "")}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-xl bg-[#E8F7EE] hover:bg-[#d6f0df] text-[#16A34A] flex items-center justify-center transition-all ml-1"
+              <button
+                type="button"
+                onClick={() => {
+                  openWhatsApp({
+                    phone: brokerPhone,
+                    text: `Hello ${brokerName}, I am reviewing your DealOS Live Deal Room for ${investorName}.`,
+                    recipientName: brokerName,
+                  });
+                }}
+                className="w-9 h-9 rounded-xl bg-[#E8F7EE] hover:bg-[#d6f0df] text-[#16A34A] flex items-center justify-center transition-all ml-1 cursor-pointer"
                 title="Direct WhatsApp with Advisor"
               >
                 <MessageCircle size={16} />
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -813,7 +819,13 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
 
             <button
               type="button"
-              onClick={() => setReservationModalOpen(true)}
+              onClick={() => {
+                openWhatsApp({
+                  phone: brokerPhone,
+                  text: reservationMessageRaw,
+                  recipientName: brokerName,
+                });
+              }}
               className="h-10 px-5 rounded-xl bg-gradient-to-r from-[#2F6BFF] to-[#7B4DFF] hover:brightness-105 active:scale-[0.99] text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-[#2F6BFF]/25 w-full sm:w-auto cursor-pointer"
             >
               <MessageCircle size={15} />
@@ -824,7 +836,7 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
         </div>
       </div>
 
-      {/* ═══ IN-PAGE SIMULATED WHATSAPP RESERVATION MODAL ═══ */}
+      {/* ═══ WHATSAPP RESERVATION DISPATCH MODAL ═══ */}
       {reservationModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-200">
           <div className="w-full max-w-lg rounded-3xl bg-[#0B141A] border border-emerald-500/40 p-6 sm:p-7 shadow-2xl text-white space-y-4 relative my-8">
@@ -832,7 +844,7 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-xs font-mono font-bold text-emerald-400">
-                  Simulated WhatsApp Dispatch · {brokerName} ({brokerPhone})
+                  WhatsApp Direct Dispatch · {brokerName} ({brokerPhone})
                 </span>
               </div>
               <button
@@ -866,27 +878,34 @@ export function DealRoomView({ leadId }: { leadId?: string }) {
                   {activeDeal.name} · {formatMoney(activeDeal.basePriceAed)}
                 </span>
                 <span className="text-emerald-400 font-bold flex items-center gap-1 text-[10px]">
-                  Delivered <CheckCheck size={13} />
+                  Ready to send <CheckCheck size={13} />
                 </span>
               </div>
             </div>
 
-            <p className="text-[11px] text-zinc-400 text-center">
-              🔒 In-page demonstration effect · External WhatsApp app not opened on device.
-            </p>
-
             <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
-              <div className="w-full sm:flex-1 h-11 rounded-xl bg-white/5 border border-white/10 text-zinc-300 font-mono text-[11px] flex items-center justify-center gap-1.5 px-3 text-center">
-                <Eye size={13} className="text-emerald-400" />
-                <span>Viewable Client Draft · Read-Only</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setReservationModalOpen(false);
+                  openWhatsApp({
+                    phone: brokerPhone,
+                    text: reservationMessageRaw,
+                    recipientName: brokerName,
+                  });
+                }}
+                className="w-full sm:flex-1 h-11 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-500/25"
+              >
+                <MessageCircle size={15} />
+                <span>Open WhatsApp &amp; Send Now ↗</span>
+              </button>
 
               <button
                 type="button"
                 onClick={() => setReservationModalOpen(false)}
-                className="w-full sm:w-auto h-11 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition-all cursor-pointer"
+                className="w-full sm:w-auto h-11 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-all cursor-pointer"
               >
-                Close Preview
+                Close
               </button>
             </div>
           </div>

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { workspaceHead } from "@/components/app/WorkspacePlaceholder";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export const Route = createFileRoute("/_authenticated/app/agreements")({
   head: () => workspaceHead("Agreements & Legal"),
@@ -145,8 +146,7 @@ function Page() {
   const handleShareDoc = (e: React.MouseEvent, doc: Agreement) => {
     e.stopPropagation();
     const text = `Official Document: *${doc.title}* (${doc.ref})\nParties: ${doc.parties}\nValue: ${doc.value}\nStatus: ${doc.status}\nDate: ${doc.date}. Official DLD-compliant document issued by Skyline Realty LLC.`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`WhatsApp link prepared for ${doc.ref}`);
+    openWhatsApp({ text, recipientName: doc.title });
   };
 
   return (

@@ -31,6 +31,7 @@ import {
 } from '@/lib/pricing';
 import { RevealText, Scene } from './primitives';
 import { CorporateInvoiceModal } from '@/components/pricing/CorporateInvoiceModal';
+import { openWhatsApp, getWhatsAppNativeUrl } from '@/lib/whatsapp-send';
 import { PaymentMethodsModal } from '@/components/pricing/PaymentMethodsModal';
 import { Button } from '@/components/ui/button';
 
@@ -133,9 +134,8 @@ export function Pricing() {
     setShowInvoiceModal(true);
   };
 
-  const waAgencyUrl = `https://wa.me/971500000000?text=${encodeURIComponent(
-    `Hello DealOS Team! We verified Agency Quote (${quoteCode}) for ${agencyName || 'our brokerage'} (${activeAgencyTier.agentRangeLabel}). We would like to proceed with team activation.`
-  )}`;
+  const agencyQuoteMsg = `Hello DealOS Team! We verified Agency Quote (${quoteCode}) for ${agencyName || 'our brokerage'} (${activeAgencyTier.agentRangeLabel}). We would like to proceed with team activation.`;
+  const waAgencyUrl = getWhatsAppNativeUrl("971500000000", agencyQuoteMsg);
 
   return (
     <Scene id="pricing">
@@ -881,9 +881,11 @@ export function Pricing() {
                       {/* Instant WhatsApp Concierge Activation */}
                       <a
                         href={waAgencyUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full h-11 rounded-xl text-xs font-bold border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center gap-2 transition-all"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openWhatsApp({ phone: "971500000000", text: agencyQuoteMsg, recipientName: "DealOS Team" });
+                        }}
+                        className="w-full h-11 rounded-xl text-xs font-bold border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center gap-2 transition-all cursor-pointer"
                       >
                         <MessageCircle size={15} />
                         <span>Activate Quote via WhatsApp Concierge</span>

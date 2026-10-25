@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { LEADS, formatAed, type Lead } from "@/lib/demo-leads";
 import { toast } from "sonner";
 import { useShell } from "./AppShell";
+import { openWhatsApp } from "@/lib/whatsapp-send";
 
 export type ReadyProperty = {
   id: string;
@@ -983,14 +984,12 @@ export function ReadyInventory({
 
   const handleWhatsAppBuyer = (lead: Lead, property: ReadyProperty) => {
     const text = `Hi ${lead.name.split(" ")[0]}! We just listed a verified handed-over ready property in ${property.community} that matches your purchase budget:\n\n🏡 *Property:* ${property.title}\n💰 *Price:* ${property.priceFormatted} (${property.priceUsd})\n📜 *Title Deed:* ${property.titleDeedStatus}\n🔑 *Status:* ${property.status}\n📍 *Maps:* ${property.googleMapsUrl}\n\nWould you like to schedule an immediate viewing inspection this week?`;
-    window.open(`https://wa.me/${lead.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`WhatsApp ready match dispatched to ${lead.name}`);
+    openWhatsApp({ phone: lead.phone, text, recipientName: lead.name });
   };
 
   const handleShareListing = (property: ReadyProperty) => {
     const text = `Verified Dubai Ready Property Listing:\n\n*${property.title}*\n📍 Location: ${property.community}\n💰 Price: ${property.priceFormatted} (${property.priceUsd})\n🔑 Status: ${property.status}\n📐 Specs: ${property.bedrooms} BR · ${property.sizeSqft} sq.ft\n📜 Title: ${property.titleDeedStatus}\n🗺️ Google Maps: ${property.googleMapsUrl}\n🛡️ Permit: ${property.permitNumber}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-    toast.success(`Ready brochure shared for ${property.title}`);
+    openWhatsApp({ text, recipientName: property.title });
   };
 
   return (
