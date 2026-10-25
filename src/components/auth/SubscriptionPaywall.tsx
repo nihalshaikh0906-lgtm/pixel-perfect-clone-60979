@@ -15,6 +15,13 @@ export const WHITELISTED_TEST_EMAILS = [
   "demo-agent@dealos.ae",
 ];
 
+// ═══════════════════════════════════════════════════════════════════════════
+// 24-HOUR PUBLIC REVIEW & DEMO OPEN ACCESS BYPASS
+// Set to true: Bypasses payment paywalls for public testing & reviews.
+// Set to false: Re-enables strict paywall security (when requested tomorrow).
+// ═══════════════════════════════════════════════════════════════════════════
+export const OPEN_ACCESS_DEMO_24H = true;
+
 export function isWhitelistedAccount(email?: string | null): boolean {
   if (!email) return false;
   const clean = email.trim().toLowerCase();
@@ -27,8 +34,12 @@ export function isWhitelistedAccount(email?: string | null): boolean {
 }
 
 export function isSubscriptionActive(email?: string | null): boolean {
+  if (OPEN_ACCESS_DEMO_24H) return true;
   if (isWhitelistedAccount(email)) return true;
   if (typeof window === "undefined") return true;
+
+  // Check demo mode bypass
+  if (localStorage.getItem("dealos_demo_mode") === "true") return true;
 
   // Check user-specific payment status
   if (email) {

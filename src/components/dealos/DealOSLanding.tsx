@@ -139,6 +139,12 @@ export function DealOSLanding() {
           ))}
         </nav>
         <div className="d-nav-actions">
+          <Button asChild size="sm" variant="ghost" className="h-9 px-3 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold gap-1.5 shadow-xs cursor-pointer">
+            <Link to="/demo">
+              <Sparkles size={13} className="text-emerald-400" />
+              <span>Live Demo ⚡</span>
+            </Link>
+          </Button>
           <Button asChild variant="ghost" className="d-login text-foreground hover:text-primary">
             <Link to="/login" search={{ mode: undefined }}>
               Login <span>↗</span>
@@ -162,13 +168,22 @@ export function DealOSLanding() {
         <div className="d-mobile-menu animate-in fade-in-50 zoom-in-95 duration-150">
           <div className="w-full flex items-center justify-between pb-2.5 mb-2 border-b border-border/60">
             <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Quick Menu</span>
-            <Link
-              to="/login"
-              search={{ mode: undefined }}
-              className="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500 text-black hover:bg-amber-400 inline-flex items-center gap-1 shadow-sm"
-            >
-              <span>Sign In ↗</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/demo"
+                className="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500 text-black hover:bg-emerald-400 inline-flex items-center gap-1 shadow-sm"
+              >
+                <Sparkles size={12} />
+                <span>Try Demo ⚡</span>
+              </Link>
+              <Link
+                to="/login"
+                search={{ mode: undefined }}
+                className="px-3 py-1.5 rounded-full text-xs font-bold bg-white/10 text-white hover:bg-white/20 inline-flex items-center gap-1 border border-white/10"
+              >
+                <span>Sign In ↗</span>
+              </Link>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-1 w-full mb-2.5">
             {scenes.slice(1).map((name) => (

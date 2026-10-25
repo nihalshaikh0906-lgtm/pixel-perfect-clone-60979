@@ -18,12 +18,16 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             <Link to="/faq" className={navCls} activeProps={active}>FAQ</Link>
             <Link to="/pricing" className={navCls} activeProps={active}>Pricing</Link>
           </nav>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Link to="/demo" className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 flex items-center gap-1 shadow-xs">
+              <span>Try Demo ⚡</span>
+            </Link>
             <Link to="/login" search={{ mode: undefined }} className="text-[13px] font-medium hover:text-[var(--bronze)]">Login</Link>
             <Link to="/pricing" className="rounded-full bg-[var(--bronze)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--silk)] hover:opacity-90">View Plans</Link>
           </div>
         </div>
-        <nav className="flex justify-center gap-6 pb-3 text-[#4B5272] md:hidden">
+        <nav className="flex items-center justify-center gap-5 pb-3 text-[#4B5272] md:hidden text-xs">
+          <Link to="/demo" className="font-bold text-emerald-600 dark:text-emerald-400">Try Demo ⚡</Link>
           <Link to="/about" className={navCls} activeProps={active}>About Us</Link>
           <Link to="/faq" className={navCls} activeProps={active}>FAQ</Link>
           <Link to="/pricing" className={navCls} activeProps={active}>Pricing</Link>

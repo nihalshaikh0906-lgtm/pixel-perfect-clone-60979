@@ -213,9 +213,15 @@ export function Hero() {
                 <Video size={14} className="text-primary" />
                 <span>Book Live Demo ↗</span>
               </Button>
-              <Button asChild className="d-button d-button-outline border-amber-500/50 text-foreground font-bold hover:bg-amber-500/10 hover:border-amber-500">
+              <Button asChild className="d-button d-button-outline border-primary/40 text-foreground font-bold hover:bg-primary/10 hover:border-primary">
                 <Link to="/login">
                   <span>Sign In ↗</span>
+                </Link>
+              </Button>
+              <Button asChild className="d-button bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-500/40 text-emerald-400 font-bold gap-1.5 shadow-xs">
+                <Link to="/demo">
+                  <Sparkles size={14} className="text-emerald-400" />
+                  <span>Try Live Demo ⚡</span>
                 </Link>
               </Button>
               <Button className="d-button d-button-outline" onClick={() => setTour(true)}>

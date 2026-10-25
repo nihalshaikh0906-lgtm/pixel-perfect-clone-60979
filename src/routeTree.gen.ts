@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as BrokerDashboardRouteImport } from './routes/broker-dashboard'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as JoinRouteImport } from './routes/join'
@@ -94,6 +95,11 @@ const AboutRoute = AboutRouteImport.update({
 const BrokerDashboardRoute = BrokerDashboardRouteImport.update({
   id: '/broker-dashboard',
   path: '/broker-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DownloadRoute = DownloadRouteImport.update({
@@ -467,6 +473,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/about': typeof AboutRoute
   '/broker-dashboard': typeof BrokerDashboardRoute
+  '/demo': typeof DemoRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
   '/join': typeof JoinRoute
@@ -539,6 +546,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/broker-dashboard': typeof BrokerDashboardRoute
+  '/demo': typeof DemoRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
   '/join': typeof JoinRoute
@@ -613,6 +621,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/broker-dashboard': typeof BrokerDashboardRoute
+  '/demo': typeof DemoRoute
   '/download': typeof DownloadRoute
   '/faq': typeof FaqRoute
   '/join': typeof JoinRoute
@@ -689,6 +698,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/broker-dashboard'
+    | '/demo'
     | '/download'
     | '/faq'
     | '/join'
@@ -761,6 +771,7 @@ export interface FileRouteTypes {
   to:
     | '/about'
     | '/broker-dashboard'
+    | '/demo'
     | '/download'
     | '/faq'
     | '/join'
@@ -834,6 +845,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/broker-dashboard'
+    | '/demo'
     | '/download'
     | '/faq'
     | '/join'
@@ -909,6 +921,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   BrokerDashboardRoute: typeof BrokerDashboardRoute
+  DemoRoute: typeof DemoRoute
   DownloadRoute: typeof DownloadRoute
   FaqRoute: typeof FaqRoute
   JoinRoute: typeof JoinRoute
@@ -950,6 +963,13 @@ declare module '@tanstack/react-router' {
       path: '/broker-dashboard'
       fullPath: '/broker-dashboard'
       preLoaderRoute: typeof BrokerDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/download': {
@@ -1562,6 +1582,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   BrokerDashboardRoute: BrokerDashboardRoute,
+  DemoRoute: DemoRoute,
   DownloadRoute: DownloadRoute,
   FaqRoute: FaqRoute,
   JoinRoute: JoinRoute,

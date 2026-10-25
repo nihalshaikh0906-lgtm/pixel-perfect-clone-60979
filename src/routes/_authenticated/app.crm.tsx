@@ -194,7 +194,7 @@ function CrmPage() {
     );
   }
 
-  const all = leads.data ?? DEMO_LEADS;
+  const all = leads.data && leads.data.length > 0 ? leads.data : DEMO_LEADS;
   const active = all.filter((l) => !l.deleted_at);
   const bin = all.filter((l) => l.deleted_at);
   const rows = tab === "active" ? active : bin;

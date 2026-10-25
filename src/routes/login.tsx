@@ -228,6 +228,20 @@ function LoginPage() {
         </div>
       </div>
 
+      {/* 24-Hour Public Demo Access Callout */}
+      <div className="mb-4 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3 text-left">
+        <div>
+          <span className="text-xs font-bold text-emerald-400 block">✦ 24-Hour Open Review Active</span>
+          <span className="text-[11px] text-muted-foreground">Test DealOS immediately with sample Dubai leads without logging in:</span>
+        </div>
+        <Link
+          to="/demo"
+          className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs shrink-0 shadow-sm flex items-center gap-1"
+        >
+          <span>Try Demo ⚡</span>
+        </Link>
+      </div>
+
       <div className="au-roles" role="radiogroup" aria-label="Login type">
         {([
           ["agent", "👤 Licensed Broker / Agent", "Inbound leads, client dossiers & unit matching"],
