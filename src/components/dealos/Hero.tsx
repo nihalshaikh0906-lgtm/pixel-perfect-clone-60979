@@ -198,35 +198,31 @@ export function Hero() {
               Client WhatsApp briefs, sourced off-plan allocations and agency commission ledgers — in one high-velocity cockpit.
             </motion.p>
 
-            {/* Action Buttons */}
-            <motion.div variants={actionVariants} className="d-hero-buttons flex flex-wrap items-center justify-center gap-2.5">
-              <Magnetic className="d-button d-button-primary" asChild>
-                <Link to="/signup">
-                  Start free <ArrowIcon />
-                </Link>
-              </Magnetic>
-              <Button
-                type="button"
-                className="d-button d-button-outline border-primary/50 text-foreground font-bold hover:bg-primary/10 hover:border-primary gap-1.5 cursor-pointer"
-                onClick={() => setDemoOpen(true)}
-              >
-                <Video size={14} className="text-primary" />
-                <span>Book Live Demo ↗</span>
-              </Button>
-              <Button asChild className="d-button d-button-outline border-primary/40 text-foreground font-bold hover:bg-primary/10 hover:border-primary">
-                <Link to="/login">
-                  <span>Sign In ↗</span>
-                </Link>
-              </Button>
-              <Button asChild className="d-button bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-500/40 text-emerald-400 font-bold gap-1.5 shadow-xs">
+            {/* Clean Action Buttons: Exactly 2 Clear Choices */}
+            <motion.div variants={actionVariants} className="d-hero-buttons flex flex-col sm:flex-row items-center justify-center gap-3 mt-6 sm:mt-8">
+              <Button asChild className="h-12 px-7 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold text-sm shadow-lg shadow-primary/25 gap-2 cursor-pointer w-full sm:w-auto">
                 <Link to="/demo">
-                  <Sparkles size={14} className="text-emerald-400" />
+                  <Sparkles size={16} className="text-amber-300" />
                   <span>Try Live Demo ⚡</span>
                 </Link>
               </Button>
-              <Button className="d-button d-button-outline" onClick={() => setTour(true)}>
-                <Play size={14} fill="currentColor" className="text-primary" /> Explore workspace
+              <Button asChild variant="outline" className="h-12 px-7 rounded-2xl border-border hover:bg-secondary text-foreground font-bold text-sm gap-2 w-full sm:w-auto">
+                <Link to="/login">
+                  <span>Sign In to Workspace ↗</span>
+                </Link>
               </Button>
+            </motion.div>
+
+            {/* Subtle Walkthrough Option */}
+            <motion.div variants={actionVariants} className="mt-3 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => setDemoOpen(true)}
+                className="text-xs text-muted-foreground hover:text-foreground font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer py-1"
+              >
+                <Video size={13} className="text-primary" />
+                <span>Need a 1-on-1 team walkthrough? Book 15-min demo ↗</span>
+              </button>
             </motion.div>
 
             {/* Trust Proof */}

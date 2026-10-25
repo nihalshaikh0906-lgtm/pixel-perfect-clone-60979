@@ -23,39 +23,8 @@ const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: 
   return (
     <>
       <Hero />
-      <CockpitDemoSection />
-      <SeeTheBrokerHeader />
       <LiveDubaiPulse />
       <InteractiveDeviceShowcase />
-
-      {/* ═══ HIGH-CONVERTING EARLY DEMO & WALKTHROUGH BANNER (ACCESSIBLE EARLY) ═══ */}
-      <section className="relative z-10 -mt-6 sm:-mt-10 mb-14 px-4 max-w-4xl mx-auto">
-        <div className="rounded-3xl border border-primary/30 bg-gradient-to-r from-card via-card to-primary/5 p-6 sm:p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6 backdrop-blur-xl">
-          <div className="space-y-1.5 text-center sm:text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <Sparkles size={13} />
-              <span>Live 1-on-1 Walkthrough</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-black text-foreground font-display">
-              Want a personalized demo for your brokerage?
-            </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
-              See how DealOS syncs 1,355+ off-plan projects, automates speed-to-lead, and tracks broker splits.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
-            <Button
-              type="button"
-              onClick={onOpenDemo}
-              className="w-full sm:w-auto h-12 px-6 rounded-2xl text-xs sm:text-sm font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 gap-2 cursor-pointer"
-            >
-              <Video size={16} />
-              <span>Book 15-Min Demo ↗</span>
-            </Button>
-          </div>
-        </div>
-      </section>
-
       <Product />
       <Insights />
       <BrokerRoiCalculator onOpenDemo={onOpenDemo} />
@@ -142,25 +111,27 @@ export function DealOSLanding() {
             </Button>
           ))}
         </nav>
-        <div className="d-nav-actions">
-          <Button asChild size="sm" variant="ghost" className="h-9 px-3 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold gap-1.5 shadow-xs cursor-pointer">
+        <div className="d-nav-actions flex items-center gap-2">
+          <Button asChild size="sm" variant="ghost" className="hidden sm:inline-flex h-9 px-3.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold gap-1.5 shadow-xs cursor-pointer">
             <Link to="/demo">
               <Sparkles size={13} className="text-emerald-400" />
               <span>Live Demo ⚡</span>
             </Link>
           </Button>
-          <Button asChild variant="ghost" className="d-login text-foreground hover:text-primary">
+          <Button asChild variant="ghost" size="sm" className="h-9 px-3.5 rounded-xl text-foreground hover:text-primary text-xs font-bold">
             <Link to="/login" search={{ mode: undefined }}>
-              Login <span>↗</span>
+              <span>Sign In ↗</span>
             </Link>
           </Button>
-          <Magnetic className="d-button d-button-primary cursor-pointer" onClick={() => setDemoModalOpen(true)}>
-            Book a demo <span>↗</span>
-          </Magnetic>
+          <div className="hidden md:inline-flex">
+            <Magnetic className="d-button d-button-primary cursor-pointer text-xs h-9 px-4 rounded-xl" onClick={() => setDemoModalOpen(true)}>
+              Book a demo <span>↗</span>
+            </Magnetic>
+          </div>
           <Button
             variant="ghost"
             size="icon"
-            className="d-mobile-menu-button text-foreground"
+            className="d-mobile-menu-button text-foreground size-9 rounded-xl"
             aria-label={menu ? 'Close menu' : 'Open menu'}
             onClick={() => setMenu((v) => !v)}
           >
