@@ -93,35 +93,41 @@ function AuthedLayout() {
   const inApp = useRouterState({ select: (s) => s.location.pathname.startsWith("/app") });
   const { user } = Route.useRouteContext();
   const [hasPaid, setHasPaid] = useState<boolean>(() => isSubscriptionActive(user?.email));
-  const isDemo = typeof window !== "undefined" && (localStorage.getItem("dealos_demo_mode") === "true" || OPEN_ACCESS_DEMO_24H);
+  const isDemo = typeof window !== "undefined" && localStorage.getItem("dealos_demo_mode") === "true";
 
   const role = ((user?.user_metadata?.role as string | undefined)?.toLowerCase() === "company" ? "company" : "agent") as "company" | "agent";
 
   return (
     <>
-      {isDemo && (
-        <aside aria-label="Demo mode banner" className="sticky top-0 z-50 bg-gradient-to-r from-emerald-600 via-primary to-emerald-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 shadow-xs">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-white animate-pulse shrink-0" />
-            <span className="text-center sm:text-left text-[11px] sm:text-xs">
-              <strong>✦ 7-Day Access Active:</strong> {isTestingAccount(user?.email || getActiveEmail()) ? "Universal Testrun Mode" : "Dubai Demo Mode"} (<strong>{role === "company" ? "Owner Cockpit" : "Broker Desk"}</strong>)
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                const nextRole = role === "company" ? "agent" : "company";
-                setStoredRole(nextRole);
-                window.location.href = nextRole === "company" ? "/owner-dashboard" : "/app";
-              }}
-              className="bg-black/30 hover:bg-black/50 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border border-white/20 transition-colors cursor-pointer"
-            >
-              Switch to {role === "company" ? "Broker Desk" : "Owner Cockpit"} ⇄
-            </button>
-          </div>
-        </aside>
-      )}
+      <aside aria-label="Platform Access Banner" className={`sticky top-0 z-50 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 shadow-xs ${isDemo ? "bg-gradient-to-r from-emerald-600 via-primary to-emerald-600" : "bg-gradient-to-r from-zinc-900 via-indigo-950 to-zinc-900 border-b border-indigo-500/30"}`}>
+        <div className="flex items-center gap-2">
+          <span className={`size-2 rounded-full animate-pulse shrink-0 ${isDemo ? "bg-white" : "bg-emerald-400"}`} />
+          <span className="text-center sm:text-left text-[11px] sm:text-xs">
+            {isDemo ? (
+              <>
+                <strong>✦ Demo Mode Active:</strong> 30+ Sample Items Loaded (<strong>{role === "company" ? "Owner Cockpit" : "Broker Desk"}</strong>) · Free Access until 1 Nov 2026
+              </>
+            ) : (
+              <>
+                <strong>✦ Free Access Active:</strong> Full platform unlocked · Software will need paid subscription from 1 Nov 2026
+              </>
+            )}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              const nextRole = role === "company" ? "agent" : "company";
+              setStoredRole(nextRole);
+              window.location.href = nextRole === "company" ? "/owner-dashboard" : "/app";
+            }}
+            className="bg-black/30 hover:bg-black/50 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border border-white/20 transition-colors cursor-pointer"
+          >
+            Switch to {role === "company" ? "Broker Desk" : "Owner Cockpit"} ⇄
+          </button>
+        </div>
+      </aside>
       {!hasPaid && !isWhitelistedAccount(user?.email) && !OPEN_ACCESS_DEMO_24H && (
         <SubscriptionPaywall
           userEmail={user?.email}

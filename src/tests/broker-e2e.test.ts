@@ -10,8 +10,16 @@ import {
   addImportedLeads,
   nextBestActions,
   formatAed,
+  isDemoModeActive,
   type Lead,
 } from "@/lib/demo-leads";
+import {
+  isFreeAccessActive,
+  isSubscriptionActive,
+  isWhitelistedAccount,
+  FREE_ACCESS_UNTIL_TIMESTAMP,
+  SUPER_ADMIN_KEY_EMAIL,
+} from "@/components/auth/SubscriptionPaywall";
 import {
   SAMPLE_VOICENOTES,
   getWhatsAppSession,
@@ -1503,6 +1511,73 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
     it("verifies dedicated red logout action is placed cleanly in sidebar footer and not floating on top", () => {
       const logoutLocation = "sidebar_footer_logout";
       expect(logoutLocation).toBe("sidebar_footer_logout");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 26: REAL REGISTERED USER OTP LOGIN & DEMO SEPARATION
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 26: Real Registered Account Separation & Free Access Period", () => {
+    it("confirms free access until 1 Nov 2026 is fully active without payment lock", () => {
+      expect(isFreeAccessActive()).toBe(true);
+      const expiryDate = new Date(FREE_ACCESS_UNTIL_TIMESTAMP);
+      expect(expiryDate.getFullYear()).toBe(2026);
+      expect(expiryDate.getMonth()).toBe(10); // November is index 10
+
+      // Regular tester email has full active subscription during free period
+      expect(isSubscriptionActive("tester@agency.ae")).toBe(true);
+      // Master admin is always whitelisted
+      expect(isWhitelistedAccount(SUPER_ADMIN_KEY_EMAIL)).toBe(true);
+      expect(isWhitelistedAccount("admin@dealos.ae")).toBe(true);
+    });
+
+    it("verifies demo mode active returns 1,000 demo leads", () => {
+      localStorage.setItem("dealos_demo_mode", "true");
+      expect(isDemoModeActive()).toBe(true);
+      const leads = queueLeads("all");
+      expect(leads.length).toBeGreaterThanOrEqual(1000);
+    });
+
+    it("verifies real registered user (demo mode false) gets a clean CRM with 0 fake leads", () => {
+      localStorage.setItem("dealos_demo_mode", "false");
+      localStorage.setItem("dealos_active_email", "realuser@brokerage.ae");
+      localStorage.removeItem("dealos_custom_leads");
+
+      expect(isDemoModeActive()).toBe(false);
+      const leads = queueLeads("all");
+      expect(leads).toHaveLength(0);
+      expect(queueCount("all")).toBe(0);
+    });
+
+    it("verifies real user can add custom leads and they persist cleanly in their inbox", () => {
+      localStorage.setItem("dealos_demo_mode", "false");
+      localStorage.setItem("dealos_active_email", "realuser@brokerage.ae");
+
+      const myClient: Lead = {
+        id: "REAL-001",
+        name: "Rashid Al Nuaimi",
+        initials: "RN",
+        country: "UAE",
+        phone: "+971 50 999 8888",
+        type: "Off-plan",
+        beds: 3,
+        area: "Palm Jumeirah",
+        budget: 8500000,
+        payment: "Payment plan",
+        score: 95,
+        stage: "Qualified",
+        source: "WhatsApp",
+        receivedHoursAgo: 1,
+        contacted: true,
+        followUpDueInHours: 4,
+        message: "Looking for a luxury penthouse on Palm Jumeirah",
+        task: "Send brochure",
+      };
+
+      addImportedLeads([myClient]);
+      const myLeads = queueLeads("all");
+      expect(myLeads.length).toBeGreaterThanOrEqual(1);
+      expect(myLeads[0].name).toBe("Rashid Al Nuaimi");
     });
   });
 });

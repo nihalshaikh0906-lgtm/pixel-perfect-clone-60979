@@ -179,22 +179,28 @@ export function VerifyingPage() {
     setElapsedMs(TOTAL_DURATION_SEC * 1000);
 
     if (typeof window !== "undefined") {
+      localStorage.setItem("dealos_demo_mode", "false");
       localStorage.setItem("dealos_verified", "true");
-      localStorage.setItem("dealos_demo_mode", "true");
+      localStorage.setItem("dealos_subscription_active", "true");
+      localStorage.setItem(`dealos_subscription_active_${activeEmail.toLowerCase().trim()}`, "true");
       localStorage.setItem("dealos_active_email", activeEmail);
       localStorage.setItem("dealos_role", selectedRole === "owner" ? "company" : "agent");
     }
 
-    toast.success("✓ Identity & DLD License 100% Verified!", {
-      description: "Now confirm your subscription plan to unlock full workspace access.",
-      duration: 3500,
+    toast.success("✓ Identity Verified! Free Access Active until 1 Nov 2026", {
+      description: `Launching your ${selectedRole === "owner" ? "Executive Owner Overwatch" : "Broker Cockpit"}...`,
+      duration: 3000,
     });
+
+    setTimeout(() => {
+      const destination = selectedRole === "owner" ? "/owner-dashboard" : "/app";
+      void navigate({ to: destination, replace: true });
+    }, 1000);
   };
 
-  // Fast-track directly to payment
+  // Fast-track directly to workspace
   const handleFastTrackIdentity = () => {
     handleFinishIdentity();
-    setActiveStep("payment");
   };
 
   // Instant full activation bypass (skips payment and verification instantly for rapid testing)

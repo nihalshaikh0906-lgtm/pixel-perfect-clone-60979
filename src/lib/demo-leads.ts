@@ -100,6 +100,29 @@ function build(): Lead[] {
 export const LEADS: Lead[] = build();
 export const LEAD_BY_ID = new Map(LEADS.map((l) => [l.id, l]));
 
+export function isDemoModeActive(): boolean {
+  if (typeof window === "undefined") return true;
+  const demoFlag = localStorage.getItem("dealos_demo_mode");
+  if (demoFlag === "true") return true;
+  if (demoFlag === "false") return false;
+  const activeEmail = localStorage.getItem("dealos_active_email")?.toLowerCase().trim();
+  if (activeEmail) {
+    if (activeEmail.includes("demo") || activeEmail === "dealostesting.com") return true;
+    return false;
+  }
+  return true;
+}
+
+export function getCustomLeads(): Lead[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const saved = JSON.parse(localStorage.getItem("dealos_custom_leads") || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
+
 export const priorityOf = (l: Lead): Priority => (l.score >= 75 ? "Hot" : l.score >= 50 ? "Warm" : "Cold");
 export const isOpen = (l: Lead) => l.stage !== "Won" && l.stage !== "Lost";
 
@@ -122,17 +145,22 @@ export function inQueue(l: Lead, q: Queue): boolean {
 }
 
 export function queueLeads(q: Queue): Lead[] {
-  const list = LEADS.filter((l) => inQueue(l, q));
+  const currentLeads = isDemoModeActive() ? LEADS : getCustomLeads();
+  const list = currentLeads.filter((l) => inQueue(l, q));
   if (q === "followup") return list.sort((a, b) => (a.followUpDueInHours ?? 0) - (b.followUpDueInHours ?? 0));
   if (q === "hot") return list.sort((a, b) => b.score - a.score);
   return list.sort((a, b) => a.receivedHoursAgo - b.receivedHoursAgo);
 }
 
-export const queueCount = (q: Queue) => LEADS.reduce((n, l) => n + (inQueue(l, q) ? 1 : 0), 0);
+export const queueCount = (q: Queue) => {
+  const currentLeads = isDemoModeActive() ? LEADS : getCustomLeads();
+  return currentLeads.reduce((n, l) => n + (inQueue(l, q) ? 1 : 0), 0);
+};
 
 export function stats() {
-  const open = LEADS.filter(isOpen);
-  const pipelineLeads = LEADS.filter((l) => l.type !== "Rent" && QUALIFIED_PLUS.includes(l.stage));
+  const currentLeads = isDemoModeActive() ? LEADS : getCustomLeads();
+  const open = currentLeads.filter(isOpen);
+  const pipelineLeads = currentLeads.filter((l) => l.type !== "Rent" && QUALIFIED_PLUS.includes(l.stage));
   const pipeline = pipelineLeads.reduce((s, l) => s + l.budget, 0);
   return {
     open: open.length,
@@ -140,11 +168,11 @@ export function stats() {
     hot: queueCount("hot"),
     followup: queueCount("followup"),
     nurture: queueCount("nurture"),
-    newToday: LEADS.filter((l) => l.receivedHoursAgo < 24).length,
-    total: LEADS.length,
+    newToday: currentLeads.filter((l) => l.receivedHoursAgo < 24).length,
+    total: currentLeads.length,
     pipeline,
     commission: pipeline * 0.02,
-    won: LEADS.filter((l) => l.stage === "Won").length,
+    won: currentLeads.filter((l) => l.stage === "Won").length,
     byStage: OPEN_STAGES.map((s) => ({ stage: s, count: open.filter((l) => l.stage === s).length })).sort((a, b) => b.count - a.count),
   };
 }

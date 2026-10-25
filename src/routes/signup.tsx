@@ -83,6 +83,11 @@ function SignupPage() {
       return;
     }
     setRemember(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dealos_demo_mode", "false");
+      localStorage.setItem("dealos_subscription_active", "true");
+      localStorage.setItem("dealos_active_email", f.email.trim());
+    }
     setState("success");
     await new Promise((r) => setTimeout(r, 450));
     setLeaving(true);

@@ -16,9 +16,15 @@ export const WHITELISTED_TEST_EMAILS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// OPEN DEMO ACCESS: Demo access active for 1 week (or until commanded to lock).
-// Set to true: Active open access. Set to false: Re-locks payment firewall.
+// FREE UNLIMITED PLATFORM ACCESS UNTIL NOVEMBER 1, 2026
+// Free for all users to test, review, and demo. Activates paywall after Nov 1.
 // ═══════════════════════════════════════════════════════════════════════════
+export const FREE_ACCESS_UNTIL_TIMESTAMP = new Date("2026-11-01T23:59:59+04:00").getTime();
+
+export function isFreeAccessActive(): boolean {
+  return Date.now() <= FREE_ACCESS_UNTIL_TIMESTAMP;
+}
+
 export const OPEN_ACCESS_DEMO_7D = true;
 export const OPEN_ACCESS_DEMO_24H = true; // maintained for backward compatibility
 
@@ -37,6 +43,8 @@ export function isWhitelistedAccount(email?: string | null): boolean {
 }
 
 export function isSubscriptionActive(email?: string | null): boolean {
+  // Free for all users without payment until 1 Nov 2026
+  if (isFreeAccessActive()) return true;
   if (OPEN_ACCESS_DEMO_24H) return true;
   if (isWhitelistedAccount(email)) return true;
   if (typeof window === "undefined") return true;

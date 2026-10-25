@@ -61,6 +61,8 @@ function Inbox() {
     return () => window.removeEventListener("dealos:lead_added", handleLeadAdded);
   }, []);
 
+  const isDemo = typeof window !== "undefined" && (localStorage.getItem("dealos_demo_mode") === "true" || localStorage.getItem("dealos_active_email")?.includes("demo"));
+
   const base = useMemo(() => queueLeads(queue), [queue, importCount]);
   const rows = useMemo(() => {
     const t = text.trim().toLowerCase();
@@ -94,7 +96,7 @@ function Inbox() {
               </span>
               <span className="text-muted-foreground">•</span>
               <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                <ShieldCheck size={14} /> 1,000 Verified Dubai Investor Leads
+                <ShieldCheck size={14} /> {isDemo ? "1,000 Verified Dubai Investor Leads" : `${rows.length} Investor Leads`}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
@@ -340,9 +342,38 @@ function Inbox() {
       </div>
 
       {rows.length === 0 && (
-        <div className="rounded-3xl border border-border/80 bg-card p-12 text-center space-y-2">
-          <p className="text-base font-bold text-foreground">No investor leads match these filters.</p>
-          <p className="text-xs text-muted-foreground">Try clearing search filters or changing the active queue.</p>
+        <div className="rounded-3xl border border-border/80 bg-card p-10 sm:p-14 text-center space-y-4 max-w-2xl mx-auto shadow-sm">
+          <div className="size-14 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center font-bold text-2xl">
+            ✨
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-lg font-bold text-foreground font-display">
+              {base.length === 0 ? "Your Client Inbox is Ready" : "No Leads Match These Filters"}
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+              {base.length === 0
+                ? "This is your private, secure broker workspace. Add your first client manually, import a CSV list, or connect your WhatsApp."
+                : "Try clearing search filters or switching between queue tabs to view other leads."}
+            </p>
+          </div>
+          {base.length === 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Button asChild className="h-10 px-5 rounded-xl text-xs font-bold bg-primary text-primary-foreground gap-2 shadow-sm">
+                <Link to="/app/crm" search={{ action: "add" }}>
+                  <Plus size={15} />
+                  <span>Add First Client</span>
+                </Link>
+              </Button>
+              <button
+                type="button"
+                onClick={() => setIsImportOpen(true)}
+                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-border bg-card hover:bg-secondary text-foreground font-bold text-xs transition-all shadow-sm"
+              >
+                <Upload size={14} />
+                <span>Import CSV File</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
 
