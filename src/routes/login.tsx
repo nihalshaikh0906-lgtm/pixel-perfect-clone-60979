@@ -7,6 +7,7 @@ import { CheckBox, EMAIL_RE, Field, GoogleIcon, PasswordField, googleEnabled } f
 import { supabase } from "@/integrations/supabase/client";
 import { setRemember } from "@/lib/remember";
 import { setStoredRole, detectRole, setActiveEmail, fullSignOut } from "@/lib/auth-role";
+import { isTestingAccount, isTestingAccountValid, TESTING_EMAIL, TESTING_PASSWORD } from "@/lib/testing-account";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
@@ -73,9 +74,10 @@ function LoginPage() {
   const isMasterPlatformAdmin =
     cleanCurrentEmail === "nihalshaikh0906@gmail.com" ||
     cleanCurrentEmail === "admin@dealos.ae";
+  const isTestingUser = isTestingAccount(cleanCurrentEmail);
 
-  const emailOk = EMAIL_RE.test(email.trim());
-  const pwOk = isMasterPlatformAdmin ? password.length >= 1 : password.length >= 8;
+  const emailOk = EMAIL_RE.test(email.trim()) || isTestingUser;
+  const pwOk = (isMasterPlatformAdmin || isTestingUser) ? password.length >= 1 : password.length >= 8;
   const busy = state !== "idle";
 
   async function onSubmit(e: React.FormEvent) {
@@ -89,6 +91,30 @@ function LoginPage() {
     setState("loading"); setError(null); setMismatch(null);
     const cleanEm = em.toLowerCase().trim();
     setActiveEmail(cleanEm);
+
+    // ═══ 7-DAY UNIVERSAL TESTING ACCOUNT (dealostesting.com / Rko8786!) ═══
+    if (isTestingAccount(cleanEm)) {
+      if (!isTestingAccountValid(cleanEm)) {
+        setState("idle");
+        setError("This 7-day testrun account has expired. Please contact support.");
+        setShake((v) => v + 1);
+        return;
+      }
+      const trimmedPw = pw.trim();
+      if (trimmedPw !== "Rko8786!" && trimmedPw !== "rko8786!" && trimmedPw !== TESTING_PASSWORD) {
+        setState("idle");
+        setError("Incorrect password for testing account.");
+        setShake((v) => v + 1);
+        return;
+      }
+      // Instant bypass without OTP or authenticator
+      localStorage.setItem("dealos_demo_mode", "true");
+      localStorage.setItem("dealos_subscription_active", "true");
+      setStoredRole(want);
+      setActiveEmail(cleanEm);
+      await finish(want);
+      return;
+    }
 
     const isMasterKey =
       cleanEm === "nihalshaikh0906@gmail.com" ||
@@ -330,6 +356,23 @@ function LoginPage() {
           <span className="au-demo-sub">Direct instant access without typing credentials (Admin Master Key / Agency Owner):</span>
         </div>
         <div className="flex flex-col gap-2 mt-2">
+          {/* 7-Day Testrun Account 1-Click Access */}
+          <button
+            type="button"
+            className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500/20 via-primary/20 to-emerald-500/15 border border-emerald-500/40 text-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-500/25 transition-all shadow-xs cursor-pointer mb-2"
+            disabled={busy}
+            onClick={() => {
+              setStoredRole(role);
+              setActiveEmail("dealostesting.com");
+              setEmail("dealostesting.com");
+              setPassword("Rko8786!");
+              void doSignIn("dealostesting.com", "Rko8786!", role);
+            }}
+          >
+            <span>🧪</span>
+            <span>7-Day Testrun Access: dealostesting.com ({role === "company" ? "Owner Cockpit" : "Broker Desk"})</span>
+          </button>
+
           <button
             type="button"
             className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-primary/20 border border-amber-500/40 text-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-amber-500/25 transition-all shadow-xs cursor-pointer"

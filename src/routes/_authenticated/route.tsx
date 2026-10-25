@@ -7,6 +7,8 @@ import { SubscriptionPaywall, isSubscriptionActive, isWhitelistedAccount, OPEN_A
 
 import { supabase } from "@/integrations/supabase/client";
 import { enforceRemember } from "@/lib/remember";
+import { isTestingAccount } from "@/lib/testing-account";
+import { setStoredRole, getActiveEmail } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -97,39 +99,39 @@ function AuthedLayout() {
   return (
     <>
       {isDemo && (
-        <aside aria-label="Demo mode banner" className="sticky top-0 z-50 bg-gradient-to-r from-emerald-600 via-primary to-emerald-600 text-white px-4 py-2 text-xs font-semibold flex flex-col sm:flex-row items-center justify-between gap-2 shadow-md">
+        <aside aria-label="Demo mode banner" className="sticky top-0 z-50 bg-gradient-to-r from-emerald-600 via-primary to-emerald-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 shadow-xs">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-white animate-pulse" />
-            <span>
-              <strong>✦ 7-Day Open Demo Access Active:</strong> Exploring DealOS as <strong>{role === "company" ? "Agency Owner" : "Solo Broker"}</strong> with Dubai sample data.
+            <span className="size-2 rounded-full bg-white animate-pulse shrink-0" />
+            <span className="text-center sm:text-left text-[11px] sm:text-xs">
+              <strong>✦ 7-Day Access Active:</strong> {isTestingAccount(user?.email || getActiveEmail()) ? "Universal Testrun Mode" : "Dubai Demo Mode"} (<strong>{role === "company" ? "Owner Cockpit" : "Broker Desk"}</strong>)
             </span>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <a
-              href="/demo"
-              className="bg-black/30 hover:bg-black/50 px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-white/20 transition-colors"
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                const nextRole = role === "company" ? "agent" : "company";
+                setStoredRole(nextRole);
+                window.location.href = nextRole === "company" ? "/owner-dashboard" : "/app";
+              }}
+              className="bg-black/30 hover:bg-black/50 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border border-white/20 transition-colors cursor-pointer"
             >
-              Switch Role ⇄
-            </a>
+              Switch to {role === "company" ? "Broker Desk" : "Owner Cockpit"} ⇄
+            </button>
             <button
               type="button"
               onClick={() => {
                 if (typeof window !== "undefined") {
                   localStorage.removeItem("dealos_demo_mode");
                   localStorage.removeItem("dealos_subscription_active");
+                  localStorage.removeItem("dealos_active_email");
                   window.location.href = "/login";
                 }
               }}
-              className="bg-black/30 hover:bg-black/50 px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-white/20 transition-colors cursor-pointer"
+              className="bg-black/30 hover:bg-black/50 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border border-white/20 transition-colors cursor-pointer"
             >
-              Exit Demo ✕
+              Sign Out ✕
             </button>
-            <a
-              href="/pricing"
-              className="bg-white text-black hover:bg-white/90 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold shadow-xs transition-colors"
-            >
-              Official Licenses ↗
-            </a>
           </div>
         </aside>
       )}

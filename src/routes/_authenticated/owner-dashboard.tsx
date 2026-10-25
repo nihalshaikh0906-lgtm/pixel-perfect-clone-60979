@@ -6,11 +6,12 @@ import { AppShell } from "@/components/app/AppShell";
 import { OwnerDashboard } from "@/pages/OwnerDashboard";
 import { inventorySummaryOptions, projectPageOptions } from "@/lib/inventory.functions";
 import { detectRole, getStoredRole } from "@/lib/auth-role";
+import { isTestingAccountValid } from "@/lib/testing-account";
 
 export const Route = createFileRoute("/_authenticated/owner-dashboard")({
   beforeLoad: async () => {
     const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
-    const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
+    const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com" || isTestingAccountValid(activeEmail);
     if (isMasterAdmin) return;
 
     const role = await detectRole();
@@ -50,7 +51,7 @@ function OwnerDashboardPage() {
   const navigate = Route.useNavigate();
   const role = getStoredRole();
   const activeEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
-  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
+  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com" || isTestingAccountValid(activeEmail);
 
   const { user } = Route.useRouteContext();
 

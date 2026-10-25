@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { isTestingAccountValid } from "./testing-account";
 
 export type DealOSRole = "company" | "agent";
 
@@ -59,9 +60,8 @@ export async function fullSignOut(): Promise<void> {
 export async function detectRole(): Promise<DealOSRole> {
   const stored = getStoredRole();
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
-
-  // Super Admin Master Keys: nihalshaikh0906@gmail.com & admin@dealos.ae have universal access to BOTH Owner Cockpit and Broker Desk
-  if (activeEmail === "nihalshaikh0906@gmail.com" || activeEmail === "admin@dealos.ae") {
+  // Super Admin Master Keys & 7-Day Testing Account: universal access to BOTH Owner Cockpit and Broker Desk
+  if (activeEmail === "nihalshaikh0906@gmail.com" || activeEmail === "admin@dealos.ae" || isTestingAccountValid(activeEmail)) {
     const desiredRole: DealOSRole = stored === "agent" ? "agent" : "company";
     setStoredRole(desiredRole);
     return desiredRole;

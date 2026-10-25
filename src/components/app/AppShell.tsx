@@ -15,6 +15,7 @@ import { DealCalculatorModal } from "@/components/dealos/FloatingDealCalculator"
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { detectRole, getStoredRole, setStoredRole, setActiveEmail, clearStoredRole, fullSignOut, type DealOSRole } from "@/lib/auth-role";
+import { isTestingAccountValid, getTestingAccountRemainingDays } from "@/lib/testing-account";
 
 type ShellCtx = { clientMode: boolean; openAi: () => void };
 const Ctx = createContext<ShellCtx>({ clientMode: false, openAi: () => {} });
@@ -77,7 +78,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   const isOwnerRoute = pathname === "/owner-dashboard" || pathname.startsWith("/owner-dashboard");
   const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? (isOwnerRoute ? "company" : "agent"));
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
-  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
+  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com" || isTestingAccountValid(activeEmail);
 
   useEffect(() => {
     void detectRole().then((r) => setRole(r));

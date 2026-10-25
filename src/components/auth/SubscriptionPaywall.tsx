@@ -22,8 +22,11 @@ export const WHITELISTED_TEST_EMAILS = [
 export const OPEN_ACCESS_DEMO_7D = true;
 export const OPEN_ACCESS_DEMO_24H = true; // maintained for backward compatibility
 
+import { isTestingAccountValid } from "@/lib/testing-account";
+
 export function isWhitelistedAccount(email?: string | null): boolean {
   if (!email) return false;
+  if (isTestingAccountValid(email)) return true;
   const clean = email.trim().toLowerCase();
   return (
     clean === SUPER_ADMIN_KEY_EMAIL ||
