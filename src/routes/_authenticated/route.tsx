@@ -45,19 +45,14 @@ export const Route = createFileRoute("/_authenticated")({
       cachedActiveEmail === "nihalshaikh0906@gmail.com" ||
       cachedActiveEmail === "admin@dealos.ae";
 
-    // Allow testing & verification in 24h public demo, Lovable preview, test runners, or demo/admin mode
+    // OPTION 1: Real-workspace protections remain 100% active.
+    // Bypass occurs strictly via "Try Live Demo" (dealos_demo_mode = "true"), ?demo=true, or master admin.
     const isDemoMode =
       OPEN_ACCESS_DEMO_24H ||
       (typeof window !== "undefined" &&
         (isCachedMasterAdmin ||
           localStorage.getItem("dealos_demo_mode") === "true" ||
-          window.location.search.includes("demo=true") ||
-          window.location.hostname.includes("lovable") ||
-          window.location.hostname.includes("localhost") ||
-          window.location.hostname.includes("127.0.0.1") ||
-          window.location.hostname.includes("vercel.app") ||
-          window.location.pathname.startsWith("/app") ||
-          window.location.pathname.startsWith("/owner-dashboard")));
+          window.location.search.includes("demo=true")));
 
     if (isDemoMode) {
       const activeEmail = cachedActiveEmail;
@@ -86,7 +81,7 @@ export const Route = createFileRoute("/_authenticated")({
       };
     }
 
-    throw redirect({ to: "/welcome" });
+    throw redirect({ to: "/login" });
   },
   component: AuthedLayout,
 });
@@ -116,6 +111,19 @@ function AuthedLayout() {
             >
               Switch Role ⇄
             </a>
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  localStorage.removeItem("dealos_demo_mode");
+                  localStorage.removeItem("dealos_subscription_active");
+                  window.location.href = "/login";
+                }
+              }}
+              className="bg-black/30 hover:bg-black/50 px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-white/20 transition-colors cursor-pointer"
+            >
+              Exit Demo ✕
+            </button>
             <a
               href="/pricing"
               className="bg-white text-black hover:bg-white/90 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold shadow-xs transition-colors"

@@ -16,11 +16,10 @@ export const WHITELISTED_TEST_EMAILS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 24-HOUR PUBLIC REVIEW & DEMO OPEN ACCESS BYPASS
-// Set to true: Bypasses payment paywalls for public testing & reviews.
-// Set to false: Re-enables strict paywall security (when requested tomorrow).
+// OPTION 1: Real-workspace protections remain active.
+// Bypass occurs strictly via "Try Live Demo" (dealos_demo_mode = "true").
 // ═══════════════════════════════════════════════════════════════════════════
-export const OPEN_ACCESS_DEMO_24H = true;
+export const OPEN_ACCESS_DEMO_24H = false;
 
 export function isWhitelistedAccount(email?: string | null): boolean {
   if (!email) return false;
