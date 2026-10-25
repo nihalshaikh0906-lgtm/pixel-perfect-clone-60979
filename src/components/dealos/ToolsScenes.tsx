@@ -177,11 +177,11 @@ export function Tools() {
           </div>
         </div>
 
-        {/* ═══ LIVE PLATFORM TEASER: PHYSICAL CALCULATOR ═══ */}
+        {/* ═══ DUBAI DEAL CALCULATOR & REAL-TIME MORTGAGE ═══ */}
         <div className="mt-14 sm:mt-20 pt-10 border-t border-border/60">
           <div className="text-center max-w-xl mx-auto mb-8">
             <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-primary block mb-1">
-              LIVE PLATFORM TEASER
+              LIVE DUBAI PROPERTY CALCULATOR
             </span>
             <h3 className="text-2xl sm:text-3xl font-bold text-foreground font-display">
               What does a Dubai deal really cost?

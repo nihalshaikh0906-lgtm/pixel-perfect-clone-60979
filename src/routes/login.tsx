@@ -78,6 +78,7 @@ function LoginPage() {
     if (typeof window !== "undefined") {
       localStorage.setItem("dealos_demo_mode", "true");
       localStorage.setItem("dealos_subscription_active", "true");
+      localStorage.setItem("dealos_verified", "true");
       localStorage.setItem("dealos_role", chosenRole);
       localStorage.setItem("dealos_active_email", chosenRole === "company" ? "owner-demo@dealos.ae" : "broker-demo@dealos.ae");
       // Instant direct navigation straight into system with all sample data active
@@ -348,7 +349,7 @@ function LoginPage() {
       {/* 2 Primary Demo Buttons (Active 10 Days through Nov 5, 2026) */}
       <div className="space-y-3 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Button 1: Demo as Broker */}
+          {/* Button 1: Demo as Broker / Agent */}
           <button
             type="button"
             onClick={() => void loginAsDemo("agent")}
@@ -359,10 +360,10 @@ function LoginPage() {
               <span className="text-xl">👤</span>
               <div className="text-left">
                 <div className="text-sm font-extrabold text-foreground group-hover:text-emerald-400 transition-colors">
-                  Demo as Broker
+                  Demo as Broker / Agent
                 </div>
                 <div className="text-[11px] text-muted-foreground">
-                  1,000 Sample Leads Desk
+                  Full 1,000 Leads Workspace &amp; WhatsApp
                 </div>
               </div>
             </div>
@@ -382,10 +383,10 @@ function LoginPage() {
               <span className="text-xl">🏢</span>
               <div className="text-left">
                 <div className="text-sm font-extrabold text-foreground group-hover:text-amber-400 transition-colors">
-                  Demo as Owner
+                  Demo as Agency Owner
                 </div>
                 <div className="text-[11px] text-muted-foreground">
-                  32 Agents &amp; GMV Radar
+                  Full Agency Overwatch &amp; 30 Brokers
                 </div>
               </div>
             </div>
