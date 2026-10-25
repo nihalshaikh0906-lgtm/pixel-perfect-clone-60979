@@ -11,7 +11,6 @@ import {
   Building2,
   Lock,
   MessageCircle,
-  LogIn,
   User,
   Calculator,
   RotateCcw,
@@ -221,22 +220,14 @@ export function Pricing() {
                 })}
               </div>
 
-              {/* Mobile portrait quick login link */}
-              <div className="pt-3 sm:hidden flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <span>Already have a license?</span>
-                <Link
-                  to="/login"
-                  search={{ mode: undefined }}
-                  className="font-bold text-primary hover:underline inline-flex items-center gap-1"
-                >
-                  <span>Sign In ↗</span>
-                </Link>
-                <span>·</span>
+              {/* Instant demo bypass link */}
+              <div className="pt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Link
                   to="/demo"
                   className="font-bold text-emerald-400 hover:underline inline-flex items-center gap-1"
                 >
-                  <span>Try Live Demo ⚡</span>
+                  <Zap size={13} className="text-emerald-400" />
+                  <span>Try Instant Live Demo ⚡</span>
                 </Link>
               </div>
             </div>
@@ -359,29 +350,17 @@ export function Pricing() {
                     </Link>
                   </Button>
 
-                  {/* Secondary Member Links & Demo Bypass */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full h-10 rounded-xl text-xs font-bold border-border bg-secondary/60 hover:bg-secondary text-foreground gap-1.5 transition-all shadow-xs"
-                    >
-                      <Link to="/login" search={{ mode: undefined }}>
-                        <LogIn size={14} className="text-primary" />
-                        <span>Sign In ↗</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full h-10 rounded-xl text-xs font-bold border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 gap-1.5 transition-all shadow-xs"
-                    >
-                      <Link to="/demo">
-                        <Zap size={14} className="text-emerald-400" />
-                        <span>Try Live Demo ⚡</span>
-                      </Link>
-                    </Button>
-                  </div>
+                  {/* Instant Demo Bypass (No Duplicate Login Button) */}
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full h-10 rounded-xl text-xs font-bold border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 gap-1.5 transition-all shadow-xs"
+                  >
+                    <Link to="/demo">
+                      <Zap size={14} className="text-emerald-400" />
+                      <span>Try Live Demo ⚡</span>
+                    </Link>
+                  </Button>
 
                   <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
                     <ShieldCheck size={13} className="text-emerald-500" />
