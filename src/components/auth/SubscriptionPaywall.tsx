@@ -16,10 +16,11 @@ export const WHITELISTED_TEST_EMAILS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// OPEN DEMO ACCESS: Demo button gives everyone access till user says stop.
+// OPEN DEMO ACCESS: Demo access active for 1 week (or until commanded to lock).
 // Set to true: Active open access. Set to false: Re-locks payment firewall.
 // ═══════════════════════════════════════════════════════════════════════════
-export const OPEN_ACCESS_DEMO_24H = true;
+export const OPEN_ACCESS_DEMO_7D = true;
+export const OPEN_ACCESS_DEMO_24H = true; // maintained for backward compatibility
 
 export function isWhitelistedAccount(email?: string | null): boolean {
   if (!email) return false;

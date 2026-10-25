@@ -78,7 +78,7 @@ function DemoPage() {
           </span>
           <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            24-HOUR PUBLIC DEMO ACCESS
+            7-DAY OPEN DEMO ACCESS
           </span>
         </div>
 

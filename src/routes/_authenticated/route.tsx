@@ -103,7 +103,7 @@ function AuthedLayout() {
           <div className="flex items-center gap-2">
             <span className="size-2 rounded-full bg-white animate-pulse" />
             <span>
-              <strong>✦ 24-Hour Public Review Active:</strong> Exploring DealOS as <strong>{role === "company" ? "Agency Owner" : "Solo Broker"}</strong> with Dubai sample data.
+              <strong>✦ 7-Day Open Demo Access Active:</strong> Exploring DealOS as <strong>{role === "company" ? "Agency Owner" : "Solo Broker"}</strong> with Dubai sample data.
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
