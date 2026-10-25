@@ -5,11 +5,13 @@ import {
   Sparkles, Plus, Mic, Send, Paperclip, User, Building2, Users, FileText,
   X, Check, ArrowRight, RefreshCw, Copy, CheckCheck,
   ChevronDown, Flame, ShieldCheck, Zap, MessageSquare, Clock,
-  Search, PanelLeft, ArrowUpRight, LineChart, Calculator
+  Search, PanelLeft, ArrowUpRight, LineChart, Calculator, DollarSign,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/Logo";
+import { type DealOSRole } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/_authenticated/app/ai-assistant")({
   head: () => workspaceHead("AI Assistant"),
@@ -50,9 +52,277 @@ const RECENT_CHATS = [
   "Danube vs Sobha Payment Plan Analysis",
 ];
 
+function getSmartRoleResponse(prompt: string, role: "company" | "agent", attachedLead?: AttachedItem): string {
+  const q = prompt.toLowerCase();
+  
+  if (attachedLead) {
+    return `### Strategic Analysis for ${attachedLead.label}
+
+**1. Investor Financial Profile:**
+* **Budget:** ${attachedLead.budget || "Verified Range"}
+* **Preferences:** ${attachedLead.sub}
+* **Status:** High Probability Closer · DLD Registration Ready
+
+**2. Matched Dubai Developments:**
+* **Reef Luxury 995 (DLRC):** 1BR from AED 684,000 · 10/40/50 Handover Q4 2026. Aligns with budget; 8.4% projected net rental yield.
+* **Bayz 102 by Danube (Business Bay):** 1% monthly post-handover plan for investor cash-flow optimization.
+
+**3. 1-Click WhatsApp Pitch:**
+> *"Hi ${attachedLead.label.split(" ")[0]}, hope you're having a productive week! I just reviewed exclusive allocations that align with your search criteria in Dubai. We have 2 prime options with flexible developer payment plans and verified DLD escrow. Would 3:00 PM today suit you for a quick 2-minute overview?"*
+
+*Would you like me to prepare an official EOI reservation slip or draft an Ejari/SPA contract review?*`;
+  }
+
+  // Agency Owner Responses
+  if (q.includes("aging") || q.includes("commission") || q.includes("delinquent") || q.includes("receivable") || q.includes("overdue")) {
+    return `### 🏢 Agency Commission Aging Ledger Audit
+**Audit Date:** Live DLD Sync | **Receivables Balance:** AED 1,420,000 (Overdue > 60 Days)
+
+| Developer | Project | Outstanding (AED) | Aging (Days) | Status / Recommended Action |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sobha Realty** | Verde / SeaHaven | AED 640,000 | 78 Days | SPA Registered · Send Automated 60d Demand Notice |
+| **Danube Properties** | Bayz 102 | AED 420,000 | 64 Days | Invoice Batched · Awaiting Milestone 1 Settlement |
+| **Binghatti** | Phantom Tower | AED 360,000 | 92 Days | Escalated to Principal KAM · Schedule Reconciliation |
+
+**Executive Recommendation:** 
+1. Dispatch DealOS automated DLD-compliant commission demand letters to Sobha & Danube finance desks.
+2. Freeze secondary broker allocations on Binghatti pending receivables clearance.`;
+  }
+
+  if (q.includes("leaderboard") || q.includes("top-performing") || q.includes("sales volume") || q.includes("quota")) {
+    return `### 🏆 Q4 Broker Sales Production & Velocity Leaderboard
+**Agency Total Volume:** AED 48,250,000 | **Closed Deals:** 19 | **Avg Deal Size:** AED 2.54M
+
+1. 🥇 **Nihal Shaikh (Principal):** AED 18.5M Volume (7 Closed Deals) · Pipeline: AED 24M · Projected Take-Home: AED 185,000
+2. 🥈 **Amina Al-Mansoori (Senior Off-Plan):** AED 14.2M Volume (5 Closed Deals) · Pipeline: AED 16M · Projected Take-Home: AED 142,000
+3. 🥉 **Tariq Aziz (Luxury Residential):** AED 9.8M Volume (4 Closed Deals) · Pipeline: AED 11M · Projected Take-Home: AED 98,000
+4. 🏅 **Elena Rostova (International Desk):** AED 5.75M Volume (3 Closed Deals) · Pipeline: AED 8.5M · Projected Take-Home: AED 57,500
+
+*Overall agency pacing is 114% against Q4 target. Off-plan 1% monthly plans account for 68% of closed transactions.*`;
+  }
+
+  if (q.includes("escrow") || q.includes("compliance") || q.includes("rera") || q.includes("trust account")) {
+    return `### 🛡️ RERA Escrow & Off-Plan Trust Account Audit
+**RERA Status:** 100% of Agency Active Listings Verified via Central Bank of UAE Escrow System
+
+* **Reef Luxury 995 (DLRC):**
+  * Developer: Reef Developments | RERA Permit: #0204918239
+  * Escrow Bank: Emirates NBD (Trust A/C: 01-92384-01)
+  * Construction Milestone: 34.2% verified (On schedule for Q4 2026)
+* **Bayz 102 (Business Bay):**
+  * Developer: Danube Properties | RERA Permit: #0184920481
+  * Escrow Bank: Mashreq Bank (Trust A/C: 44-81920-02)
+  * Construction Milestone: 18.7% verified (On schedule for Q4 2027)
+* **Creek Waters (Dubai Creek Harbour):**
+  * Developer: Emaar Properties | RERA Permit: #0992384721
+  * Escrow Bank: First Abu Dhabi Bank (FAB)
+  * Construction Milestone: 52.0% verified (On schedule for Q2 2026)
+
+*Compliance Note: All developer accounts verified under Dubai Law No. (8) of 2007.*`;
+  }
+
+  if (q.includes("allocation") || q.includes("proposal") || q.includes("developer master") || q.includes("exclusive floor")) {
+    return `### 📑 Agency Master Pre-Launch Allocation Proposal
+**Target Developer:** Off-Plan Waterfront Launch | **Requested Allocation:** 2 Complete High Floors
+
+**Draft Proposal Letter:**
+> *"Dear Head of Sales & Investor Allocations,*
+> 
+> *DealOS Agency Network currently represents 42 active qualified HNWI buyers with over AED 65,000,000 in liquid capital earmarked for prime Dubai waterfront assets.*
+> 
+> *We formally request a dedicated pre-launch allocation of 2 contiguous high-level floors (1BR & 2BR layouts). In return, our agency commits to:*
+> * 100% EOI reservation deposit conversions within 7 calendar days of release.
+> * Full DLD 4% pre-registration settlement upon launch day.
+> * Dedicated agency roadshow and private investor screening.*
+> 
+> *Kindly share the unit layout matrix and payment milestones to execute the broker underwriting agreement.*
+> 
+> *Sincerely,*  
+> *Agency Principal & Managing Partner — DealOS Overwatch"*`;
+  }
+
+  // Solo Broker Responses
+  if (q.includes("matcher") || q.includes("off-plan") || q.includes("1br") || q.includes("dlrc") || q.includes("jvc")) {
+    return `### 🎯 Dubai Off-Plan Matcher (1% Monthly Plans < AED 1.2M)
+
+1. **Reef Luxury 995 (DLRC):**
+   * **Starting Price:** AED 684,000 (1BR · 742 sq.ft)
+   * **Payment Plan:** 10% Down | 1% Monthly for 40 months | 50% on Handover (Q4 2026)
+   * **Projected Net ROI:** 8.6% | Capital Growth: +19% by handover
+   * **DLD Escrow:** Emirates NBD #0204918239 (Verified)
+
+2. **Bayz 102 by Danube (Business Bay):**
+   * **Starting Price:** AED 1,180,000 (1BR · 615 sq.ft)
+   * **Payment Plan:** 1% Monthly Post-Handover for 30 months (Zero Interest)
+   * **Projected Net ROI:** 7.9% | Capital Growth: +24% by handover
+   * **DLD Escrow:** Mashreq Bank #0184920481 (Verified)
+
+*Ready to generate a branded investor presentation deck or booking link?*`;
+  }
+
+  if (q.includes("roi") || q.includes("payment plan") || q.includes("cash-flow") || q.includes("60/40")) {
+    return `### 📊 Payment Plan ROI Analysis: 60/40 vs 1% Monthly Plan
+**Benchmark Property:** AED 1,200,000 (1BR Luxury Apartment)
+
+* **Plan A: Standard 60/40 Developer Plan**
+  * Capital Required Pre-Handover: AED 772,200 (60% + 4% DLD + AED 4,200 Trustee)
+  * Final Handover Payment: AED 480,000 (Cash or Mortgage)
+  * 3-Year Cash-on-Cash Return: **9.8% net**
+* **Plan B: 1% Monthly Post-Handover Plan**
+  * Capital Required Pre-Handover: AED 532,200 (40% + 4% DLD + AED 4,200 Trustee)
+  * Post-Handover Payment: AED 12,000/month (covered by projected tenant rent of AED 12,500/month)
+  * 3-Year Cash-on-Cash Return: **16.4% net**
+
+**Broker Pitch Conclusion:** The 1% monthly plan frees up AED 240,000 in investor working capital while raising cash-on-cash returns by **+6.6%**.`;
+  }
+
+  if (q.includes("yield") || q.includes("radar") || q.includes("business bay") || q.includes("dubai hills") || q.includes("appreciation")) {
+    return `### 📡 DLD Yield Radar: Business Bay vs. Dubai Hills Estate
+**Source:** Real-time Dubai Land Department Transaction Registry (Past 12 Months)
+
+| Metric | Business Bay (Urban High-Rise) | Dubai Hills Estate (Master Community) |
+| :--- | :--- | :--- |
+| **Average Price/Sq.Ft** | AED 2,240 / sq.ft (+14.2% YoY) | AED 2,580 / sq.ft (+18.9% YoY) |
+| **Gross Rental Yield** | **7.8%** | **6.4%** |
+| **Net Rental Yield** | **6.9%** | **5.7%** |
+| **Tenant Demographic** | Corporate expats, young professionals | Families, long-term corporate directors |
+| **Short-Term Airbnb Yield** | 9.4% gross (High holiday velocity) | 6.8% gross |
+| **Optimal Exit Horizon** | 2–3 Years (Yield maximization) | 5–7 Years (Capital preservation) |
+
+*Recommendation: Pitch Business Bay for liquid cash-flow yields; pitch Dubai Hills for multi-generational equity preservation.*`;
+  }
+
+  if (q.includes("whatsapp") || q.includes("pitch") || q.includes("script") || q.includes("converting")) {
+    return `### 💬 VIP WhatsApp Pitch Script (High-Converting Conversion Template)
+
+*Copy and send directly to your prospective off-plan investor:*
+
+> *"Hi [First Name], hope you're having a productive week!*
+> 
+> *I just secured access to a limited allocation in Business Bay / DLRC starting from AED 850,000 with a developer 1% monthly payment plan and verified DLD Escrow.*
+> 
+> *At this entry price point, rental yields in the district are generating 8.2% net, meaning tenant rental cash-flow covers the remaining installments post-handover.*
+> 
+> *I’ve prepared a 1-page financial breakdown showing the exact cash-to-close schedule and projected ROI. May I share the PDF and unit layouts with you here on WhatsApp?*
+> 
+> *Best regards,*  
+> *[Your Name] · Licensed Dubai Broker, DealOS"*`;
+  }
+
+  // Fallback
+  return `### DealOS Strategic Mastermind
+
+I've processed your inquiry: **"${prompt}"**
+
+* **Dubai Market Update:** Active inventory shows 1,355+ off-plan projects with steady capital growth across DLRC, JVC, Business Bay, and Dubai Hills Estate.
+* **Next Action:** Select any of the 4 role-tailored prompt cards below or attach a lead from your CRM to generate an immediate contract, pitch, or financial yield breakdown.`;
+}
+
 export function GeminiAssistantPage() {
   const profile = useBrokerProfile();
   const userName = profile?.name?.split(" ")[0] || "Nihal";
+
+  // Role detection and switcher (Agency Owner vs Solo Broker)
+  const storedRole = typeof window !== "undefined" ? (localStorage.getItem("dealos_role") as DealOSRole | null) : null;
+  const [role, setRole] = useState<DealOSRole>(storedRole === "company" ? "company" : "agent");
+
+  const toggleRole = () => {
+    const nextRole: DealOSRole = role === "company" ? "agent" : "company";
+    setRole(nextRole);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dealos_role", nextRole);
+    }
+    toast.success(`Switched AI Copilot to ${nextRole === "company" ? "Agency Owner" : "Solo Broker"} persona`);
+  };
+
+  // 4 Role-Wise Suggestions
+  const brokerSuggestions = [
+    {
+      id: "b-offplan",
+      title: "Off-Plan Matcher",
+      tag: "TOP MATCH",
+      tagColor: "bg-amber-500/15 text-amber-500 border-amber-500/25",
+      icon: Building2,
+      iconColor: "text-amber-500 bg-amber-500/10 border-amber-500/25",
+      desc: "Match off-plan 1BR and 2BR in DLRC or JVC under AED 1.2M with 1% monthly plan",
+      prompt: "Match off-plan 1BR and 2BR units in DLRC or JVC under AED 1.2M with 1% monthly payment plan and high projected ROI.",
+    },
+    {
+      id: "b-roi",
+      title: "Payment Plan ROI",
+      tag: "FINANCIAL",
+      tagColor: "bg-blue-500/15 text-blue-500 border-blue-500/25",
+      icon: Calculator,
+      iconColor: "text-blue-500 bg-blue-500/10 border-blue-500/25",
+      desc: "Compare 60/40 vs 1% monthly plan cash-flow & handover net rental yields",
+      prompt: "Calculate 60/40 payment plan vs 1% monthly plan cash-flow and net rental yield for an international cash buyer.",
+    },
+    {
+      id: "b-yield",
+      title: "DLD Yield Radar",
+      tag: "DLD DATA",
+      tagColor: "bg-emerald-500/15 text-emerald-500 border-emerald-500/25",
+      icon: LineChart,
+      iconColor: "text-emerald-500 bg-emerald-500/10 border-emerald-500/25",
+      desc: "Compare 5-year capital appreciation & rental yield: Business Bay vs Dubai Hills",
+      prompt: "Compare 5-year capital appreciation and net rental yields: Business Bay vs Dubai Hills using recent DLD transaction data.",
+    },
+    {
+      id: "b-pitch",
+      title: "1-Click WhatsApp Pitch",
+      tag: "CONVERSION",
+      tagColor: "bg-purple-500/15 text-purple-500 border-purple-500/25",
+      icon: MessageSquare,
+      iconColor: "text-purple-500 bg-purple-500/10 border-purple-500/25",
+      desc: "Draft high-converting VIP WhatsApp pitch script for luxury off-plan investor",
+      prompt: "Draft a high-converting VIP WhatsApp pitch for an overseas investor looking for high rental yields with low initial deposit.",
+    },
+  ];
+
+  const ownerSuggestions = [
+    {
+      id: "o-comm",
+      title: "Commission Aging Audit",
+      tag: "RECEIVABLES",
+      tagColor: "bg-rose-500/15 text-rose-400 border-rose-500/25",
+      icon: DollarSign,
+      iconColor: "text-rose-400 bg-rose-500/10 border-rose-500/25",
+      desc: "Audit developer commissions unpaid & overdue > 60 days across agency agents",
+      prompt: "Run an audit on developer commission receivables overdue > 60 days across all agents in the agency. List top delinquent developers and total outstanding AED balance.",
+    },
+    {
+      id: "o-leaderboard",
+      title: "Broker Leaderboard",
+      tag: "PRODUCTION",
+      tagColor: "bg-blue-500/15 text-blue-400 border-blue-500/25",
+      icon: Users,
+      iconColor: "text-blue-400 bg-blue-500/10 border-blue-500/25",
+      desc: "Rank brokers by closed sales volume, pipeline velocity, and conversion rate",
+      prompt: "Show the top-performing brokers this quarter by closed sales volume, pipeline conversion velocity, and commission payout forecast.",
+    },
+    {
+      id: "o-escrow",
+      title: "Escrow Trust Audit",
+      tag: "COMPLIANCE",
+      tagColor: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25",
+      icon: ShieldCheck,
+      iconColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25",
+      desc: "Verify RERA escrow trust accounts & construction progress across registered developments",
+      prompt: "Verify RERA escrow trust account compliance and construction milestones for our active off-plan project listings.",
+    },
+    {
+      id: "o-alloc",
+      title: "Developer Allocation Pitch",
+      tag: "ACQUISITION",
+      tagColor: "bg-purple-500/15 text-purple-400 border-purple-500/25",
+      icon: Building2,
+      iconColor: "text-purple-400 bg-purple-500/10 border-purple-500/25",
+      desc: "Draft agency master allocation proposal for new luxury off-plan launch",
+      prompt: "Draft an agency master allocation proposal to secure exclusive floors and pre-launch broker allocations for a new luxury waterfront development.",
+    },
+  ];
+
+  const currentSuggestions = role === "company" ? ownerSuggestions : brokerSuggestions;
 
   // Sidebar history panel: collapsed by default (optional to open)
   const [panelOpen, setPanelOpen] = useState(false);
@@ -114,8 +384,8 @@ export function GeminiAssistantPage() {
     }
   };
 
-  const handleSend = () => {
-    const prompt = input.trim();
+  const handleSend = (customPrompt?: string) => {
+    const prompt = (customPrompt || input).trim();
     if (!prompt && attachments.length === 0) return;
 
     const userMsg: ChatMessage = {
@@ -133,33 +403,8 @@ export function GeminiAssistantPage() {
 
     // Contextual AI simulation
     setTimeout(() => {
-      let responseText = "";
       const attachedLead = userMsg.attachments?.find((a) => a.type === "lead");
-
-      if (attachedLead) {
-        responseText = `### Strategic Analysis for ${attachedLead.label}
-
-**1. Investor Financial Summary:**
-* **Budget:** ${attachedLead.budget || "Verified Range"}
-* **Preferences:** ${attachedLead.sub}
-* **Status:** High Probability Closer · DLD Registration Ready
-
-**2. Matched Dubai Developments:**
-* **Reef Luxury 995 (DLRC):** 1BR from AED 684,000 · 10/40/50 Handover Q4 2026. Aligns with budget; 8.4% projected net rental yield.
-* **Bayz 102 by Danube (Business Bay):** 1% monthly post-handover plan for investor cash-flow optimization.
-
-**3. 1-Click WhatsApp Pitch:**
-> *"Hi ${attachedLead.label.split(" ")[0]}, hope you're having a productive week! I just reviewed exclusive allocations that align with your search criteria in Dubai. We have 2 prime options with flexible developer payment plans and verified DLD escrow. Would 3:00 PM today suit you for a quick 2-minute overview?"*
-
-*Would you like me to prepare an official EOI reservation slip or draft an Ejari/SPA contract review?*`;
-      } else {
-        responseText = `### DealOS Strategic Mastermind
-
-I've processed your query: **"${prompt}"**
-
-* **Market Overview:** UAE real estate market continues strong momentum with 1,355+ verified developments across 6 Emirates and high capital growth.
-* **Recommended Next Step:** Click the **+** button to attach an investor lead or project document from your Leads directory to tailor the exact strategy.`;
-      }
+      const responseText = getSmartRoleResponse(prompt, role, attachedLead);
 
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,
@@ -170,7 +415,7 @@ I've processed your query: **"${prompt}"**
 
       setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 850);
+    }, 650);
   };
 
   const handleCopy = (id: string, text: string) => {
@@ -272,28 +517,51 @@ I've processed your query: **"${prompt}"**
 
         {/* ═══ SCENARIO A: PURE ZEN CENTER FLOATING SCREEN (NO MESSAGES) ═══ */}
         {messages.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-4 max-w-3xl mx-auto w-full relative pb-16 sm:pb-0 overflow-y-auto">
-            {/* Ambient Radial Glow */}
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div className="size-96 rounded-full bg-primary/5 blur-3xl opacity-70" />
+          <div className="flex-1 flex flex-col items-center justify-center px-4 max-w-3xl mx-auto w-full relative pb-16 sm:pb-8 overflow-y-auto">
+            {/* Ambient Radial Glow & Gemini Shimmer Backdrop */}
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+              <div className="size-[480px] rounded-full bg-gradient-to-tr from-primary/10 via-[#7B4DFF]/10 to-emerald-500/5 blur-3xl opacity-80 animate-pulse" />
             </div>
 
-            {/* Center Greeting */}
-            <div className="text-center mb-6 relative z-10 space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold font-mono bg-primary/10 text-primary border border-primary/20 shadow-xs mb-1">
-                <Sparkles size={12} className="text-amber-400" />
-                <span>DEALOS MASTERMIND · DUBAI COPILOT</span>
+            {/* Centered DealOS Logo (Gemini Style) & Halo Aura */}
+            <div className="text-center mb-6 relative z-10 flex flex-col items-center space-y-3">
+              <div className="relative group">
+                {/* Glowing Gemini-like aura ring */}
+                <div className="absolute -inset-3 rounded-full bg-gradient-to-tr from-primary via-[#7B4DFF] to-cyan-400 opacity-40 blur-xl group-hover:opacity-60 transition-opacity animate-pulse" />
+                <div className="relative size-20 sm:size-24 rounded-3xl bg-card/90 border border-white/20 shadow-2xl flex items-center justify-center p-3 backdrop-blur-xl">
+                  <LogoMark size={56} variant="dark" />
+                </div>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground font-display">
-                Your move, {userName}!
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
-                Dubai off-plan matching, 1% payment plans, DLD yields, and 1-click investor pitches.
-              </p>
+
+              <div className="space-y-1 pt-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold font-mono bg-primary/10 text-primary border border-primary/20 shadow-xs">
+                  <Sparkles size={12} className="text-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
+                  <span>DEALOS MASTERMIND · GEMINI AI ENGINE</span>
+                </div>
+                <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground font-display">
+                  {role === "company" ? `Welcome to Overwatch, ${userName}!` : `Your move, ${userName}!`}
+                </h1>
+                <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
+                  {role === "company"
+                    ? "Overwatch broker commissions, RERA escrow compliance, and agency allocation pipelines."
+                    : "Dubai off-plan matching, 1% payment plans, DLD yields, and 1-click investor pitches."}
+                </p>
+              </div>
+
+              {/* Role Switcher Pill */}
+              <button
+                type="button"
+                onClick={toggleRole}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/80 hover:bg-secondary text-foreground text-xs font-semibold border border-border/80 transition-all cursor-pointer shadow-xs active:scale-95"
+                title="Switch role mode"
+              >
+                <span>Viewing as: <strong>{role === "company" ? "🏢 Agency Owner" : "💼 Solo Broker"}</strong></span>
+                <span className="text-[11px] text-primary underline font-bold">Switch ⇄</span>
+              </button>
             </div>
 
-            {/* ═══ CENTER FLOATING INPUT CAPSULE BAR (EXACTLY LIKE GEMINI) ═══ */}
-            <div className="w-full max-w-2xl relative z-20">
+            {/* ═══ FLOATING CAPSULE IN CENTRE OF SCREEN (EXACTLY LIKE GEMINI) ═══ */}
+            <div className="w-full max-w-2xl relative z-20 mb-6">
               {/* Context Chips (Show if items are attached) */}
               {attachments.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2 px-1">
@@ -316,13 +584,13 @@ I've processed your query: **"${prompt}"**
                 </div>
               )}
 
-              {/* Capsule Container */}
-              <div className="relative rounded-full border border-border/80 bg-card shadow-lg hover:border-border transition-all duration-200 flex items-center p-2 pl-3">
+              {/* Floating Elevated Capsule Container */}
+              <div className="relative rounded-full border border-primary/30 bg-card/95 backdrop-blur-2xl shadow-[0_12px_40px_-10px_rgba(47,107,255,0.2),0_2px_10px_rgba(0,0,0,0.1)] hover:border-primary/60 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 flex items-center p-2 pl-3">
                 {/* Plus Button: Opens Center Floating Leads Picker */}
                 <button
                   type="button"
                   onClick={() => setLeadsModalOpen(true)}
-                  className="size-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+                  className="size-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer"
                   title="Add Leads or Documents to Chat"
                 >
                   <Plus size={20} />
@@ -332,7 +600,7 @@ I've processed your query: **"${prompt}"**
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
-                  placeholder="Ask DealOS Mastermind..."
+                  placeholder={role === "company" ? "Ask Agency Overwatch (commissions, broker quotas, RERA escrow)..." : "Ask DealOS Copilot (off-plan matching, DLD yields, 1% plans)..."}
                   className="flex-1 bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                 />
 
@@ -341,7 +609,7 @@ I've processed your query: **"${prompt}"**
                   <select
                     value={aiModel}
                     onChange={(e) => setAiModel(e.target.value as typeof aiModel)}
-                    className="bg-secondary/60 text-foreground text-xs font-bold rounded-full px-2.5 py-1 border border-border cursor-pointer focus:outline-none"
+                    className="bg-secondary/70 text-foreground text-xs font-bold rounded-full px-2.5 py-1 border border-border cursor-pointer focus:outline-none"
                   >
                     <option value="Pro">Pro</option>
                     <option value="Fast">Fast</option>
@@ -355,7 +623,7 @@ I've processed your query: **"${prompt}"**
                       setIsRecording((v) => !v);
                       toast.info(isRecording ? "Voice memo stopped" : "Listening for voice memo...");
                     }}
-                    className={`size-8 rounded-full flex items-center justify-center transition-colors ${
+                    className={`size-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                       isRecording ? "bg-red-500/20 text-red-400 animate-pulse" : "text-muted-foreground hover:text-foreground"
                     }`}
                     title="Voice prompt"
@@ -366,9 +634,9 @@ I've processed your query: **"${prompt}"**
                   {/* Send Button */}
                   <button
                     type="button"
-                    onClick={handleSend}
+                    onClick={() => handleSend()}
                     disabled={!input.trim() && attachments.length === 0}
-                    className="size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
+                    className="size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity shadow-sm cursor-pointer"
                     title="Send"
                   >
                     <ArrowRight size={15} />
@@ -377,91 +645,43 @@ I've processed your query: **"${prompt}"**
               </div>
             </div>
 
-            {/* ═══ PICTORIAL VIBRANT QUICK-ACTION PROMPTS (SOLVES SCREENSHOT ISSUES) ═══ */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl mt-5 px-1 relative z-10">
-              <button
-                type="button"
-                onClick={() => {
-                  setInput("Match off-plan 1BR and 2BR in DLRC or JVC under AED 1.2M with 1% monthly payment plan");
-                }}
-                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-amber-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
-              >
-                <div className="size-9 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Building2 size={17} />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="text-xs font-bold text-foreground">Off-Plan Matcher</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-500 px-1.5 py-0.2 rounded-full">Top Pick</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
-                    Find 1BR in DLRC or JVC under AED 1.2M with 1% monthly plan
-                  </p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setInput("Calculate 60/40 payment plan vs post-handover ROI for an investor cash buyer");
-                }}
-                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-blue-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
-              >
-                <div className="size-9 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Zap size={17} />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="text-xs font-bold text-foreground">Payment Plan ROI</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider bg-blue-500/15 text-blue-500 px-1.5 py-0.2 rounded-full">Financial</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
-                    Compare 60/40 vs 1% monthly plan cash-flow & handover yield
-                  </p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setInput("Compare 5-year capital appreciation & rental yield: Business Bay vs Dubai Hills");
-                }}
-                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-emerald-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
-              >
-                <div className="size-9 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <ShieldCheck size={17} />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="text-xs font-bold text-foreground">DLD Yield Radar</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-500 px-1.5 py-0.2 rounded-full">DLD Data</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
-                    Compare capital appreciation & net rental yields across districts
-                  </p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setInput("Draft a high-converting 1-click WhatsApp pitch for high-net-worth investor lead");
-                }}
-                className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-purple-500/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98]"
-              >
-                <div className="size-9 rounded-xl bg-purple-500/10 border border-purple-500/25 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <MessageSquare size={17} />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="text-xs font-bold text-foreground">WhatsApp Pitcher</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider bg-purple-500/15 text-purple-500 px-1.5 py-0.2 rounded-full">Pitch</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
-                    Generate tailored Dubai off-plan WhatsApp script for HNWI
-                  </p>
-                </div>
-              </button>
+            {/* ═══ 4 ROLE-WISE SUGGESTIONS UNDER FLOATING CAPSULE ═══ */}
+            <div className="w-full max-w-2xl px-1 relative z-10">
+              <div className="flex items-center justify-between mb-2 px-1">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Sparkles size={11} className="text-primary" />
+                  {role === "company" ? "4 Executive Agency Prompts" : "4 Solo Broker Prompts"}
+                </span>
+                <span className="text-[10px] text-muted-foreground">Click to run</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {currentSuggestions.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleSend(item.prompt)}
+                      className="group p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card/80 hover:bg-secondary/70 hover:border-primary/40 text-left transition-all shadow-xs flex items-start gap-3 active:scale-[0.98] cursor-pointer"
+                    >
+                      <div className={`size-9 rounded-xl border flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform ${item.iconColor}`}>
+                        <Icon size={17} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">{item.title}</span>
+                          <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded-full border ${item.tagColor}`}>
+                            {item.tag}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         ) : (

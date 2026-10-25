@@ -60,19 +60,19 @@ export function GeneralCopilot() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open DealOS Copilot"
-        className="fixed right-6 bottom-6 z-40 flex size-14 items-center justify-center rounded-full border border-gold bg-obsidian text-gold shadow-[0_18px_40px_-16px_rgba(0,0,0,0.6)] transition-transform hover:scale-105"
+        className="fixed right-6 bottom-6 z-40 flex size-12 sm:size-14 items-center justify-center rounded-full border border-primary/40 bg-[#0B0F19] text-primary shadow-2xl hover:border-primary hover:bg-primary hover:text-white transition-all hover:scale-105 cursor-pointer"
       >
         <MessageSquare className="size-5" />
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="flex w-full flex-col gap-0 bg-silk p-0 sm:max-w-md [&>button]:hidden">
-          <SheetHeader className="flex-row items-center justify-between border-b border-gold/30 bg-obsidian px-5 py-4">
+        <SheetContent className="flex w-full flex-col gap-0 bg-background p-0 sm:max-w-md [&>button]:hidden border-l border-border/80">
+          <SheetHeader className="flex-row items-center justify-between border-b border-border/80 bg-card px-5 py-4">
             <div>
-              <SheetTitle className="text-[13px] uppercase tracking-[0.18em] text-silk">DealOS Copilot</SheetTitle>
-              <p className="text-[11px] uppercase tracking-[0.18em] text-gold">Ask anything</p>
+              <SheetTitle className="text-[13px] uppercase tracking-[0.18em] text-foreground font-mono font-bold">DealOS Copilot</SheetTitle>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-primary font-mono">Ask anything</p>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="text-silk/70 hover:text-gold">
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="size-5" />
             </button>
           </SheetHeader>
@@ -85,18 +85,18 @@ export function GeneralCopilot() {
             ) : null}
             {msgs.map((m, i) =>
               m.role === "user" ? (
-                <div key={i} className="ml-auto max-w-[85%] rounded-2xl bg-obsidian px-4 py-2.5 text-silk">
+                <div key={i} className="ml-auto max-w-[85%] rounded-2xl bg-primary px-4 py-2.5 text-primary-foreground font-medium">
                   {m.content}
                 </div>
               ) : (
-                <div key={i} className="max-w-full text-foreground">
+                <div key={i} className="max-w-full text-foreground bg-card p-3 rounded-2xl border border-border/80">
                   <ChatText text={m.content} />
                 </div>
               ),
             )}
             {busy ? (
-              <span className="shimmer-text inline-flex items-center gap-2 rounded-full border border-gold/40 px-3 py-1 text-xs font-medium">
-                <Loader2 className="size-3 animate-spin text-gold" /> DealOS is thinking…
+              <span className="shimmer-text inline-flex items-center gap-2 rounded-full border border-primary/40 px-3 py-1 text-xs font-medium text-primary">
+                <Loader2 className="size-3 animate-spin text-primary" /> DealOS is thinking…
               </span>
             ) : null}
             {error ? (
@@ -105,7 +105,7 @@ export function GeneralCopilot() {
             <div ref={endRef} />
           </div>
 
-          <div className="flex items-end gap-2 border-t border-border p-4">
+          <div className="flex items-end gap-2 border-t border-border p-4 bg-card/60">
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -117,9 +117,9 @@ export function GeneralCopilot() {
               }}
               placeholder="Ask DealOS Copilot…"
               rows={2}
-              className="min-h-0 resize-none bg-card"
+              className="min-h-0 resize-none bg-background border-border/80 text-foreground"
             />
-            <Button size="icon" onClick={send} disabled={busy || !input.trim()} className="bg-gold text-silk hover:bg-gold/90" aria-label="Send">
+            <Button size="icon" onClick={send} disabled={busy || !input.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer" aria-label="Send">
               <Send className="size-4" />
             </Button>
           </div>
