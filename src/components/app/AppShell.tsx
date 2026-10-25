@@ -5,7 +5,7 @@ import {
   Building2, CalendarClock, ChevronsLeft, ChevronsRight, Construction, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
-  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X, Calculator as CalcIcon,
+  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X, Calculator as CalcIcon, MessageSquare,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -69,6 +69,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   }, [userMenu]);
 
   const signOut = async () => {
+    toast.info("Logged out of DealOS session");
     await fullSignOut();
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -104,8 +105,9 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       title: "OVERWATCH",
       items: [
         { label: "Executive Cockpit", desc: "Agency Overwatch & Speed to Lead", to: "/owner-dashboard", icon: Home, exact: true },
-        { label: "Broker Leaderboard", desc: "12 Licensed Agents & Quotas", to: "/owner-dashboard#brokers", icon: Users },
+        { label: "Broker Leaderboard", desc: "32 Licensed Agents & Quotas", to: "/owner-dashboard#brokers", icon: Users, badge: 32 },
         { label: "Deals Stages Radar", desc: "Inbound Leads, Pipeline & Form F", to: "/owner-dashboard#pipeline", icon: Layers },
+        { label: "WhatsApp Gateway", desc: "Agency Multi-Device Sync & Webhooks", to: "/whatsapp", icon: MessageSquare },
       ],
     },
     {
@@ -129,7 +131,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
     {
       title: "GOVERNANCE",
       items: [
-        { label: "Manage Users & Team", desc: "12 Licensed Agents & RERA Access", to: "/app/users", icon: Users, badge: 12 },
+        { label: "Manage Users & Team", desc: "32 Licensed Agents & RERA Access", to: "/app/users", icon: Users, badge: 32 },
         { label: "Developer Debt", desc: "Danube & Emaar Overdue Commission Ledger", to: "/owner-dashboard#vouchers", icon: DollarSign },
         { label: "Owner AI Mastermind", desc: "Executive Decisions & Cashflow", to: "/owner-dashboard#mastermind", icon: Sparkles },
         { label: "Agency Settings", desc: "DLD License & Governance", to: "/app/settings?role=owner", icon: Settings },
@@ -144,6 +146,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
         { label: "Broker Cockpit", desc: "Daily Deal Desk, Priority Tasks & Actions", to: "/app", icon: Home, exact: true },
         { label: "Leads Inbox", desc: "Investor Inbox & Priority Action Queue", to: "/app/leads", icon: Inbox },
         { label: "Broker AI Copilot", desc: "Strategic Mastermind & Real Estate Copilot", to: "/app/ai-assistant", icon: Sparkles },
+        { label: "WhatsApp Gateway", desc: "1-Click WhatsApp Sync, Voice AI & Lead Routing", to: "/whatsapp", icon: MessageSquare },
       ],
     },
     {
@@ -545,6 +548,39 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                   </span>
                 )}
               </button>
+
+              {/* Dedicated Clear Logout Action in Sidebar */}
+              {(!collapsed || drawer) ? (
+                <div className="pt-2 px-0.5">
+                  <button
+                    type="button"
+                    onClick={() => void signOut()}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 text-xs font-bold transition-all cursor-pointer group shadow-2xs"
+                    title="Sign out of DealOS and return to login"
+                  >
+                    <div className="flex items-center gap-2">
+                      <LogOut size={14} className="group-hover:-translate-x-0.5 transition-transform text-rose-400 shrink-0" />
+                      <span>Log Out / Switch</span>
+                    </div>
+                    <span className="text-[10px] font-mono uppercase bg-rose-500/15 px-1.5 py-0.5 rounded text-rose-300">
+                      Exit
+                    </span>
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-2 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => void signOut()}
+                    className="size-9 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 transition-all cursor-pointer"
+                    title="Log out of DealOS"
+                    onMouseEnter={(e) => handleMouseEnter(e, { label: "Log Out", desc: "Sign out and return to login" })}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <LogOut size={15} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </aside>
@@ -687,11 +723,12 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               <button
                 type="button"
                 onClick={() => void signOut()}
-                className="a-btn a-btn-line inline-flex items-center justify-center p-2 rounded-xl text-rose-500/80 hover:text-rose-500 hover:bg-rose-500/10 border-rose-500/20 transition-all"
+                className="a-btn a-btn-line inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/25 transition-all shadow-xs cursor-pointer"
                 title="Log out of DealOS"
                 aria-label="Log out"
               >
-                <LogOut size={16} />
+                <LogOut size={14} className="shrink-0" />
+                <span className="hidden sm:inline">Log Out</span>
               </button>
             </div>
           </header>

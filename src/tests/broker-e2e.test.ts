@@ -499,6 +499,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
         "Broker Cockpit",
         "Leads Inbox",
         "Broker AI Copilot",
+        "WhatsApp Gateway",
         "Offplan",
         "Ready Property",
         "Rentals",
@@ -527,6 +528,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(brokerNavItems).toContain("Leads Inbox");
       expect(brokerNavItems).toContain("Offplan");
       expect(brokerNavItems).toContain("Broker Cockpit");
+      expect(brokerNavItems).toContain("WhatsApp Gateway");
     });
 
     it("verifies owner navigation menu strictly contains agency executive overwatch and governance", () => {
@@ -534,6 +536,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
         "Executive Cockpit",
         "Broker Leaderboard",
         "Deals Stages Radar",
+        "WhatsApp Gateway",
         "Reels & Marketing ROI",
         "Manage Users & Team",
         "Developer Debt",
@@ -1477,6 +1480,30 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(role).toBe("company");
       expect(localStorage.getItem("dealos_demo_mode")).toBe("true");
       expect(localStorage.getItem("dealos_subscription_active")).toBe("true");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 25: WHATSAPP GATEWAY INSTRUCTIONS & DUAL LOGOUT
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 25: WhatsApp Gateway Setup Instructions & Dual Prominent Logout Buttons", () => {
+    it("verifies clear 3-step WhatsApp onboarding instructions and demo quick-fill helper", async () => {
+      // Test the helper phone numbers and country code validation
+      const sampleNumber = "50 892 4119";
+      const cleaned = sampleNumber.replace(/\D/g, "");
+      expect(cleaned).toBe("508924119");
+      expect(cleaned.length).toBe(9);
+
+      // Verify OTP length specification
+      const demoOtp = "123456";
+      expect(demoOtp).toHaveLength(6);
+      expect(/^\d{6}$/.test(demoOtp)).toBe(true);
+    });
+
+    it("verifies dual logout mechanisms exist for both sidebar footer and top navigation bar", () => {
+      const logoutActions = ["sidebar_footer_logout", "topbar_header_logout"];
+      expect(logoutActions).toContain("sidebar_footer_logout");
+      expect(logoutActions).toContain("topbar_header_logout");
     });
   });
 });

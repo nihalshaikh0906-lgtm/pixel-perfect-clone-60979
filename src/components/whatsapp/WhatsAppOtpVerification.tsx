@@ -299,14 +299,71 @@ export function WhatsAppOtpVerification() {
         </div>
       </div>
 
+      {/* ═══ 3-STEP VISUAL INSTRUCTIONS FOR CLEAR WHATSAPP SETUP ═══ */}
+      <div className="rounded-2xl bg-gradient-to-r from-emerald-500/10 via-primary/5 to-emerald-500/5 border border-emerald-500/30 p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-400">
+            <Sparkles size={15} />
+            <span>3-Step Quick WhatsApp Setup (Takes 30 Seconds)</span>
+          </div>
+          <span className="text-[10px] font-mono font-bold text-emerald-400/80 bg-emerald-500/15 px-2 py-0.5 rounded-full">
+            INSTANT SYNC
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 rounded-xl bg-card/70 border border-border/70 space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-foreground">
+              <span className="size-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-mono">1</span>
+              <span>Enter Phone Number</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed m-0">
+              Pick your country code (+971 UAE) and enter your active mobile or WhatsApp number.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-card/70 border border-border/70 space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-foreground">
+              <span className="size-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-mono">2</span>
+              <span>Enter 6-Digit OTP</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed m-0">
+              Type the 6-digit confirmation code dispatched to your screen (Demo Code: <strong>742918</strong>).
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-card/70 border border-border/70 space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-foreground">
+              <span className="size-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-mono">3</span>
+              <span>Live CRM Routing</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed m-0">
+              Your device slot is activated. Investor leads, client pitches &amp; voice notes route directly to your WhatsApp.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* ═══ STEP 1: ENTER PHONE NUMBER ═══ */}
       {step === "input" && (
         <form onSubmit={handleSendOtp} className="space-y-4 max-w-xl">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground flex items-center justify-between">
-              <span>Mobile / WhatsApp Number</span>
-              <span className="text-[11px] text-muted-foreground font-normal">SMS / WhatsApp Verification</span>
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-foreground">
+                Mobile / WhatsApp Number
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setCountryCode("+971");
+                  setRawPhone("508924119");
+                  toast.info("Quick-filled sample UAE number (+971 50 892 4119)");
+                }}
+                className="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold underline cursor-pointer"
+              >
+                ⚡ Quick Fill Sample Number (+971 50 892 4119)
+              </button>
+            </div>
 
             <div className="flex items-center gap-2">
               {/* Country Code Picker */}
