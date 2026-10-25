@@ -5,12 +5,13 @@ import {
   Building2, CalendarClock, ChevronsLeft, ChevronsRight, Construction, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
-  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X,
+  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X, Calculator as CalcIcon,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { AiChat } from "./AiChat";
 import { AddMenu, Notifications, ThemeToggle, useTheme } from "./ShellExtras";
+import { DealCalculatorModal } from "@/components/dealos/FloatingDealCalculator";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { detectRole, getStoredRole, setStoredRole, setActiveEmail, clearStoredRole, fullSignOut, type DealOSRole } from "@/lib/auth-role";
@@ -46,6 +47,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   const [ai, setAi] = useState(false);
   const [q, setQ] = useState("");
   const [userMenu, setUserMenu] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -658,6 +660,17 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               <Notifications />
               <ThemeToggle {...theme} />
 
+              {/* Deal Calculator Quick-Access on Top */}
+              <button
+                type="button"
+                onClick={() => setShowCalculator((v) => !v)}
+                className="a-btn a-btn-line inline-flex items-center justify-center p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer"
+                title="Deal Calculator (AED Mortgage & DLD)"
+                aria-label="Deal Calculator"
+              >
+                <CalcIcon size={16} />
+              </button>
+
               {/* Direct Settings Quick-Access Button */}
               <Link
                 to={role === "company" ? "/app/settings?role=owner" : "/app/settings"}
@@ -735,6 +748,13 @@ export function AppShell({ children, userName, initials, agency }: { children: R
         >
           <Sparkles size={22} />
         </button>
+
+        {showCalculator && (
+          <DealCalculatorModal
+            isOpen={showCalculator}
+            onClose={() => setShowCalculator(false)}
+          />
+        )}
       </div>
     </Ctx.Provider>
   );

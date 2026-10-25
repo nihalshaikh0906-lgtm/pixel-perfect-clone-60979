@@ -16,7 +16,6 @@ import { Magnetic } from './primitives';
 import { Sparkles, Video } from 'lucide-react';
 
 import { CockpitDemoSection, SeeTheBrokerHeader } from './CockpitDemoSection';
-import { FloatingDealCalculator } from './FloatingDealCalculator';
 
 const scenes=['Hero','Product','Insights','Integrations','Tools','Workflow','Modes','Proof','Pricing','CTA'];
 
@@ -269,9 +268,6 @@ export function DealOSLanding() {
         isOpen={demoModalOpen}
         onClose={() => setDemoModalOpen(false)}
       />
-
-      {/* Live Floating Deal Calculator with AI Summary */}
-      <FloatingDealCalculator />
     </main>
   );
 }

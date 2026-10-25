@@ -3,10 +3,10 @@ import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-mot
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RevealText, Rise, Scene, TiltCard } from './primitives';
+import { PhysicalDealCalculator } from './FloatingDealCalculator';
 import skyline from '@/assets/dealos-dubai.jpg';
 const apps=['Property Finder','Bayut','Dubizzle','WhatsApp','Meta Ads','Google Ads','Calendar','Gmail','Zapier','TikTok','LinkedIn','Mailchimp'];
 export function Integrations(){return <Scene id="integrations" pinned height="180vh"><div className="d-integration-stage"><div className="d-orbit-center"><span className="d-pill">Your ecosystem. Connected.</span><RevealText>Connect all/your apps.</RevealText><p>Less switching. More selling.</p><span className="d-demo-tag">Integration concept · availability varies</span></div><div className="d-orbits">{[0,1].map(row=><div key={row} className={`d-orbit orbit-${row}`}>{apps.slice(row*6,row*6+6).map((app,i)=><div className={`d-orbit-position pos-${i}`} key={app}><div className="d-app-logo" tabIndex={0} title={`${app} · illustrative integration`}><span className={`d-app-initial app-${(i+row)%4}`}>{app==='WhatsApp'?<MessageCircle/>:app==='Gmail'?<Mail/>:app.split(' ').map(v=>v[0]).join('').slice(0,2)}</span><small>{app}</small></div></div>)}</div>)}</div><div className="d-mobile-apps">{[0,1].map(row=><div className={`d-logo-marquee row-${row}`} key={row}>{[...apps.slice(row*6,row*6+6),...apps.slice(row*6,row*6+6)].map((v,i)=><span key={i}><b>{v.slice(0,1)}</b>{v}</span>)}</div>)}</div></div></Scene>;}
-function Calculator(){const [price,setPrice]=useState(2);const [down,setDown]=useState(20);return <><div className="d-calculator-number">AED {(price*1000000).toLocaleString('en-US')}</div><label>Property price <input aria-label="Property price" type="range" min="1" max="5" step=".1" value={price} onChange={e=>setPrice(Number(e.target.value))}/></label><label>Down payment <span>{down}%</span><input aria-label="Down payment" type="range" min="10" max="50" value={down} onChange={e=>setDown(Number(e.target.value))}/></label><div className="d-calc-results"><div><small>Down payment</small><b>AED {Math.round(price*10000*down).toLocaleString('en-US')}</b></div><div><small>DLD fee · 4%</small><b>AED {(price*40000).toLocaleString('en-US')}</b></div></div></>;}
 function Satellite(){const [split,setSplit]=useState(50);return <div className="d-satellite"><img src={skyline} alt="Illustrative Dubai waterfront" width={1920} height={1024} loading="lazy"/><div className="d-satellite-before" style={{clipPath:`inset(0 ${100-split}% 0 0)`}}><img src={skyline} alt="Desaturated comparison preview" width={1920} height={1024} loading="lazy"/></div><span className="d-before-label">2024</span><span className="d-after-label">2026</span><input type="range" min="5" max="95" value={split} onChange={e=>setSplit(Number(e.target.value))} aria-label="Construction comparison divider"/><div className="d-satellite-divider" style={{left:`${split}%`}}><span>↔</span></div><small>Illustrative comparison, not historical imagery</small></div>;}
 function PortalPreview() {
  const ref = useRef<HTMLDivElement>(null);
@@ -177,22 +177,22 @@ export function Tools() {
           </div>
         </div>
 
-        {/* ═══ TRY IT YOURSELF: CALCULATOR ═══ */}
+        {/* ═══ LIVE PLATFORM TEASER: PHYSICAL CALCULATOR ═══ */}
         <div className="mt-14 sm:mt-20 pt-10 border-t border-border/60">
-          <div className="text-center max-w-xl mx-auto mb-6">
+          <div className="text-center max-w-xl mx-auto mb-8">
             <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-primary block mb-1">
-              TRY IT YOURSELF
+              LIVE PLATFORM TEASER
             </span>
             <h3 className="text-2xl sm:text-3xl font-bold text-foreground font-display">
-              What does a purchase really cost?
+              What does a Dubai deal really cost?
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">
-              Live mortgage &amp; DLD 4% transaction fee calculator with real-time breakdowns.
+              Live physical calculator with real-time DLD 4%, 20% down payment, 25-year mortgage EMI, and instant AI executive summary.
             </p>
           </div>
 
-          <div className="max-w-lg mx-auto p-5 sm:p-7 rounded-2xl sm:rounded-3xl bg-card border border-border/80 shadow-md">
-            <Calculator />
+          <div className="flex justify-center px-2">
+            <PhysicalDealCalculator embedded />
           </div>
         </div>
       </div>

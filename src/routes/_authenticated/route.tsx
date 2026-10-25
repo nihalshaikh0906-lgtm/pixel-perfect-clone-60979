@@ -8,8 +8,6 @@ import { SubscriptionPaywall, isSubscriptionActive, isWhitelistedAccount, OPEN_A
 import { supabase } from "@/integrations/supabase/client";
 import { enforceRemember } from "@/lib/remember";
 
-import { FloatingDealCalculator } from "@/components/dealos/FloatingDealCalculator";
-
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
@@ -145,7 +143,6 @@ function AuthedLayout() {
       <Outlet />
       {inApp ? null : <ProfileWidget />}
       {inApp ? null : <GeneralCopilot />}
-      <FloatingDealCalculator />
     </>
   );
 }

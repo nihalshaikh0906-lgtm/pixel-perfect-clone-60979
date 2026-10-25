@@ -1,22 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Calculator as CalcIcon,
   X,
   Sparkles,
-  Minimize2,
-  Maximize2,
   Volume2,
   VolumeX,
-  RotateCcw,
-  Zap,
   ArrowRight,
-  TrendingUp,
-  Building2,
-  DollarSign,
-  ChevronDown,
+  ShieldCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
 
 // Tactile acoustic button press click
 function playKeyClick(type: "num" | "op" | "eq" | "clear") {
@@ -40,23 +32,23 @@ function playKeyClick(type: "num" | "op" | "eq" | "clear") {
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.06);
   } catch {
-    // blocked by browser
+    // blocked by browser policy until user gesture
   }
 }
 
-export function FloatingDealCalculator({
-  defaultOpen = false,
+export function PhysicalDealCalculator({
+  embedded = false,
   onClose,
+  initialValue = "2500000",
 }: {
-  defaultOpen?: boolean;
+  embedded?: boolean;
   onClose?: () => void;
+  initialValue?: string;
 }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Calculator State
-  const [display, setDisplay] = useState("2500000"); // default to standard AED 2.5M Dubai deal
+  const [display, setDisplay] = useState(initialValue); // default standard AED 2.5M Dubai deal
   const [prevValue, setPrevValue] = useState<number | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [formulaHistory, setFormulaHistory] = useState("2,500,000 AED");
@@ -205,306 +197,340 @@ export function FloatingDealCalculator({
   };
 
   return (
-    <>
-      {/* Floating launcher trigger pill (bottom-left or wherever placed) */}
-      {!isOpen && (
-        <motion.button
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="fixed left-6 bottom-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#0B0F19] text-white border border-primary/40 shadow-2xl backdrop-blur-xl cursor-pointer hover:border-primary transition-all group"
-          title="Open Floating Deal Calculator"
-        >
-          <div className="size-7 rounded-full bg-primary/20 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-            <CalcIcon size={15} />
+    <div
+      className={`relative select-none text-white overflow-hidden ${
+        embedded
+          ? "w-full max-w-[360px] mx-auto rounded-[32px] p-4 sm:p-5 bg-gradient-to-b from-[#181C28] via-[#101420] to-[#0A0D15] border border-white/20 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.12)]"
+          : "w-[calc(100vw-24px)] max-w-[360px] max-h-[92vh] overflow-y-auto rounded-[34px] p-4 sm:p-5 bg-gradient-to-b from-[#181C28] via-[#101420] to-[#0A0D15] border border-white/20 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.15)] scrollbar-none"
+      }`}
+    >
+      {/* Top Hardware Header & Brand */}
+      <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+        <div className="flex items-center gap-2">
+          <div
+            className="size-3 rounded-full bg-rose-500/80 cursor-pointer"
+            onClick={onClose || handleClear}
+            title={onClose ? "Close" : "Reset"}
+          />
+          <div
+            className="size-3 rounded-full bg-amber-500/80 cursor-pointer"
+            onClick={handleClear}
+            title="Clear display"
+          />
+          <div
+            className="size-3 rounded-full bg-emerald-500/80 cursor-pointer"
+            onClick={() => setDisplay("2500000")}
+            title="Standard AED 2.5M"
+          />
+          <span className="text-[11px] font-mono font-bold text-zinc-300 ml-1">
+            Deal<span className="text-primary font-black">OS</span> FX-991
+          </span>
+        </div>
+
+        {/* Solar Cell / Sound / Close Controls */}
+        <div className="flex items-center gap-2">
+          {/* Mini Solar Cell Accent */}
+          <div className="flex gap-0.5 p-1 rounded-xs bg-black/60 border border-white/10">
+            <span className="w-1.5 h-3 bg-zinc-800 rounded-2xs" />
+            <span className="w-1.5 h-3 bg-zinc-800 rounded-2xs" />
+            <span className="w-1.5 h-3 bg-zinc-800 rounded-2xs" />
           </div>
-          <span className="text-xs font-mono font-bold tracking-tight">Deal Calculator</span>
-          <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-        </motion.button>
-      )}
 
-      {/* Actual Physical Calculator Chassis (Floating Window) */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              height: isMinimized ? "auto" : "auto",
-            }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="fixed z-50 bottom-4 sm:bottom-6 left-3 sm:left-8 w-[calc(100vw-24px)] max-w-[340px] xs:max-w-[360px] max-h-[90vh] overflow-y-auto rounded-[34px] p-4 sm:p-5 bg-gradient-to-b from-[#181C28] via-[#101420] to-[#0A0D15] border border-white/20 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.12)] text-white select-none scrollbar-none"
+          <button
+            type="button"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="size-7 rounded-lg bg-white/5 hover:bg-white/15 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            title={soundEnabled ? "Mute clicks" : "Enable clicks"}
           >
-            {/* Top Hardware Header & Brand */}
-            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
-              <div className="flex items-center gap-2">
-                <div className="size-3 rounded-full bg-rose-500/80 cursor-pointer" onClick={() => setIsOpen(false)} />
-                <div className="size-3 rounded-full bg-amber-500/80 cursor-pointer" onClick={() => setIsMinimized(!isMinimized)} />
-                <div className="size-3 rounded-full bg-emerald-500/80 cursor-pointer" onClick={() => setIsMinimized(false)} />
-                <span className="text-[11px] font-mono font-bold text-zinc-300 ml-1">
-                  Deal<span className="text-primary font-black">OS</span> FX-991
-                </span>
-              </div>
+            {soundEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
+          </button>
 
-              {/* Solar Cell / Sound / Minimize Controls */}
-              <div className="flex items-center gap-2">
-                {/* Mini Solar Cell Accent */}
-                <div className="hidden xs:flex gap-0.5 p-1 rounded-sm bg-black/60 border border-white/10">
-                  <span className="w-1.5 h-3 bg-zinc-800 rounded-2xs" />
-                  <span className="w-1.5 h-3 bg-zinc-800 rounded-2xs" />
-                  <span className="w-1.5 h-3 bg-zinc-800 rounded-2xs" />
-                </div>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="size-7 rounded-lg bg-white/5 hover:bg-white/15 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              title="Close calculator"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+      </div>
 
-                <button
-                  type="button"
-                  onClick={() => setSoundEnabled(!soundEnabled)}
-                  className="size-7 rounded-lg bg-white/5 hover:bg-white/15 text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
-                  title={soundEnabled ? "Mute clicks" : "Enable clicks"}
-                >
-                  {soundEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
-                </button>
+      {/* ═══ HIGH-CONTRAST OLED DISPLAY ═══ */}
+      <div className="p-3.5 rounded-2xl bg-black/85 border border-white/15 shadow-inner space-y-1 mb-3">
+        {/* Formula / Operation Subtext */}
+        <div className="h-4 flex items-center justify-between text-[11px] font-mono text-zinc-400">
+          <span className="truncate">{formulaHistory || "Ready"}</span>
+          <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-primary/20 text-primary font-bold">
+            DLD Sync
+          </span>
+        </div>
 
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="size-7 rounded-lg bg-white/5 hover:bg-white/15 text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            </div>
+        {/* Main Numeric Readout */}
+        <div className="flex items-baseline justify-end gap-1.5 overflow-hidden">
+          <span className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white truncate">
+            {parseFloat(display).toLocaleString()}
+          </span>
+          <span className="text-xs font-mono font-bold text-emerald-400">AED</span>
+        </div>
+      </div>
 
-            {/* Minimized view indicator */}
-            {isMinimized ? (
-              <div className="py-2 flex items-center justify-between text-xs">
-                <span className="font-mono font-bold text-emerald-400">{display} AED</span>
-                <button
-                  type="button"
-                  onClick={() => setIsMinimized(false)}
-                  className="text-primary font-bold text-xs hover:underline flex items-center gap-1"
-                >
-                  <span>Expand</span>
-                  <Maximize2 size={12} />
-                </button>
-              </div>
-            ) : (
-              <>
-                {/* ═══ HIGH-CONTRAST OLED DISPLAY ═══ */}
-                <div className="p-3.5 rounded-2xl bg-black/80 border border-white/15 shadow-inner space-y-1 mb-3.5">
-                  {/* Formula / Operation Subtext */}
-                  <div className="h-4 flex items-center justify-between text-[11px] font-mono text-zinc-400">
-                    <span className="truncate">{formulaHistory || "Ready"}</span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-primary/20 text-primary font-bold">
-                      DLD Sync
-                    </span>
-                  </div>
+      {/* ═══ DUBAI PRESET SHORTCUT BUTTONS ═══ */}
+      <div className="grid grid-cols-4 gap-1.5 mb-2.5 text-[10px] font-mono font-bold">
+        <button
+          type="button"
+          onClick={applyDld}
+          className={`py-1.5 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95 ${
+            activePreset === "dld"
+              ? "bg-primary text-white border-primary shadow-xs"
+              : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10"
+          }`}
+        >
+          <span>DLD 4%</span>
+        </button>
+        <button
+          type="button"
+          onClick={applyDeposit}
+          className={`py-1.5 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95 ${
+            activePreset === "mortgage"
+              ? "bg-primary text-white border-primary shadow-xs"
+              : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10"
+          }`}
+        >
+          <span>20% Dep</span>
+        </button>
+        <button
+          type="button"
+          onClick={applyCommission}
+          className={`py-1.5 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95 ${
+            activePreset === "commission"
+              ? "bg-primary text-white border-primary shadow-xs"
+              : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10"
+          }`}
+        >
+          <span>2% Comm</span>
+        </button>
+        <button
+          type="button"
+          onClick={applyTrustee}
+          className="py-1.5 px-1 rounded-xl bg-white/5 text-zinc-300 border border-white/10 hover:bg-white/10 flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95"
+        >
+          <span>+Trustee</span>
+        </button>
+      </div>
 
-                  {/* Main Numeric Readout */}
-                  <div className="flex items-baseline justify-end gap-1.5 overflow-hidden">
-                    <span className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white truncate">
-                      {parseFloat(display).toLocaleString()}
-                    </span>
-                    <span className="text-xs font-mono font-bold text-emerald-400">AED</span>
-                  </div>
-                </div>
+      {/* ═══ PHYSICAL CALCULATOR KEYPAD (4x5 GRID) ═══ */}
+      <div className="grid grid-cols-4 gap-1.5 mb-3">
+        {/* Row 1: Clear, Backspace, %, Divide */}
+        <button
+          type="button"
+          onClick={handleClear}
+          className="h-10 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          AC
+        </button>
+        <button
+          type="button"
+          onClick={handleBackspace}
+          className="h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          ⌫
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            handleSoundClick("op");
+            const val = parseFloat(display) / 100;
+            setDisplay(String(val));
+          }}
+          className="h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          %
+        </button>
+        <button
+          type="button"
+          onClick={() => handleOp("÷")}
+          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          ÷
+        </button>
 
-                {/* ═══ DUBAI PRESET SHORTCUT BUTTONS ═══ */}
-                <div className="grid grid-cols-4 gap-1.5 mb-3 text-[10px] font-mono font-bold">
-                  <button
-                    type="button"
-                    onClick={applyDld}
-                    className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95 ${
-                      activePreset === "dld"
-                        ? "bg-primary text-white border-primary shadow-xs"
-                        : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10"
-                    }`}
-                  >
-                    <span>DLD 4%</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyDeposit}
-                    className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95 ${
-                      activePreset === "mortgage"
-                        ? "bg-primary text-white border-primary shadow-xs"
-                        : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10"
-                    }`}
-                  >
-                    <span>20% Dep</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyCommission}
-                    className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95 ${
-                      activePreset === "commission"
-                        ? "bg-primary text-white border-primary shadow-xs"
-                        : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10"
-                    }`}
-                  >
-                    <span>2% Comm</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyTrustee}
-                    className="py-2 px-1 rounded-xl bg-white/5 text-zinc-300 border border-white/10 hover:bg-white/10 flex flex-col items-center justify-center transition-all cursor-pointer active:scale-95"
-                  >
-                    <span>+Trustee</span>
-                  </button>
-                </div>
+        {/* Row 2: 7, 8, 9, Multiply */}
+        {["7", "8", "9"].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => handleDigit(n)}
+            className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          >
+            {n}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => handleOp("×")}
+          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          ×
+        </button>
 
-                {/* ═══ PHYSICAL CALCULATOR KEYPAD (4x5 GRID) ═══ */}
-                <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-3">
-                  {/* Row 1: Clear, Backspace, %, Divide */}
-                  <button
-                    type="button"
-                    onClick={handleClear}
-                    className="h-11 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-sm transition-all active:scale-95 shadow-xs"
-                  >
-                    AC
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleBackspace}
-                    className="h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all active:scale-95 shadow-xs"
-                  >
-                    ⌫
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleSoundClick("op");
-                      const val = parseFloat(display) / 100;
-                      setDisplay(String(val));
-                    }}
-                    className="h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all active:scale-95 shadow-xs"
-                  >
-                    %
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleOp("÷")}
-                    className="h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-lg transition-all active:scale-95 shadow-xs"
-                  >
-                    ÷
-                  </button>
+        {/* Row 3: 4, 5, 6, Subtract */}
+        {["4", "5", "6"].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => handleDigit(n)}
+            className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          >
+            {n}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => handleOp("−")}
+          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          −
+        </button>
 
-                  {/* Row 2: 7, 8, 9, Multiply */}
-                  {["7", "8", "9"].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => handleDigit(n)}
-                      className="h-11 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-base transition-all active:scale-95 shadow-xs"
-                    >
-                      {n}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => handleOp("×")}
-                    className="h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-lg transition-all active:scale-95 shadow-xs"
-                  >
-                    ×
-                  </button>
+        {/* Row 4: 1, 2, 3, Add */}
+        {["1", "2", "3"].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => handleDigit(n)}
+            className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          >
+            {n}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => handleOp("+")}
+          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          +
+        </button>
 
-                  {/* Row 3: 4, 5, 6, Subtract */}
-                  {["4", "5", "6"].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => handleDigit(n)}
-                      className="h-11 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-base transition-all active:scale-95 shadow-xs"
-                    >
-                      {n}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => handleOp("−")}
-                    className="h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-lg transition-all active:scale-95 shadow-xs"
-                  >
-                    −
-                  </button>
+        {/* Row 5: 0, 00, Decimal, Equals */}
+        <button
+          type="button"
+          onClick={() => handleDigit("0")}
+          className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          0
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            handleSoundClick("num");
+            if (display !== "0") setDisplay(display + "00");
+          }}
+          className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs font-mono transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          00
+        </button>
+        <button
+          type="button"
+          onClick={handleDecimal}
+          className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+        >
+          .
+        </button>
+        <button
+          type="button"
+          onClick={handleEquals}
+          className="h-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-base transition-all active:scale-95 shadow-md shadow-emerald-500/20 cursor-pointer"
+        >
+          =
+        </button>
+      </div>
 
-                  {/* Row 4: 1, 2, 3, Add */}
-                  {["1", "2", "3"].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => handleDigit(n)}
-                      className="h-11 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-base transition-all active:scale-95 shadow-xs"
-                    >
-                      {n}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => handleOp("+")}
-                    className="h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-lg transition-all active:scale-95 shadow-xs"
-                  >
-                    +
-                  </button>
+      {/* ═══ LIVE DUBAI METRICS QUICK-STRIP ═══ */}
+      <div className="grid grid-cols-2 gap-1.5 p-2 rounded-xl bg-white/5 border border-white/10 mb-3 text-[11px] font-mono">
+        <div>
+          <span className="text-zinc-400 block text-[10px]">20% Deposit:</span>
+          <span className="font-bold text-white">AED {deposit20Pct.toLocaleString()}</span>
+        </div>
+        <div>
+          <span className="text-zinc-400 block text-[10px]">DLD 4% Fee:</span>
+          <span className="font-bold text-amber-400">AED {dldFee.toLocaleString()}</span>
+        </div>
+        <div>
+          <span className="text-zinc-400 block text-[10px]">25Y Mortgage:</span>
+          <span className="font-bold text-emerald-400">~AED {monthlyMortgage.toLocaleString()}/mo</span>
+        </div>
+        <div>
+          <span className="text-zinc-400 block text-[10px]">2% Commission:</span>
+          <span className="font-bold text-primary">AED {brokerCommission2Pct.toLocaleString()}</span>
+        </div>
+      </div>
 
-                  {/* Row 5: 0, 00, Decimal, Equals */}
-                  <button
-                    type="button"
-                    onClick={() => handleDigit("0")}
-                    className="h-11 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-base transition-all active:scale-95 shadow-xs"
-                  >
-                    0
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleSoundClick("num");
-                      if (display !== "0") setDisplay(display + "00");
-                    }}
-                    className="h-11 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs font-mono transition-all active:scale-95 shadow-xs"
-                  >
-                    00
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDecimal}
-                    className="h-11 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-base transition-all active:scale-95 shadow-xs"
-                  >
-                    .
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleEquals}
-                    className="h-11 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-lg transition-all active:scale-95 shadow-md shadow-emerald-500/20"
-                  >
-                    =
-                  </button>
-                </div>
-
-                {/* ═══ AI INTEGRATED SUMMARY ON BOTTOM (2-LINER BRIEF) ═══ */}
-                <div className="p-3 rounded-2xl bg-gradient-to-r from-primary/15 via-[#7B4DFF]/15 to-emerald-500/10 border border-primary/30 text-xs space-y-1.5 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono font-bold text-primary uppercase flex items-center gap-1">
-                      <Sparkles size={11} className="text-amber-300" />
-                      AI FINANCIAL DOSSIER
-                    </span>
-                    <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/15 px-1.5 py-0.2 rounded font-bold">
-                      Live Brief
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-zinc-200 leading-relaxed font-sans">
-                    {getAiSummary()}
-                  </p>
-                </div>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      {/* ═══ AI INTEGRATED SUMMARY ON BOTTOM (2-LINER BRIEF) ═══ */}
+      <div className="p-3 rounded-2xl bg-gradient-to-r from-primary/15 via-[#7B4DFF]/15 to-emerald-500/10 border border-primary/30 text-xs space-y-1 shadow-sm">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-mono font-bold text-primary uppercase flex items-center gap-1">
+            <Sparkles size={11} className="text-amber-300" />
+            AI FINANCIAL DOSSIER
+          </span>
+          <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/15 px-1.5 py-0.2 rounded font-bold">
+            Live Brief
+          </span>
+        </div>
+        <p className="text-[11px] text-zinc-200 leading-relaxed font-sans">
+          {getAiSummary()}
+        </p>
+      </div>
+    </div>
   );
+}
+
+// Modal dialog for when launched from the system on top (AppShell header)
+export function DealCalculatorModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    if (isOpen) window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          transition={{ type: "spring", stiffness: 380, damping: 26 }}
+          className="relative"
+        >
+          <PhysicalDealCalculator onClose={onClose} />
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+}
+
+// Deprecated alias for backwards compatibility
+export function FloatingDealCalculator({
+  defaultOpen = false,
+  onClose,
+}: {
+  defaultOpen?: boolean;
+  onClose?: () => void;
+}) {
+  // If explicitly opened, render the modal; otherwise, render nothing (no floating buttons)
+  if (!defaultOpen) return null;
+  return <DealCalculatorModal isOpen={defaultOpen} onClose={onClose || (() => {})} />;
 }
