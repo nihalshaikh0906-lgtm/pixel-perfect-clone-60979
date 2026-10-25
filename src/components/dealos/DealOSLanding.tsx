@@ -5,7 +5,9 @@ import { Menu, X } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Hero } from './Hero';
+import { LiveDubaiPulse } from './LiveDubaiPulse';
 import { InteractiveDeviceShowcase } from './InteractiveDeviceShowcase';
+import { BrokerRoiCalculator } from './BrokerRoiCalculator';
 import { Product, Insights } from './ProductScenes';
 import { Integrations, Tools, Workflow, Modes } from './ToolsScenes';
 import { Proof, Pricing, CTA, Footer } from './FinalScenes';
@@ -19,6 +21,7 @@ const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: 
   return (
     <>
       <Hero />
+      <LiveDubaiPulse />
       <InteractiveDeviceShowcase />
 
       {/* ═══ HIGH-CONVERTING EARLY DEMO & WALKTHROUGH BANNER (ACCESSIBLE EARLY) ═══ */}
@@ -51,6 +54,7 @@ const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: 
 
       <Product />
       <Insights />
+      <BrokerRoiCalculator onOpenDemo={onOpenDemo} />
       <Integrations />
       <Tools />
       <Workflow />
