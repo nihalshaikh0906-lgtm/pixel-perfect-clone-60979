@@ -169,52 +169,45 @@ export function SubscriptionPaywall({
           <span className="text-[11px] text-muted-foreground">Pre-cleared for Institutional License Activation</span>
         </div>
 
-        {/* Value Proposition Alert */}
-        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 mb-6 flex items-start gap-3 text-xs text-amber-200">
-          <Lock size={18} className="text-amber-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-bold text-amber-300">No Platform Data Accessible on Free Tier</p>
-            <p className="text-amber-200/80 leading-relaxed">
-              DealOS is an institutional commercial operating system for Dubai real estate. To access live Dubai Land Department transaction streams, 34,850+ inventory units, client dossiers, and automated WhatsApp matching, confirm your license subscription below.
-            </p>
-          </div>
+        {/* Concise Status */}
+        <div className="rounded-xl bg-primary/10 border border-primary/20 px-3.5 py-2 mb-4 flex items-center gap-2 text-xs text-primary font-medium">
+          <Lock size={14} className="shrink-0" />
+          <span>Select your license period to unlock real-time DLD streams &amp; verified inventory.</span>
         </div>
 
-        {/* Plan Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-6">
+        {/* Plan Cards Grid: 2x2 on Mobile, 4 Columns on Desktop */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4">
           {PLANS.map((p) => {
             const isSelected = selectedPlan === p.id;
+            const discount = Math.round((1 - p.price / p.originalPrice) * 100);
             return (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => setSelectedPlan(p.id)}
-                className={`relative p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`relative p-3 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
-                    ? "border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/20 shadow-md"
+                    ? "border-primary bg-primary/10 ring-2 ring-primary/20 shadow-md"
                     : "border-border/80 bg-secondary/30 hover:border-border hover:bg-secondary/50"
                 }`}
               >
                 {p.highlighted && (
-                  <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-amber-500 text-black shadow-xs">
-                    ★ Best Deal
+                  <span className="absolute -top-2 right-2 px-1.5 py-0.2 rounded-full text-[8px] font-extrabold uppercase tracking-wider bg-primary text-primary-foreground shadow-xs">
+                    ★ Best
                   </span>
                 )}
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-foreground">{p.label}</span>
-                    {isSelected && <CheckCircle2 size={15} className="text-amber-400" />}
+                    <span className="text-[9px] font-mono font-bold text-emerald-400">-{discount}%</span>
                   </div>
-                  <div className="mt-2">
-                    <span className="text-lg font-black text-foreground font-display">{aedPrice(p.price)}</span>
+                  <div className="mt-1">
+                    <span className="text-base sm:text-lg font-black text-foreground font-display">{aedPrice(p.price)}</span>
                     <span className="text-[10px] text-muted-foreground ml-1">{p.period}</span>
                   </div>
                   <p className="text-[10px] text-emerald-400 font-semibold mt-0.5">
-                    {p.months > 1 ? `${aedPrice(p.perMonth)}/mo` : "Monthly flexible"}
+                    {p.months > 1 ? `${aedPrice(p.perMonth)}/mo` : "Flexible"}
                   </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-border/40 text-[9px] text-muted-foreground font-medium">
-                  {p.savingLabel}
                 </div>
               </button>
             );
@@ -222,50 +215,50 @@ export function SubscriptionPaywall({
         </div>
 
         {/* Payment Method Selector */}
-        <div className="rounded-2xl border border-border/70 bg-secondary/20 p-4 mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-foreground">Select Payment Method:</span>
-            <span className="text-[11px] text-muted-foreground font-mono">Instant UAE Central Bank 3DS Checkout</span>
+        <div className="rounded-2xl border border-border/70 bg-secondary/20 p-3 sm:p-4 mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-foreground">Payment Method:</span>
+            <span className="text-[10px] text-muted-foreground font-mono">Central Bank 3DS Checkout</span>
           </div>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-2">
             {[
-              { id: "card", label: "Credit / Debit Card", icon: CreditCard },
-              { id: "apple_pay", label: "Apple Pay / Google Pay", icon: Zap },
-              { id: "bank_transfer", label: "Corporate UAE IBAN", icon: Building2 },
+              { id: "card", label: "Cards", icon: CreditCard },
+              { id: "apple_pay", label: "Apple / Google Pay", icon: Zap },
+              { id: "bank_transfer", label: "UAE IBAN", icon: Building2 },
             ].map((m) => (
               <button
                 key={m.id}
                 type="button"
                 onClick={() => setPaymentMethod(m.id as typeof paymentMethod)}
-                className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`py-2 px-2 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                   paymentMethod === m.id
                     ? "border-primary bg-primary/10 text-primary shadow-xs"
                     : "border-border/60 bg-card text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <m.icon size={14} />
-                <span>{m.label}</span>
+                <m.icon size={13} />
+                <span className="truncate">{m.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Feature Confirmation Bullet points */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-muted-foreground mb-6">
+        {/* Feature Confirmation Bullet points (Desktop Only) */}
+        <div className="hidden sm:grid grid-cols-4 gap-2 text-[11px] text-muted-foreground mb-4">
           <div className="flex items-center gap-1.5">
-            <Check size={13} className="text-amber-400 shrink-0" />
+            <Check size={13} className="text-emerald-400 shrink-0" />
             <span>34,850+ Verified Units</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Check size={13} className="text-amber-400 shrink-0" />
+            <Check size={13} className="text-emerald-400 shrink-0" />
             <span>1 WhatsApp Single Slot</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Check size={13} className="text-amber-400 shrink-0" />
+            <Check size={13} className="text-emerald-400 shrink-0" />
             <span>Live DLD Transcripts</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Check size={13} className="text-amber-400 shrink-0" />
+            <Check size={13} className="text-emerald-400 shrink-0" />
             <span>Full Dashboard Access</span>
           </div>
         </div>

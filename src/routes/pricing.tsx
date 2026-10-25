@@ -31,6 +31,11 @@ export const Route = createFileRoute("/pricing")({
 
 function PricingPage() {
   const [planType, setPlanType] = useState<"broker" | "agency">("broker");
+  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>("annual");
+
+  const activePlan = PLANS.find((p) => p.id === selectedPlanId) || PLANS[3]!;
+  const activeDiscount = Math.round((1 - activePlan.price / activePlan.originalPrice) * 100);
+  const activeSavings = activePlan.originalPrice - activePlan.price;
 
   // Agency Quote State
   const [agencyName, setAgencyName] = useState("");
@@ -93,171 +98,324 @@ function PricingPage() {
 
   return (
     <PublicLayout>
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20 text-center">
-        <Eyebrow>Institutional value. Zero hidden fees.</Eyebrow>
-        <h1 className="mx-auto mt-4 max-w-3xl text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground font-display">
-          Select Your DealOS License
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-16 text-center">
+        <Eyebrow>Institutional value · Zero hidden fees</Eyebrow>
+        <h1 className="mx-auto mt-3 max-w-3xl text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground font-display">
+          Simple, Transparent Pricing
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base text-muted-foreground">
-          Built exclusively for Dubai property consultants and agency owners. Close one additional off-plan or secondary transaction and your DealOS subscription pays for itself dozens of times over.
+        <p className="mx-auto mt-2 max-w-xl text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          Full institutional access to 1,355+ Dubai off-plan developments, DLD escrow registry, and DealOS AI Copilot.
         </p>
 
         {/* Master License Type Switcher */}
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <div className="inline-flex p-1 rounded-2xl bg-secondary/80 border border-border shadow-sm max-w-md w-full">
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-md mx-auto">
+          <div className="inline-flex p-1 rounded-2xl bg-secondary/80 border border-border shadow-xs w-full">
             <button
               type="button"
               onClick={() => setPlanType("broker")}
-              className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 planType === "broker"
-                  ? "bg-primary text-primary-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <User size={15} />
-              <span>Solo Broker Pro</span>
+              <User size={14} />
+              <span>Solo Broker</span>
             </button>
             <button
               type="button"
               onClick={() => setPlanType("agency")}
-              className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 planType === "agency"
-                  ? "bg-primary text-primary-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Building2 size={15} />
-              <span>Agency &amp; Brokerage</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold">
+              <Building2 size={14} />
+              <span>Agency Teams</span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-400 font-bold">
                 Quote
               </span>
             </button>
           </div>
 
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            className="hidden sm:inline-flex rounded-full border-border bg-secondary/80 px-4 text-xs font-bold text-foreground hover:bg-secondary gap-1.5 shadow-xs"
-          >
-            <Link to="/login" search={{ mode: undefined }}>
-              <LogIn size={13} className="text-primary" />
-              <span>Sign In ↗</span>
-            </Link>
-          </Button>
-
-          <Button
-            asChild
-            size="sm"
-            className="inline-flex rounded-full bg-emerald-500 hover:bg-emerald-600 text-white px-4 text-xs font-extrabold gap-1.5 shadow-sm"
-          >
-            <Link to="/demo">
-              <span>Try Live Demo ⚡</span>
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-center">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="rounded-xl border-border bg-card text-xs font-bold text-foreground hover:bg-secondary px-3 py-1.5 h-9"
+            >
+              <Link to="/login" search={{ mode: undefined }}>
+                <LogIn size={13} className="text-primary mr-1" />
+                <span>Sign In</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-1.5 h-9 shadow-xs"
+            >
+              <Link to="/demo">
+                <span>Try Demo ⚡</span>
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* ══════════════════════════════════════════════════════════ */}
         {/* VIEW A: SOLO BROKER PLANS                                  */}
         {/* ══════════════════════════════════════════════════════════ */}
         {planType === "broker" && (
-          <div className="mt-12">
-            <div className="grid gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 max-w-5xl mx-auto">
+            {/* MOBILE ONLY: ULTRA CLEAN SINGLE-CARD EXPERIENCE */}
+            <div className="block sm:hidden space-y-4 text-left">
+              {/* Clean 4-Pill Cadence Switcher */}
+              <div className="grid grid-cols-4 gap-1.5 p-1 rounded-2xl bg-secondary/80 border border-border">
+                {PLANS.map((p) => {
+                  const discount = Math.round((1 - p.price / p.originalPrice) * 100);
+                  const isSelected = p.id === selectedPlanId;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setSelectedPlanId(p.id)}
+                      className={`py-2 px-1 rounded-xl text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <span className="text-[11px] font-bold">{p.label}</span>
+                      <span className={`text-[9px] font-mono font-bold ${isSelected ? "text-white/90" : "text-emerald-500"}`}>
+                        -{discount}%
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Single Focused Clean Card */}
+              <div className="rounded-3xl border border-primary/40 bg-card/95 p-6 shadow-xl space-y-5 relative overflow-hidden backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
+                      {activePlan.label} License
+                    </span>
+                    <h3 className="text-xl font-extrabold text-foreground font-display">
+                      DealOS Broker Pro
+                    </h3>
+                  </div>
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                    Save {activeDiscount}%
+                  </span>
+                </div>
+
+                {/* Price Display */}
+                <div className="p-4 rounded-2xl bg-secondary/40 border border-border/70 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <s className="text-xs text-muted-foreground line-through font-semibold">
+                      {aedPrice(activePlan.originalPrice)}
+                    </s>
+                    <span className="text-[11px] font-mono font-bold text-emerald-400">
+                      Save {aedPrice(activeSavings)}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-4xl font-black text-foreground font-display tracking-tight">
+                      {aedPrice(activePlan.price)}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-semibold">
+                      {activePlan.period}
+                    </span>
+                  </div>
+                  <p className="text-xs text-emerald-400 font-semibold pt-0.5">
+                    {activePlan.months > 1 ? `Equivalent to ${aedPrice(activePlan.perMonth)} / month` : "Flexible 30-day billing"}
+                  </p>
+                </div>
+
+                {/* 4 Crisp Feature Bullets (No Walls of Text!) */}
+                <ul className="space-y-2.5 text-xs text-foreground/90 font-medium">
+                  <li className="flex items-center gap-2.5">
+                    <Check className="size-4 shrink-0 text-emerald-400" />
+                    <span>34,850+ Verified Units &amp; 1,355+ Off-Plan Projects</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="size-4 shrink-0 text-emerald-400" />
+                    <span>Live DLD Escrow Accounts &amp; Yield Radar</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="size-4 shrink-0 text-emerald-400" />
+                    <span>1-Tap WhatsApp Investor Pitches &amp; PDF Dossiers</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="size-4 shrink-0 text-emerald-400" />
+                    <span>DealOS AI Copilot &amp; Voice CRM Integration</span>
+                  </li>
+                </ul>
+
+                {/* Direct Action Buttons */}
+                <div className="space-y-2 pt-1">
+                  <Button
+                    asChild
+                    className="w-full h-12 rounded-xl text-xs font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-md gap-2"
+                  >
+                    <Link to="/signup" search={{ plan: activePlan.id }}>
+                      <span>Get Started Now</span>
+                      <ArrowRight size={14} />
+                    </Link>
+                  </Button>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="flex-1 h-10 rounded-xl text-xs font-bold border-border bg-secondary/50 text-foreground"
+                    >
+                      <Link to="/login" search={{ mode: undefined }}>
+                        <span>Sign In ↗</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="flex-1 h-10 rounded-xl text-xs font-bold border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                    >
+                      <Link to="/demo">
+                        <span>Live Demo ⚡</span>
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Bank Wire Link */}
+                <div className="pt-2 text-center border-t border-border/50">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInvoicePrefill({
+                        agencyName: "",
+                        contactName: "",
+                        email: "",
+                        phone: "+971 ",
+                        plan: `Solo Broker (${activePlan.label} · AED ${activePlan.price})`,
+                        billing: "annual",
+                      });
+                      setShowInvoiceModal(true);
+                    }}
+                    className="text-[11px] font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <Landmark size={12} className="text-amber-500" />
+                    <span>Pay with Corporate UAE Bank Wire / IBAN ➔</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* DESKTOP VIEW: CLEAN 4-COLUMN COMPARISON WITH SHORT BULLETS */}
+            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
               {PLANS.map((p) => {
                 const discount = Math.round((1 - p.price / p.originalPrice) * 100);
                 return (
                   <div
                     key={p.id}
-                    className={`relative flex flex-col rounded-2xl border bg-card/90 p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 ${
+                    className={`relative flex flex-col rounded-2xl border bg-card/90 p-5 backdrop-blur-md transition-all duration-200 hover:-translate-y-1 ${
                       p.highlighted
-                        ? "border-primary ring-2 ring-primary/20 shadow-xl"
+                        ? "border-primary ring-2 ring-primary/20 shadow-lg"
                         : "border-border/80"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-                        {p.label} Plan
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                        {p.label}
                       </p>
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                         {discount}% Off
                       </span>
                     </div>
 
-                    <p className="metric mt-5 text-sm text-muted-foreground line-through">
-                      {aedPrice(p.originalPrice)}
-                    </p>
-                    <p className="mt-1 flex items-baseline gap-1">
-                      <span className="metric text-4xl font-extrabold tracking-tight text-foreground">
-                        {aedPrice(p.price)}
-                      </span>
-                      <span className="text-sm text-muted-foreground">{p.period}</span>
-                    </p>
-                    <p className="metric mt-1 text-xs text-emerald-400 font-semibold">
-                      {p.months > 1 ? `${aedPrice(p.perMonth)} / month` : "Flexible monthly billing"}
-                    </p>
-                    <p className="mt-5 text-[13px] text-muted-foreground">{p.savingLabel}</p>
-                    <ul className="mt-5 flex-1 space-y-2.5 text-[13px] text-muted-foreground">
+                    <div className="mt-4">
+                      <s className="text-xs text-muted-foreground line-through font-semibold">
+                        {aedPrice(p.originalPrice)}
+                      </s>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-3xl font-extrabold text-foreground font-display">
+                          {aedPrice(p.price)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">{p.period}</span>
+                      </div>
+                      <p className="text-xs text-emerald-400 font-semibold mt-0.5">
+                        {p.months > 1 ? `${aedPrice(p.perMonth)}/mo` : "Flexible 30-day"}
+                      </p>
+                    </div>
+
+                    <ul className="mt-5 flex-1 space-y-2 text-xs text-muted-foreground">
                       <li className="flex gap-2">
                         <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
-                        <span>34,850+ verified units &amp; 1,355+ projects</span>
+                        <span>34,850+ units &amp; 1,355+ projects</span>
                       </li>
                       <li className="flex gap-2">
                         <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
-                        <span>DLD transaction metrics &amp; yield maps</span>
+                        <span>DLD escrow &amp; yield radar</span>
                       </li>
                       <li className="flex gap-2">
                         <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
-                        <span>Instant 1-tap WhatsApp pitch scripts</span>
+                        <span>1-tap WhatsApp investor pitches</span>
                       </li>
                       <li className="flex gap-2">
                         <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-400" />
-                        <span>1-click client PDF dossiers with your logo</span>
+                        <span>DealOS AI Copilot &amp; CRM</span>
                       </li>
-                      {p.months >= 6 && (
-                        <li className="flex gap-2 font-semibold text-foreground">
-                          <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                          <span>Priority concierge support &amp; training</span>
-                        </li>
-                      )}
                     </ul>
+
                     <Link
                       to="/signup"
                       search={{ plan: p.id }}
-                      className={`mt-6 rounded-xl py-3 px-4 text-center text-[11px] font-bold uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-1.5 ${
+                      className={`mt-6 rounded-xl py-2.5 px-3 text-center text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                         p.highlighted
-                          ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs"
                           : "bg-secondary text-foreground hover:bg-secondary/80 border border-border"
                       }`}
                     >
                       <span>{p.buttonLabel}</span>
-                      <ArrowRight size={14} />
+                      <ArrowRight size={13} />
                     </Link>
                   </div>
                 );
               })}
             </div>
 
-            {/* Corporate UAE Bank Wire Option Banner */}
-            <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-border/80 bg-secondary/30 p-5 text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Corporate UAE Bank Wire Link (Desktop) */}
+            <div className="hidden sm:flex items-center justify-between mt-6 p-4 rounded-2xl border border-border/80 bg-secondary/30 text-left">
               <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-                  <Landmark size={20} />
+                <div className="size-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                  <Landmark size={16} />
                 </div>
                 <div>
-                  <p className="font-extrabold text-sm text-foreground">
-                    Paying via Corporate UAE Bank Wire or Manager's Cheque?
+                  <p className="font-bold text-xs text-foreground">
+                    Corporate UAE Bank Wire / Manager's Cheque?
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    Generate an instant official Proforma Invoice with our UAE IBAN (Emirates NBD / Wio Bank).
+                  <p className="text-[11px] text-muted-foreground">
+                    Generate an instant official Proforma Invoice with our UAE IBAN.
                   </p>
                 </div>
               </div>
               <Button
                 type="button"
-                onClick={() => setShowInvoiceModal(true)}
-                className="h-10 px-4 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shrink-0 gap-1.5 shadow-sm"
+                onClick={() => {
+                  setInvoicePrefill({
+                    agencyName: "",
+                    contactName: "",
+                    email: "",
+                    phone: "+971 ",
+                    plan: `Solo Broker (${activePlan.label} · AED ${activePlan.price})`,
+                    billing: "annual",
+                  });
+                  setShowInvoiceModal(true);
+                }}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shrink-0 gap-1.5 shadow-xs cursor-pointer"
               >
-                <Landmark size={14} />
+                <Landmark size={13} />
                 <span>Generate Proforma Invoice</span>
               </Button>
             </div>

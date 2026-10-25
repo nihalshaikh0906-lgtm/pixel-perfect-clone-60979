@@ -325,6 +325,26 @@ export function Pricing() {
                     )}
                     {plan.perMonthNote ? ` (${plan.perMonthNote})` : ''}
                   </p>
+
+                  {/* 4 Crisp Feature Bullets (Mobile-only, replaces 6 huge stacked boxes) */}
+                  <ul className="lg:hidden space-y-2 text-xs text-foreground/90 font-medium pt-3 border-t border-border/50 text-left">
+                    <li className="flex items-center gap-2">
+                      <Check className="size-3.5 text-emerald-400 shrink-0" />
+                      <span>34,850+ Units &amp; 1,355+ Off-Plan Projects</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-3.5 text-emerald-400 shrink-0" />
+                      <span>Live DLD Escrow &amp; Price Yield Radar</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-3.5 text-emerald-400 shrink-0" />
+                      <span>1-Tap WhatsApp Pitch &amp; Client Dossiers</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-3.5 text-emerald-400 shrink-0" />
+                      <span>DealOS AI Copilot &amp; Voice CRM</span>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* CTA Buttons */}
@@ -423,10 +443,22 @@ export function Pricing() {
                     </button>
                   </div>
                 </div>
+
+                {/* Mobile Agency Link */}
+                <div className="lg:hidden pt-3 border-t border-border/70 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setPlanType('agency')}
+                    className="text-xs font-bold text-amber-500 hover:underline inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Building2 size={13} />
+                    <span>Managing a team of 5+ agents? Get Brokerage Quote ➔</span>
+                  </button>
+                </div>
               </div>
 
-              {/* ── RIGHT COLUMN: STRUCTURED FEATURES & CAPABILITIES (7 Cols) ── */}
-              <div className="lg:col-span-7 space-y-6 lg:border-l lg:border-border/60 lg:pl-10">
+              {/* ── RIGHT COLUMN: STRUCTURED FEATURES & CAPABILITIES (Desktop only) ── */}
+              <div className="hidden lg:block lg:col-span-7 space-y-6 lg:border-l lg:border-border/60 lg:pl-10">
                 <div className="space-y-1.5">
                   <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-500">
                     Included in Every License
