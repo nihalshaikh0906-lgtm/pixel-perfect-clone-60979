@@ -61,8 +61,12 @@ function DemoPage() {
 
     setTimeout(() => {
       const destination = role === "owner" ? "/owner-dashboard" : "/app";
-      void router.navigate({ to: destination, replace: true });
-    }, 400);
+      if (typeof window !== "undefined") {
+        window.location.href = destination;
+      } else {
+        void router.navigate({ to: destination, replace: true });
+      }
+    }, 200);
   };
 
   return (

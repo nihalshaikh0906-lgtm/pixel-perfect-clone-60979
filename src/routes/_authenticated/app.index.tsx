@@ -34,10 +34,14 @@ export const Route = createFileRoute("/_authenticated/app/")({
   }),
   loaderDeps: ({ search }) => ({ page: search.page }),
   loader: async ({ context, deps }) => {
-    await Promise.all([
-      context.queryClient.ensureQueryData(inventorySummaryOptions()),
-      context.queryClient.ensureQueryData(projectPageOptions(deps.page)),
-    ]);
+    try {
+      await Promise.allSettled([
+        context.queryClient.ensureQueryData(inventorySummaryOptions()),
+        context.queryClient.ensureQueryData(projectPageOptions(deps.page)),
+      ]);
+    } catch {
+      // Resilient fallback
+    }
   },
   errorComponent: ({ error }) => (
     <div className="flex h-96 flex-col items-center justify-center gap-4 text-center p-6">

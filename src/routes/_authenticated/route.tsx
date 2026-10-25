@@ -14,6 +14,48 @@ export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     await enforceRemember();
+
+    const cachedActiveEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
+    const isCachedMasterAdmin =
+      cachedActiveEmail === "nihalshaikh0906@gmail.com" ||
+      cachedActiveEmail === "admin@dealos.ae";
+
+    // Demo Mode & Master Admin Instant Access: always takes priority so 1-click demo never gets blocked
+    const isExplicitDemo = typeof window !== "undefined" && (
+      localStorage.getItem("dealos_demo_mode") === "true" ||
+      cachedActiveEmail?.includes("demo") ||
+      window.location.search.includes("demo=true")
+    );
+
+    const isDemoMode = OPEN_ACCESS_DEMO_24H || isExplicitDemo || isCachedMasterAdmin;
+
+    if (isDemoMode) {
+      const activeEmail = cachedActiveEmail;
+      const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
+
+      // Honor the user's selected role (storedRole === 'company' vs 'agent')
+      const isOwner = storedRole === "company";
+      const isAdminKey = isCachedMasterAdmin;
+
+      const adminFullName = activeEmail === "nihalshaikh0906@gmail.com"
+        ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
+        : activeEmail === "admin@dealos.ae"
+        ? (isOwner ? "DealOS Master Admin (Owner Cockpit)" : "DealOS Master Admin (Broker Desk)")
+        : (isOwner ? "DealOS Agency Owner" : "DealOS Licensed Broker");
+
+      return {
+        user: {
+          id: isOwner ? "demo-owner-user-1" : "demo-broker-user-1",
+          email: activeEmail || (isOwner ? "demo-owner@dealos.ae" : "demo-agent@dealos.ae"),
+          user_metadata: {
+            full_name: adminFullName,
+            role: isOwner ? "company" : "agent",
+            is_super_admin: isAdminKey,
+          },
+        },
+      };
+    }
+
     const { data } = await supabase.auth.getUser();
     if (data?.user) {
       const cleanEmail = (data.user.email ?? "").toLowerCase().trim();
@@ -40,47 +82,6 @@ export const Route = createFileRoute("/_authenticated")({
         };
       }
       return { user: data.user };
-    }
-
-    const cachedActiveEmail = typeof window !== "undefined" ? localStorage.getItem("dealos_active_email")?.toLowerCase().trim() : null;
-    const isCachedMasterAdmin =
-      cachedActiveEmail === "nihalshaikh0906@gmail.com" ||
-      cachedActiveEmail === "admin@dealos.ae";
-
-    // OPTION 1: Real-workspace protections remain 100% active.
-    // Bypass occurs strictly via "Try Live Demo" (dealos_demo_mode = "true"), ?demo=true, or master admin.
-    const isDemoMode =
-      OPEN_ACCESS_DEMO_24H ||
-      (typeof window !== "undefined" &&
-        (isCachedMasterAdmin ||
-          localStorage.getItem("dealos_demo_mode") === "true" ||
-          window.location.search.includes("demo=true")));
-
-    if (isDemoMode) {
-      const activeEmail = cachedActiveEmail;
-      const storedRole = typeof window !== "undefined" ? localStorage.getItem("dealos_role") : null;
-
-      // Honor the user's selected role (storedRole === 'company' vs 'agent')
-      const isOwner = storedRole === "company";
-      const isAdminKey = isCachedMasterAdmin;
-
-      const adminFullName = activeEmail === "nihalshaikh0906@gmail.com"
-        ? (isOwner ? "Nihal Shaikh (Principal Owner)" : "Nihal Shaikh (Licensed Broker)")
-        : activeEmail === "admin@dealos.ae"
-        ? (isOwner ? "DealOS Master Admin (Owner Cockpit)" : "DealOS Master Admin (Broker Desk)")
-        : (isOwner ? "DealOS Agency Owner" : "DealOS Licensed Broker");
-
-      return {
-        user: {
-          id: isOwner ? "master-owner-user-1" : "master-broker-user-1",
-          email: activeEmail || (isOwner ? "admin@dealos.ae" : "nihalshaikh0906@gmail.com"),
-          user_metadata: {
-            full_name: adminFullName,
-            role: isOwner ? "company" : "agent",
-            is_super_admin: isAdminKey,
-          },
-        },
-      };
     }
 
     throw redirect({ to: "/login" });

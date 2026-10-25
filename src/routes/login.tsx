@@ -72,11 +72,14 @@ function LoginPage() {
   async function loginAsDemo(chosenRole: "company" | "agent") {
     setState("loading");
     setError(null);
-    localStorage.setItem("dealos_demo_mode", "true");
-    localStorage.setItem("dealos_subscription_active", "true");
-    setStoredRole(chosenRole);
-    setActiveEmail(chosenRole === "company" ? "owner-demo@dealos.ae" : "broker-demo@dealos.ae");
-    await finish(chosenRole);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dealos_demo_mode", "true");
+      localStorage.setItem("dealos_subscription_active", "true");
+      localStorage.setItem("dealos_role", chosenRole);
+      localStorage.setItem("dealos_active_email", chosenRole === "company" ? "owner-demo@dealos.ae" : "broker-demo@dealos.ae");
+      // Instant direct navigation straight into system with all sample data active
+      window.location.href = chosenRole === "company" ? "/owner-dashboard" : "/app";
+    }
   }
 
   useEffect(() => { void googleEnabled().then(setGoogle); }, []);
@@ -222,14 +225,18 @@ function LoginPage() {
     setStoredRole(finalRole);
     setRemember(remember);
     setState("success");
-    await new Promise((r) => setTimeout(r, 450));
+    await new Promise((r) => setTimeout(r, 200));
     setLeaving(true);
-    await new Promise((r) => setTimeout(r, 400));
-    await router.invalidate();
-    if (finalRole === "company") {
-      void router.navigate({ to: "/owner-dashboard", replace: true });
+    await new Promise((r) => setTimeout(r, 150));
+    if (typeof window !== "undefined") {
+      window.location.href = finalRole === "company" ? "/owner-dashboard" : "/app";
     } else {
-      void router.navigate({ to: "/app", replace: true });
+      await router.invalidate();
+      if (finalRole === "company") {
+        void router.navigate({ to: "/owner-dashboard", replace: true });
+      } else {
+        void router.navigate({ to: "/app", replace: true });
+      }
     }
   }
 
