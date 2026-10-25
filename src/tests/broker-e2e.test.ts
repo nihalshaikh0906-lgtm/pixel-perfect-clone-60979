@@ -1540,9 +1540,12 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
 
     it("verifies demo mode active returns 1,000 demo leads", () => {
       localStorage.setItem("dealos_demo_mode", "true");
+      localStorage.setItem("dealos_active_email", "broker-demo@dealos.ae");
       expect(isDemoModeActive()).toBe(true);
       const leads = queueLeads("all");
       expect(leads.length).toBeGreaterThanOrEqual(1000);
+      expect(queueLeads("respond").length).toBeGreaterThan(0);
+      expect(queueLeads("hot").length).toBeGreaterThan(0);
     });
 
     it("verifies real registered user (demo mode false) gets a clean CRM with 0 fake leads", () => {

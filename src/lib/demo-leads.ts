@@ -102,12 +102,15 @@ export const LEAD_BY_ID = new Map(LEADS.map((l) => [l.id, l]));
 
 export function isDemoModeActive(): boolean {
   if (typeof window === "undefined") return true;
+  const activeEmail = localStorage.getItem("dealos_active_email")?.toLowerCase().trim();
+  // Any demo or testing account is always in demo mode
+  if (activeEmail && (activeEmail.includes("demo") || activeEmail === "dealostesting.com")) {
+    return true;
+  }
   const demoFlag = localStorage.getItem("dealos_demo_mode");
   if (demoFlag === "true") return true;
   if (demoFlag === "false") return false;
-  const activeEmail = localStorage.getItem("dealos_active_email")?.toLowerCase().trim();
   if (activeEmail) {
-    if (activeEmail.includes("demo") || activeEmail === "dealostesting.com") return true;
     return false;
   }
   return true;

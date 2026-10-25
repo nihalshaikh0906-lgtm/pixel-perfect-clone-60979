@@ -50,7 +50,7 @@ const DEMO_LEADS: Lead[] = [
     source: "WhatsApp Cloud",
     stage: "qualified",
     priority: "hot",
-    assigned_to: null,
+    assigned_to: "demo-broker-user-1",
     deleted_at: null,
     next_follow_up_at: new Date(Date.now() + 1800e3).toISOString(),
     ai_summary: "High net worth investor from London seeking under 1M AED property with post-handover plan. Interested in DLRC metro growth.",
@@ -65,7 +65,7 @@ const DEMO_LEADS: Lead[] = [
     source: "Meta Ads",
     stage: "viewing",
     priority: "hot",
-    assigned_to: null,
+    assigned_to: "demo-broker-user-1",
     deleted_at: null,
     next_follow_up_at: new Date(Date.now() + 3600e3).toISOString(),
     ai_summary: "Saudi national seeking 10-year Golden Visa luxury unit. Prefers Business Bay canal views or Creek Harbour.",
@@ -80,7 +80,7 @@ const DEMO_LEADS: Lead[] = [
     source: "Property Finder",
     stage: "contacted",
     priority: "warm",
-    assigned_to: null,
+    assigned_to: "demo-broker-2",
     deleted_at: null,
     next_follow_up_at: new Date(Date.now() + 7200e3).toISOString(),
     ai_summary: "Swiss buyer looking for turnkey high-yield holiday home in Sports City or JVC. Prefers 1% monthly payment plan.",
@@ -95,7 +95,7 @@ const DEMO_LEADS: Lead[] = [
     source: "Referral",
     stage: "new",
     priority: "hot",
-    assigned_to: null,
+    assigned_to: "demo-broker-user-1",
     deleted_at: null,
     next_follow_up_at: new Date(Date.now() + 1200e3).toISOString(),
     ai_summary: "Singapore tech executive seeking secondary market or off-plan duplex near upcoming infrastructure nodes.",
@@ -110,7 +110,7 @@ const DEMO_LEADS: Lead[] = [
     source: "Google Ads",
     stage: "new",
     priority: "warm",
-    assigned_to: null,
+    assigned_to: "demo-broker-3",
     deleted_at: null,
     next_follow_up_at: new Date(Date.now() + 5400e3).toISOString(),
     ai_summary: "Local resident searching for modern family residence close to top KHDA schools and parks.",
@@ -130,25 +130,49 @@ function CrmPage() {
   const navigate = Route.useNavigate();
   const closeModal = () => void navigate({ search: {} });
 
+  const isDemo = typeof window !== "undefined" && (localStorage.getItem("dealos_demo_mode") === "true" || localStorage.getItem("dealos_active_email")?.includes("demo"));
+
   const me = useQuery({
-    queryKey: ["crm-me"],
+    queryKey: ["crm-me", isDemo],
     queryFn: async () => {
+      if (isDemo) {
+        return { org_id: "demo-org-1", role: "company_admin", user_id: "demo-broker-user-1" };
+      }
       const { data: u } = await supabase.auth.getUser();
-      const { data } = await db.from("org_members").select("org_id, role, user_id").eq("user_id", u.user?.id ?? "").maybeSingle();
-      return data as { org_id: string; role: string; user_id: string } | null;
+      if (!u?.user) return null;
+      const { data } = await db.from("org_members").select("org_id, role, user_id").eq("user_id", u.user.id).maybeSingle();
+      return (data || { org_id: "default-org", role: "agent", user_id: u.user.id }) as { org_id: string; role: string; user_id: string } | null;
     },
   });
-  const isAdmin = me.data?.role === "company_admin";
+  const isAdmin = isDemo || me.data?.role === "company_admin";
 
   const members = useQuery({
-    queryKey: ["crm-members"], enabled: !!me.data,
-    queryFn: async () => ((await db.from("org_members").select("user_id, full_name, role")).data ?? []) as Member[],
-  });
-  const leads = useQuery({
-    queryKey: ["crm-leads"], enabled: !!me.data,
+    queryKey: ["crm-members", isDemo],
     queryFn: async () => {
+      if (isDemo) {
+        return [
+          { user_id: "demo-broker-user-1", full_name: "Adam Rahman (Managing Director)", role: "company_admin" },
+          { user_id: "demo-broker-2", full_name: "Aisha Al-Mansoor (Senior Broker)", role: "agent" },
+          { user_id: "demo-broker-3", full_name: "Omar Farooq (Off-Plan Specialist)", role: "agent" },
+          { user_id: "demo-broker-4", full_name: "Tariq Mansoor (Investment Advisory)", role: "agent" },
+          { user_id: "demo-broker-5", full_name: "Elena Rostova (Luxury Waterfront)", role: "agent" },
+        ] as Member[];
+      }
+      if (!me.data) return [] as Member[];
+      return ((await db.from("org_members").select("user_id, full_name, role")).data ?? []) as Member[];
+    },
+  });
+
+  const leads = useQuery({
+    queryKey: ["crm-leads", isDemo],
+    queryFn: async () => {
+      if (isDemo) {
+        return DEMO_LEADS as Lead[];
+      }
+      const { data: u } = await supabase.auth.getUser();
+      if (!u?.user) return [] as Lead[];
       const res = (await db.from("leads").select("*").order("created_at", { ascending: false }).limit(500)).data ?? [];
-      return (res.length > 0 ? res : DEMO_LEADS) as Lead[];
+      return res as Lead[];
     },
   });
   const msgs = useQuery({

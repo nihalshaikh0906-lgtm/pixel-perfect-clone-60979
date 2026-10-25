@@ -108,6 +108,10 @@ function BrokerCockpit({ userName }: { userName?: string }) {
   const [newLeadOpen, setNewLeadOpen] = useState(false);
   const [quickPitchModal, setQuickPitchModal] = useState<Lead | null>(null);
 
+  useEffect(() => {
+    setLeadList(queueLeads("all"));
+  }, []);
+
   // New Lead Form State
   const [leadName, setLeadName] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
