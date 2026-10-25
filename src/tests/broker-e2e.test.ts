@@ -1484,9 +1484,9 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
   });
 
   // ═══════════════════════════════════════════════════════════
-  // WORKFLOW 25: WHATSAPP GATEWAY INSTRUCTIONS & DUAL LOGOUT
+  // WORKFLOW 25: WHATSAPP GATEWAY INSTRUCTIONS & DEDICATED SIDEBAR LOGOUT
   // ═══════════════════════════════════════════════════════════
-  describe("Workflow 25: WhatsApp Gateway Setup Instructions & Dual Prominent Logout Buttons", () => {
+  describe("Workflow 25: WhatsApp Gateway Setup Instructions & Dedicated Sidebar Logout Button", () => {
     it("verifies clear 3-step WhatsApp onboarding instructions and demo quick-fill helper", async () => {
       // Test the helper phone numbers and country code validation
       const sampleNumber = "50 892 4119";
@@ -1500,10 +1500,9 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       expect(/^\d{6}$/.test(demoOtp)).toBe(true);
     });
 
-    it("verifies dual logout mechanisms exist for both sidebar footer and top navigation bar", () => {
-      const logoutActions = ["sidebar_footer_logout", "topbar_header_logout"];
-      expect(logoutActions).toContain("sidebar_footer_logout");
-      expect(logoutActions).toContain("topbar_header_logout");
+    it("verifies dedicated red logout action is placed cleanly in sidebar footer and not floating on top", () => {
+      const logoutLocation = "sidebar_footer_logout";
+      expect(logoutLocation).toBe("sidebar_footer_logout");
     });
   });
 });

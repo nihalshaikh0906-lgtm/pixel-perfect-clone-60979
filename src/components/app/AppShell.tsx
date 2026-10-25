@@ -549,22 +549,17 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                 )}
               </button>
 
-              {/* Dedicated Clear Logout Action in Sidebar */}
+              {/* Small Red Logout Action at End of Sidebar */}
               {(!collapsed || drawer) ? (
-                <div className="pt-2 px-0.5">
+                <div className="pt-2 px-1">
                   <button
                     type="button"
                     onClick={() => void signOut()}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 text-xs font-bold transition-all cursor-pointer group shadow-2xs"
-                    title="Sign out of DealOS and return to login"
+                    className="w-full flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-[11px] font-bold transition-all cursor-pointer"
+                    title="Log out of DealOS"
                   >
-                    <div className="flex items-center gap-2">
-                      <LogOut size={14} className="group-hover:-translate-x-0.5 transition-transform text-rose-400 shrink-0" />
-                      <span>Log Out / Switch</span>
-                    </div>
-                    <span className="text-[10px] font-mono uppercase bg-rose-500/15 px-1.5 py-0.5 rounded text-rose-300">
-                      Exit
-                    </span>
+                    <LogOut size={12} className="shrink-0" />
+                    <span>Log Out</span>
                   </button>
                 </div>
               ) : (
@@ -572,12 +567,12 @@ export function AppShell({ children, userName, initials, agency }: { children: R
                   <button
                     type="button"
                     onClick={() => void signOut()}
-                    className="size-9 flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 transition-all cursor-pointer"
+                    className="size-7 flex items-center justify-center rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all cursor-pointer"
                     title="Log out of DealOS"
-                    onMouseEnter={(e) => handleMouseEnter(e, { label: "Log Out", desc: "Sign out and return to login" })}
+                    onMouseEnter={(e) => handleMouseEnter(e, { label: "Log Out", desc: "Sign out" })}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <LogOut size={15} />
+                    <LogOut size={12} />
                   </button>
                 </div>
               )}
@@ -718,18 +713,6 @@ export function AppShell({ children, userName, initials, agency }: { children: R
               >
                 <Settings size={16} />
               </Link>
-
-              {/* Direct Logout Quick-Access Button */}
-              <button
-                type="button"
-                onClick={() => void signOut()}
-                className="a-btn a-btn-line inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/25 transition-all shadow-xs cursor-pointer"
-                title="Log out of DealOS"
-                aria-label="Log out"
-              >
-                <LogOut size={14} className="shrink-0" />
-                <span className="hidden sm:inline">Log Out</span>
-              </button>
             </div>
           </header>
 

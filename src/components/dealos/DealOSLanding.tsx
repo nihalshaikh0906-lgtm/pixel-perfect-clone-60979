@@ -172,17 +172,15 @@ export function DealOSLanding() {
               </Button>
             ))}
           </div>
-          <div className="space-y-2 w-full">
+          <div className="space-y-2 w-full pt-1 border-t border-border/50">
             <Button
-              type="button"
-              onClick={() => {
-                setMenu(false);
-                setDemoModalOpen(true);
-              }}
-              className="w-full h-11 rounded-xl text-xs font-bold bg-primary text-primary-foreground shadow-sm gap-1.5 cursor-pointer"
+              asChild
+              className="w-full h-11 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
             >
-              <Video size={15} />
-              <span>Book Live Demo Walkthrough ↗</span>
+              <Link to="/demo">
+                <Sparkles size={14} className="text-amber-300 mr-1.5" />
+                <span>Try Live Demo ⚡</span>
+              </Link>
             </Button>
             <Button
               asChild
@@ -190,7 +188,7 @@ export function DealOSLanding() {
               className="w-full h-10 rounded-xl text-xs font-bold border-border/80 text-foreground"
             >
               <Link to="/login" search={{ mode: undefined }}>
-                <span>Sign In to DealOS Workspace ↗</span>
+                <span>Sign In to Workspace ↗</span>
               </Link>
             </Button>
           </div>
@@ -211,27 +209,7 @@ export function DealOSLanding() {
           </Button>
         ))}
       </aside>
-      {scrolled && (
-        <div className="sm:hidden fixed bottom-5 right-4 z-50 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setDemoModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-xl border border-primary/40 active:scale-95 transition-all cursor-pointer"
-            aria-label="Book Demo"
-          >
-            <Video size={13} />
-            <span>Book Demo ↗</span>
-          </button>
-          <Link
-            to="/login"
-            search={{ mode: undefined }}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shadow-xl shadow-amber-500/30 border border-amber-300 active:scale-95 transition-all"
-            aria-label="Sign In to DealOS"
-          >
-            <span>Sign In ↗</span>
-          </Link>
-        </div>
-      )}
+
       <LandingScenes onOpenDemo={() => setDemoModalOpen(true)} />
 
       {/* 1-Click Universal Demo Booking Modal */}

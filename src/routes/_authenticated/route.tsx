@@ -119,20 +119,6 @@ function AuthedLayout() {
             >
               Switch to {role === "company" ? "Broker Desk" : "Owner Cockpit"} ⇄
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== "undefined") {
-                  localStorage.removeItem("dealos_demo_mode");
-                  localStorage.removeItem("dealos_subscription_active");
-                  localStorage.removeItem("dealos_active_email");
-                  window.location.href = "/login";
-                }
-              }}
-              className="bg-black/30 hover:bg-black/50 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border border-white/20 transition-colors cursor-pointer"
-            >
-              Sign Out ✕
-            </button>
           </div>
         </aside>
       )}
@@ -144,7 +130,6 @@ function AuthedLayout() {
         />
       )}
       <Outlet />
-      {inApp ? null : <ProfileWidget />}
       {inApp ? null : <GeneralCopilot />}
     </>
   );
