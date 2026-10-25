@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
-import { Check, Loader2, Zap } from "lucide-react";
+import { ArrowRight, Building2, Check, ChevronDown, ChevronUp, Loader2, Sparkles, User, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { AuthShell, Logo } from "@/components/auth/AuthShell";
@@ -7,7 +7,7 @@ import { CheckBox, EMAIL_RE, Field, GoogleIcon, PasswordField, googleEnabled } f
 import { supabase } from "@/integrations/supabase/client";
 import { setRemember } from "@/lib/remember";
 import { setStoredRole, detectRole, setActiveEmail, fullSignOut } from "@/lib/auth-role";
-import { isTestingAccount, isTestingAccountValid, TESTING_EMAIL, TESTING_PASSWORD } from "@/lib/testing-account";
+import { isDemoButtonsActive, getDemoButtonsRemainingDays, isTestingAccount, isTestingAccountValid, TESTING_EMAIL, TESTING_PASSWORD } from "@/lib/testing-account";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
@@ -67,6 +67,17 @@ function LoginPage() {
   const [role, setRole] = useState<"company" | "agent">(search.role ?? "agent");
   const [mismatch, setMismatch] = useState<"company" | "agent" | null>(null);
   const [magic, setMagic] = useState<"idle" | "loading" | "sent">("idle");
+  const [showEmailLogin, setShowEmailLogin] = useState(false);
+
+  async function loginAsDemo(chosenRole: "company" | "agent") {
+    setState("loading");
+    setError(null);
+    localStorage.setItem("dealos_demo_mode", "true");
+    localStorage.setItem("dealos_subscription_active", "true");
+    setStoredRole(chosenRole);
+    setActiveEmail(chosenRole === "company" ? "owner-demo@dealos.ae" : "broker-demo@dealos.ae");
+    await finish(chosenRole);
+  }
 
   useEffect(() => { void googleEnabled().then(setGoogle); }, []);
 
@@ -249,207 +260,148 @@ function LoginPage() {
       <div className="flex items-center gap-3 mb-6">
         <Logo size={42} />
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground m-0">Sign In to DealOS</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground m-0">Welcome to DealOS</h1>
           <p className="text-xs text-muted-foreground m-0">Institutional Real Estate Platform</p>
         </div>
       </div>
 
-      {/* 7-Day Open Demo Access Callout */}
-      <div className="mb-4 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3 text-left">
-        <div>
-          <span className="text-xs font-bold text-emerald-400 block">✦ 7-Day Open Demo Access Active</span>
-          <span className="text-[11px] text-muted-foreground">Test DealOS immediately with sample Dubai leads without logging in:</span>
+      {/* 2 Primary Demo Buttons (Active until Nov 2, 2026) */}
+      <div className="space-y-3 mb-6">
+        <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-left">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-xs font-bold text-emerald-400">
+              ✦ Instant 1-Click Access Active
+            </span>
+          </div>
+          <span className="text-[11px] font-semibold text-emerald-400/90">
+            Valid through Nov 2, 2026
+          </span>
         </div>
-        <Link
-          to="/demo"
-          className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs shrink-0 shadow-sm flex items-center gap-1"
+
+        {/* Button 1: Demo as Broker */}
+        <button
+          type="button"
+          onClick={() => void loginAsDemo("agent")}
+          disabled={busy}
+          className="w-full text-left p-4 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-primary/10 to-emerald-500/10 border-2 border-emerald-500/40 hover:border-emerald-500 hover:from-emerald-500/25 hover:to-emerald-500/15 transition-all shadow-md group cursor-pointer relative overflow-hidden"
         >
-          <span>Try Demo ⚡</span>
-        </Link>
-      </div>
-
-      <div className="au-roles" role="radiogroup" aria-label="Login type">
-        {([
-          ["agent", "👤 Licensed Broker / Agent", "Inbound leads, client dossiers & unit matching"],
-          ["company", "🏢 Company Owner / Director", "Agency cockpit, broker oversight & escrow payouts"]
-        ] as const).map(([k, t, d]) => (
-          <button
-            key={k}
-            type="button"
-            role="radio"
-            aria-checked={role === k}
-            className={`au-role ${role === k ? "on" : ""}`}
-            onClick={() => {
-              setRole(k);
-              setStoredRole(k);
-              setMismatch(null);
-            }}
-          >
-            <b>{t}</b>
-            <small>{d}</small>
-          </button>
-        ))}
-      </div>
-
-      {mismatch ? (
-        <div className="au-msg bad" role="alert">
-          This account is {mismatch === "agent" ? "an agent" : "a company"} account — switch to {mismatch === "agent" ? "Broker" : "Company"} login?{" "}
-          <button type="button" className="au-link" onClick={() => { setRole(mismatch); setMismatch(null); void finish(mismatch); }}>Switch &amp; continue</button>
-        </div>
-      ) : null}
-
-      {google ? (
-        <>
-          <button type="button" className="au-btn au-btn-line" onClick={() => void withGoogle()} disabled={busy}><GoogleIcon /> Continue with Google</button>
-          <div className="au-or">or</div>
-        </>
-      ) : null}
-
-      <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
-        <Field
-          id="email" label="Work Email Address" type="email" autoComplete="email" placeholder={role === "company" ? "director@agency.ae" : "broker@agency.ae"}
-          value={email} onChange={(v) => { setEmail(v); setError(null); }} disabled={busy}
-          onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-          ok={touched.email && emailOk}
-          error={touched.email && email && !emailOk ? "That doesn’t look like an email address." : null}
-        />
-        <PasswordField
-          id="password" label="Password" autoComplete="current-password" placeholder="••••••••"
-          value={password} onChange={(v) => { setPassword(v); setError(null); }} disabled={busy}
-          onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-          error={touched.password && password && !pwOk ? (isAdminCandidate ? null : "Password must be at least 8 characters.") : null}
-        />
-        <div className="au-row">
-          <CheckBox id="remember" checked={remember} onChange={setRem}>Remember this browser</CheckBox>
-          <button type="button" className="au-link" aria-expanded={forgot} onClick={() => { setForgot((v) => !v); setResetEmail((r) => r || email); }}>Forgot password?</button>
-        </div>
-
-        <div className={`au-slide ${forgot ? "open" : ""}`} aria-hidden={!forgot}>
-          <div>
-            <div className="au-slide-inner">
-              {resetState === "sent" ? (
-                <p className="au-msg good" style={{ margin: 0 }}>Reset link sent. Check your inbox for an email from DealOS.</p>
-              ) : (
-                <>
-                  <b>Reset your password</b>
-                  <Field id="reset-email" label="Email" type="email" autoComplete="email" placeholder={role === "company" ? "director@agency.ae" : "broker@agency.ae"} value={resetEmail} onChange={setResetEmail} error={resetErr} disabled={!forgot} />
-                  <button type="button" className="au-btn au-btn-line" onClick={() => void sendReset()} disabled={!forgot || resetState === "loading"}>
-                    {resetState === "loading" ? <Loader2 size={18} className="au-spin" /> : null} Send reset link
-                  </button>
-                </>
-              )}
+          <div className="flex items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">👤</span>
+                <span className="text-base font-extrabold text-foreground group-hover:text-emerald-400 transition-colors">
+                  Demo as Broker
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  1-Click Entry
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                Loaded with <strong>1,000+ Dubai Leads</strong>, <strong>32 Active Deals</strong>, <strong>32 Luxury Properties</strong>, and live AI Copilot.
+              </p>
+            </div>
+            <div className="size-9 rounded-xl bg-emerald-500/20 group-hover:bg-emerald-500 text-emerald-400 group-hover:text-black flex items-center justify-center shrink-0 transition-all">
+              {busy ? <Loader2 size={18} className="au-spin" /> : <ArrowRight size={18} />}
             </div>
           </div>
-        </div>
-
-        <button type="submit" className={`au-btn au-btn-ink ${state === "success" ? "success" : ""}`} disabled={!emailOk || !pwOk || busy}>
-          {state === "loading" ? <><Loader2 size={18} className="au-spin" /> Authenticating…</> : state === "success" ? <><Check size={18} /> Welcome back</> : `Sign In as ${role === "company" ? "Company Owner" : "Broker Agent"}`}
         </button>
-        {error ? <p className="au-msg bad" role="alert" style={{ margin: 0 }}>{error}</p> : null}
-        {magic === "sent" ? <p className="au-msg good" role="status" style={{ margin: 0 }}>Check your inbox — we sent a login link to {email.trim()}.</p> : null}
-      </form>
 
-      {/* 1-Tap Direct Admin & Demo Access */}
-      <div className="au-demo-card">
-        <div className="au-demo-header">
-          <span className="au-demo-label">⚡ Direct 1-Tap Admin &amp; Demo Access</span>
-          <span className="au-demo-sub">Direct instant access without typing credentials (Admin Master Key / Agency Owner):</span>
-        </div>
-        <div className="flex flex-col gap-2 mt-2">
-          {/* 7-Day Testrun Account 1-Click Access */}
-          <button
-            type="button"
-            className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500/20 via-primary/20 to-emerald-500/15 border border-emerald-500/40 text-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-500/25 transition-all shadow-xs cursor-pointer mb-2"
-            disabled={busy}
-            onClick={() => {
-              setStoredRole(role);
-              setActiveEmail("dealostesting.com");
-              setEmail("dealostesting.com");
-              setPassword("Rko8786!");
-              void doSignIn("dealostesting.com", "Rko8786!", role);
-            }}
-          >
-            <span>🧪</span>
-            <span>7-Day Testrun Access: dealostesting.com ({role === "company" ? "Owner Cockpit" : "Broker Desk"})</span>
-          </button>
-
-          <button
-            type="button"
-            className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-primary/20 border border-amber-500/40 text-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-amber-500/25 transition-all shadow-xs cursor-pointer"
-            disabled={busy}
-            onClick={() => {
-              setStoredRole(role);
-              setActiveEmail("nihalshaikh0906@gmail.com");
-              setEmail("nihalshaikh0906@gmail.com");
-              setPassword("MasterAdmin2026!");
-              void doSignIn("nihalshaikh0906@gmail.com", "MasterAdmin2026!", role);
-            }}
-          >
-            <span>🔑</span>
-            <span>Direct Super Admin Login (nihalshaikh0906@gmail.com · {role === "company" ? "Owner Cockpit" : "Broker Desk"})</span>
-          </button>
-
-          <div className="au-demo-actions">
-            <button
-              type="button"
-              className="au-demo-btn"
-              disabled={busy}
-              onClick={() => {
-                setStoredRole("company");
-                setActiveEmail("admin@dealos.ae");
-                setEmail("admin@dealos.ae");
-                setPassword("Admin1234!");
-                setRole("company");
-                void doSignIn("admin@dealos.ae", "Admin1234!", "company");
-              }}
-            >
-              <span>🏢</span> Direct Admin (admin@dealos.ae)
-            </button>
-            <button
-              type="button"
-              className="au-demo-btn"
-              disabled={busy}
-              onClick={() => {
-                setStoredRole("agent");
-                setActiveEmail("demo-agent@dealos.ae");
-                setEmail("demo-agent@dealos.ae");
-                setPassword("Demo1234!");
-                setRole("agent");
-                void doSignIn("demo-agent@dealos.ae", "Demo1234!", "agent");
-              }}
-            >
-              <span>👤</span> Demo Licensed Broker
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 p-3.5 rounded-2xl bg-primary/10 border border-primary/25 text-center space-y-1">
-        <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-primary">
-          <Zap size={14} className="fill-current" />
-          <span>Awaiting Verification or New Registration?</span>
-        </div>
-        <p className="text-[11px] text-muted-foreground">
-          Run the automated 30-second DLD &amp; WhatsApp approval check to get verified instantly:
-        </p>
-        <Link
-          to="/verifying"
-          search={{ role: role === "company" ? "owner" : "broker", email: email.trim() || undefined }}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-primary underline hover:text-primary/80 pt-1"
+        {/* Button 2: Demo as Owner */}
+        <button
+          type="button"
+          onClick={() => void loginAsDemo("company")}
+          disabled={busy}
+          className="w-full text-left p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-primary/10 to-amber-500/10 border-2 border-amber-500/40 hover:border-amber-500 hover:from-amber-500/25 hover:to-amber-500/15 transition-all shadow-md group cursor-pointer relative overflow-hidden"
         >
-          <span>Open 30-Second Automated Approval Gateway →</span>
-        </Link>
-      </div>
-
-      <div className="au-alt">
-        <span>New agency? <Link to="/signup" className="au-link">Register new agency account</Link></span>
-        <button type="button" className="au-link" onClick={() => void sendMagic()} disabled={magic === "loading"}>
-          {magic === "loading" ? "Sending OTP…" : "Send me a magic login link"}
+          <div className="flex items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🏢</span>
+                <span className="text-base font-extrabold text-foreground group-hover:text-amber-400 transition-colors">
+                  Demo as Owner
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  1-Click Entry
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed m-0">
+                Loaded with <strong>32 Licensed Brokers Roster</strong>, <strong>32 Live Closed Deals</strong>, Escrow Payouts &amp; Executive Overwatch.
+              </p>
+            </div>
+            <div className="size-9 rounded-xl bg-amber-500/20 group-hover:bg-amber-500 text-amber-400 group-hover:text-black flex items-center justify-center shrink-0 transition-all">
+              {busy ? <Loader2 size={18} className="au-spin" /> : <ArrowRight size={18} />}
+            </div>
+          </div>
         </button>
       </div>
+
+      {/* Discreet Accordion for Standard Email Sign-In */}
+      <div className="pt-2 border-t border-border/50 text-center">
+        <button
+          type="button"
+          onClick={() => setShowEmailLogin((v) => !v)}
+          className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 transition-colors cursor-pointer py-1"
+        >
+          <span>{showEmailLogin ? "Hide email sign-in" : "Have agency email credentials? Sign in here"}</span>
+          {showEmailLogin ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        </button>
+      </div>
+
+      {showEmailLogin && (
+        <div className="mt-4 space-y-4">
+          <div className="au-roles" role="radiogroup" aria-label="Login type">
+            {([
+              ["agent", "👤 Licensed Broker", "Agent workspace"],
+              ["company", "🏢 Agency Owner", "Executive cockpit"]
+            ] as const).map(([k, t, d]) => (
+              <button
+                key={k}
+                type="button"
+                role="radio"
+                aria-checked={role === k}
+                className={`au-role ${role === k ? "on" : ""}`}
+                onClick={() => {
+                  setRole(k);
+                  setStoredRole(k);
+                  setMismatch(null);
+                }}
+              >
+                <b>{t}</b>
+                <small>{d}</small>
+              </button>
+            ))}
+          </div>
+
+          <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
+            <Field
+              id="email" label="Work Email Address" type="email" autoComplete="email" placeholder={role === "company" ? "director@agency.ae" : "broker@agency.ae"}
+              value={email} onChange={(v) => { setEmail(v); setError(null); }} disabled={busy}
+              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+              ok={touched.email && emailOk}
+              error={touched.email && email && !emailOk ? "That doesn’t look like an email address." : null}
+            />
+            <PasswordField
+              id="password" label="Password" autoComplete="current-password" placeholder="••••••••"
+              value={password} onChange={(v) => { setPassword(v); setError(null); }} disabled={busy}
+              onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+              error={touched.password && password && !pwOk ? "Password must be at least 8 characters." : null}
+            />
+            <div className="au-row">
+              <CheckBox id="remember" checked={remember} onChange={setRem}>Remember this browser</CheckBox>
+              <button type="button" className="au-link" aria-expanded={forgot} onClick={() => { setForgot((v) => !v); setResetEmail((r) => r || email); }}>Forgot password?</button>
+            </div>
+
+            <button type="submit" className={`au-btn au-btn-ink ${state === "success" ? "success" : ""}`} disabled={!emailOk || !pwOk || busy}>
+              {state === "loading" ? <><Loader2 size={18} className="au-spin" /> Authenticating…</> : state === "success" ? <><Check size={18} /> Welcome back</> : `Sign In as ${role === "company" ? "Company Owner" : "Broker Agent"}`}
+            </button>
+            {error ? <p className="au-msg bad" role="alert" style={{ margin: 0 }}>{error}</p> : null}
+          </form>
+        </div>
+      )}
 
       <div className="text-center text-[11px] text-muted-foreground/80 mt-6 pt-4 border-t border-border/50">
-        Protected by Dubai Land Department (DLD) &amp; RERA Broker Compliance Protocol
+        Protected by Dubai Land Department (DLD) &amp; RERA Broker Compliance Protocol · Valid through Nov 2, 2026
       </div>
     </AuthShell>
   );

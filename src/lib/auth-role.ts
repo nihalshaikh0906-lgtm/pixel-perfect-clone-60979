@@ -60,9 +60,10 @@ export async function fullSignOut(): Promise<void> {
 export async function detectRole(): Promise<DealOSRole> {
   const stored = getStoredRole();
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
-  // Super Admin Master Keys & 7-Day Testing Account: universal access to BOTH Owner Cockpit and Broker Desk
-  if (activeEmail === "nihalshaikh0906@gmail.com" || activeEmail === "admin@dealos.ae" || isTestingAccountValid(activeEmail)) {
-    const desiredRole: DealOSRole = stored === "agent" ? "agent" : "company";
+  // Super Admin Master Keys, 7-Day Testing Account, and 1-Click Demo: universal dual access to BOTH Owner Cockpit and Broker Desk
+  const isDemo = typeof window !== "undefined" && (localStorage.getItem("dealos_demo_mode") === "true" || activeEmail?.includes("demo"));
+  if (activeEmail === "nihalshaikh0906@gmail.com" || activeEmail === "admin@dealos.ae" || isTestingAccountValid(activeEmail) || isDemo) {
+    const desiredRole: DealOSRole = stored === "company" ? "company" : "agent";
     setStoredRole(desiredRole);
     return desiredRole;
   }

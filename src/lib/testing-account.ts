@@ -32,3 +32,19 @@ export function getTestingAccountRemainingDays(): number {
   if (diff <= 0) return 0;
   return Math.max(0, Math.min(7, Math.round(diff / (1000 * 60 * 60 * 24))));
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 1-CLICK INSTANT DEMO BUTTONS ("Demo as Broker" & "Demo as Owner")
+// Active until November 2, 2026 at 23:59:59 UAE time (or until commanded to lock).
+// ═══════════════════════════════════════════════════════════════════════════
+export const DEMO_BUTTONS_EXPIRY_TIMESTAMP = new Date("2026-11-02T23:59:59+04:00").getTime();
+
+export function isDemoButtonsActive(): boolean {
+  return Date.now() <= DEMO_BUTTONS_EXPIRY_TIMESTAMP;
+}
+
+export function getDemoButtonsRemainingDays(): number {
+  const diff = DEMO_BUTTONS_EXPIRY_TIMESTAMP - Date.now();
+  if (diff <= 0) return 0;
+  return Math.max(0, Math.min(8, Math.round(diff / (1000 * 60 * 60 * 24))));
+}

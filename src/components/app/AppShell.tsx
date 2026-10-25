@@ -78,7 +78,8 @@ export function AppShell({ children, userName, initials, agency }: { children: R
   const isOwnerRoute = pathname === "/owner-dashboard" || pathname.startsWith("/owner-dashboard");
   const [role, setRole] = useState<DealOSRole>(() => getStoredRole() ?? (isOwnerRoute ? "company" : "agent"));
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
-  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com" || isTestingAccountValid(activeEmail);
+  const isDemo = typeof window !== "undefined" && (localStorage.getItem("dealos_demo_mode") === "true" || activeEmail?.includes("demo"));
+  const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com" || isTestingAccountValid(activeEmail) || isDemo;
 
   useEffect(() => {
     void detectRole().then((r) => setRole(r));

@@ -696,7 +696,7 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
     });
 
     it("verifies broker pace leaderboard integrity and coaching alerts", () => {
-      expect(AGENCY_BROKERS).toHaveLength(5);
+      expect(AGENCY_BROKERS.length).toBeGreaterThanOrEqual(30);
 
       const aisha = AGENCY_BROKERS.find((b) => b.name === "Aisha Khan")!;
       expect(aisha.tier).toBe("Top Producer");
@@ -1423,6 +1423,60 @@ describe("DealOS End-to-End Broker Simulation Audit", () => {
       setStoredRole("agent");
       role = await detectRole();
       expect(role).toBe("agent");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // WORKFLOW 24: 1-CLICK DEMO BUTTONS & 30+ SAMPLE DATA
+  // ═══════════════════════════════════════════════════════════
+  describe("Workflow 24: 1-Click Demo As Broker & As Owner with 30+ Sample Data & Nov 2 Expiry Guarantee", () => {
+    it("verifies 1-click demo buttons remain active through November 2, 2026", async () => {
+      const { isDemoButtonsActive, getDemoButtonsRemainingDays, DEMO_BUTTONS_EXPIRY_TIMESTAMP } = await import("@/lib/testing-account");
+      expect(isDemoButtonsActive()).toBe(true);
+      expect(DEMO_BUTTONS_EXPIRY_TIMESTAMP).toBe(new Date("2026-11-02T23:59:59+04:00").getTime());
+      expect(getDemoButtonsRemainingDays()).toBeGreaterThanOrEqual(1);
+      expect(getDemoButtonsRemainingDays()).toBeLessThanOrEqual(8);
+    });
+
+    it("verifies both Broker and Owner have at least 30 rich sample items across all datasets", async () => {
+      const { AGENCY_BROKERS, LIVE_CLOSED_DEALS } = await import("@/pages/OwnerDashboard");
+      const { DEMO_READY_PROPERTIES } = await import("@/components/app/ReadyInventory");
+      const { LEADS } = await import("@/lib/demo-leads");
+
+      // Verify at least 30 items for each category
+      expect(AGENCY_BROKERS.length).toBeGreaterThanOrEqual(30);
+      expect(LIVE_CLOSED_DEALS.length).toBeGreaterThanOrEqual(30);
+      expect(DEMO_READY_PROPERTIES.length).toBeGreaterThanOrEqual(30);
+      expect(LEADS.length).toBeGreaterThanOrEqual(30);
+
+      // Verify data richness
+      expect(AGENCY_BROKERS[0].reraNumber).toMatch(/RERA #/);
+      expect(LIVE_CLOSED_DEALS[0].dealVolume).toContain("AED");
+      expect(DEMO_READY_PROPERTIES[0].permitNumber).toContain("Trakheesi");
+    });
+
+    it("simulates instant 1-click Demo as Broker entry with zero credentials needed", async () => {
+      localStorage.setItem("dealos_demo_mode", "true");
+      localStorage.setItem("dealos_subscription_active", "true");
+      setStoredRole("agent");
+      setActiveEmail("broker-demo@dealos.ae");
+
+      const role = await detectRole();
+      expect(role).toBe("agent");
+      expect(localStorage.getItem("dealos_demo_mode")).toBe("true");
+      expect(localStorage.getItem("dealos_subscription_active")).toBe("true");
+    });
+
+    it("simulates instant 1-click Demo as Owner entry with zero credentials needed", async () => {
+      localStorage.setItem("dealos_demo_mode", "true");
+      localStorage.setItem("dealos_subscription_active", "true");
+      setStoredRole("company");
+      setActiveEmail("owner-demo@dealos.ae");
+
+      const role = await detectRole();
+      expect(role).toBe("company");
+      expect(localStorage.getItem("dealos_demo_mode")).toBe("true");
+      expect(localStorage.getItem("dealos_subscription_active")).toBe("true");
     });
   });
 });
