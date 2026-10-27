@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowRight, Building2, Check, ChevronRight, FileText, Globe, KeyRound, Mail, MessageCircle, Pause, Play, Plus, RotateCcw, Sparkles, Target, Users, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, Building2, Check, ChevronLeft, ChevronRight, FileText, Globe, KeyRound, Mail, MessageCircle, Pause, Play, Plus, RotateCcw, Sparkles, Target, Users, X } from 'lucide-react';
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -25,51 +25,107 @@ const brokerTools = [
   {
     category: "OFF-PLAN",
     title: "Deal Finder",
-    description: "1,355+ UAE projects with published payment plans, handover and sale status.",
+    description: "1,355+ UAE off-plan projects with published payment plans, escrow numbers, and handover dates.",
     badge: "1,355+ Projects",
+    metric: "80/20 & Post-Handover",
     icon: Building2,
+    colors: {
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/30",
+      text: "text-blue-500 dark:text-blue-400",
+      badge: "bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30",
+      glow: "rgba(59, 130, 246, 0.15)",
+    },
   },
   {
     category: "READY",
     title: "Ready Properties",
-    description: "Your own listings, verified title deeds, statuses, and bulk actions.",
+    description: "Verified title deeds, direct landlord inventory, instantaneous DLD sales comparables, and bulk actions.",
     badge: "Verified Deeds",
+    metric: "Zero Duplicate Units",
     icon: KeyRound,
+    colors: {
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30",
+      text: "text-emerald-500 dark:text-emerald-400",
+      badge: "bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 border-emerald-500/30",
+      glow: "rgba(16, 185, 129, 0.15)",
+    },
   },
   {
     category: "DEALS",
     title: "Deals & Commission",
-    description: "Track EOI to commission paid, per agent and milestone.",
+    description: "Track deals from initial EOI to developer tranche payout with automated split aging calculations.",
     badge: "Automated Splits",
+    metric: "AED 1.45M Tracked",
     icon: Target,
+    colors: {
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/30",
+      text: "text-amber-500 dark:text-amber-400",
+      badge: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30",
+      glow: "rgba(245, 158, 11, 0.15)",
+    },
   },
   {
     category: "INTELLIGENCE",
-    title: "AI Copilot",
-    description: "A second brain for every client objection and contract comparison.",
+    title: "AI Copilot & Voice",
+    description: "Instant Dubai investor objection solver, contract cross-examiner, and voice-to-CRM transcription.",
     badge: "Instant Intel",
+    metric: "Sub-45s Briefs ⚡",
     icon: Sparkles,
+    colors: {
+      bg: "bg-purple-500/10",
+      border: "border-purple-500/30",
+      text: "text-purple-500 dark:text-purple-400",
+      badge: "bg-purple-500/15 text-purple-500 dark:text-purple-400 border-purple-500/30",
+      glow: "rgba(168, 85, 247, 0.15)",
+    },
   },
   {
     category: "DISTRIBUTION",
-    title: "Portal Sync",
-    description: "One listing, instant sync across Property Finder, Bayut, and Dubizzle.",
+    title: "Portal Multi-Sync",
+    description: "One listing input, instantaneous live broadcast across Property Finder, Bayut, and Dubizzle.",
     badge: "1-Click Multi-post",
+    metric: "Real-Time Portal API",
     icon: Globe,
+    colors: {
+      bg: "bg-cyan-500/10",
+      border: "border-cyan-500/30",
+      text: "text-cyan-500 dark:text-cyan-400",
+      badge: "bg-cyan-500/15 text-cyan-500 dark:text-cyan-400 border-cyan-500/30",
+      glow: "rgba(6, 182, 212, 0.15)",
+    },
   },
   {
     category: "PRESENTATION",
-    title: "1-Click Client Decks",
-    description: "Polished branded investor decks generated in 10 seconds.",
-    badge: "White-label PDF",
+    title: "Live Deal Rooms",
+    description: "Polished, branded interactive web links and WhatsApp briefs generated in 10 seconds for HNWIs.",
+    badge: "Interactive Rooms",
+    metric: "4.8x Conversion Rate",
     icon: FileText,
+    colors: {
+      bg: "bg-rose-500/10",
+      border: "border-rose-500/30",
+      text: "text-rose-500 dark:text-rose-400",
+      badge: "bg-rose-500/15 text-rose-500 dark:text-rose-400 border-rose-500/30",
+      glow: "rgba(244, 63, 94, 0.15)",
+    },
   },
   {
     category: "ESCROW",
     title: "Satellite Progress",
-    description: "DLD construction audit and verified drone satellite timeline.",
-    badge: "Milestone Audit",
+    description: "Official DLD construction percentage audit, drone tracking timelines, and escrow release status.",
+    badge: "DLD Verified",
+    metric: "100% Escrow Active",
     icon: Users,
+    colors: {
+      bg: "bg-indigo-500/10",
+      border: "border-indigo-500/30",
+      text: "text-indigo-500 dark:text-indigo-400",
+      badge: "bg-indigo-500/15 text-indigo-500 dark:text-indigo-400 border-indigo-500/30",
+      glow: "rgba(99, 102, 241, 0.15)",
+    },
   },
 ];
 
@@ -84,23 +140,49 @@ export function Tools() {
     setActiveIdx(Math.min(Math.max(idx, 0), brokerTools.length - 1));
   };
 
+  const scroll = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const offset = direction === 'left' ? -340 : 340;
+    scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+  };
+
   return (
     <Scene id="tools">
       <div className="d-container">
-        {/* Section Heading */}
-        <div className="d-section-heading text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span className="d-pill text-xs font-bold tracking-wider uppercase text-primary bg-primary/10 px-3 py-1 rounded-full inline-block mb-3">
-            EVERYTHING A BROKER NEEDS
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground font-display">
-            Seven tools, one login.
-          </h2>
-          <p className="hidden md:block text-sm text-muted-foreground mt-2">
-            Hover to pause the carousel.
-          </p>
-          <p className="block md:hidden text-xs text-muted-foreground mt-2 font-medium">
-            Swipe to explore all 7 broker tools · Built for UAE Real Estate
-          </p>
+        {/* Section Heading with Left/Right Interactive Gliders */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 sm:mb-12">
+          <div className="max-w-2xl text-left">
+            <span className="d-pill text-xs font-bold tracking-wider uppercase text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 mb-3">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              EVERYTHING A BROKER NEEDS
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-foreground font-display">
+              Seven tools, one login.
+            </h2>
+            <p className="text-sm text-muted-foreground mt-2 font-medium">
+              Hover to pause · Glides seamlessly across all UAE property workflows.
+            </p>
+          </div>
+
+          {/* Desktop Arrow Glider Controls */}
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scroll('left')}
+              className="size-11 rounded-2xl bg-secondary/80 hover:bg-secondary text-foreground border border-border flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-xs hover:border-primary/40"
+              aria-label="Previous tool card"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => scroll('right')}
+              className="size-11 rounded-2xl bg-secondary/80 hover:bg-secondary text-foreground border border-border flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-xs hover:border-primary/40"
+              aria-label="Next tool card"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Carousel / Cards Track */}
@@ -108,55 +190,69 @@ export function Tools() {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 pt-1 px-4 sm:px-0 no-scrollbar snap-x snap-mandatory scroll-smooth"
+            className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 pt-2 px-2 sm:px-1 no-scrollbar snap-x snap-mandatory scroll-smooth"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
               WebkitOverflowScrolling: "touch",
             }}
           >
-            {brokerTools.map((t, i) => {
+            {brokerTools.map((t) => {
               const Icon = t.icon;
-              const colors = [
-                { bg: "bg-blue-500/10", border: "border-blue-500/30", text: "text-blue-500", badge: "bg-blue-500/10 text-blue-500 dark:text-blue-400 border-blue-500/30" },
-                { bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-500", badge: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/30" },
-                { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-500", badge: "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/30" },
-                { bg: "bg-purple-500/10", border: "border-purple-500/30", text: "text-purple-500", badge: "bg-purple-500/10 text-purple-500 dark:text-purple-400 border-purple-500/30" },
-                { bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-500", badge: "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border-cyan-500/30" },
-                { bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-500", badge: "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/30" },
-                { bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-500", badge: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border-indigo-500/30" },
-              ][i % 7];
+              const { colors } = t;
 
               return (
                 <motion.div
                   key={t.title}
-                  whileHover={{ y: -5, transition: { duration: 0.22, ease: "easeOut" } }}
+                  whileHover={{ y: -6, transition: { duration: 0.22, ease: "easeOut" } }}
                   whileTap={{ scale: 0.98 }}
-                  className="d-tools-carousel-card w-[84vw] max-w-[325px] sm:w-[310px] shrink-0 snap-center rounded-2xl sm:rounded-3xl p-6 sm:p-6 pb-8 bg-card border border-border/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-visible cursor-pointer"
-                  style={{ minHeight: "285px", height: "auto" }}
+                  className="d-tools-carousel-card w-[84vw] max-w-[340px] sm:w-[330px] shrink-0 snap-center rounded-3xl p-6 sm:p-7 bg-card/90 backdrop-blur-xl border border-border/80 shadow-md hover:shadow-2xl transition-all flex flex-col justify-between overflow-hidden cursor-pointer group relative"
+                  style={{ minHeight: "310px", height: "auto" }}
                 >
-                  <div className="space-y-3">
+                  {/* Subtle ambient corner glow on hover */}
+                  <div
+                    className="absolute -top-12 -right-12 size-36 rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-40 transition-opacity duration-300"
+                    style={{ background: colors.glow }}
+                  />
+
+                  <div className="space-y-3 relative z-10 text-left">
                     <div className="flex items-center justify-between">
-                      <div className={`size-11 rounded-2xl ${colors.bg} ${colors.text} border ${colors.border} flex items-center justify-center shrink-0 shadow-xs`}>
-                        <Icon size={21} />
+                      {/* Animated Floating Icon Container */}
+                      <div className={`size-12 rounded-2xl ${colors.bg} ${colors.text} border ${colors.border} flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1`}>
+                        <Icon size={22} />
                       </div>
-                      <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${colors.badge}`}>
+
+                      {/* Pill Badge */}
+                      <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border ${colors.badge} shadow-xs`}>
                         {t.badge}
                       </span>
                     </div>
-                    <div>
-                      <span className={`text-[11px] font-extrabold tracking-wider uppercase ${colors.text} block mb-1`}>
+
+                    <div className="pt-1">
+                      <span className={`text-[11px] font-mono font-black tracking-wider uppercase ${colors.text} block mb-1`}>
                         {t.category}
                       </span>
-                      <h3 className="text-xl font-bold text-foreground font-display tracking-tight">
+                      <h3 className="text-xl sm:text-2xl font-black text-foreground font-display tracking-tight group-hover:text-primary transition-colors">
                         {t.title}
                       </h3>
                     </div>
+
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed pt-1 break-words font-sans">
+                      {t.description}
+                    </p>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-4 break-words">
-                    {t.description}
-                  </p>
+                  {/* Bottom Highlight Strip with Live Metric & Interactive Arrow */}
+                  <div className="mt-5 pt-3.5 border-t border-border/60 flex items-center justify-between text-xs relative z-10">
+                    <span className="font-mono text-[11px] font-bold text-foreground/80 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {t.metric}
+                    </span>
+                    <span className="text-primary font-bold text-xs inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      <span>Explore</span>
+                      <ArrowRight size={13} />
+                    </span>
+                  </div>
                 </motion.div>
               );
             })}
@@ -169,7 +265,7 @@ export function Tools() {
                 key={i}
                 className={`transition-all rounded-full ${
                   activeIdx === i
-                    ? "w-5 h-1.5 bg-primary"
+                    ? "w-6 h-1.5 bg-primary"
                     : "w-1.5 h-1.5 bg-muted-foreground/30"
                 }`}
               />
