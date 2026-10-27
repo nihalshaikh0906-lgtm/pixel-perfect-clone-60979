@@ -8,6 +8,7 @@ import skyline from '@/assets/dealos-dubai.jpg';
 import { Dashboard } from './Dashboard';
 import { Magnetic } from './primitives';
 import { DemoBookingModal } from './DemoBookingModal';
+import { HeroTestDriveWidget } from './HeroTestDriveWidget';
 
 export const tileIcons = [Users, Building2, MapPin, Sparkles, Percent, KeyRound, ChartNoAxesCombined, MessageCircle];
 
@@ -225,6 +226,11 @@ export function Hero() {
                 ))}
               </div>
               <span className="text-muted-foreground font-semibold">Enterprise-Grade Real Estate CRM</span>
+            </motion.div>
+
+            {/* Step 2: 3-Second Interactive Test-Drive Cockpit */}
+            <motion.div variants={actionVariants}>
+              <HeroTestDriveWidget />
             </motion.div>
           </motion.div>
         </motion.div>
