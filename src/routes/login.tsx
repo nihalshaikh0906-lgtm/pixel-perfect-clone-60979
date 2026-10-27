@@ -338,11 +338,12 @@ function LoginPage() {
 
   return (
     <AuthShell leaving={leaving} sections={false}>
-      <div className="flex items-center gap-3.5 mb-6">
-        <Logo size={42} />
+      {/* Centered Brand Header */}
+      <div className="flex flex-col items-center text-center gap-2 mb-6">
+        <Logo size={46} />
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 m-0">Welcome to DealOS</h1>
-          <p className="text-xs text-slate-500 m-0">Institutional Dubai Real Estate Platform</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 m-0">Welcome to DealOS</h1>
+          <p className="text-xs font-semibold text-slate-500 m-0 mt-1">Institutional Dubai Real Estate Platform</p>
         </div>
       </div>
 
@@ -354,20 +355,20 @@ function LoginPage() {
             type="button"
             onClick={() => void loginAsDemo("agent")}
             disabled={busy}
-            className="flex items-center justify-between p-3.5 rounded-2xl bg-white hover:bg-emerald-50/70 border-2 border-emerald-500/40 hover:border-emerald-500 transition-all shadow-xs group cursor-pointer"
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/15 via-emerald-50/60 to-white border-2 border-emerald-500/40 hover:border-emerald-500 hover:shadow-md transition-all shadow-2xs group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <span className="text-xl">👤</span>
               <div className="text-left">
                 <div className="text-sm font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
-                  Demo as Broker / Agent
+                  Demo as Broker
                 </div>
-                <div className="text-[11px] text-slate-500">
-                  Full 1,000 Leads Workspace &amp; WhatsApp
+                <div className="text-[11px] text-slate-500 font-medium">
+                  1,000 Leads &amp; WhatsApp
                 </div>
               </div>
             </div>
-            <div className="size-7 rounded-lg bg-emerald-500/15 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="size-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
               {busy ? <Loader2 size={14} className="au-spin" /> : <ArrowRight size={14} />}
             </div>
           </button>
@@ -377,36 +378,37 @@ function LoginPage() {
             type="button"
             onClick={() => void loginAsDemo("company")}
             disabled={busy}
-            className="flex items-center justify-between p-3.5 rounded-2xl bg-white hover:bg-amber-50/70 border-2 border-amber-500/40 hover:border-amber-500 transition-all shadow-xs group cursor-pointer"
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/15 via-amber-50/60 to-white border-2 border-amber-500/40 hover:border-amber-500 hover:shadow-md transition-all shadow-2xs group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <span className="text-xl">🏢</span>
               <div className="text-left">
                 <div className="text-sm font-extrabold text-slate-900 group-hover:text-amber-700 transition-colors">
-                  Demo as Agency Owner
+                  Demo as Owner
                 </div>
-                <div className="text-[11px] text-slate-500">
-                  Full Agency Overwatch &amp; 30 Brokers
+                <div className="text-[11px] text-slate-500 font-medium">
+                  Overwatch &amp; 30 Brokers
                 </div>
               </div>
             </div>
-            <div className="size-7 rounded-lg bg-amber-500/15 text-amber-600 flex items-center justify-center shrink-0">
+            <div className="size-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
               {busy ? <Loader2 size={14} className="au-spin" /> : <ArrowRight size={14} />}
             </div>
           </button>
         </div>
 
         <div className="text-center">
-          <span className="text-[11px] font-semibold text-slate-500">
-            ✦ 10 Days Free Access Active · 30+ Sample Items Loaded · Valid through Nov 5, 2026
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200/90 text-[11px] font-bold text-slate-600 shadow-2xs">
+            <span className="size-1.5 rounded-full bg-emerald-500" />
+            <span>10 Days Free Access Active · 30+ Sample Items Loaded</span>
           </span>
         </div>
       </div>
 
       {/* Agency Sign In Container */}
-      <div className="space-y-4 pt-4 border-t border-slate-200">
+      <div className="space-y-4 pt-4 border-t border-slate-200/90">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-slate-900">Sign In to Existing Account</span>
+          <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Sign In to Existing Account</span>
           <button
             type="button"
             onClick={() => {
@@ -415,7 +417,7 @@ function LoginPage() {
               setPassword("Rko8786!");
               toast.info("Filled universal testing account credentials");
             }}
-            className="text-[11px] font-semibold text-primary hover:underline cursor-pointer"
+            className="text-[11px] font-bold text-primary hover:text-blue-700 bg-primary/10 hover:bg-primary/15 px-2 py-0.5 rounded-md border border-primary/20 transition-colors cursor-pointer"
           >
             ⚡ Quick-fill 7-day testrun
           </button>

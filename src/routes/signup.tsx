@@ -102,11 +102,12 @@ function SignupPage() {
 
   return (
     <AuthShell leaving={leaving} sections={false}>
-      <div className="flex items-center gap-3.5 mb-6">
-        <Logo size={42} />
+      {/* Centered Brand Header */}
+      <div className="flex flex-col items-center text-center gap-2 mb-6">
+        <Logo size={46} />
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 m-0">Create your workspace</h1>
-          <p className="text-xs text-slate-500 m-0">Set up your broker account in under a minute.</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 m-0">Create your workspace</h1>
+          <p className="text-xs font-semibold text-slate-500 m-0 mt-1">Set up your broker account in under a minute.</p>
         </div>
       </div>
       <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
