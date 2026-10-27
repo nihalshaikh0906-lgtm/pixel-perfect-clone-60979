@@ -219,17 +219,6 @@ export function Pricing() {
                   );
                 })}
               </div>
-
-              {/* Instant demo bypass link */}
-              <div className="pt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <Link
-                  to="/demo"
-                  className="font-bold text-emerald-400 hover:underline inline-flex items-center gap-1"
-                >
-                  <Zap size={13} className="text-emerald-400" />
-                  <span>Try Instant Live Demo ⚡</span>
-                </Link>
-              </div>
             </div>
           )}
         </div>
@@ -306,15 +295,14 @@ export function Pricing() {
                     </span>
                   </div>
 
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground font-mono">
                     {plan.months > 1 ? (
-                      <span className="font-mono font-bold text-foreground">
+                      <span className="font-bold text-foreground">
                         Equivalent to {aedPrice(plan.perMonth)} / month
                       </span>
                     ) : (
                       'Flexible 30-day billing · No lock-in'
                     )}
-                    {plan.perMonthNote ? ` (${plan.perMonthNote})` : ''}
                   </p>
 
                   {/* 4 Crisp Feature Bullets (Mobile-only, replaces 6 huge stacked boxes) */}
@@ -338,100 +326,64 @@ export function Pricing() {
                   </ul>
                 </div>
 
-                {/* CTA Buttons */}
-                <div className="space-y-3">
+                {/* Spacious, Dominant Primary CTA */}
+                <div className="pt-4 pb-1 space-y-3">
                   <Button
                     asChild
-                    className="w-full h-12 rounded-xl text-sm font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 gap-2 transition-all group"
+                    className="w-full h-14 rounded-2xl text-base font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/25 gap-2.5 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                   >
                     <Link to="/signup" search={{ plan: plan.id }}>
                       <span>Get Started Now</span>
-                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight size={18} />
                     </Link>
                   </Button>
 
-                  {/* Instant Demo Bypass (No Duplicate Login Button) */}
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full h-10 rounded-xl text-xs font-bold border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 gap-1.5 transition-all shadow-xs"
-                  >
-                    <Link to="/demo">
-                      <Zap size={14} className="text-emerald-400" />
-                      <span>Try Live Demo ⚡</span>
-                    </Link>
-                  </Button>
-
-                  <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1.5">
-                    <ShieldCheck size={13} className="text-emerald-500" />
-                    <span>Instant digital activation · Plus 5% UAE VAT · Cancel anytime</span>
+                  <p className="text-xs text-center text-muted-foreground font-medium flex items-center justify-center gap-1.5">
+                    <ShieldCheck size={14} className="text-emerald-500" />
+                    <span>Instant digital activation · Cancel anytime · UAE VAT compliant</span>
                   </p>
                 </div>
 
-                {/* Sleek Payment Options Trigger */}
-                <div className="pt-3 border-t border-border/70 space-y-2.5">
+                {/* Sleek Minimalist Payment & Wire Options */}
+                <div className="pt-4 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
                   <button
                     type="button"
                     onClick={() => setShowPaymentMethodsModal(true)}
-                    className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-secondary/50 hover:bg-secondary border border-border/70 hover:border-border transition-all text-left cursor-pointer group shadow-xs"
+                    className="hover:text-foreground inline-flex items-center gap-1.5 font-medium transition-colors cursor-pointer"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="size-9 rounded-xl bg-background border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors shadow-xs shrink-0">
-                        <CreditCard size={17} />
-                      </div>
-                      <div>
-                        <div className="text-xs sm:text-[13px] font-bold text-foreground flex items-center gap-2">
-                          <span>Accepted Payment Methods</span>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-                            3D Secure
-                          </span>
-                        </div>
-                        <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                          Cards (Visa, MC, AMEX), Apple/Google Pay, Lemon Squeezy, UAE Wire
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-0.5 transition-transform shrink-0">
-                      <span>View</span>
-                      <ChevronRight size={15} />
-                    </div>
+                    <CreditCard size={14} className="text-primary" />
+                    <span>Cards, Apple Pay &amp; Wire</span>
                   </button>
 
-                  <div className="flex items-center justify-between text-[11px] sm:text-xs text-muted-foreground px-1 pt-0.5">
-                    <span className="flex items-center gap-1.5">
-                      <Lock size={12} className="text-muted-foreground" />
-                      <span>256-bit encrypted checkout</span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setInvoicePrefill({
-                          agencyName: '',
-                          contactName: '',
-                          email: '',
-                          phone: '+971 ',
-                          plan: `Solo Broker (${plan.label} · AED ${plan.price})`,
-                          billing: 'annual',
-                        });
-                        setShowInvoiceModal(true);
-                      }}
-                      className="font-semibold text-amber-500 hover:underline cursor-pointer flex items-center gap-1"
-                    >
-                      <Landmark size={12} />
-                      <span>Bank Wire Proforma ↗</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInvoicePrefill({
+                        agencyName: '',
+                        contactName: '',
+                        email: '',
+                        phone: '+971 ',
+                        plan: `Solo Broker (${plan.label} · AED ${plan.price})`,
+                        billing: 'annual',
+                      });
+                      setShowInvoiceModal(true);
+                    }}
+                    className="text-amber-500 hover:text-amber-400 font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Landmark size={13} />
+                    <span>UAE Bank Wire ➔</span>
+                  </button>
                 </div>
 
                 {/* Mobile Agency Link */}
-                <div className="lg:hidden pt-3 border-t border-border/70 text-center">
+                <div className="lg:hidden pt-3 border-t border-border/60 text-center">
                   <button
                     type="button"
                     onClick={() => setPlanType('agency')}
                     className="text-xs font-bold text-amber-500 hover:underline inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     <Building2 size={13} />
-                    <span>Managing a team of 5+ agents? Get Brokerage Quote ➔</span>
+                    <span>Managing 5+ agents? Get Brokerage Quote ➔</span>
                   </button>
                 </div>
               </div>

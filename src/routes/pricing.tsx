@@ -254,42 +254,26 @@ function PricingPage() {
                   </li>
                 </ul>
 
-                {/* Direct Action Buttons */}
-                <div className="space-y-2 pt-1">
+                {/* Spacious, Dominant Primary CTA */}
+                <div className="space-y-3 pt-3">
                   <Button
                     asChild
-                    className="w-full h-12 rounded-xl text-xs font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-md gap-2"
+                    className="w-full h-14 rounded-2xl text-base font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/25 gap-2.5 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                   >
                     <Link to="/signup" search={{ plan: activePlan.id }}>
                       <span>Get Started Now</span>
-                      <ArrowRight size={14} />
+                      <ArrowRight size={18} />
                     </Link>
                   </Button>
 
-                  <div className="flex items-center gap-2">
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="flex-1 h-10 rounded-xl text-xs font-bold border-border bg-secondary/50 text-foreground"
-                    >
-                      <Link to="/login" search={{ mode: undefined }}>
-                        <span>Sign In ↗</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="flex-1 h-10 rounded-xl text-xs font-bold border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                    >
-                      <Link to="/demo">
-                        <span>Live Demo ⚡</span>
-                      </Link>
-                    </Button>
-                  </div>
+                  <p className="text-xs text-center text-muted-foreground font-medium flex items-center justify-center gap-1.5">
+                    <ShieldCheck size={14} className="text-emerald-500" />
+                    <span>Instant digital activation · Cancel anytime · UAE VAT compliant</span>
+                  </p>
                 </div>
 
                 {/* Bank Wire Link */}
-                <div className="pt-2 text-center border-t border-border/50">
+                <div className="pt-3 text-center border-t border-border/50">
                   <button
                     type="button"
                     onClick={() => {
@@ -303,9 +287,9 @@ function PricingPage() {
                       });
                       setShowInvoiceModal(true);
                     }}
-                    className="text-[11px] font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 cursor-pointer transition-colors"
                   >
-                    <Landmark size={12} className="text-amber-500" />
+                    <Landmark size={13} className="text-amber-500" />
                     <span>Pay with Corporate UAE Bank Wire / IBAN ➔</span>
                   </button>
                 </div>
