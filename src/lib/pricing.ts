@@ -48,6 +48,9 @@ export interface AgencyTier {
   monthlyPrice: number;
   annualPrice: number;
   annualEquivalentMonthly: number;
+  perSeatAnnual: number;
+  perSeatMonthly: number;
+  savingsPercentVsSolo: string;
   standardSoloAnnualCost: number;
   adminSeats: string;
   brokerSeats: string;
@@ -62,14 +65,18 @@ export const AGENCY_TIERS: AgencyTier[] = [
     minAgents: 5,
     maxAgents: 10,
     agentRangeLabel: "5 – 10 Agents",
-    monthlyPrice: 599,
-    annualPrice: 4990,
-    annualEquivalentMonthly: 415,
+    monthlyPrice: 399,
+    annualPrice: 3490,
+    annualEquivalentMonthly: 290,
+    perSeatAnnual: 29,
+    perSeatMonthly: 39,
+    savingsPercentVsSolo: "68% cheaper per person",
     standardSoloAnnualCost: 10990, // 10 x AED 1,099
     adminSeats: "1 Master Admin Cockpit",
     brokerSeats: "Up to 10 Dedicated Broker Desks",
     features: [
       "1 Master Admin + 10 Dedicated Broker Desks",
+      "From AED 29 / person / mo (68% cheaper than solo)",
       "Full Dubai off-plan catalog (1,355+ developments)",
       "Team WhatsApp script library & branded presentations",
       "Centralized agency lead inbox & tracking",
@@ -82,15 +89,19 @@ export const AGENCY_TIERS: AgencyTier[] = [
     minAgents: 11,
     maxAgents: 25,
     agentRangeLabel: "11 – 25 Agents",
-    monthlyPrice: 1199,
-    annualPrice: 9990,
-    annualEquivalentMonthly: 832,
+    monthlyPrice: 799,
+    annualPrice: 6990,
+    annualEquivalentMonthly: 582,
+    perSeatAnnual: 23,
+    perSeatMonthly: 32,
+    savingsPercentVsSolo: "75% cheaper per person",
     standardSoloAnnualCost: 27475, // 25 x AED 1,099
     adminSeats: "2 Admin Cockpits",
     brokerSeats: "Up to 25 Dedicated Broker Desks",
     recommended: true,
     features: [
       "2 Admin Cockpits + 25 Dedicated Broker Desks",
+      "From AED 23 / person / mo (75% cheaper than solo)",
       "Automated Round-Robin Lead Distribution Engine",
       "Broker commission split ledger & payout tracking",
       "Custom agency branding on all client PDF decks",
@@ -103,14 +114,18 @@ export const AGENCY_TIERS: AgencyTier[] = [
     minAgents: 26,
     maxAgents: 50,
     agentRangeLabel: "26 – 50 Agents",
-    monthlyPrice: 2199,
-    annualPrice: 18990,
-    annualEquivalentMonthly: 1582,
+    monthlyPrice: 1499,
+    annualPrice: 12990,
+    annualEquivalentMonthly: 1082,
+    perSeatAnnual: 21,
+    perSeatMonthly: 30,
+    savingsPercentVsSolo: "77% cheaper per person",
     standardSoloAnnualCost: 54950, // 50 x AED 1,099
     adminSeats: "5 Admin Cockpits",
     brokerSeats: "Up to 50 Dedicated Broker Desks",
     features: [
       "5 Admin Cockpits + 50 Dedicated Broker Desks",
+      "From AED 21 / person / mo (77% cheaper than solo)",
       "Custom Brokerage Domain (e.g. crm.youragency.ae)",
       "Developer direct inventory sync & priority feeds",
       "Agent productivity leaderboard & KPI analytics",
@@ -123,14 +138,18 @@ export const AGENCY_TIERS: AgencyTier[] = [
     minAgents: 51,
     maxAgents: 200,
     agentRangeLabel: "50+ Agents",
-    monthlyPrice: 3999,
-    annualPrice: 34990,
-    annualEquivalentMonthly: 2915,
+    monthlyPrice: 2799,
+    annualPrice: 24990,
+    annualEquivalentMonthly: 2082,
+    perSeatAnnual: 20,
+    perSeatMonthly: 28,
+    savingsPercentVsSolo: "78% cheaper per person",
     standardSoloAnnualCost: 109900, // 100 x AED 1,099
     adminSeats: "Unlimited Admins",
     brokerSeats: "Custom Unlimited Desks",
     features: [
       "Unlimited Admin & Manager accounts + custom desks",
+      "From AED 20 / person / mo (78% cheaper than solo)",
       "Multi-branch / Multi-license isolation support",
       "Dedicated database instance & automated daily backup",
       "Custom CRM data migration from HubSpot / Salesforce",

@@ -485,8 +485,14 @@ function PricingPage() {
                                 <span className="text-xs font-semibold text-amber-500 mt-0.5 block">
                                   {tier.name}
                                 </span>
+                                <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                                  <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/25">
+                                    AED {tier.perSeatAnnual} / person / mo
+                                  </span>
+                                </div>
                               </div>
-                              <div className="mt-3 pt-2 border-t border-border/50 text-[11px] text-muted-foreground space-y-0.5">
+                              <div className="mt-2.5 pt-2 border-t border-border/50 text-[11px] text-muted-foreground space-y-0.5">
+                                <div className="text-[10px] font-semibold text-emerald-400/90">{tier.savingsPercentVsSolo}</div>
                                 <div>{tier.adminSeats}</div>
                                 <div>{tier.brokerSeats}</div>
                               </div>
@@ -662,6 +668,13 @@ function PricingPage() {
                           </span>{" "}
                           (Corporate volume rate applied for {agencyName})
                         </p>
+
+                        <div className="pt-2 border-t border-border/50 flex flex-wrap items-center justify-between gap-1 text-xs">
+                          <span className="text-muted-foreground font-medium">Per-person rate:</span>
+                          <span className="font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            AED {agencyBilling === 'annual' ? activeAgencyTier.perSeatAnnual : activeAgencyTier.perSeatMonthly} / broker / mo ({activeAgencyTier.savingsPercentVsSolo})
+                          </span>
+                        </div>
                       </div>
 
                       <div className="space-y-2.5">
