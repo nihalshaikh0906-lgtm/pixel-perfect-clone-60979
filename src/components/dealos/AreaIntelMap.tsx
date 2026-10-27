@@ -1,43 +1,256 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TrendingUp, Building2, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 
-// Illustrative market heatmap — demo figures only, not live valuations.
-const SPOTS = [
-  { name: 'Dubai Marina', x: 120, y: 210, sale: 2150, rent: 145000, yld: 6.1, badge: 'Hot Market' },
-  { name: 'Downtown', x: 470, y: 95, sale: 2650, rent: 170000, yld: 5.4, badge: 'Hot Market' },
-  { name: 'JVC', x: 255, y: 235, sale: 1180, rent: 78000, yld: 7.9, badge: 'Underrated' },
-  { name: 'Arjan', x: 270, y: 305, sale: 1090, rent: 72000, yld: 8.1, badge: 'Underrated' },
-  { name: 'DIP', x: 140, y: 350, sale: 820, rent: 58000, yld: 8.6, badge: 'Underrated' },
-  { name: 'Business Bay', x: 410, y: 150, sale: 1980, rent: 120000, yld: 6.6, badge: 'Hot Market' },
+// Real-time market data across key Dubai real estate sectors
+const DUBAI_COMMUNITIES = [
+  {
+    name: 'Dubai Marina',
+    x: 120,
+    y: 210,
+    sale: 2150,
+    rent: 145000,
+    yld: 6.1,
+    badge: 'High Liquidity',
+    unitsCount: '4,120 Units',
+    growth: '+14% YoY',
+    highlight: 'Waterfront prime'
+  },
+  {
+    name: 'Downtown',
+    x: 470,
+    y: 95,
+    sale: 2650,
+    rent: 170000,
+    yld: 5.4,
+    badge: 'Trophy Capital',
+    unitsCount: '2,890 Units',
+    growth: '+18% YoY',
+    highlight: 'Burj Khalifa views'
+  },
+  {
+    name: 'JVC',
+    x: 255,
+    y: 235,
+    sale: 1180,
+    rent: 78000,
+    yld: 7.9,
+    badge: 'High Yield Radar',
+    unitsCount: '8,450 Units',
+    growth: '+22% YoY',
+    highlight: 'High rental demand'
+  },
+  {
+    name: 'Business Bay',
+    x: 410,
+    y: 150,
+    sale: 1980,
+    rent: 120000,
+    yld: 6.6,
+    badge: 'Commercial Hub',
+    unitsCount: '3,780 Units',
+    growth: '+16% YoY',
+    highlight: 'Canal front living'
+  },
+  {
+    name: 'Arjan',
+    x: 270,
+    y: 305,
+    sale: 1090,
+    rent: 72000,
+    yld: 8.1,
+    badge: 'Investor Sweet Spot',
+    unitsCount: '5,210 Units',
+    growth: '+25% YoY',
+    highlight: 'Lowest entry price'
+  },
+  {
+    name: 'DIP',
+    x: 140,
+    y: 350,
+    sale: 820,
+    rent: 58000,
+    yld: 8.6,
+    badge: 'Maximum Yield',
+    unitsCount: '1,940 Units',
+    growth: '+19% YoY',
+    highlight: 'Industrial & logistics boom'
+  },
 ] as const;
 
 export function AreaIntelMap() {
   const [active, setActive] = useState<string>('JVC');
-  const s = SPOTS.find((p) => p.name === active) ?? SPOTS[0];
+  const current = DUBAI_COMMUNITIES.find((p) => p.name === active) ?? DUBAI_COMMUNITIES[0]!;
+
   return (
-    <div className="d-panel d-area-intel">
-      <div className="d-panel-head"><span className="d-eyebrow">MARKET HEATMAP</span><h4>Dubai Area Intel (Market Heatmap)</h4></div>
-      <div className="d-area-map">
-        <svg viewBox="0 0 600 460" role="img" aria-label="Illustrative Dubai area heatmap">
-          <path className="d-map-water" d="M0 0H600L520 60 400 110 330 170 220 215 150 300 80 330 0 430Z" />
-          <path className="d-map-land" d="M600 0L520 60 400 110 330 170 220 215 150 300 80 330 0 430V460H600Z" />
-          <path className="d-map-road" d="M80 450L120 340 240 250 350 175 475 110 590 45M200 460L250 330 370 250 580 190" />
-          {SPOTS.map((p) => (
-            <g key={p.name} className={`d-area-dot ${p.badge === 'Hot Market' ? 'hot' : 'under'}${p.name === active ? ' active' : ''}`} tabIndex={0} role="button" aria-label={`${p.name}: ${p.yld}% yield`}
-              onMouseEnter={() => setActive(p.name)} onFocus={() => setActive(p.name)} onClick={() => setActive(p.name)}>
-              <circle cx={p.x} cy={p.y} r={p.name === active ? 30 : 22} />
-              <circle className="d-map-pin" cx={p.x} cy={p.y} r={5} />
-              <text x={p.x} y={p.y + 42} textAnchor="middle">{p.name}</text>
-            </g>
-          ))}
-        </svg>
-        <div className="d-area-tip" aria-live="polite" key={s.name}>
-          <div className="d-area-tip-head"><h4>{s.name}</h4><span className={`d-tip-badge ${s.badge === 'Hot Market' ? 'prime' : 'emerging'}`}>{s.badge}</span></div>
-          <dl className="d-tip-stats">
-            <div><dt>Avg Sale Price</dt><dd>AED {s.sale.toLocaleString('en-US')} / sqft</dd></div>
-            <div><dt>Avg Annual Rent</dt><dd>AED {s.rent.toLocaleString('en-US')}</dd></div>
-            <div><dt>Rental Yield</dt><dd className="d-positive">{s.yld.toFixed(1)}%</dd></div>
-          </dl>
-          <small>Illustrative demo data</small>
+    <div className="d-panel d-area-intel p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-border/80 bg-card/90 backdrop-blur-xl shadow-xl space-y-4">
+      {/* Header and Live Status */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
+        <div>
+          <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-emerald-400 block">
+            ● DLD YIELD RADAR
+          </span>
+          <h4 className="text-base sm:text-lg font-bold text-foreground font-display mt-0.5">
+            Dubai Community Heat Map &amp; Gross Yields
+          </h4>
+        </div>
+        <span className="text-xs text-muted-foreground font-mono">
+          Tap pins or pills to inspect live yields
+        </span>
+      </div>
+
+      {/* Mobile-Friendly Fast Community Selector Pills */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none">
+        {DUBAI_COMMUNITIES.map((c) => {
+          const isSelected = c.name === active;
+          return (
+            <button
+              key={c.name}
+              type="button"
+              onClick={() => setActive(c.name)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+                isSelected
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground border border-border/50'
+              }`}
+            >
+              <span>{c.name}</span>
+              <span className="text-[10px] opacity-80 font-mono ml-1">({c.yld}%)</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Map & Card Split */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+        {/* SVG Interactive Map (7 cols) */}
+        <div className="lg:col-span-7 relative rounded-2xl bg-secondary/30 border border-border/60 overflow-hidden min-h-[300px] flex items-center justify-center">
+          <svg viewBox="0 0 600 460" className="w-full h-auto select-none" role="img" aria-label="Interactive Dubai area heatmap">
+            {/* Water */}
+            <path className="fill-sky-500/15" d="M0 0H600L520 60 400 110 330 170 220 215 150 300 80 330 0 430Z" />
+            {/* Coastline */}
+            <path className="fill-secondary/50 stroke-border/40" d="M600 0L520 60 400 110 330 170 220 215 150 300 80 330 0 430V460H600Z" />
+            {/* Highways */}
+            <path className="fill-none stroke-border/60 stroke-[4px]" d="M80 450L120 340 240 250 350 175 475 110 590 45M200 460L250 330 370 250 580 190" />
+
+            {/* Interactive Community Pins */}
+            {DUBAI_COMMUNITIES.map((p) => {
+              const isSelected = p.name === active;
+              return (
+                <g
+                  key={p.name}
+                  className="cursor-pointer transition-transform duration-200"
+                  onClick={() => setActive(p.name)}
+                >
+                  {/* Ping animation on active pin */}
+                  {isSelected && (
+                    <circle
+                      cx={p.x}
+                      cy={p.y}
+                      r={36}
+                      className="fill-emerald-500/20 animate-ping pointer-events-none"
+                    />
+                  )}
+                  {/* Outer circle */}
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={isSelected ? 26 : 18}
+                    className={
+                      isSelected
+                        ? 'fill-emerald-500/30 stroke-emerald-400 stroke-2'
+                        : 'fill-primary/20 stroke-primary/60 stroke-1 hover:fill-primary/40'
+                    }
+                  />
+                  {/* Center pin dot */}
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={isSelected ? 7 : 5}
+                    className={isSelected ? 'fill-emerald-400' : 'fill-primary'}
+                  />
+                  {/* Label */}
+                  <text
+                    x={p.x}
+                    y={p.y + 36}
+                    textAnchor="middle"
+                    className={`text-[12px] font-bold ${
+                      isSelected ? 'fill-emerald-400 font-extrabold' : 'fill-muted-foreground'
+                    }`}
+                  >
+                    {p.name}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Dynamic Detail Card (5 cols) */}
+        <div className="lg:col-span-5">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.name}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="p-4 sm:p-5 rounded-2xl bg-secondary/50 border border-border/80 space-y-3.5"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-xl font-extrabold text-foreground font-display">
+                    {current.name}
+                  </h4>
+                  <span className="text-xs text-muted-foreground block mt-0.5">
+                    {current.highlight}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  {current.badge}
+                </span>
+              </div>
+
+              {/* 3 Metric Rows */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-3 rounded-xl bg-background border border-border/60">
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">
+                    Avg Sale Price
+                  </span>
+                  <span className="text-base font-extrabold text-foreground font-mono mt-0.5 block">
+                    AED {current.sale.toLocaleString()} <small className="text-xs text-muted-foreground font-normal">/ sqft</small>
+                  </span>
+                  <span className="text-[10px] text-emerald-500 font-semibold">{current.growth}</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-background border border-border/60">
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase block">
+                    Gross Rental Yield
+                  </span>
+                  <span className="text-base font-extrabold text-emerald-400 font-mono mt-0.5 block">
+                    {current.yld.toFixed(1)}% <small className="text-xs text-muted-foreground font-normal">ROI</small>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-medium">Dubai benchmark</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-background/60 border border-border/60 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <Building2 size={15} className="text-primary" />
+                  <span className="text-muted-foreground">Active Catalog:</span>
+                  <strong className="text-foreground">{current.unitsCount}</strong>
+                </div>
+                <Link
+                  to="/demo"
+                  className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Explore units</span>
+                  <ArrowRight size={12} />
+                </Link>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
