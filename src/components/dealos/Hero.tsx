@@ -198,7 +198,7 @@ export function Hero() {
               Client WhatsApp briefs, sourced off-plan allocations and agency commission ledgers — in one high-velocity cockpit.
             </motion.p>
 
-            {/* Clean Action Buttons: Exactly 2 Clear Choices (No Duplicate Login) */}
+            {/* Exactly 2 Distinct Action Choices (Zero Duplicate Buttons) */}
             <motion.div variants={actionVariants} className="d-hero-buttons flex flex-col sm:flex-row items-center justify-center gap-3 mt-6 sm:mt-8">
               <Button asChild className="h-12 px-8 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold text-sm shadow-lg shadow-primary/25 gap-2 cursor-pointer w-full sm:w-auto">
                 <Link to="/demo">
@@ -207,13 +207,13 @@ export function Hero() {
                 </Link>
               </Button>
               <Button
-                type="button"
+                asChild
                 variant="outline"
-                onClick={() => setDemoOpen(true)}
                 className="h-12 px-7 rounded-2xl border-border hover:bg-secondary text-foreground font-bold text-sm gap-2 w-full sm:w-auto cursor-pointer"
               >
-                <Video size={15} className="text-primary" />
-                <span>Book a Demo ↗</span>
+                <Link to="/signup">
+                  <span>Start 14-Day Free Trial ↗</span>
+                </Link>
               </Button>
             </motion.div>
 

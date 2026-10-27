@@ -125,12 +125,6 @@ export function DealOSLanding() {
           ))}
         </nav>
         <div className="d-nav-actions flex items-center gap-2">
-          <Button asChild size="sm" variant="ghost" className="hidden sm:inline-flex h-9 px-3.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold gap-1.5 shadow-xs cursor-pointer">
-            <Link to="/demo">
-              <Sparkles size={13} className="text-emerald-400" />
-              <span>Live Demo ⚡</span>
-            </Link>
-          </Button>
           <Button asChild variant="ghost" size="sm" className="h-9 px-3.5 rounded-xl text-foreground hover:text-primary text-xs font-bold">
             <Link to="/login" search={{ mode: undefined }}>
               <span>Sign In ↗</span>
