@@ -1,40 +1,39 @@
 /* DealOS sign-in pages — scoped to .dauth so the rest of the app is untouched */
 .dauth{
-  --au-bg:#F7F8FC;--au-ink:#141A33;--au-ink-2:#4B5272;--au-gold:#2F6BFF;--au-gold-d:#2A45C8;--au-line:#E6E9F5;--au-card:var(--silk);
-  --au-bad:var(--destructive);--au-ok:var(--au-gold-d);
-  --au-night-0:#0B0E1A;--au-night:linear-gradient(160deg,var(--au-night-0) 0%,#121629 55%,#1B1F45 100%);
+  --au-bg:#F8FAFC;--au-ink:#0F172A;--au-ink-2:#475569;--au-gold:#2F6BFF;--au-gold-d:#1D4ED8;--au-line:#E2E8F0;--au-card:#FFFFFF;
+  --au-bad:var(--destructive);--au-ok:#10B981;
   --au-ease:cubic-bezier(.22,1,.36,1);
   background:var(--au-bg);color:var(--au-ink);font-family:'Manrope',sans-serif;min-height:100vh;padding:24px;overflow-x:clip;font-variant-numeric:lining-nums tabular-nums
 }
 .dauth *{box-sizing:border-box}
 .dauth :focus-visible{outline:2px solid var(--au-gold);outline-offset:2px;border-radius:10px}
 .au-grid{display:grid;grid-template-columns:55fr 45fr;gap:24px;transition:grid-template-columns .4s var(--au-ease)}
-.au-panel{position:sticky;top:24px;height:calc(100vh - 48px);border-radius:32px;overflow:hidden;background:var(--au-night);color:var(--silk);isolation:isolate;--mx:0;--my:0}
+.au-panel{position:sticky;top:24px;height:calc(100vh - 48px);border-radius:32px;overflow:hidden;background:linear-gradient(155deg,#F0F5FF 0%,#F8FAFC 50%,#EEF2FF 100%);border:1px solid #E2E8F0;color:#0F172A;isolation:isolate;box-shadow:0 10px 30px -10px rgba(0,0,0,.05);--mx:0;--my:0}
 .au-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.au-glow{position:absolute;width:70%;aspect-ratio:1;left:10%;top:10%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--au-gold) 32%,transparent),transparent 65%);filter:blur(20px);z-index:0;animation:au-drift 20s ease-in-out infinite;pointer-events:none}
+.au-glow{position:absolute;width:70%;aspect-ratio:1;left:10%;top:10%;border-radius:50%;background:radial-gradient(circle,rgba(47,107,255,.08),transparent 65%);filter:blur(24px);z-index:0;animation:au-drift 20s ease-in-out infinite;pointer-events:none}
 @keyframes au-drift{0%,100%{translate:0 0}33%{translate:18% 12%}66%{translate:-8% 22%}}
-.au-panel::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(to top,color-mix(in srgb,var(--au-night-0) 88%,transparent),transparent);z-index:1;pointer-events:none}
+.au-panel::after{display:none}
 .au-panel-logo{position:absolute;top:40px;left:40px;z-index:3;color:var(--au-gold)}
 .au-panel-logo .d-logo-mark{width:88px;height:96px;font-size:64px;border-width:5px;border-radius:22px}
 .au-panel-logo .d-logo-mark>span{width:34px;height:16px;border-top-width:5px;left:16px;top:-17px}
 .au-panel-copy{position:absolute;left:48px;right:48px;bottom:48px;z-index:3}
-.au-headline{font-size:56px;line-height:1.06;font-weight:750;letter-spacing:-.02em;color:color-mix(in srgb,var(--silk) 96%,transparent);margin:0;animation:au-in .5s var(--au-ease) both}
+.au-headline{font-size:56px;line-height:1.06;font-weight:800;letter-spacing:-.02em;color:#0F172A;margin:0;animation:au-in .5s var(--au-ease) both}
 .au-headline em{font-style:normal;color:var(--au-gold)}
 @keyframes au-in{from{opacity:0;translate:0 10px}}
-.au-ticker{margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:520px;padding:16px 20px;border-radius:18px;background:color-mix(in srgb,var(--silk) 8%,transparent);border:1px solid color-mix(in srgb,var(--silk) 15%,transparent);backdrop-filter:blur(16px)}
-.au-ticker p{margin:0;font-size:16px;font-weight:600;color:color-mix(in srgb,var(--silk) 92%,transparent);animation:au-in .45s var(--au-ease) both}
+.au-ticker{margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:520px;padding:16px 20px;border-radius:18px;background:rgba(255,255,255,.8);border:1px solid #E2E8F0;backdrop-filter:blur(16px);box-shadow:0 4px 12px rgba(0,0,0,.03)}
+.au-ticker p{margin:0;font-size:16px;font-weight:600;color:#1E293B;animation:au-in .45s var(--au-ease) both}
 .au-ticker-dots{display:flex;gap:6px;flex-shrink:0}
-.au-ticker-dots button{width:8px;height:8px;border-radius:99px;border:0;padding:0;background:color-mix(in srgb,var(--silk) 35%,transparent);cursor:pointer;transition:width .3s var(--au-ease),background .3s}
+.au-ticker-dots button{width:8px;height:8px;border-radius:99px;border:0;padding:0;background:#CBD5E1;cursor:pointer;transition:width .3s var(--au-ease),background .3s}
 .au-ticker-dots button[aria-pressed=true]{width:22px;background:var(--au-gold)}
-.au-float{position:absolute;z-index:2;padding:12px 16px;border-radius:16px;background:color-mix(in srgb,var(--silk) 8%,transparent);border:1px solid color-mix(in srgb,var(--silk) 15%,transparent);backdrop-filter:blur(16px);font-size:14px;font-weight:650;color:color-mix(in srgb,var(--silk) 92%,transparent);display:flex;align-items:center;gap:8px;translate:calc(var(--mx)*var(--px)) calc(var(--my)*var(--px));transition:translate .5s var(--au-ease);animation:au-bob 6s ease-in-out infinite}
-.au-float small{display:block;font-size:13px;font-weight:500;color:color-mix(in srgb,var(--silk) 85%,transparent)}
+.au-float{position:absolute;z-index:2;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.85);border:1px solid #E2E8F0;backdrop-filter:blur(16px);font-size:14px;font-weight:650;color:#1E293B;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.04);translate:calc(var(--mx)*var(--px)) calc(var(--my)*var(--px));transition:translate .5s var(--au-ease);animation:au-bob 6s ease-in-out infinite}
+.au-float small{display:block;font-size:13px;font-weight:500;color:#64748B}
 .au-f1{top:22%;right:9%;flex-direction:column;align-items:flex-start;gap:2px;--px:-26px}.au-f1 b{font-size:22px}
 .au-f2{top:40%;left:12%;--px:20px;animation-delay:-2s}
 .au-f3{top:12%;right:34%;--px:14px;animation-delay:-4s}
 .au-dot{width:8px;height:8px;border-radius:50%;background:var(--au-gold)}
 @keyframes au-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .au-col{display:flex;flex-direction:column;min-width:0;transition:opacity .3s}
-.au-form-wrap{min-height:calc(100vh - 48px);display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.au-form-wrap{min-height:calc(100vh - 48px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px}
 .au-form{width:100%;max-width:460px}
 .au-logo{color:var(--au-ink);display:inline-flex}
 .au-form h1{font-size:44px;line-height:1.08;font-weight:750;letter-spacing:-.02em;margin:28px 0 12px}
@@ -113,18 +112,15 @@
 @media(max-width:1023px){
   .dauth{padding:16px}
   .au-grid{grid-template-columns:1fr}
-  .au-panel{position:relative;top:0;height:280px;border-radius:28px}
-  .au-panel-logo{top:24px;left:24px}
-  .au-panel-logo .d-logo-mark{width:48px;height:52px;font-size:34px;border-width:3px;border-radius:13px}
-  .au-panel-logo .d-logo-mark>span{width:18px;height:9px;border-top-width:3px;left:9px;top:-9px}
+  .au-panel{position:relative;top:0;height:auto;border-radius:24px;padding:28px}
   .au-panel-copy{left:24px;right:24px;bottom:24px}
   .au-headline{font-size:32px}
   .au-ticker,.au-float{display:none}
-  .au-form-wrap{min-height:auto;padding:40px 4px 8px}
+  .au-form-wrap{min-height:auto;padding:24px 4px 8px}
   .dauth.is-leaving .au-grid{grid-template-columns:1fr}
 }
 @media(max-width:767px){
-  .au-panel{display:none}
+  .au-panel,.au-panel-executive{display:none!important}
   .au-form-wrap{min-height:auto;padding:12px 0}
   .dauth{padding:14px}
 }
@@ -149,23 +145,23 @@
 .dauth .au-demo .au-btn{flex:1;min-width:150px}
 @media (max-width:480px){.dauth .au-roles{grid-template-columns:1fr}}
 
-/* ═══ EXECUTIVE AUTH PANEL (ZERO UNNECESSARY ANIMATIONS OR JUNK) ═══ */
+/* ═══ EXECUTIVE AUTH PANEL (LUXURY LIGHT ARCHITECTURE) ═══ */
 .au-panel-executive{display:flex;flex-direction:column;justify-content:space-between;padding:44px}
 .au-panel-top{display:flex;align-items:center;justify-content:space-between}
 .au-panel-brand{display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit}
-.au-brand-title{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;color:#fff}
-.au-brand-tag{display:block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--au-gold)}
+.au-brand-title{display:block;font-size:24px;font-weight:900;letter-spacing:-.02em;color:#0F172A}
+.au-brand-tag{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--au-gold)}
 .au-panel-body{margin:auto 0;padding:24px 0}
-.au-exec-headline{font-size:32px;line-height:1.18;font-weight:800;letter-spacing:-.02em;color:#fff;margin:0 0 12px}
-.au-exec-gold{color:#F59E0B}
-.au-exec-desc{font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.7);margin:0 0 24px;max-width:480px}
+.au-exec-headline{font-size:32px;line-height:1.18;font-weight:900;letter-spacing:-.02em;color:#0F172A;margin:0 0 12px}
+.au-exec-gold{color:#2F6BFF}
+.au-exec-desc{font-size:13.5px;line-height:1.6;color:#475569;margin:0 0 24px;max-width:480px}
 .au-exec-features{display:flex;flex-direction:column;gap:12px}
-.au-exec-feat{display:flex;align-items:flex-start;gap:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px 16px}
+.au-exec-feat{display:flex;align-items:flex-start;gap:14px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.02)}
 .au-feat-icon{font-size:18px;flex-shrink:0;margin-top:1px}
-.au-exec-feat b{display:block;font-size:13.5px;font-weight:700;color:#fff}
-.au-exec-feat p{margin:2px 0 0;font-size:12px;line-height:1.45;color:rgba(255,255,255,.65)}
-.au-panel-foot{padding-top:20px;border-top:1px solid rgba(255,255,255,.08)}
-.au-compliance-pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:rgba(255,255,255,.85)}
+.au-exec-feat b{display:block;font-size:13.5px;font-weight:750;color:#0F172A}
+.au-exec-feat p{margin:2px 0 0;font-size:12px;line-height:1.45;color:#64748B}
+.au-panel-foot{padding-top:20px;border-top:1px solid #E2E8F0}
+.au-compliance-pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#475569}
 
 /* ═══ 1-TAP DEMO CARD ═══ */
 .au-demo-card{margin-top:20px;padding:16px;border-radius:16px;background:rgba(47,107,255,.04);border:1px dashed rgba(47,107,255,.3);display:flex;flex-direction:column;gap:10px}

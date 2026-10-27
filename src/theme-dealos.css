@@ -82,9 +82,9 @@
 
 /* ---------- Auth ---------- */
 .dauth{
-  --au-bg:#FFFFFF;--au-ink:#141A33;--au-ink-2:#4B5272;--au-gold:#2F6BFF;--au-gold-d:#2A45C8;--au-line:#E6E9F5;--au-card:#FFFFFF;
-  --au-night-0:#0B0E1A;--au-night:linear-gradient(160deg,#0B0E1A 0%,#121629 55%,#1B1F45 100%);
-  --logo-bg-dark:#0B0E1A;font-family:Manrope,sans-serif;
+  --au-bg:#F8FAFC;--au-ink:#0F172A;--au-ink-2:#475569;--au-gold:#2F6BFF;--au-gold-d:#2A45C8;--au-line:#E2E8F0;--au-card:#FFFFFF;
+  --au-night-0:#F0F5FF;--au-night:linear-gradient(155deg,#F0F5FF 0%,#F8FAFC 50%,#EEF2FF 100%);
+  --logo-bg-dark:#FFFFFF;font-family:Manrope,sans-serif;
 }
 .dauth .au-btn-ink,.dauth .au-btn-ink.success{background:var(--brand-gradient);color:#fff;border-radius:14px}
 .dauth .au-btn-ink:hover:not(:disabled){background:var(--brand-gradient);color:#fff;filter:brightness(1.08);box-shadow:0 12px 30px rgba(59,100,255,.35)}

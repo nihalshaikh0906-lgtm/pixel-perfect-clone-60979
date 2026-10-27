@@ -338,11 +338,11 @@ function LoginPage() {
 
   return (
     <AuthShell leaving={leaving} sections={false}>
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3.5 mb-6">
         <Logo size={42} />
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground m-0">Welcome to DealOS</h1>
-          <p className="text-xs text-muted-foreground m-0">Institutional Dubai Real Estate Platform</p>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 m-0">Welcome to DealOS</h1>
+          <p className="text-xs text-slate-500 m-0">Institutional Dubai Real Estate Platform</p>
         </div>
       </div>
 
@@ -354,20 +354,20 @@ function LoginPage() {
             type="button"
             onClick={() => void loginAsDemo("agent")}
             disabled={busy}
-            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-primary/10 to-emerald-500/10 border-2 border-emerald-500/40 hover:border-emerald-500 hover:from-emerald-500/25 transition-all shadow-sm group cursor-pointer"
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-white hover:bg-emerald-50/70 border-2 border-emerald-500/40 hover:border-emerald-500 transition-all shadow-xs group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <span className="text-xl">👤</span>
               <div className="text-left">
-                <div className="text-sm font-extrabold text-foreground group-hover:text-emerald-400 transition-colors">
+                <div className="text-sm font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
                   Demo as Broker / Agent
                 </div>
-                <div className="text-[11px] text-muted-foreground">
+                <div className="text-[11px] text-slate-500">
                   Full 1,000 Leads Workspace &amp; WhatsApp
                 </div>
               </div>
             </div>
-            <div className="size-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="size-7 rounded-lg bg-emerald-500/15 text-emerald-600 flex items-center justify-center shrink-0">
               {busy ? <Loader2 size={14} className="au-spin" /> : <ArrowRight size={14} />}
             </div>
           </button>
@@ -377,36 +377,36 @@ function LoginPage() {
             type="button"
             onClick={() => void loginAsDemo("company")}
             disabled={busy}
-            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-primary/10 to-amber-500/10 border-2 border-amber-500/40 hover:border-amber-500 hover:from-amber-500/25 transition-all shadow-sm group cursor-pointer"
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-white hover:bg-amber-50/70 border-2 border-amber-500/40 hover:border-amber-500 transition-all shadow-xs group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <span className="text-xl">🏢</span>
               <div className="text-left">
-                <div className="text-sm font-extrabold text-foreground group-hover:text-amber-400 transition-colors">
+                <div className="text-sm font-extrabold text-slate-900 group-hover:text-amber-700 transition-colors">
                   Demo as Agency Owner
                 </div>
-                <div className="text-[11px] text-muted-foreground">
+                <div className="text-[11px] text-slate-500">
                   Full Agency Overwatch &amp; 30 Brokers
                 </div>
               </div>
             </div>
-            <div className="size-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+            <div className="size-7 rounded-lg bg-amber-500/15 text-amber-600 flex items-center justify-center shrink-0">
               {busy ? <Loader2 size={14} className="au-spin" /> : <ArrowRight size={14} />}
             </div>
           </button>
         </div>
 
         <div className="text-center">
-          <span className="text-[11px] font-semibold text-muted-foreground">
+          <span className="text-[11px] font-semibold text-slate-500">
             ✦ 10 Days Free Access Active · 30+ Sample Items Loaded · Valid through Nov 5, 2026
           </span>
         </div>
       </div>
 
       {/* Agency Sign In Container */}
-      <div className="space-y-4 pt-4 border-t border-border/60">
+      <div className="space-y-4 pt-4 border-t border-slate-200">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-foreground">Sign In to Existing Account</span>
+          <span className="text-xs font-bold text-slate-900">Sign In to Existing Account</span>
           <button
             type="button"
             onClick={() => {
@@ -446,7 +446,7 @@ function LoginPage() {
         </div>
 
         {/* Auth Method Switcher Tabs */}
-        <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-secondary/80 border border-border/60">
+        <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200/80">
           <button
             type="button"
             onClick={() => {
@@ -455,8 +455,8 @@ function LoginPage() {
             }}
             className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               authMethod === "otp"
-                ? "bg-background text-foreground shadow-xs border border-border"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
             <Mail size={13} />
@@ -470,8 +470,8 @@ function LoginPage() {
             }}
             className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               authMethod === "password"
-                ? "bg-background text-foreground shadow-xs border border-border"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
             <KeyRound size={13} />

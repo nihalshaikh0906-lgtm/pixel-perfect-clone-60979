@@ -65,7 +65,7 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
         <aside className="au-panel au-panel-executive" aria-label="DealOS Platform">
           <div className="au-panel-top">
             <Link to="/welcome" className="au-panel-brand" aria-label="DealOS home">
-              <LogoMark size={56} variant="dark" />
+              <LogoMark size={52} variant="light" />
               <div>
                 <span className="au-brand-title">DealOS</span>
                 <span className="au-brand-tag">Institutional Real Estate Platform</span>
@@ -74,37 +74,37 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
           </div>
 
           <div className="au-panel-body">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-mono font-bold mb-4">
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 text-xs font-mono font-bold mb-4">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>SECURE ACCESS PORTAL</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
-              Institutional Gateway for <span className="text-amber-400">Dubai Real Estate</span>.
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+              Institutional Gateway for <span className="text-primary font-black">Dubai Real Estate</span>.
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
               Direct access to live agency pipeline, DLD escrow verification, investor lead triage, and executive commission governance.
             </p>
 
-            <div className="mt-8 space-y-3 border-t border-zinc-800/80 pt-6">
-              <div className="flex items-center justify-between text-xs text-zinc-400 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-                <span className="font-semibold text-zinc-300">Live DLD Inventory</span>
-                <span className="font-mono font-bold text-emerald-400">34,850+ Units</span>
+            <div className="mt-8 space-y-3 border-t border-slate-200 pt-6">
+              <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-white border border-slate-200/90 shadow-xs">
+                <span className="font-semibold text-slate-700">Live DLD Inventory</span>
+                <span className="font-mono font-bold text-emerald-600">34,850+ Units</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-zinc-400 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-                <span className="font-semibold text-zinc-300">Escrow Security</span>
-                <span className="font-mono font-bold text-emerald-400">RERA Verified</span>
+              <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-white border border-slate-200/90 shadow-xs">
+                <span className="font-semibold text-slate-700">Escrow Security</span>
+                <span className="font-mono font-bold text-emerald-600">RERA Verified</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-zinc-400 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-                <span className="font-semibold text-zinc-300">Active Testrun Mode</span>
-                <span className="font-mono font-bold text-amber-400">Open Access Active</span>
+              <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-white border border-slate-200/90 shadow-xs">
+                <span className="font-semibold text-slate-700">Active Testrun Mode</span>
+                <span className="font-mono font-bold text-blue-600">Open Access Active</span>
               </div>
             </div>
           </div>
 
           <div className="au-panel-foot">
-            <div className="au-compliance-pill">
-              <ShieldCheck size={15} className="text-emerald-400" />
+            <div className="au-compliance-pill text-slate-600">
+              <ShieldCheck size={15} className="text-emerald-600" />
               <span>DLD Registered · RERA Trakheesi Verified Gateway</span>
             </div>
           </div>
@@ -112,16 +112,18 @@ export function AuthShell({ children, leaving = false, sections = false }: { chi
 
         <div className="au-col">
           <section className="au-form-wrap" data-head="form">
-            <div className="mb-4">
-              <Link
-                to="/welcome"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-              >
-                <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-                <span>Back to Landing Page</span>
-              </Link>
+            <div className="au-form">
+              <div className="mb-4">
+                <Link
+                  to="/welcome"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors group"
+                >
+                  <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform text-slate-400 group-hover:text-slate-800" />
+                  <span>Back to Landing Page</span>
+                </Link>
+              </div>
+              {children}
             </div>
-            <div className="au-form">{children}</div>
           </section>
 
           {sections ? (

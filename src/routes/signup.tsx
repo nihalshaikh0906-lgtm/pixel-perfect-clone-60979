@@ -102,9 +102,13 @@ function SignupPage() {
 
   return (
     <AuthShell leaving={leaving} sections={false}>
-      <Logo size={40} />
-      <h1>Create your workspace</h1>
-      <p className="au-sub">Set up your broker account in under a minute.</p>
+      <div className="flex items-center gap-3.5 mb-6">
+        <Logo size={42} />
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 m-0">Create your workspace</h1>
+          <p className="text-xs text-slate-500 m-0">Set up your broker account in under a minute.</p>
+        </div>
+      </div>
       <form key={shake} className={`au-stack ${shake ? "au-shake" : ""}`} onSubmit={onSubmit} noValidate>
         <Field id="name" label="Full name" autoComplete="name" placeholder="Nihal Shaikh" value={f.name} onChange={set("name")} onBlur={blur("name")} disabled={busy}
           ok={!!touched["name"] && ok.name} error={touched["name"] && !ok.name ? "Please enter your name." : null} />
