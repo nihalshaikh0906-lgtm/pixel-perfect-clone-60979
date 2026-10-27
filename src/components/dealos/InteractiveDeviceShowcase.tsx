@@ -545,7 +545,7 @@ export function InteractiveDeviceShowcase() {
                             </span>
                           </button>
 
-                          <span className="text-[10px] font-mono text-zinc-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full self-start sm:self-auto">
+                          <span className="text-[10px] font-mono text-zinc-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full my-2 inline-flex items-center self-start sm:self-auto shadow-xs">
                             Project preview
                           </span>
                         </div>
