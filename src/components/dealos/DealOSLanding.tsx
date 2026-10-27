@@ -13,6 +13,7 @@ import { Product, Insights } from './ProductScenes';
 import { Integrations, Tools, Workflow, Modes } from './ToolsScenes';
 import { Proof, Pricing, CTA, Footer } from './FinalScenes';
 import { DemoBookingModal } from './DemoBookingModal';
+import { WhatsAppInteractivePitchModal } from './WhatsAppInteractivePitchModal';
 import { Magnetic } from './primitives';
 import { Sparkles, Video } from 'lucide-react';
 
@@ -211,6 +212,9 @@ export function DealOSLanding() {
         isOpen={demoModalOpen}
         onClose={() => setDemoModalOpen(false)}
       />
+
+      {/* Floating Sample iPhone WhatsApp Pitch Simulator */}
+      <WhatsAppInteractivePitchModal />
     </main>
   );
 }

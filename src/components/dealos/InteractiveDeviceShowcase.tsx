@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { LogoMark } from "@/components/Logo";
 import { WhatsAppHandoffCard } from "./WhatsAppHandoffCard";
+import { openWhatsAppDemo } from "./WhatsAppInteractivePitchModal";
 
 // Tactile acoustic WhatsApp confirmation chime
 function playWhatsAppChime() {
@@ -140,7 +141,8 @@ export function InteractiveDeviceShowcase() {
     playWhatsAppChime();
     setTimeout(() => {
       setWaDispatchState("delivered");
-    }, 650);
+      openWhatsAppDemo("palm");
+    }, 450);
   };
 
   // 3D Parallax Mouse Tracking for Desktop

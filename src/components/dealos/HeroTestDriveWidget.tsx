@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, MessageCircle, ShieldCheck, ArrowRight, Building2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { WhatsAppHandoffCard } from './WhatsAppHandoffCard';
+import { openWhatsAppDemo } from './WhatsAppInteractivePitchModal';
 
 interface ProjectSample {
   id: string;
@@ -164,13 +165,19 @@ export function HeroTestDriveWidget() {
             <div className="pt-1 flex flex-col sm:flex-row items-center gap-2.5">
               <button
                 type="button"
-                onClick={() => setShowPitch((v) => !v)}
-                className="w-full sm:flex-1 h-11 px-4 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98"
+                onClick={() => openWhatsAppDemo(active.id)}
+                className="w-full sm:flex-1 h-11 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-98"
               >
                 <MessageCircle size={15} />
-                <span>
-                  {showPitch ? 'Hide WhatsApp Brief' : '⚡ Generate 45-Second WhatsApp Brief'}
-                </span>
+                <span>📱 Test Live WhatsApp Pitch (Sample iPhone)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowPitch((v) => !v)}
+                className="w-full sm:w-auto h-11 px-4 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-98"
+              >
+                <span>{showPitch ? 'Hide Brief' : 'Preview Brief'}</span>
               </button>
 
               <Link
