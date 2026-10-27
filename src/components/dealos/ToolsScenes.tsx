@@ -287,7 +287,7 @@ export function Tools() {
             </p>
           </div>
 
-          <div className="flex justify-center px-2">
+          <div className="w-full flex justify-center px-0 sm:px-2">
             <PhysicalDealCalculator embedded />
           </div>
         </div>
