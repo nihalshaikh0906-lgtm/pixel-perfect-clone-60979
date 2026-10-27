@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Hero } from './Hero';
+import { LiveDubaiMarketTicker } from './LiveDubaiMarketTicker';
 import { LiveDubaiPulse } from './LiveDubaiPulse';
 import { InteractiveDeviceShowcase } from './InteractiveDeviceShowcase';
 import { BrokerRoiCalculator } from './BrokerRoiCalculator';
@@ -23,6 +24,7 @@ const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: 
   return (
     <>
       <Hero />
+      <LiveDubaiMarketTicker />
       <LiveDubaiPulse />
       <InteractiveDeviceShowcase />
       <Product />
