@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { LogoMark } from "@/components/Logo";
+import { WhatsAppHandoffCard } from "./WhatsAppHandoffCard";
 
 // Tactile acoustic WhatsApp confirmation chime
 function playWhatsAppChime() {
@@ -550,7 +551,7 @@ export function InteractiveDeviceShowcase() {
                           </span>
                         </div>
 
-                        {/* WhatsApp Bubble Preview */}
+                        {/* Dynamic WhatsApp Phone Handoff Card */}
                         <AnimatePresence>
                           {waDispatchState === "delivered" && (
                             <motion.div
@@ -558,46 +559,13 @@ export function InteractiveDeviceShowcase() {
                               animate={{ opacity: 1, y: 0, scale: 1 }}
                               exit={{ opacity: 0, y: -8, scale: 0.98 }}
                               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                              className="p-4 rounded-2xl bg-[#0B141A] border border-emerald-500/30 text-xs text-white space-y-2.5 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in-95"
                             >
-                              <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                                  <span className="text-[11px] font-mono text-emerald-400 font-bold">
-                                    WhatsApp Direct Session · Dr. Mansoor Al-Ketbi (+971 50...)
-                                  </span>
-                                </div>
-                                <span className="text-[10px] font-mono text-zinc-400">14:32 UAE</span>
-                              </div>
-
-                              <div className="bg-[#005c4b]/35 p-3.5 rounded-xl border border-emerald-500/25 space-y-2">
-                                <p className="text-zinc-100 text-[11px] leading-relaxed">
-                                  "Salam Dr. Mansoor, following up on your voice note. I've prepared your private Live Deal Room for <strong>Creek Waters 2</strong> (2BR Waterfront Suite · AED 3,650,000) with DLD escrow security."
-                                </p>
-                                
-                                <div className="p-2.5 rounded-lg bg-black/40 border border-white/10 flex items-center justify-between hover:border-violet-500/50 transition-colors">
-                                  <div>
-                                    <span className="text-violet-300 font-mono text-[11px] font-bold block">
-                                      🔗 deals.dealos.ae/mansoor
-                                    </span>
-                                    <span className="text-[10px] text-zinc-400">
-                                      Private Live Deal Room · Emaar Off-Plan Allocation
-                                    </span>
-                                  </div>
-                                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                                    Active Link
-                                  </span>
-                                </div>
-
-                                <div className="flex items-center justify-between pt-1">
-                                  <span className="text-[10px] text-zinc-300">
-                                    ⚡ Delivered via DealOS Copilot Engine
-                                  </span>
-                                  <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
-                                    Delivered <CheckCheck size={14} className="text-emerald-400 inline" />
-                                  </span>
-                                </div>
-                              </div>
+                              <WhatsAppHandoffCard
+                                text="Salam Dr. Mansoor, following up on your voice note. I've prepared your private Live Deal Room for Creek Waters 2 (2BR Waterfront Suite · AED 3,650,000) with DLD escrow security."
+                                title="WhatsApp Session · Dr. Mansoor Al-Ketbi (+971 50...)"
+                                subtitle="Scan QR or open directly on phone"
+                                dealRoomUrl="https://dealos.ae/deal-room/mansoor"
+                              />
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -939,14 +907,12 @@ export function InteractiveDeviceShowcase() {
                     </button>
 
                     {waDispatchState === "delivered" && (
-                      <div className="p-2.5 rounded-xl bg-[#005c4b]/30 border border-emerald-500/30 text-[10px] space-y-1.5 text-zinc-200">
-                        <div className="flex justify-between items-center text-emerald-400 font-bold">
-                          <span>WhatsApp Deal Room</span>
-                          <CheckCheck size={13} />
-                        </div>
-                        <p>"Salam Dr. Mansoor, here is your private Live Deal Room for Creek Waters 2 (AED 3.65M)."</p>
-                        <span className="text-violet-300 font-mono block">deals.dealos.ae/mansoor</span>
-                      </div>
+                      <WhatsAppHandoffCard
+                        text="Salam Dr. Mansoor, following up on your voice note. I've prepared your private Live Deal Room for Creek Waters 2 (AED 3.65M)."
+                        title="WhatsApp Deal Room"
+                        dealRoomUrl="https://dealos.ae/deal-room/mansoor"
+                        className="mt-2 text-[11px]"
+                      />
                     )}
                   </div>
                 )}

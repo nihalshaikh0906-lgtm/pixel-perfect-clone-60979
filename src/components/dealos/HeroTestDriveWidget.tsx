@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, MessageCircle, ShieldCheck, CheckCheck, Copy, ArrowRight, Building2, TrendingUp } from 'lucide-react';
-import { toast } from 'sonner';
+import { Sparkles, MessageCircle, ShieldCheck, ArrowRight, Building2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import { WhatsAppHandoffCard } from './WhatsAppHandoffCard';
 
 interface ProjectSample {
   id: string;
@@ -62,16 +62,8 @@ const SAMPLE_PROJECTS: ProjectSample[] = [
 export function HeroTestDriveWidget() {
   const [selectedId, setSelectedId] = useState<string>('palm');
   const [showPitch, setShowPitch] = useState<boolean>(false);
-  const [copied, setCopied] = useState<boolean>(false);
 
   const active = SAMPLE_PROJECTS.find((p) => p.id === selectedId) || SAMPLE_PROJECTS[0]!;
-
-  const handleCopyPitch = () => {
-    navigator.clipboard.writeText(active.pitchBrief);
-    setCopied(true);
-    toast.success('WhatsApp investor brief copied to clipboard!');
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 mt-6 sm:mt-8">
@@ -179,35 +171,21 @@ export function HeroTestDriveWidget() {
               </Link>
             </div>
 
-            {/* Instant WhatsApp Pitch Preview Box */}
+            {/* Instant WhatsApp Pitch & Dynamic Phone Handoff Box */}
             {showPitch && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
-                className="mt-3 p-3.5 rounded-2xl bg-[#0B141A] border border-emerald-500/30 text-xs text-zinc-100 space-y-2.5 shadow-xl"
+                className="mt-3"
               >
-                <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-[11px] font-mono text-emerald-400 font-bold">
-                      WhatsApp Investor Script (Formatted for Dubai HNWIs)
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleCopyPitch}
-                    className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20"
-                  >
-                    {copied ? <CheckCheck size={12} /> : <Copy size={12} />}
-                    <span>{copied ? 'Copied' : 'Copy Text'}</span>
-                  </button>
-                </div>
-
-                <div className="bg-[#005c4b]/30 p-3 rounded-xl border border-emerald-500/20 text-[11px] leading-relaxed text-zinc-200">
-                  {active.pitchBrief}
-                </div>
+                <WhatsAppHandoffCard
+                  text={active.pitchBrief}
+                  title="WhatsApp Investor Script (Formatted for Dubai HNWIs)"
+                  subtitle="Scan QR to open directly on your mobile device"
+                  dealRoomUrl={`https://dealos.ae/deal-room/${active.id}`}
+                />
               </motion.div>
             )}
           </motion.div>
