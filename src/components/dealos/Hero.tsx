@@ -191,12 +191,14 @@ export function Hero() {
               </span>
             </motion.h1>
 
-            {/* Subtitle */}
+            {/* Subtitle with Rich Color-Separated Highlights */}
             <motion.p
               variants={subVariants}
               className="d-hero-sub text-base sm:text-lg max-w-2xl mx-auto leading-relaxed text-muted-foreground"
             >
-              Client WhatsApp briefs, sourced off-plan allocations and agency commission ledgers — in one high-velocity cockpit.
+              <strong className="text-emerald-500 dark:text-emerald-400 font-extrabold">Client WhatsApp briefs</strong>,{' '}
+              <strong className="text-blue-500 dark:text-blue-400 font-extrabold">1,355+ verified off-plan allocations</strong> and{' '}
+              <strong className="text-amber-500 dark:text-amber-400 font-extrabold">developer commission ledgers</strong> — in one high-velocity Dubai cockpit.
             </motion.p>
 
             {/* Exactly 2 Distinct Action Choices (Zero Duplicate Buttons) */}
@@ -218,8 +220,22 @@ export function Hero() {
               </Button>
             </motion.div>
 
+            {/* 3 Colorful Micro-Stat Badges */}
+            <motion.div variants={actionVariants} className="flex flex-wrap items-center justify-center gap-2 mt-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/25 shadow-xs">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                ⚡ 45s Speed to Lead
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/25 shadow-xs">
+                🏢 34,850+ Live Units
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/25 shadow-xs">
+                🛡️ 100% DLD Escrow Radar
+              </span>
+            </motion.div>
+
             {/* Trust Proof */}
-            <motion.div variants={actionVariants} className="d-trust text-muted-foreground">
+            <motion.div variants={actionVariants} className="d-trust text-muted-foreground mt-3">
               <div className="d-avatar-stack">
                 {['SA', 'AK', 'MR', 'JN'].map((v) => (
                   <span key={v} className="bg-white text-primary border-sand">{v}</span>

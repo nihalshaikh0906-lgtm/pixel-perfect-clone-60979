@@ -82,36 +82,54 @@ export const LiveDubaiMarketTicker = memo(function LiveDubaiMarketTicker() {
             key={`${item.id}-${idx}`}
             className="flex items-center gap-3 px-5 py-1.5 border-r border-border/40 whitespace-nowrap text-xs transition-colors hover:bg-secondary/40 rounded-lg cursor-default"
           >
-            {/* Live Indicator Icon */}
+            {/* Category Tag with Distinct High-Contrast Color Coding */}
             <div className="flex items-center gap-1.5">
               {item.type === 'deal' && (
-                <span className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {item.tag}
+                </span>
               )}
               {item.type === 'yield' && (
-                <TrendingUp size={13} className="text-amber-400" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                  <TrendingUp size={11} className="text-amber-400" />
+                  {item.tag}
+                </span>
               )}
               {item.type === 'sla' && (
-                <Zap size={13} className="text-emerald-400" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider bg-teal-500/15 text-teal-400 border border-teal-500/30">
+                  <Zap size={11} className="text-teal-400" />
+                  {item.tag}
+                </span>
               )}
               {item.type === 'escrow' && (
-                <ShieldCheck size={13} className="text-primary" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                  <ShieldCheck size={11} className="text-blue-400" />
+                  {item.tag}
+                </span>
               )}
-              <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-muted-foreground">
-                {item.tag}
-              </span>
             </div>
 
-            {/* Headline */}
-            <span className="font-bold text-foreground">
+            {/* Bold Headline */}
+            <span className="font-extrabold text-foreground tracking-tight">
               {item.headline}
             </span>
 
-            {/* Metric pill */}
+            {/* Subtle sub-context */}
+            <span className="text-muted-foreground text-[11px] hidden sm:inline font-medium">
+              ({item.sub})
+            </span>
+
+            {/* Highlighted Metric Badge */}
             <span
-              className={`font-mono font-extrabold text-[11px] px-2 py-0.5 rounded-md border ${
-                item.highlight
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
-                  : 'bg-secondary text-foreground border-border/60'
+              className={`font-mono font-black text-xs px-2.5 py-0.5 rounded-lg border shadow-xs ${
+                item.type === 'deal'
+                  ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                  : item.type === 'yield'
+                  ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                  : item.type === 'sla'
+                  ? 'bg-teal-500/15 text-teal-400 border-teal-500/30'
+                  : 'bg-blue-500/15 text-blue-400 border-blue-500/30'
               }`}
             >
               {item.metric}

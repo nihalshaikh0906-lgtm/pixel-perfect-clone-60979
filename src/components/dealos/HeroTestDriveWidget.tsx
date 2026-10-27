@@ -133,19 +133,30 @@ export function HeroTestDriveWidget() {
               </div>
             </div>
 
-            {/* Escrow and Payment Plan Badges */}
+            {/* Escrow and Payment Plan Badges with Distinct Colors & Bold Typography */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-secondary/40 border border-border/50">
-                <ShieldCheck size={14} className="text-primary shrink-0" />
-                <span className="text-muted-foreground font-mono text-[11px] truncate">
-                  {active.escrowNum}
-                </span>
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-blue-500/10 border border-blue-500/25">
+                <div className="size-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                  <ShieldCheck size={14} />
+                </div>
+                <div className="truncate">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 block">DLD Escrow Status</span>
+                  <span className="text-foreground font-mono font-extrabold text-[11px] truncate block mt-0.5">
+                    {active.escrowNum}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-secondary/40 border border-border/50">
-                <Building2 size={14} className="text-amber-400 shrink-0" />
-                <span className="text-muted-foreground font-mono text-[11px] truncate">
-                  {active.paymentPlan}
-                </span>
+
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
+                <div className="size-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                  <Building2 size={14} />
+                </div>
+                <div className="truncate">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400 block">Payment Plan</span>
+                  <span className="text-foreground font-mono font-extrabold text-[11px] truncate block mt-0.5">
+                    {active.paymentPlan}
+                  </span>
+                </div>
               </div>
             </div>
 
