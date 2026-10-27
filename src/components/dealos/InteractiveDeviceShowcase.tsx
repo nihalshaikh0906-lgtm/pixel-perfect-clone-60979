@@ -173,10 +173,11 @@ export function InteractiveDeviceShowcase() {
 
   return (
     <section
+      id="cockpit"
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 py-16 lg:py-24 overflow-hidden"
+      className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-16 overflow-hidden"
     >
       {/* Ambient Radial Cobalt/Violet Glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-[#2F6BFF]/20 via-[#7B4DFF]/15 to-transparent blur-[120px] rounded-full pointer-events-none -z-10" />

@@ -10,7 +10,7 @@ import { LiveDubaiPulse } from './LiveDubaiPulse';
 import { InteractiveDeviceShowcase } from './InteractiveDeviceShowcase';
 import { Product, Insights } from './ProductScenes';
 import { Integrations, Tools, Workflow, Modes } from './ToolsScenes';
-import { Proof, Pricing, CTA, Footer } from './FinalScenes';
+import { Proof, Pricing, CTA, Footer, AgencyComparison } from './FinalScenes';
 import { DemoBookingModal } from './DemoBookingModal';
 import { WhatsAppInteractivePitchModal } from './WhatsAppInteractivePitchModal';
 import { Magnetic } from './primitives';
@@ -33,6 +33,7 @@ const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: 
       <Tools />
       <Workflow />
       <Modes />
+      <AgencyComparison />
       <Proof />
       <Pricing />
       <CTA />
@@ -102,7 +103,19 @@ export function DealOSLanding() {
 
   const go = (id: string) => {
     setMenu(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: reduce ? 'instant' : 'smooth' });
+    const target =
+      id === 'cockpit'
+        ? (document.getElementById('cockpit') || document.getElementById('product'))
+        : id === 'how-it-works' || id === 'workflow'
+        ? document.getElementById('workflow')
+        : id === 'modules' || id === 'tools'
+        ? document.getElementById('tools')
+        : id === 'try-a-quote' || id === 'quote' || id === 'pricing'
+        ? document.getElementById('pricing')
+        : id === 'our-rules' || id === 'rules' || id === 'proof'
+        ? document.getElementById('proof')
+        : document.getElementById(id);
+    target?.scrollIntoView({ behavior: reduce ? 'instant' : 'smooth' });
   };
 
   return (
@@ -114,13 +127,13 @@ export function DealOSLanding() {
         </Link>
         <nav aria-label="Main navigation">
           {[
-            ['Product', 'product'],
-            ['Data', 'insights'],
-            ['AI', 'tools'],
-            ['Integrations', 'integrations'],
-            ['Pricing', 'pricing'],
+            ['Cockpit', 'cockpit'],
+            ['How it works', 'how-it-works'],
+            ['Modules', 'modules'],
+            ['Try a quote', 'try-a-quote'],
+            ['Our rules', 'our-rules'],
           ].map(([label, id]) => (
-            <Button key={id} variant="ghost" className="d-nav-link text-foreground hover:text-primary" onClick={() => go(id ?? 'product')}>
+            <Button key={id} variant="ghost" className="d-nav-link text-foreground hover:text-primary font-bold text-xs" onClick={() => go(id)}>
               {label}
             </Button>
           ))}

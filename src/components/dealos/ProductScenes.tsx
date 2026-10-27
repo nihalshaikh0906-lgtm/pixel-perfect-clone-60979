@@ -15,7 +15,7 @@ function ProductCard({item,index,progress}:{item:typeof products[number];index:n
  const reduce=useReducedMotion(); const rotate=useTransform(progress,[0,.35,.75,1],[-28,-22+index*3,0,0]); const y=useTransform(progress,[0,.4,.8],[100+index*20,20,0]);
  return <motion.div className="d-product-card-motion" style={reduce?{}:{rotate,y}}><TiltCard className="d-product-card"><div className="d-product-label"><item.icon size={17}/><span>{item.label}</span><ArrowRight size={15}/></div><div className="d-product-visual">{item.body}</div><h4>{item.name}</h4></TiltCard></motion.div>;
 }
-export function Product(){const ref=useRef<HTMLDivElement>(null);const {scrollYProgress}=useScroll({target:ref,offset:['start end','end start']});return <Scene id="product" pinned height="230vh"><div className="d-container" ref={ref}><div className="d-section-heading"><span className="d-pill">Seamless control</span><RevealText>Everything your/brokerage needs.</RevealText><p>From first lead to signed SPA — every step in one flow.</p></div><div className="d-product-grid">{products.map((item,i)=><ProductCard key={item.label} item={item} index={i} progress={scrollYProgress}/>)}</div></div></Scene>;}
+export function Product(){const ref=useRef<HTMLDivElement>(null);const {scrollYProgress}=useScroll({target:ref,offset:['start end','end start']});return <Scene id="product" pinned={false} height="auto"><div className="d-container" ref={ref}><div className="d-section-heading"><span className="d-pill">Seamless control</span><RevealText>Everything your/brokerage needs.</RevealText><p>From first lead to signed SPA — every step in one flow.</p></div><div className="d-product-grid">{products.map((item,i)=><ProductCard key={item.label} item={item} index={i} progress={scrollYProgress}/>)}</div></div></Scene>;}
 interface MarketArea {
   name: string;
   shortName: string;
@@ -321,7 +321,7 @@ export function Insights() {
             </div>
 
             {/* SVG Interactive Map */}
-            <div className="relative w-full h-[270px] overflow-hidden">
+            <div className="relative w-full h-[320px] sm:h-[360px] overflow-hidden bg-sky-500/5">
               <svg viewBox="0 0 600 480" role="img" aria-label="Interactive Dubai area heatmap" className="w-full h-full select-none">
                 <defs>
                   {/* Heat glow gradients for each area */}

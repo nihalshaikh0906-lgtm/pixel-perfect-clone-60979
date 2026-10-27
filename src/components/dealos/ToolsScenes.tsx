@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RevealText, Rise, Scene, TiltCard } from './primitives';
 import { PhysicalDealCalculator } from './FloatingDealCalculator';
+import { openWhatsAppDemo } from './WhatsAppInteractivePitchModal';
 import skyline from '@/assets/dealos-dubai.jpg';
 const apps=['Property Finder','Bayut','Dubizzle','WhatsApp','Meta Ads','Google Ads','Calendar','Gmail','Zapier','TikTok','LinkedIn','Mailchimp'];
-export function Integrations(){return <Scene id="integrations" pinned height="180vh"><div className="d-integration-stage"><div className="d-orbit-center"><span className="d-pill">Your ecosystem. Connected.</span><RevealText>Connect all/your apps.</RevealText><p>Less switching. More selling.</p><span className="d-demo-tag">Integration concept · availability varies</span></div><div className="d-orbits">{[0,1].map(row=><div key={row} className={`d-orbit orbit-${row}`}>{apps.slice(row*6,row*6+6).map((app,i)=><div className={`d-orbit-position pos-${i}`} key={app}><div className="d-app-logo" tabIndex={0} title={`${app} · illustrative integration`}><span className={`d-app-initial app-${(i+row)%4}`}>{app==='WhatsApp'?<MessageCircle/>:app==='Gmail'?<Mail/>:app.split(' ').map(v=>v[0]).join('').slice(0,2)}</span><small>{app}</small></div></div>)}</div>)}</div><div className="d-mobile-apps">{[0,1].map(row=><div className={`d-logo-marquee row-${row}`} key={row}>{[...apps.slice(row*6,row*6+6),...apps.slice(row*6,row*6+6)].map((v,i)=><span key={i}><b>{v.slice(0,1)}</b>{v}</span>)}</div>)}</div></div></Scene>;}
+export function Integrations(){return <Scene id="integrations" pinned={false} height="auto"><div className="d-integration-stage"><div className="d-orbit-center"><span className="d-pill">Your ecosystem. Connected.</span><RevealText>Connect all/your apps.</RevealText><p>Less switching. More selling.</p><span className="d-demo-tag">Integration concept · availability varies</span></div><div className="d-orbits">{[0,1].map(row=><div key={row} className={`d-orbit orbit-${row}`}>{apps.slice(row*6,row*6+6).map((app,i)=><div className={`d-orbit-position pos-${i}`} key={app}><div className="d-app-logo" tabIndex={0} title={`${app} · illustrative integration`}><span className={`d-app-initial app-${(i+row)%4}`}>{app==='WhatsApp'?<MessageCircle/>:app==='Gmail'?<Mail/>:app.split(' ').map(v=>v[0]).join('').slice(0,2)}</span><small>{app}</small></div></div>)}</div>)}</div><div className="d-mobile-apps">{[0,1].map(row=><div className={`d-logo-marquee row-${row}`} key={row}>{[...apps.slice(row*6,row*6+6),...apps.slice(row*6,row*6+6)].map((v,i)=><span key={i}><b>{v.slice(0,1)}</b>{v}</span>)}</div>)}</div></div></Scene>;}
 function Satellite(){const [split,setSplit]=useState(50);return <div className="d-satellite"><img src={skyline} alt="Illustrative Dubai waterfront" width={1920} height={1024} loading="lazy"/><div className="d-satellite-before" style={{clipPath:`inset(0 ${100-split}% 0 0)`}}><img src={skyline} alt="Desaturated comparison preview" width={1920} height={1024} loading="lazy"/></div><span className="d-before-label">2024</span><span className="d-after-label">2026</span><input type="range" min="5" max="95" value={split} onChange={e=>setSplit(Number(e.target.value))} aria-label="Construction comparison divider"/><div className="d-satellite-divider" style={{left:`${split}%`}}><span>↔</span></div><small>Illustrative comparison, not historical imagery</small></div>;}
 function PortalPreview() {
  const ref = useRef<HTMLDivElement>(null);
@@ -23,6 +24,7 @@ function PortalPreview() {
 }
 const brokerTools = [
   {
+    actionId: "offplan",
     category: "OFF-PLAN",
     title: "Deal Finder",
     description: "Curated UAE off-plan launches with published developer payment plans, escrow numbers, and handover dates.",
@@ -38,6 +40,7 @@ const brokerTools = [
     },
   },
   {
+    actionId: "ready",
     category: "READY",
     title: "Ready Properties",
     description: "Direct landlord inventory, title deed inspection, instant DLD sales comparables, and bulk action tools.",
@@ -53,6 +56,7 @@ const brokerTools = [
     },
   },
   {
+    actionId: "deals",
     category: "DEALS",
     title: "Deals & Commission",
     description: "Track deals from initial EOI to developer tranche payout with automated split aging calculations.",
@@ -68,6 +72,7 @@ const brokerTools = [
     },
   },
   {
+    actionId: "ai",
     category: "INTELLIGENCE",
     title: "AI Copilot & Voice",
     description: "Instant Dubai investor objection solver, contract cross-examiner, and voice-to-CRM transcription.",
@@ -83,6 +88,7 @@ const brokerTools = [
     },
   },
   {
+    actionId: "portals",
     category: "DISTRIBUTION",
     title: "Portal Multi-Sync",
     description: "One listing input, instantaneous live broadcast across Property Finder, Bayut, and Dubizzle.",
@@ -98,6 +104,7 @@ const brokerTools = [
     },
   },
   {
+    actionId: "presentation",
     category: "PRESENTATION",
     title: "Live Deal Rooms",
     description: "Polished, branded interactive web links and WhatsApp briefs generated in 10 seconds for HNWIs.",
@@ -113,6 +120,7 @@ const brokerTools = [
     },
   },
   {
+    actionId: "satellite",
     category: "ESCROW",
     title: "Satellite Progress",
     description: "Official DLD construction percentage audit, drone tracking timelines, and escrow release status.",
@@ -146,6 +154,14 @@ export function Tools() {
     scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
   };
 
+  const handleToolAction = (actionId: string) => {
+    if (actionId === 'ai' || actionId === 'presentation') {
+      openWhatsAppDemo('palm');
+    } else {
+      window.location.href = '/demo';
+    }
+  };
+
   return (
     <Scene id="tools">
       <div className="d-container">
@@ -160,7 +176,7 @@ export function Tools() {
               Seven tools, one login.
             </h2>
             <p className="text-sm text-muted-foreground mt-2 font-medium">
-              Hover to pause · Glides seamlessly across all UAE property workflows.
+              Click any card to launch demo · Glides seamlessly across all UAE property workflows.
             </p>
           </div>
 
@@ -204,6 +220,15 @@ export function Tools() {
               return (
                 <motion.div
                   key={t.title}
+                  onClick={() => handleToolAction(t.actionId)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleToolAction(t.actionId);
+                    }
+                  }}
                   whileHover={{ y: -6, transition: { duration: 0.22, ease: "easeOut" } }}
                   whileTap={{ scale: 0.98 }}
                   className="d-tools-carousel-card w-[84vw] max-w-[340px] sm:w-[330px] shrink-0 snap-center rounded-3xl p-5 sm:p-7 bg-card/90 backdrop-blur-xl border border-border/80 shadow-md hover:shadow-2xl transition-all flex flex-col justify-between overflow-hidden cursor-pointer group relative"
@@ -248,10 +273,17 @@ export function Tools() {
                       <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       {t.metric}
                     </span>
-                    <span className="text-primary font-bold text-xs inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToolAction(t.actionId);
+                      }}
+                      className="text-primary font-bold text-xs inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer hover:underline"
+                    >
                       <span>Explore</span>
                       <ArrowRight size={13} />
-                    </span>
+                    </button>
                   </div>
                 </motion.div>
               );

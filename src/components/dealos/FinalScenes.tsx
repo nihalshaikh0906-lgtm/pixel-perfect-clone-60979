@@ -1,4 +1,4 @@
-import { ArrowRight, Check, CheckCheck, ChevronRight, Instagram, Linkedin, Mail, MessageCircle, Phone, Sparkles, Star, Loader2, Calendar, Video, Clock, ExternalLink } from 'lucide-react';
+import { ArrowRight, Check, CheckCheck, ChevronRight, Instagram, Linkedin, Mail, MessageCircle, Phone, Sparkles, Star, Loader2, Calendar, Video, Clock, ExternalLink, X, Zap } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
@@ -43,6 +43,142 @@ function QuoteTrack({ row }: { row: number }) {
         ))}
       </div>
     </div>
+  );
+}
+
+export function AgencyComparison() {
+  return (
+    <section id="comparison" className="w-full max-w-5xl mx-auto px-4 sm:px-6 my-10 sm:my-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+        {/* Left Column: The old way */}
+        <div className="rounded-3xl p-6 sm:p-8 bg-rose-500/5 dark:bg-rose-500/10 border border-rose-500/20 flex flex-col justify-between space-y-6 text-left">
+          <div className="space-y-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold text-rose-500 bg-rose-500/10 border border-rose-500/20">
+              <X size={12} /> Spreadsheets &amp; chat chaos
+            </span>
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground block">
+                The old way
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground font-display tracking-tight mt-0.5">
+                The fragmented agency
+              </h3>
+            </div>
+
+            <div className="space-y-3.5 pt-2">
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <X size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">Time lost on every lead</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Hunting through WhatsApp groups for outdated developer PDFs.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <X size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">Lost floor plans &amp; old pricing</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Blurry screenshots that weaken investor confidence.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <X size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">Commission nobody chases</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Deals buried in chat notes, invoices forgotten.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <X size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">Fees worked out by hand</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Typing 4% DLD, trustee fees and milestones into chat.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-mono font-bold text-rose-500 flex items-center gap-2">
+            <Clock size={14} />
+            <span>Minutes of manual searching per pitch</span>
+          </div>
+        </div>
+
+        {/* Right Column: The DealOS way */}
+        <div className="rounded-3xl p-6 sm:p-8 bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/25 flex flex-col justify-between space-y-6 shadow-xl text-left">
+          <div className="space-y-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/25">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> CATALOGUE · 34,854 SEARCHABLE UAE UNITS
+            </span>
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
+                The DealOS way
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground font-display tracking-tight mt-0.5">
+                One cockpit
+              </h3>
+            </div>
+
+            <div className="space-y-3.5 pt-2">
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">One-tap WhatsApp pitch</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Unit, price, payment plan and catalogue floor plan in one message.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">34,854+ searchable UAE units</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Searchable across 1,355 UAE projects in the catalogue.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">Forms A, B &amp; F per deal</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Tracked alongside each stage of the investor pipeline.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 text-xs sm:text-sm">
+                <div className="size-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <Check size={13} />
+                </div>
+                <div>
+                  <strong className="text-foreground font-bold block">Commission tracked per deal</strong>
+                  <p className="text-muted-foreground text-xs mt-0.5">Follow each deal from EOI to agency fee collection.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <Zap size={14} className="text-amber-400" />
+            <span>Pitch drafted in seconds, reviewed by you</span>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
