@@ -25,8 +25,8 @@ const brokerTools = [
   {
     category: "OFF-PLAN",
     title: "Deal Finder",
-    description: "1,355+ UAE off-plan projects with published payment plans, escrow numbers, and handover dates.",
-    badge: "1,355+ Projects",
+    description: "Curated UAE off-plan launches with published developer payment plans, escrow numbers, and handover dates.",
+    badge: "Off-Plan Catalog",
     metric: "80/20 & Post-Handover",
     icon: Building2,
     colors: {
@@ -40,9 +40,9 @@ const brokerTools = [
   {
     category: "READY",
     title: "Ready Properties",
-    description: "Verified title deeds, direct landlord inventory, instantaneous DLD sales comparables, and bulk actions.",
-    badge: "Verified Deeds",
-    metric: "Zero Duplicate Units",
+    description: "Direct landlord inventory, title deed inspection, instant DLD sales comparables, and bulk action tools.",
+    badge: "Direct Landlords",
+    metric: "De-duplicated Units",
     icon: KeyRound,
     colors: {
       bg: "bg-emerald-500/10",

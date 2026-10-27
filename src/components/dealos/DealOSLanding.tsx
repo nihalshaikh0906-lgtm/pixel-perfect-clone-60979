@@ -8,7 +8,6 @@ import { Hero } from './Hero';
 import { LiveDubaiMarketTicker } from './LiveDubaiMarketTicker';
 import { LiveDubaiPulse } from './LiveDubaiPulse';
 import { InteractiveDeviceShowcase } from './InteractiveDeviceShowcase';
-import { BrokerRoiCalculator } from './BrokerRoiCalculator';
 import { Product, Insights } from './ProductScenes';
 import { Integrations, Tools, Workflow, Modes } from './ToolsScenes';
 import { Proof, Pricing, CTA, Footer } from './FinalScenes';
@@ -30,7 +29,6 @@ const LandingScenes = memo(function LandingScenes({ onOpenDemo }: { onOpenDemo: 
       <InteractiveDeviceShowcase />
       <Product />
       <Insights />
-      <BrokerRoiCalculator onOpenDemo={onOpenDemo} />
       <Integrations />
       <Tools />
       <Workflow />
