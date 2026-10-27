@@ -67,11 +67,11 @@ export function HeroTestDriveWidget() {
   const active = SAMPLE_PROJECTS.find((p) => p.id === selectedId) || SAMPLE_PROJECTS[0]!;
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 mt-6 sm:mt-8">
-      <div className="rounded-2xl sm:rounded-3xl border border-primary/25 bg-card/85 backdrop-blur-xl p-4 sm:p-6 shadow-2xl relative overflow-hidden text-left transition-all">
+    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 mt-6 sm:mt-8">
+      <div className="rounded-2xl sm:rounded-3xl border border-primary/25 bg-card/85 backdrop-blur-xl p-3.5 sm:p-6 shadow-2xl relative overflow-hidden text-left transition-all">
         {/* Top Header & Fast Filter Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/60">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 border-b border-border/60">
+          <div className="flex items-center gap-2 shrink-0">
             <span className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
             <span className="text-[11px] font-mono font-extrabold uppercase tracking-wider text-emerald-400">
               Interactive 3-Second Test Drive
@@ -79,7 +79,7 @@ export function HeroTestDriveWidget() {
           </div>
 
           {/* 3 Community Fast Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto">
             {SAMPLE_PROJECTS.map((p) => {
               const isSelected = p.id === selectedId;
               return (
@@ -90,7 +90,7 @@ export function HeroTestDriveWidget() {
                     setSelectedId(p.id);
                     setShowPitch(false);
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 active:scale-95 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 active:scale-95 ${
                     isSelected
                       ? 'bg-primary text-primary-foreground shadow-md'
                       : 'bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground border border-border/50'
@@ -112,7 +112,7 @@ export function HeroTestDriveWidget() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
-            className="pt-4 space-y-3"
+            className="pt-3.5 sm:pt-4 space-y-3"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
@@ -124,11 +124,11 @@ export function HeroTestDriveWidget() {
                 </p>
               </div>
 
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-baseline gap-2 flex-wrap">
                 <span className="text-lg sm:text-xl font-extrabold text-foreground font-mono">
                   {active.price}
                 </span>
-                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
                   {active.yieldRate}
                 </span>
               </div>
@@ -136,11 +136,11 @@ export function HeroTestDriveWidget() {
 
             {/* Escrow and Payment Plan Badges with Distinct Colors & Bold Typography */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-blue-500/10 border border-blue-500/25">
+              <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-blue-500/10 border border-blue-500/25">
                 <div className="size-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
                   <ShieldCheck size={14} />
                 </div>
-                <div className="truncate">
+                <div className="min-w-0">
                   <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 block">DLD Escrow Status</span>
                   <span className="text-foreground font-mono font-extrabold text-[11px] truncate block mt-0.5">
                     {active.escrowNum}
@@ -148,11 +148,11 @@ export function HeroTestDriveWidget() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
+              <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
                 <div className="size-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
                   <Building2 size={14} />
                 </div>
-                <div className="truncate">
+                <div className="min-w-0">
                   <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400 block">Payment Plan</span>
                   <span className="text-foreground font-mono font-extrabold text-[11px] truncate block mt-0.5">
                     {active.paymentPlan}
@@ -162,31 +162,33 @@ export function HeroTestDriveWidget() {
             </div>
 
             {/* Action Trigger Row */}
-            <div className="pt-1 flex flex-col sm:flex-row items-center gap-2.5">
+            <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5">
               <button
                 type="button"
                 onClick={() => openWhatsAppDemo(active.id)}
-                className="w-full sm:flex-1 h-11 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-98"
+                className="w-full sm:flex-1 min-h-[44px] py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-black font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-98 text-center"
               >
-                <MessageCircle size={15} />
-                <span>📱 Test Live WhatsApp Pitch (Sample iPhone)</span>
+                <MessageCircle size={15} className="shrink-0" />
+                <span>Test WhatsApp Pitch (iPhone Demo)</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => setShowPitch((v) => !v)}
-                className="w-full sm:w-auto h-11 px-4 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-98"
-              >
-                <span>{showPitch ? 'Hide Brief' : 'Preview Brief'}</span>
-              </button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setShowPitch((v) => !v)}
+                  className="flex-1 sm:flex-initial h-11 px-3 sm:px-4 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-98"
+                >
+                  <span>{showPitch ? 'Hide Brief' : 'Preview Brief'}</span>
+                </button>
 
-              <Link
-                to="/demo"
-                className="w-full sm:w-auto h-11 px-4 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
-              >
-                <span>Full Cockpit</span>
-                <ArrowRight size={13} />
-              </Link>
+                <Link
+                  to="/demo"
+                  className="flex-1 sm:flex-initial h-11 px-3 sm:px-4 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center"
+                >
+                  <span>Full Cockpit</span>
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
             </div>
 
             {/* Instant WhatsApp Pitch & Dynamic Phone Handoff Box */}

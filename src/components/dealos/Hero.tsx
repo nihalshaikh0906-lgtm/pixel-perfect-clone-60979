@@ -153,11 +153,11 @@ export function Hero() {
             animate="visible"
           >
             {/* Top Pill / Badge */}
-            <motion.p variants={pillVariants} className="d-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/90 border border-sand shadow-xs text-foreground">
-              <span className="size-2 rounded-full bg-emerald-500 inline-block animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+            <motion.p variants={pillVariants} className="d-pill inline-flex max-w-[92vw] flex-wrap justify-center items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-white/90 border border-sand shadow-xs text-foreground text-center">
+              <span className="size-2 rounded-full bg-emerald-500 inline-block animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)] shrink-0" />
               <strong className="font-bold tracking-tight text-foreground">DealOS</strong>
-              <span className="text-muted-foreground/40 font-light mx-1">/</span>
-              <span className="uppercase text-[11px] font-bold tracking-[0.14em] text-primary">
+              <span className="text-muted-foreground/40 font-light mx-0.5 sm:mx-1">/</span>
+              <span className="uppercase text-[10px] sm:text-[11px] font-bold tracking-wider sm:tracking-[0.14em] text-primary">
                 THE DUBAI BROKER OPERATING SYSTEM
               </span>
             </motion.p>
@@ -221,15 +221,15 @@ export function Hero() {
             </motion.div>
 
             {/* 3 Colorful Micro-Stat Badges */}
-            <motion.div variants={actionVariants} className="flex flex-wrap items-center justify-center gap-2 mt-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/25 shadow-xs">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <motion.div variants={actionVariants} className="flex flex-wrap items-center justify-center gap-2 mt-4 px-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/25 shadow-xs">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                 ⚡ 45s Speed to Lead
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/25 shadow-xs">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/25 shadow-xs">
                 🏢 34,850+ Live Units
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/25 shadow-xs">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-amber-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/25 shadow-xs">
                 🛡️ 100% DLD Escrow Radar
               </span>
             </motion.div>
@@ -252,7 +252,7 @@ export function Hero() {
         </motion.div>
         <motion.div
           ref={dashRef}
-          className={`d-hero-dashboard ${compact ? 'd-dash-compact' : ''}`}
+          className={`d-hero-dashboard hidden md:block ${compact ? 'd-dash-compact' : ''}`}
           style={{ rotateX, scale, y: dy }}
         >
           <Dashboard />

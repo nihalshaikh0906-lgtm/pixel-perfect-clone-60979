@@ -243,8 +243,8 @@ export function PhysicalDealCalculator({
     <div
       className={`relative select-none text-white overflow-hidden ${
         embedded
-          ? "w-full max-w-[360px] mx-auto rounded-[32px] p-4 sm:p-5 bg-gradient-to-b from-[#181C28] via-[#101420] to-[#0A0D15] border border-white/20 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.12)]"
-          : "w-[calc(100vw-24px)] max-w-[360px] max-h-[92vh] overflow-y-auto rounded-[34px] p-4 sm:p-5 bg-gradient-to-b from-[#181C28] via-[#101420] to-[#0A0D15] border border-white/20 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.15)] scrollbar-none"
+          ? "w-full max-w-[340px] sm:max-w-[360px] mx-auto rounded-[28px] sm:rounded-[32px] p-3.5 sm:p-5 bg-gradient-to-b from-[#181C28] via-[#101420] to-[#0A0D15] border border-white/20 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.12)]"
+          : "w-[calc(100vw-24px)] max-w-[340px] sm:max-w-[360px] max-h-[92vh] overflow-y-auto rounded-[28px] sm:rounded-[34px] p-3.5 sm:p-5 bg-gradient-to-b from-[#181C28] via-[#101420] to-[#0A0D15] border border-white/20 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.15)] scrollbar-none"
       }`}
     >
       {/* Top Hardware Header & Brand */}
@@ -365,19 +365,19 @@ export function PhysicalDealCalculator({
       </div>
 
       {/* ═══ PHYSICAL CALCULATOR KEYPAD (4x5 GRID) ═══ */}
-      <div className="grid grid-cols-4 gap-1.5 mb-3">
+      <div className="grid grid-cols-4 gap-1 sm:gap-1.5 mb-2.5 sm:mb-3">
         {/* Row 1: Clear, Backspace, %, Divide */}
         <button
           type="button"
           onClick={handleClear}
-          className="h-10 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           AC
         </button>
         <button
           type="button"
           onClick={handleBackspace}
-          className="h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           ⌫
         </button>
@@ -388,14 +388,14 @@ export function PhysicalDealCalculator({
             const val = parseFloat(display) / 100;
             setDisplay(String(val));
           }}
-          className="h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           %
         </button>
         <button
           type="button"
           onClick={() => handleOp("÷")}
-          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-sm sm:text-base transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           ÷
         </button>
@@ -406,7 +406,7 @@ export function PhysicalDealCalculator({
             key={n}
             type="button"
             onClick={() => handleDigit(n)}
-            className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+            className="h-9 sm:h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
           >
             {n}
           </button>
@@ -414,7 +414,7 @@ export function PhysicalDealCalculator({
         <button
           type="button"
           onClick={() => handleOp("×")}
-          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-sm sm:text-base transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           ×
         </button>
@@ -425,7 +425,7 @@ export function PhysicalDealCalculator({
             key={n}
             type="button"
             onClick={() => handleDigit(n)}
-            className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+            className="h-9 sm:h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
           >
             {n}
           </button>
@@ -433,7 +433,7 @@ export function PhysicalDealCalculator({
         <button
           type="button"
           onClick={() => handleOp("−")}
-          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-sm sm:text-base transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           −
         </button>
@@ -444,7 +444,7 @@ export function PhysicalDealCalculator({
             key={n}
             type="button"
             onClick={() => handleDigit(n)}
-            className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+            className="h-9 sm:h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
           >
             {n}
           </button>
@@ -452,7 +452,7 @@ export function PhysicalDealCalculator({
         <button
           type="button"
           onClick={() => handleOp("+")}
-          className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-base transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-extrabold text-sm sm:text-base transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           +
         </button>
@@ -461,7 +461,7 @@ export function PhysicalDealCalculator({
         <button
           type="button"
           onClick={() => handleDigit("0")}
-          className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           0
         </button>
@@ -471,21 +471,21 @@ export function PhysicalDealCalculator({
             handleSoundClick("num");
             if (display !== "0") setDisplay(display + "00");
           }}
-          className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs font-mono transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-[11px] sm:text-xs font-mono transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           00
         </button>
         <button
           type="button"
           onClick={handleDecimal}
-          className="h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs sm:text-sm transition-all active:scale-95 shadow-xs cursor-pointer"
         >
           .
         </button>
         <button
           type="button"
           onClick={handleEquals}
-          className="h-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-base transition-all active:scale-95 shadow-md shadow-emerald-500/20 cursor-pointer"
+          className="h-9 sm:h-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm sm:text-base transition-all active:scale-95 shadow-md shadow-emerald-500/20 cursor-pointer"
         >
           =
         </button>
@@ -550,13 +550,13 @@ export function DealCalculatorModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: "spring", stiffness: 380, damping: 26 }}
-          className="relative"
+          className="relative my-auto"
         >
           <PhysicalDealCalculator onClose={onClose} />
         </motion.div>

@@ -206,7 +206,7 @@ export function Tools() {
                   key={t.title}
                   whileHover={{ y: -6, transition: { duration: 0.22, ease: "easeOut" } }}
                   whileTap={{ scale: 0.98 }}
-                  className="d-tools-carousel-card w-[84vw] max-w-[340px] sm:w-[330px] shrink-0 snap-center rounded-3xl p-6 sm:p-7 bg-card/90 backdrop-blur-xl border border-border/80 shadow-md hover:shadow-2xl transition-all flex flex-col justify-between overflow-hidden cursor-pointer group relative"
+                  className="d-tools-carousel-card w-[84vw] max-w-[340px] sm:w-[330px] shrink-0 snap-center rounded-3xl p-5 sm:p-7 bg-card/90 backdrop-blur-xl border border-border/80 shadow-md hover:shadow-2xl transition-all flex flex-col justify-between overflow-hidden cursor-pointer group relative"
                   style={{ minHeight: "310px", height: "auto" }}
                 >
                   {/* Subtle ambient corner glow on hover */}

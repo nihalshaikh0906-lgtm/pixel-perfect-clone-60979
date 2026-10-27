@@ -302,7 +302,7 @@ export function Insights() {
                       key={a.shortName}
                       type="button"
                       onClick={() => setArea(a.shortName)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 active:scale-95 ${
                         isSel
                           ? 'bg-primary text-primary-foreground shadow-xs'
                           : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground'

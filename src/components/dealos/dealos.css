@@ -494,11 +494,34 @@
     gap: 8px !important;
   }
   .dealos .d-hero-dashboard {
+    display: none !important;
+  }
+  .dealos .d-pill,
+  .dealos .d-glass-pill {
+    max-width: calc(100vw - 32px) !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+  .dealos .d-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 4px !important;
+    margin-bottom: 20px !important;
+    padding: 4px !important;
     width: 100% !important;
-    max-height: 320px !important;
-    margin-top: 24px !important;
-    border-radius: 16px !important;
-    overflow: hidden !important;
+  }
+  .dealos .d-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+  .dealos .d-tabs > button {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    height: 32px !important;
+    padding: 0 12px !important;
   }
 
   /* 6. Declutter Mobile Scenes & Cards */
