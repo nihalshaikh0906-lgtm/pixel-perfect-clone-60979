@@ -144,7 +144,7 @@ export function Hero() {
           alt="Dubai waterfront and Burj Khalifa"
         />
         <div className="d-hero-tint" />
-        <motion.div className="d-hero-copy" style={{ opacity: copyO, y: copyY }}>
+        <div className="d-hero-copy">
           <GlassTiles />
           <motion.div
             className="d-hero-text"
@@ -249,7 +249,7 @@ export function Hero() {
               <HeroTestDriveWidget />
             </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
         <motion.div
           ref={dashRef}
           className={`d-hero-dashboard hidden md:block ${compact ? 'd-dash-compact' : ''}`}
