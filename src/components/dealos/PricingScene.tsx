@@ -327,7 +327,7 @@ export function Pricing() {
                 </div>
 
                 {/* Spacious, Dominant Primary CTA */}
-                <div className="pt-4 pb-1 space-y-3">
+                <div className="pt-4 pb-1 space-y-2">
                   <Button
                     asChild
                     className="w-full h-14 rounded-2xl text-base font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/25 gap-2.5 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
@@ -338,9 +338,9 @@ export function Pricing() {
                     </Link>
                   </Button>
 
-                  <p className="text-xs text-center text-muted-foreground font-medium flex items-center justify-center gap-1.5">
-                    <ShieldCheck size={14} className="text-emerald-500" />
-                    <span>Instant digital activation · Cancel anytime · UAE VAT compliant</span>
+                  <p className="text-[11px] text-center text-muted-foreground/80 font-medium flex items-center justify-center gap-1.5">
+                    <ShieldCheck size={13} className="text-emerald-500 shrink-0" />
+                    <span>Instant activation · Cancel anytime</span>
                   </p>
                 </div>
 
