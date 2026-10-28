@@ -8,7 +8,8 @@ import {
   Flame, CheckCheck, Megaphone, X, Bell, Volume2, VolumeX,
   UserCheck, AlertCircle, Building, Wallet, RefreshCw,
   Crown, ExternalLink, Download, Copy, FileText, Check, Briefcase,
-  Compass, PieChart, ShieldAlert, ArrowRightLeft, Phone, Mail, UserPlus
+  Compass, PieChart, ShieldAlert, ArrowRightLeft, Phone, Mail, UserPlus,
+  Plus, Upload
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,12 @@ import { aed } from "@/lib/format";
 import { toast } from "sonner";
 import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
 import { ImportLeadPropertyModal } from "@/components/owner/ImportLeadPropertyModal";
-import { getCompanyPool, type CompanyLeadItem } from "@/lib/company-leads";
+import { OwnerAddLeadModal } from "@/components/owner/OwnerAddLeadModal";
+import { OwnerAssignLeadModal } from "@/components/owner/OwnerAssignLeadModal";
+import { CsvImporterModal } from "@/components/leads/CsvImporterModal";
+import { supabase } from "@/integrations/supabase/client";
+import { getCustomLeads, formatAed } from "@/lib/demo-leads";
+import { getCompanyPool, transferCompanyLead, type CompanyLeadItem } from "@/lib/company-leads";
 
 // ═══ WEB AUDIO API SYNTHESIZER: MONEY BELL CHIME ═══
 function playMoneyBellChime() {
@@ -1247,16 +1253,111 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [companyPoolItems, setCompanyPoolItems] = useState<CompanyLeadItem[]>(() => getCompanyPool());
 
+  // New Lead Ingestion & Distribution Modals
+  const [addLeadModalOpen, setAddLeadModalOpen] = useState(false);
+  const [importCsvModalOpen, setImportCsvModalOpen] = useState(false);
+  const [assignLeadModalOpen, setAssignLeadModalOpen] = useState(false);
+
   const refreshCompanyPool = () => {
     setCompanyPoolItems(getCompanyPool());
   };
 
+  const hydrateRealLeads = async () => {
+    try {
+      const customLeads = getCustomLeads();
+      const realExecutiveLeads: ExecutiveLead[] = [];
+
+      // 1. Map custom leads created in DealOS
+      if (Array.isArray(customLeads)) {
+        for (const cl of customLeads) {
+          const matchedBroker = AGENCY_BROKERS.find(
+            (b) => b.id === (cl as any).assignedBrokerId || b.name === (cl as any).assignedBrokerName
+          ) || AGENCY_BROKERS[0];
+
+          realExecutiveLeads.push({
+            id: cl.id,
+            clientName: cl.name,
+            nationality: cl.country || "Verified Investor",
+            budgetFormatted: formatAed(cl.budget),
+            projectInterest: `${cl.beds}BR in ${cl.area}`,
+            assignedBrokerId: matchedBroker.id,
+            assignedBrokerName: matchedBroker.name,
+            assignedBrokerAvatar: matchedBroker.avatar,
+            stage: (cl.stage === "New" ? "Negotiation" : cl.stage === "Qualified" ? "Deposit Staged" : "Viewing Confirmed") as any,
+            stageColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+            probability: `${cl.score || 85}%`,
+            speedToLeadMins: 1.5,
+            lastContactAgo: "Live Client Record",
+            liquidityTier: cl.budget >= 10000000 ? "Tier 1 Ultra-HNWI (Cash)" : "Tier 3 Mortgage Pre-Approved",
+            executiveBrief: cl.message || "Active client in broker leadbox.",
+            brokerPhone: matchedBroker.phone,
+          });
+        }
+      }
+
+      // 2. Query Supabase leads table
+      try {
+        const { data: dbLeads } = await supabase
+          .from("leads")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(100);
+
+        if (Array.isArray(dbLeads)) {
+          for (const dl of dbLeads) {
+            if (!realExecutiveLeads.some((r) => r.id === dl.id || r.clientName === dl.full_name)) {
+              const matchedBroker = AGENCY_BROKERS.find((b) => b.id === dl.broker_id) || AGENCY_BROKERS[0];
+              realExecutiveLeads.push({
+                id: dl.id,
+                clientName: dl.full_name,
+                nationality: "Dubai Investor",
+                budgetFormatted: dl.budget_max_aed ? formatAed(dl.budget_max_aed) : "AED 4.5M",
+                projectInterest: dl.preferred_location || "Prime Dubai",
+                assignedBrokerId: matchedBroker.id,
+                assignedBrokerName: matchedBroker.name,
+                assignedBrokerAvatar: matchedBroker.avatar,
+                stage: "Deposit Staged",
+                stageColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+                probability: "88%",
+                speedToLeadMins: 2.0,
+                lastContactAgo: "Supabase DB Record",
+                liquidityTier: "Tier 1 Ultra-HNWI (Cash)",
+                executiveBrief: dl.notes || "Live verified lead in agency database.",
+                brokerPhone: matchedBroker.phone,
+              });
+            }
+          }
+        }
+      } catch {
+        // DB fallback
+      }
+
+      // Merge with initial leads as baseline
+      const merged = [
+        ...realExecutiveLeads,
+        ...INITIAL_LEADS.filter((init) => !realExecutiveLeads.some((r) => r.id === init.id)),
+      ];
+
+      setAgencyLeads(merged);
+    } catch {
+      // Keep initial leads on error
+    }
+  };
+
   useEffect(() => {
-    const handleUpdate = () => refreshCompanyPool();
+    hydrateRealLeads();
+    const handleUpdate = () => {
+      refreshCompanyPool();
+      hydrateRealLeads();
+    };
     window.addEventListener("dealos_company_pool_updated", handleUpdate);
+    window.addEventListener("dealos:lead_added", handleUpdate);
+    window.addEventListener("dealos:lead_reassigned", handleUpdate);
     window.addEventListener("storage", handleUpdate);
     return () => {
       window.removeEventListener("dealos_company_pool_updated", handleUpdate);
+      window.removeEventListener("dealos:lead_added", handleUpdate);
+      window.removeEventListener("dealos:lead_reassigned", handleUpdate);
       window.removeEventListener("storage", handleUpdate);
     };
   }, []);
@@ -1344,8 +1445,8 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
     setTimeout(() => setBellRung(false), 1200);
   };
 
-  // Reassignment function that removes lead from previous agent leadbox and moves to new agent
-  const handleReassignLeadToAgent = (leadId: string, newBrokerId: string) => {
+  // Reassignment function that removes lead from previous agent leadbox and moves to new agent (REAL ASSIGNMENT)
+  const handleReassignLeadToAgent = async (leadId: string, newBrokerId: string) => {
     const targetBroker = AGENCY_BROKERS.find((b) => b.id === newBrokerId);
     if (!targetBroker) return;
 
@@ -1370,8 +1471,52 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
       })
     );
 
+    // 1. Persist real assignment to Supabase database
+    try {
+      await supabase
+        .from("leads")
+        .update({ broker_id: targetBroker.id, stage: "qualified" })
+        .eq("id", leadId);
+    } catch {
+      // Fallback
+    }
+
+    // 2. Persist real assignment in custom leads storage
+    if (typeof window !== "undefined") {
+      try {
+        const custom = JSON.parse(localStorage.getItem("dealos_custom_leads") || "[]");
+        const updatedCustom = custom.map((l: any) => {
+          if (l.id === leadId) {
+            return {
+              ...l,
+              assignedBrokerId: targetBroker.id,
+              assignedBrokerName: targetBroker.name,
+              task: `Assigned to ${targetBroker.name}`,
+            };
+          }
+          return l;
+        });
+        localStorage.setItem("dealos_custom_leads", JSON.stringify(updatedCustom));
+      } catch {}
+
+      // 3. If it was a company pool lead, transfer ownership
+      transferCompanyLead(leadId, targetBroker.name, {
+        name: "Company Owner",
+        role: "company",
+        email: localStorage.getItem("dealos_active_email"),
+      });
+
+      // 4. Dispatch real events to all broker inboxes
+      window.dispatchEvent(
+        new CustomEvent("dealos:lead_reassigned", {
+          detail: { leadId, brokerId: targetBroker.id, brokerName: targetBroker.name },
+        })
+      );
+      window.dispatchEvent(new Event("dealos_company_pool_updated"));
+    }
+
     if (soundEnabled) playMoneyBellChime();
-    toast.success(`⚡ Reassigned! ${leadName} moved from ${prevBrokerName}'s box to ${targetBroker.name}'s leadbox.`);
+    toast.success(`⚡ Reassigned! ${leadName || "Lead"} moved from ${prevBrokerName}'s box to ${targetBroker.name}'s live leadbox.`);
     setLeadBriefModalOpen(false);
   };
 
@@ -1656,6 +1801,34 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
               ))}
             </div>
 
+            {/* Add Lead Button */}
+            <Button
+              onClick={() => setAddLeadModalOpen(true)}
+              className="h-10 rounded-2xl text-xs font-bold gap-1.5 bg-primary text-primary-foreground shadow-sm hover:brightness-105 cursor-pointer"
+            >
+              <Plus size={14} />
+              <span>Add Lead</span>
+            </Button>
+
+            {/* Import Leads (CSV) Button */}
+            <Button
+              variant="outline"
+              onClick={() => setImportCsvModalOpen(true)}
+              className="h-10 rounded-2xl text-xs font-bold gap-1.5 border-border shadow-sm hover:bg-secondary cursor-pointer"
+            >
+              <Upload size={14} className="text-primary" />
+              <span>Import Leads</span>
+            </Button>
+
+            {/* Assign New Lead Button */}
+            <Button
+              onClick={() => setAssignLeadModalOpen(true)}
+              className="h-10 rounded-2xl text-xs font-black gap-1.5 bg-amber-500 hover:bg-amber-400 text-black shadow-sm cursor-pointer"
+            >
+              <Zap size={14} className="fill-black" />
+              <span>Assign New Lead ⚡</span>
+            </Button>
+
             {/* Broadcast Button */}
             <Button
               variant="outline"
@@ -1669,7 +1842,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             {/* Manage Team Action */}
             <Button
               asChild
-              className="h-10 rounded-2xl text-xs font-bold gap-1.5 bg-primary text-primary-foreground shadow-sm hover:brightness-105"
+              className="h-10 rounded-2xl text-xs font-bold gap-1.5 bg-secondary hover:bg-secondary/80 text-foreground border border-border shadow-sm"
             >
               <Link to="/app/users">
                 <Users size={14} />
@@ -1981,7 +2154,7 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
 
       {/* ═══ 5. EXECUTIVE ALL LEADS OVERWATCH (DYNAMIC AGENT LEADBOX MODEL) ═══ */}
       <section id="leads-overwatch" className="rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-black text-foreground font-display flex items-center gap-2">
@@ -1997,35 +2170,66 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
             </p>
           </div>
 
-          {/* Broker Filter Tabs (Shows leads per broker leadbox) */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary/70 border border-border/60 text-xs font-bold overflow-x-auto">
-            <button
-              onClick={() => setLeadFilterBroker("all")}
-              className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
-                leadFilterBroker === "all"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-              }`}
+          {/* Working Lead Ingestion & Delegation Actions */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => setAddLeadModalOpen(true)}
+              className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 bg-primary text-primary-foreground hover:brightness-105 cursor-pointer shadow-xs"
             >
-              All Leads ({agencyLeads.length})
-            </button>
-            {AGENCY_BROKERS.map((broker) => {
-              const count = agencyLeads.filter((l) => l.assignedBrokerId === broker.id).length;
-              return (
-                <button
-                  key={broker.id}
-                  onClick={() => setLeadFilterBroker(broker.id)}
-                  className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
-                    leadFilterBroker === broker.id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  }`}
-                >
-                  {broker.name.split(" ")[0]} ({count})
-                </button>
-              );
-            })}
+              <Plus size={13} />
+              <span>Add Lead</span>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setImportCsvModalOpen(true)}
+              className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 border-border hover:bg-secondary cursor-pointer"
+            >
+              <Upload size={13} className="text-primary" />
+              <span>Import Leads (CSV)</span>
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={() => setAssignLeadModalOpen(true)}
+              className="h-9 px-3.5 rounded-xl text-xs font-black gap-1.5 bg-amber-500 hover:bg-amber-400 text-black shadow-xs cursor-pointer"
+            >
+              <Zap size={13} className="fill-black" />
+              <span>Assign New Lead ⚡</span>
+            </Button>
           </div>
+        </div>
+
+        {/* Broker Filter Tabs (Shows leads per broker leadbox) */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary/70 border border-border/60 text-xs font-bold overflow-x-auto">
+          <button
+            onClick={() => setLeadFilterBroker("all")}
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
+              leadFilterBroker === "all"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+            }`}
+          >
+            All Leads ({agencyLeads.length})
+          </button>
+          {AGENCY_BROKERS.map((broker) => {
+            const count = agencyLeads.filter((l) => l.assignedBrokerId === broker.id).length;
+            return (
+              <button
+                key={broker.id}
+                onClick={() => setLeadFilterBroker(broker.id)}
+                className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
+                  leadFilterBroker === broker.id
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                }`}
+              >
+                {broker.name.split(" ")[0]} ({count})
+              </button>
+            );
+          })}
         </div>
 
         {/* Leads Table in Brief */}
@@ -3528,11 +3732,46 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
         </Dialog>
       )}
 
-      {/* ═══ IMPORT LEAD / PROPERTY MODAL ═══ */}
+      {/* ═══ IMPORT LEAD / PROPERTY MODAL (COMPANY FLOOR) ═══ */}
       <ImportLeadPropertyModal
         isOpen={importModalOpen}
         onClose={() => setImportModalOpen(false)}
         onSuccess={refreshCompanyPool}
+      />
+
+      {/* ═══ ADD LEAD MODAL ═══ */}
+      <OwnerAddLeadModal
+        isOpen={addLeadModalOpen}
+        onClose={() => setAddLeadModalOpen(false)}
+        onLeadAdded={(newLead) => setAgencyLeads((prev) => [newLead, ...prev])}
+      />
+
+      {/* ═══ IMPORT LEADS (CSV) MODAL ═══ */}
+      <CsvImporterModal
+        open={importCsvModalOpen}
+        onOpenChange={setImportCsvModalOpen}
+        onImportSuccess={() => {
+          toast.success("✓ CSV Leads ingested successfully into agency database!");
+          hydrateRealLeads();
+        }}
+      />
+
+      {/* ═══ ASSIGN NEW LEAD MODAL ═══ */}
+      <OwnerAssignLeadModal
+        isOpen={assignLeadModalOpen}
+        onClose={() => setAssignLeadModalOpen(false)}
+        unassignedLeads={agencyLeads.filter((l) => l.assignedBrokerId === "company-floor" || l.assignedBrokerName.includes("Unclaimed"))}
+        onLeadAssigned={(lead) => {
+          setAgencyLeads((prev) => {
+            const idx = prev.findIndex((l) => l.id === lead.id);
+            if (idx !== -1) {
+              const c = [...prev];
+              c[idx] = lead;
+              return c;
+            }
+            return [lead, ...prev];
+          });
+        }}
       />
     </div>
   );

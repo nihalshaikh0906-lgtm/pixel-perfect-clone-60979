@@ -184,4 +184,42 @@ describe("Company Leads & Exclusive Property Distribution System", () => {
     // Amina now has it
     expect(getAgentClaimedCompanyLeads("Amina Al Mansoori").some((l) => l.id === lead.id)).toBe(true);
   });
+
+  it("real lead assignment: assigning lead routes directly to designated broker leadbox", () => {
+    // Simulate Owner adding a real lead assigned to Tariq Mansoor
+    const lead = addCompanyLeadOrProperty({
+      type: "lead",
+      title: "Sheikh Ahmed Al-Maktoum",
+      phone: "+971501112233",
+      email: "ahmed@maktoum.ae",
+      location: "Palm Jebel Ali",
+      budgetOrPrice: "AED 25,000,000",
+      category: "Ultra-HNWI",
+      details: "Waterfront signature villa requirement.",
+    });
+
+    // Owner assigns to Tariq Mansoor
+    const ownerCaller = { name: "Company Owner", role: "company" };
+    const assignRes = transferCompanyLead(lead.id, "Tariq Mansoor", ownerCaller, "Direct Owner Delegation");
+
+    expect(assignRes.success).toBe(true);
+    expect(assignRes.lead?.claimedByAgentName).toBe("Tariq Mansoor");
+    expect(assignRes.lead?.status).toBe("claimed");
+
+    // Must be in Tariq's active claimed desk
+    const tariqDesk = getAgentClaimedCompanyLeads("Tariq Mansoor");
+    expect(tariqDesk.some((l) => l.id === lead.id)).toBe(true);
+  });
+
+  it("unauthorized transfer without caller identity is strictly rejected", () => {
+    const unclaimed = getUnclaimedCompanyPool();
+    const lead = unclaimed[0];
+    claimCompanyLead(lead.id, "Tariq Mansoor");
+
+    // Transfer attempt with empty caller
+    // @ts-expect-error test invalid caller
+    const invalidRes = transferCompanyLead(lead.id, "Amina Al Mansoori", {});
+    expect(invalidRes.success).toBe(false);
+    expect(invalidRes.error).toBe("unauthorized");
+  });
 });

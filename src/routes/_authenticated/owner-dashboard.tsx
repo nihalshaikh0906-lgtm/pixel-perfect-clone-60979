@@ -64,8 +64,8 @@ function OwnerDashboardPage() {
   }, [role, navigate, isMasterAdmin]);
 
   if (!isMasterAdmin && role !== "company") return null;
-  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
-  const raw = String(meta["full_name"] ?? meta["name"] ?? user.email?.split("@")[0] ?? "Owner");
+  const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
+  const raw = String(meta["full_name"] ?? meta["name"] ?? user?.email?.split("@")[0] ?? "Owner");
   const first = (raw.split(/[\s._-]+/)[0] ?? "Owner").replace(/\d+/g, "") || "Owner";
   const name = first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
   const full = raw.replace(/\d+/g, "").trim();
