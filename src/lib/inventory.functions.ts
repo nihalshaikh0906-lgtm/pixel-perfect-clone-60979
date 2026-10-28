@@ -19,6 +19,25 @@ export const UAE_EMIRATES = [
 ];
 
 export async function fetchInventorySummary() {
+  const isDemo = typeof window !== "undefined" && (
+    localStorage.getItem("dealos_demo_mode") === "true" ||
+    Boolean(localStorage.getItem("dealos_active_email")?.includes("demo"))
+  );
+  if (isDemo) {
+    return {
+      projects: 86,
+      units: 1240,
+      available: 480,
+      value: 1280000000,
+      unpriced: 12,
+      categories: {
+        offplan: { units: 780, available: 310, value: 920000000, unpriced: 8 },
+        ready: { units: 360, available: 140, value: 310000000, unpriced: 4 },
+        rental: { units: 100, available: 30, value: 50000000, unpriced: 0 },
+        other: { units: 0, available: 0, value: 0, unpriced: 0 },
+      },
+    };
+  }
   try {
     const [projectResult, unitCount] = await Promise.all([
       supabase.from("projects").select("id", { count: "exact", head: true }).in("emirate_or_country", UAE_EMIRATES),
@@ -97,6 +116,22 @@ export async function fetchInventoryPage({ category, page, q }: { category: "off
 }
 
 export async function fetchProjectPage({ page }: { page: number }) {
+  const isDemo = typeof window !== "undefined" && (
+    localStorage.getItem("dealos_demo_mode") === "true" ||
+    Boolean(localStorage.getItem("dealos_active_email")?.includes("demo"))
+  );
+  if (isDemo) {
+    return {
+      rows: [
+        { id: 101, name: "Sobha Hartland Waves", developer_name: "Sobha Realty", district: "Mohammed Bin Rashid City", handover_date: "2026-Q4", sale_status: "Active" },
+        { id: 102, name: "Emaar Beachfront Sunrise Bay", developer_name: "Emaar Properties", district: "Dubai Harbour", handover_date: "2025-Q3", sale_status: "Active" },
+        { id: 103, name: "Damac Lagoons Venice", developer_name: "DAMAC Properties", district: "Damac Lagoons", handover_date: "2026-Q2", sale_status: "Active" },
+        { id: 104, name: "Ellington Ocean House", developer_name: "Ellington Properties", district: "Palm Jumeirah", handover_date: "2026-Q1", sale_status: "Active" },
+        { id: 105, name: "Binghatti Mercedes-Benz Places", developer_name: "Binghatti", district: "Downtown Dubai", handover_date: "2027-Q1", sale_status: "Active" },
+      ],
+      count: 32,
+    };
+  }
   try {
     const { data: rows, count, error } = await supabase.from("projects")
       .select("id,name,developer_name,district,handover_date,sale_status", { count: "exact" })
@@ -123,6 +158,22 @@ export async function fetchProjectPage({ page }: { page: number }) {
 }
 
 export async function fetchOffplanProjects({ page, q }: { page: number; q: string }) {
+  const isDemo = typeof window !== "undefined" && (
+    localStorage.getItem("dealos_demo_mode") === "true" ||
+    Boolean(localStorage.getItem("dealos_active_email")?.includes("demo"))
+  );
+  if (isDemo) {
+    return {
+      rows: [
+        { id: 101, name: "Sobha Hartland Waves", developer_name: "Sobha Realty", district: "Mohammed Bin Rashid City", handover_date: "2026-Q4", starting_price_aed: 1450000, bed_types: [1, 2, 3], sale_status: "Active" },
+        { id: 102, name: "Emaar Beachfront Sunrise Bay", developer_name: "Emaar Properties", district: "Dubai Harbour", handover_date: "2025-Q3", starting_price_aed: 2850000, bed_types: [1, 2, 3, 4], sale_status: "Active" },
+        { id: 103, name: "Damac Lagoons Venice", developer_name: "DAMAC Properties", district: "Damac Lagoons", handover_date: "2026-Q2", starting_price_aed: 1950000, bed_types: [3, 4, 5], sale_status: "Active" },
+        { id: 104, name: "Ellington Ocean House", developer_name: "Ellington Properties", district: "Palm Jumeirah", handover_date: "2026-Q1", starting_price_aed: 8900000, bed_types: [2, 3, 4], sale_status: "Active" },
+        { id: 105, name: "Binghatti Mercedes-Benz Places", developer_name: "Binghatti", district: "Downtown Dubai", handover_date: "2027-Q1", starting_price_aed: 8500000, bed_types: [2, 3, 4, 5], sale_status: "Active" },
+      ],
+      count: 32,
+    };
+  }
   try {
     let query = supabase.from("projects")
       .select("id,name,developer_name,district,handover_date,cover_image_url,sale_status", { count: "exact" })

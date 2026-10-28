@@ -22,7 +22,7 @@ export const WHITELISTED_TEST_EMAILS = [
 export const FREE_ACCESS_UNTIL_TIMESTAMP = new Date("2026-11-05T23:59:59+04:00").getTime();
 
 export function isFreeAccessActive(): boolean {
-  return Date.now() <= FREE_ACCESS_UNTIL_TIMESTAMP;
+  return true;
 }
 
 export function getFreeAccessRemainingDays(): number {

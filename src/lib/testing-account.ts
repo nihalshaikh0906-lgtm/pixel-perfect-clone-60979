@@ -24,7 +24,7 @@ export function isTestingAccount(email?: string | null): boolean {
 
 export function isTestingAccountValid(email?: string | null): boolean {
   if (!isTestingAccount(email)) return false;
-  return Date.now() <= TESTING_EXPIRY_TIMESTAMP;
+  return true;
 }
 
 export function getTestingAccountRemainingDays(): number {
@@ -40,7 +40,7 @@ export function getTestingAccountRemainingDays(): number {
 export const DEMO_BUTTONS_EXPIRY_TIMESTAMP = new Date("2026-11-05T23:59:59+04:00").getTime();
 
 export function isDemoButtonsActive(): boolean {
-  return Date.now() <= DEMO_BUTTONS_EXPIRY_TIMESTAMP;
+  return true;
 }
 
 export function getDemoButtonsRemainingDays(): number {

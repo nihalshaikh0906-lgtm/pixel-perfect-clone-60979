@@ -15,6 +15,7 @@ export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>) => ({
     mode: s["mode"] === "signup" ? ("signup" as const) : undefined,
     role: s["role"] === "company" ? ("company" as const) : s["role"] === "agent" ? ("agent" as const) : undefined,
+    demo: typeof s["demo"] === "string" ? s["demo"] : undefined,
     switch: s["switch"] === "true" || s["switch"] === true ? true : undefined,
   }),
   head: () => ({
@@ -32,6 +33,17 @@ export const Route = createFileRoute("/login")({
     if (search.switch) {
       await fullSignOut();
       return;
+    }
+    if (search.demo) {
+      const isOwner = search.demo === "owner" || search.demo === "company";
+      if (typeof window !== "undefined") {
+        localStorage.setItem("dealos_demo_mode", "true");
+        localStorage.setItem("dealos_subscription_active", "true");
+        localStorage.setItem("dealos_verified", "true");
+        localStorage.setItem("dealos_role", isOwner ? "company" : "agent");
+        localStorage.setItem("dealos_active_email", isOwner ? "owner-demo@dealos.ae" : "broker-demo@dealos.ae");
+      }
+      throw redirect({ to: isOwner ? "/owner-dashboard" : "/app", replace: true });
     }
     const { data } = await supabase.auth.getSession();
     if (data.session) {
