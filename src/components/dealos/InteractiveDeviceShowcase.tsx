@@ -177,19 +177,19 @@ export function InteractiveDeviceShowcase() {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-16 overflow-hidden"
+      className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 overflow-hidden"
     >
       {/* Ambient Radial Cobalt/Violet Glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-[#2F6BFF]/20 via-[#7B4DFF]/15 to-transparent blur-[120px] rounded-full pointer-events-none -z-10" />
 
       {/* Section Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-3 mb-10 sm:mb-14">
+      <div className="text-center max-w-3xl mx-auto space-y-2 mb-4 sm:mb-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
           <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>INTERACTIVE PRODUCT DESK · LIVE PREVIEW</span>
         </div>
         <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground font-display">
-          The Operating System Built on Dubai Data.
+          Experience the Broker Cockpit.
         </h2>
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
           Test the interactive broker cockpit below: click between live WhatsApp voice note transcription, verified DLD inventory matching, client deal rooms, and developer commission ledgers.

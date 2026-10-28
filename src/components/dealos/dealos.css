@@ -348,24 +348,45 @@
 @media (max-width:560px){.d-area-tip{position:static;width:auto;margin:10px;box-shadow:none}}
 
 /* --- TIGHT, MODERN SCENE PADDING & ZERO DEAD GAPS --- */
+.dealos .d-scene-inner {
+  padding: 34px 0 !important;
+}
+
+.dealos .d-section-heading {
+  margin-bottom: 22px !important;
+}
+
+.dealos .d-section-heading > p {
+  margin-top: 10px !important;
+  font-size: 15px !important;
+}
 
 /* 1. Natural, comfortable padding for Product section */
 #product .d-scene-inner {
-  padding-top: 48px !important; 
-  padding-bottom: 48px !important;
+  padding-top: 30px !important; 
+  padding-bottom: 30px !important;
 }
 
 /* 2. Natural, aligned Integrations stage */
 .d-integration-stage {
-  padding-top: 36px !important;
-  padding-bottom: 36px !important;
+  padding-top: 22px !important;
+  padding-bottom: 22px !important;
   align-content: center !important;
 }
 
 /* 3. Hero section has clean, tight runway */
 .d-hero {
   height: auto !important;
-  min-height: 100svh !important; 
+  min-height: 90svh !important; 
+}
+
+.d-cta {
+  min-height: auto !important;
+  padding: 44px 20px !important;
+}
+
+.d-footer {
+  padding-top: 36px !important;
 }
 
 /* 4. Ensure the Navbar always stays above everything */
@@ -423,15 +444,15 @@
 
   /* 2. De-clutter & Streamline Section Spacing */
   .dealos .d-scene-inner {
-    padding: 44px 0 !important;
+    padding: 26px 0 !important;
   }
   .dealos .d-section-heading {
-    margin-bottom: 24px !important;
+    margin-bottom: 16px !important;
   }
   .dealos .d-section-heading > p {
     font-size: 13.5px !important;
-    margin-top: 10px !important;
-    line-height: 1.5 !important;
+    margin-top: 8px !important;
+    line-height: 1.4 !important;
   }
   .dealos h2 {
     font-size: clamp(28px, 7.5vw, 36px) !important;
@@ -529,10 +550,10 @@
 
   /* 6. Declutter Mobile Scenes & Cards */
   .dealos .d-scene-inner {
-    padding: 56px 0 !important;
+    padding: 26px 0 !important;
   }
   .dealos .d-section-heading {
-    margin-bottom: 24px !important;
+    margin-bottom: 16px !important;
   }
   .dealos .d-tool-card,
   .dealos [data-tool-card] {

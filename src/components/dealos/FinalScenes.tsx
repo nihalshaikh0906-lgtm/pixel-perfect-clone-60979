@@ -48,7 +48,7 @@ function QuoteTrack({ row }: { row: number }) {
 
 export function AgencyComparison() {
   return (
-    <section id="comparison" className="w-full max-w-5xl mx-auto px-4 sm:px-6 my-10 sm:my-16">
+    <section id="comparison" className="w-full max-w-5xl mx-auto px-4 sm:px-6 my-4 sm:my-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-stretch">
         {/* Left Column: The old way */}
         <div className="rounded-3xl p-6 sm:p-8 bg-rose-500/5 dark:bg-rose-500/10 border border-rose-500/20 flex flex-col justify-between space-y-6 text-left">

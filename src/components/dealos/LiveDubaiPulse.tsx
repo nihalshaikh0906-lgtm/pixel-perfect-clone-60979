@@ -117,7 +117,7 @@ export function LiveDubaiPulse() {
       onTouchStart={() => setIsPaused(true)}
       onTouchEnd={() => setIsPaused(false)}
       onClick={() => setIndex((prev) => (prev + 1) % PULSE_ITEMS.length)}
-      className="w-full max-w-[94vw] sm:max-w-2xl mx-auto my-6 px-2 select-none cursor-pointer"
+      className="w-full max-w-[94vw] sm:max-w-2xl mx-auto my-2 sm:my-3 px-2 select-none cursor-pointer"
       title="Tap to see next live Dubai broker activity"
     >
       <div

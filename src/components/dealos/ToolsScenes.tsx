@@ -166,7 +166,7 @@ export function Tools() {
     <Scene id="tools">
       <div className="d-container">
         {/* Section Heading with Left/Right Interactive Gliders */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 sm:mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 sm:mb-6">
           <div className="max-w-2xl text-left">
             <span className="d-pill text-xs font-bold tracking-wider uppercase text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 mb-3">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
@@ -306,8 +306,8 @@ export function Tools() {
         </div>
 
         {/* ═══ DUBAI DEAL CALCULATOR & REAL-TIME MORTGAGE ═══ */}
-        <div className="mt-14 sm:mt-20 pt-10 border-t border-border/60">
-          <div className="text-center max-w-xl mx-auto mb-8">
+        <div className="mt-8 sm:mt-10 pt-6 border-t border-border/60">
+          <div className="text-center max-w-xl mx-auto mb-4 sm:mb-6">
             <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-primary block mb-1">
               LIVE DUBAI PROPERTY CALCULATOR
             </span>
