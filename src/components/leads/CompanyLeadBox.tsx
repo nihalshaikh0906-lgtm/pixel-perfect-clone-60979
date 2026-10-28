@@ -23,6 +23,7 @@ import { openWhatsApp } from "@/lib/whatsapp-send";
 import {
   getCompanyPool,
   claimCompanyLead,
+  claimCompanyLeadAtomic,
   transferCompanyLead,
   isAuthorizedToTransfer,
   initCompanyLeadsRealtime,
@@ -67,32 +68,37 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
     (i) => i.status === "claimed" && (i.claimedByAgentName === currentAgentName || !i.claimedByAgentName)
   );
 
-  const handleClaim = (item: CompanyLeadItem, actionType: "claim" | "whatsapp") => {
+  const handleClaim = async (item: CompanyLeadItem, actionType: "claim" | "whatsapp") => {
     if (claimingId) return;
     setClaimingId(item.id);
 
-    const result = claimCompanyLead(item.id, currentAgentName);
-    setClaimingId(null);
-    loadPool();
+    try {
+      const result = await claimCompanyLeadAtomic(item.id, currentAgentName);
+      setClaimingId(null);
+      loadPool();
 
-    if (!result.success) {
-      toast.error(result.message || "Could not claim lead", { icon: "⚠️" });
-      return;
-    }
+      if (!result.success) {
+        toast.error(result.message || "Could not claim lead", { icon: "⚠️" });
+        return;
+      }
 
-    if (actionType === "whatsapp") {
-      const cleanPhone = item.phone.replace(/\D/g, "");
-      const msg = `Salam ${item.title.split(" ")[0]}, this is ${currentAgentName} from DealOS Brokerage. Our Managing Director assigned your inquiry for ${item.location} (${item.budgetOrPrice}) to my priority desk. Are you free for a quick 2-minute call?`;
-      openWhatsApp({ phone: cleanPhone, text: msg, recipientName: item.title });
-      toast.success(
-        `⚡ Action Taken! You claimed "${item.title}". It is now locked to your account with tag "Company Lead" and removed from all other agents' lead boxes.`,
-        { icon: "🔒", duration: 4000 }
-      );
-    } else {
-      toast.success(
-        `⚡ Lead Claimed! "${item.title}" is now locked to your personal leads with tag "Company Lead" and removed from all other agents.`,
-        { icon: "🔒", duration: 4000 }
-      );
+      if (actionType === "whatsapp") {
+        const cleanPhone = item.phone.replace(/\D/g, "");
+        const msg = `Salam ${item.title.split(" ")[0]}, this is ${currentAgentName} from DealOS Brokerage. Our Managing Director assigned your inquiry for ${item.location} (${item.budgetOrPrice}) to my priority desk. Are you free for a quick 2-minute call?`;
+        openWhatsApp({ phone: cleanPhone, text: msg, recipientName: item.title });
+        toast.success(
+          `⚡ Action Taken! You claimed "${item.title}". It is now locked to your account with tag "Company Lead" and removed from all other agents' lead boxes.`,
+          { icon: "🔒", duration: 4000 }
+        );
+      } else {
+        toast.success(
+          `⚡ Lead Claimed! "${item.title}" is now locked to your personal leads with tag "Company Lead" and removed from all other agents.`,
+          { icon: "🔒", duration: 4000 }
+        );
+      }
+    } catch {
+      setClaimingId(null);
+      loadPool();
     }
   };
 

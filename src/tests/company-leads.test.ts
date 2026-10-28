@@ -222,4 +222,48 @@ describe("Company Leads & Exclusive Property Distribution System", () => {
     expect(invalidRes.success).toBe(false);
     expect(invalidRes.error).toBe("unauthorized");
   });
+
+  it("forged permissions are strictly rejected: agent cannot spoof company owner credentials", () => {
+    const unclaimed = getUnclaimedCompanyPool();
+    const lead = unclaimed[0];
+    claimCompanyLead(lead.id, "Tariq Mansoor");
+
+    // Attacker (currently logged in as an Agent) attempts to forge role: 'company'
+    globalThis.localStorage.setItem("dealos_role", "agent");
+    const forgedCaller = {
+      name: "Sneaky Agent",
+      role: "company", // Spoofed role!
+      email: "sneaky@dealos.ae",
+    };
+
+    const forgedRes = transferCompanyLead(lead.id, "Layla Bennett", forgedCaller, "Forged owner transfer");
+    expect(forgedRes.success).toBe(false);
+    expect(forgedRes.error).toBe("unauthorized");
+    expect(forgedRes.message).toContain("Forged company permissions rejected");
+
+    // Lead remains assigned to genuine owner Tariq
+    const pool = getCompanyPool();
+    const verifiedLead = pool.find((l) => l.id === lead.id);
+    expect(verifiedLead?.claimedByAgentName).toBe("Tariq Mansoor");
+  });
+
+  it("duplicate claims are strictly rejected when two agents race to claim the same lead", () => {
+    const unclaimed = getUnclaimedCompanyPool();
+    const lead = unclaimed[0];
+
+    // Agent 1 claims
+    const claim1 = claimCompanyLead(lead.id, "Amina Al Mansoori");
+    expect(claim1.success).toBe(true);
+
+    // Agent 2 attempts duplicate claim
+    const claim2 = claimCompanyLead(lead.id, "Saad Khan");
+    expect(claim2.success).toBe(false);
+    expect(claim2.error).toBe("already_claimed");
+    expect(claim2.claimedBy).toBe("Amina Al Mansoori");
+
+    // Agent 3 attempts duplicate claim
+    const claim3 = claimCompanyLead(lead.id, "Zaid Al-Habib");
+    expect(claim3.success).toBe(false);
+    expect(claim3.error).toBe("already_claimed");
+  });
 });

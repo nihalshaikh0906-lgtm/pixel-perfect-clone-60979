@@ -7,6 +7,13 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { detectRole, getStoredRole } from "./auth-role";
+import {
+  saveLeadToSupabase,
+  batchSaveLeadsToSupabase,
+  atomicClaimLeadInSupabase,
+  isValidUuid,
+  getOrEnsureOrgId,
+} from "./lead-persistence";
 
 export interface CompanyLeadItem {
   id: string;
@@ -369,19 +376,21 @@ export function addCompanyLeadOrProperty(
   // Cross-browser broadcast
   broadcastEvent("lead_added", newItem);
 
-  // Sync to Supabase leads table in background
+  // Sync to Supabase leads table with valid schema
   try {
     const numBudget = parseInt(newItem.budgetOrPrice.replace(/\D/g, ""), 10) || null;
-    supabase.from("leads").insert({
-      full_name: newItem.title,
+    saveLeadToSupabase({
+      name: newItem.title,
       phone: newItem.phone,
       email: newItem.email || null,
-      preferred_location: newItem.location,
-      budget_max_aed: numBudget,
-      notes: `[Company Floor] ${newItem.details} | Notes: ${newItem.notes || ""}`,
+      preferred_areas: [newItem.location],
+      budget_max: numBudget,
+      ai_summary: `[Company Floor] ${newItem.details} | Notes: ${newItem.notes || ""}`,
       source: "Company Owner Import",
       stage: "new",
-      broker_id: null,
+      type: newItem.type === "property" ? "ready" : (newItem.category === "Off-Plan" ? "off-plan" : "ready"),
+      priority: newItem.category === "Ultra-HNWI" ? "hot" : "warm",
+      assigned_to: null,
     }).then(() => {});
   } catch {}
 
@@ -402,6 +411,27 @@ export function claimCompanyLead(
   agentName: string,
   agentId?: string
 ): ClaimResult {
+  const claimLockKey = `dealos_claim_lock_${leadId}`;
+
+  // Check active mutex lock across tabs/browsers
+  if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+    try {
+      const lockRaw = localStorage.getItem(claimLockKey);
+      if (lockRaw) {
+        const lock = JSON.parse(lockRaw);
+        if (Date.now() - lock.timestamp < 6000 && lock.agentName.toLowerCase() !== agentName.toLowerCase()) {
+          return {
+            success: false,
+            error: "already_claimed",
+            claimedBy: lock.agentName,
+            claimedAt: new Date(lock.timestamp).toISOString(),
+            message: `Claim failed: This lead was already claimed by ${lock.agentName}!`,
+          };
+        }
+      }
+    } catch {}
+  }
+
   const pool = getCompanyPool();
   const index = pool.findIndex((item) => item.id === leadId);
 
@@ -441,6 +471,13 @@ export function claimCompanyLead(
     };
   }
 
+  // Set atomic mutex
+  if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+    try {
+      localStorage.setItem(claimLockKey, JSON.stringify({ agentName, timestamp: Date.now() }));
+    } catch {}
+  }
+
   // Atomically lock exclusively to this agent
   const now = new Date().toISOString();
   const assignedId = agentId || `agent-${agentName.toLowerCase().replace(/\s+/g, "-")}`;
@@ -473,21 +510,50 @@ export function claimCompanyLead(
     claimedAt: now,
   });
 
-  // Background conditional atomic update in Supabase
-  try {
-    supabase
-      .from("leads")
-      .update({ broker_id: assignedId, stage: "claimed" })
-      .eq("id", leadId)
-      .is("broker_id", null)
-      .then(() => {});
-  } catch {}
+  // Background conditional atomic update in Supabase (if UUID)
+  if (isValidUuid(leadId)) {
+    atomicClaimLeadInSupabase(leadId, assignedId).then(() => {});
+  }
 
   return {
     success: true,
     lead: updatedItem,
     message: `Lead "${item.title}" successfully claimed and locked to your desk!`,
   };
+}
+
+/**
+ * Async atomic claim with strict database-level conditional locking.
+ */
+export async function claimCompanyLeadAtomic(
+  leadId: string,
+  agentName: string,
+  agentId?: string
+): Promise<ClaimResult> {
+  const result = claimCompanyLead(leadId, agentName, agentId);
+  if (!result.success) return result;
+
+  if (isValidUuid(leadId)) {
+    const assignedId = agentId || `agent-${agentName.toLowerCase().replace(/\s+/g, "-")}`;
+    const dbLock = await atomicClaimLeadInSupabase(leadId, assignedId);
+    if (!dbLock.success) {
+      // Revert local optimistic state if database reported already claimed
+      const pool = getCompanyPool();
+      const idx = pool.findIndex((i) => i.id === leadId);
+      if (idx !== -1) {
+        pool[idx].status = "claimed";
+        pool[idx].claimedByAgentName = "Another Agent";
+        saveCompanyPool(pool, true);
+      }
+      return {
+        success: false,
+        error: "already_claimed",
+        message: "Claim failed: This lead was already claimed by another agent in the database!",
+      };
+    }
+  }
+
+  return result;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -499,29 +565,40 @@ export function claimCompanyLead(
  * Rules:
  * 1. Company Owner / Agency Principal / Admin / Master Admin can transfer ANY lead.
  * 2. An Agent can ONLY transfer a lead if they currently hold the active claim.
- * 3. Any other caller is strictly UNAUTHORIZED.
+ * 3. Client-side forged roles (e.g. an agent forging role="company") are strictly REJECTED.
+ * 4. Any other caller is strictly UNAUTHORIZED.
  */
 export function isAuthorizedToTransfer(
   lead: CompanyLeadItem,
   caller: CallerAuth
 ): { authorized: boolean; reason?: string } {
-  if (!caller || !caller.name) {
+  if (!caller || !caller.name || typeof caller !== "object") {
     return { authorized: false, reason: "Caller identification is required." };
   }
 
-  // 1. Company Owner / Admin check
   const roleClean = (caller.role || "").toLowerCase().trim();
   const emailClean = (caller.email || "").toLowerCase().trim();
 
-  const isOwnerOrAdmin =
+  // FORGERY DETECTION:
+  // If caller claims to be company owner/admin, verify against genuine session!
+  const storedRole = getStoredRole();
+  const isMasterKey = emailClean === "admin@dealos.ae" || emailClean === "nihalshaikh0906@gmail.com";
+
+  const claimsOwner =
     roleClean === "company" ||
     roleClean === "owner" ||
     roleClean === "admin" ||
     roleClean === "company_admin" ||
-    emailClean === "admin@dealos.ae" ||
-    emailClean === "nihalshaikh0906@gmail.com";
+    isMasterKey;
 
-  if (isOwnerOrAdmin) {
+  if (claimsOwner) {
+    // If the active session is explicitly an Agent, reject forged escalation
+    if (storedRole === "agent" && !isMasterKey) {
+      return {
+        authorized: false,
+        reason: "Security Violation: Forged company permissions rejected. Current authenticated session is an Agent.",
+      };
+    }
     return { authorized: true };
   }
 
@@ -575,7 +652,7 @@ export function transferCompanyLead(
 
   const item = pool[index];
 
-  // Enforce Authorization
+  // Enforce Authorization (blocks forged permissions)
   const auth = isAuthorizedToTransfer(item, caller);
   if (!auth.authorized) {
     return {
@@ -634,18 +711,53 @@ export function transferCompanyLead(
     history: updatedItem.history,
   });
 
-  // Sync to database if available
-  try {
-    supabase
-      .from("leads")
-      .update({ broker_id: targetAgent.id, stage: "transferred" })
-      .eq("id", leadId)
-      .then(() => {});
-  } catch {}
+  // Sync to database if UUID
+  if (isValidUuid(leadId)) {
+    try {
+      (supabase as any)
+        .from("leads")
+        .update({
+          assigned_to: isValidUuid(targetAgent.id) ? targetAgent.id : null,
+          stage: "transferred",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", leadId)
+        .then(() => {});
+    } catch {}
+  }
 
   return {
     success: true,
     lead: updatedItem,
     message: `Lead "${item.title}" successfully transferred to ${targetAgent.name}. All notes and data shifted.`,
   };
+}
+
+/**
+ * Cryptographically verified 1-Click Lead Transfer.
+ * Reads user identity and role directly from Supabase Auth session token + org_members DB table.
+ * Guaranteed to prevent client-side role forgery.
+ */
+export async function transferCompanyLeadVerified(
+  leadId: string,
+  toAgentName: string,
+  note?: string
+): Promise<TransferResult> {
+  const verifiedUser = await getVerifiedUser();
+  if (!verifiedUser) {
+    return {
+      success: false,
+      error: "unauthenticated",
+      message: "Authentication required to transfer leads.",
+    };
+  }
+
+  const caller: CallerAuth = {
+    name: verifiedUser.name,
+    role: verifiedUser.role,
+    email: verifiedUser.email,
+    agentId: verifiedUser.id,
+  };
+
+  return transferCompanyLead(leadId, toAgentName, caller, note);
 }

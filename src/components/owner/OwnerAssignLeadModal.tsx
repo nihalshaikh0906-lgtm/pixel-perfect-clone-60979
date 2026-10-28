@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { addImportedLeads, type Lead } from "@/lib/demo-leads";
+import { saveLeadToSupabase, isValidUuid } from "@/lib/lead-persistence";
 import { AGENCY_BROKERS, type ExecutiveLead } from "@/pages/OwnerDashboard";
 
 interface OwnerAssignLeadModalProps {
@@ -85,17 +86,19 @@ export function OwnerAssignLeadModal({
 
     addImportedLeads([newLead]);
 
-    // 2. Persist to Supabase leads table
+    // 2. Persist to Supabase leads table with valid schema
     try {
-      await supabase.from("leads").insert({
-        full_name: nameToAssign,
+      await saveLeadToSupabase({
+        name: nameToAssign,
         phone: cleanPhone,
-        preferred_location: projectInterest,
-        budget_max_aed: numericBudget,
-        notes: `Executive Assignment to ${selectedBroker.name} | SLA: ${slaMins}m | Instructions: ${instructions}`,
+        preferred_areas: [projectInterest],
+        budget_max: numericBudget,
+        ai_summary: `Executive Assignment to ${selectedBroker.name} | SLA: ${slaMins}m | Instructions: ${instructions}`,
         source: "Executive Owner Assignment",
         stage: "qualified",
-        broker_id: selectedBroker.id,
+        type: "off-plan",
+        priority: "hot",
+        assigned_to: isValidUuid(selectedBroker.id) ? selectedBroker.id : null,
       });
     } catch {
       // Fallback

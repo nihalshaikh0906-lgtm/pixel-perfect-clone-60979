@@ -24,6 +24,7 @@ import { CsvImporterModal } from "@/components/leads/CsvImporterModal";
 import { supabase } from "@/integrations/supabase/client";
 import { getCustomLeads, formatAed } from "@/lib/demo-leads";
 import { getCompanyPool, transferCompanyLead, type CompanyLeadItem } from "@/lib/company-leads";
+import { isValidUuid } from "@/lib/lead-persistence";
 
 // ═══ WEB AUDIO API SYNTHESIZER: MONEY BELL CHIME ═══
 function playMoneyBellChime() {
@@ -1297,7 +1298,7 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
 
       // 2. Query Supabase leads table
       try {
-        const { data: dbLeads } = await supabase
+        const { data: dbLeads } = await (supabase as any)
           .from("leads")
           .select("*")
           .order("created_at", { ascending: false })
@@ -1305,24 +1306,28 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
 
         if (Array.isArray(dbLeads)) {
           for (const dl of dbLeads) {
-            if (!realExecutiveLeads.some((r) => r.id === dl.id || r.clientName === dl.full_name)) {
-              const matchedBroker = AGENCY_BROKERS.find((b) => b.id === dl.broker_id) || AGENCY_BROKERS[0];
+            const leadName = dl.name || dl.full_name;
+            if (!leadName) continue;
+            if (!realExecutiveLeads.some((r) => r.id === dl.id || r.clientName === leadName)) {
+              const matchedBroker = AGENCY_BROKERS.find((b) => b.id === dl.assigned_to || b.id === dl.broker_id) || AGENCY_BROKERS[0];
+              const maxBudget = dl.budget_max || dl.budget_max_aed;
+              const prefArea = (dl.preferred_areas && dl.preferred_areas.length > 0 ? dl.preferred_areas[0] : null) || dl.preferred_location || "Prime Dubai";
               realExecutiveLeads.push({
                 id: dl.id,
-                clientName: dl.full_name,
+                clientName: leadName,
                 nationality: "Dubai Investor",
-                budgetFormatted: dl.budget_max_aed ? formatAed(dl.budget_max_aed) : "AED 4.5M",
-                projectInterest: dl.preferred_location || "Prime Dubai",
+                budgetFormatted: maxBudget ? formatAed(Number(maxBudget)) : "AED 4.5M",
+                projectInterest: prefArea,
                 assignedBrokerId: matchedBroker.id,
                 assignedBrokerName: matchedBroker.name,
                 assignedBrokerAvatar: matchedBroker.avatar,
-                stage: "Deposit Staged",
-                stageColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+                stage: dl.stage === "new" ? "New Inbound" : "Deposit Staged",
+                stageColor: dl.stage === "new" ? "bg-amber-500/10 text-amber-300 border-amber-500/30" : "bg-blue-500/10 text-blue-400 border-blue-500/30",
                 probability: "88%",
                 speedToLeadMins: 2.0,
                 lastContactAgo: "Supabase DB Record",
-                liquidityTier: "Tier 1 Ultra-HNWI (Cash)",
-                executiveBrief: dl.notes || "Live verified lead in agency database.",
+                liquidityTier: (maxBudget && Number(maxBudget) >= 8000000) ? "Tier 1 Ultra-HNWI (Cash)" : "Tier 2 High-Net-Worth",
+                executiveBrief: dl.ai_summary || dl.notes || "Live verified lead in agency database.",
                 brokerPhone: matchedBroker.phone,
               });
             }
@@ -1471,14 +1476,20 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
       })
     );
 
-    // 1. Persist real assignment to Supabase database
-    try {
-      await supabase
-        .from("leads")
-        .update({ broker_id: targetBroker.id, stage: "qualified" })
-        .eq("id", leadId);
-    } catch {
-      // Fallback
+    // 1. Persist real assignment to Supabase database with valid columns
+    if (isValidUuid(leadId)) {
+      try {
+        await (supabase as any)
+          .from("leads")
+          .update({
+            assigned_to: isValidUuid(targetBroker.id) ? targetBroker.id : null,
+            stage: "qualified",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", leadId);
+      } catch {
+        // Fallback
+      }
     }
 
     // 2. Persist real assignment in custom leads storage

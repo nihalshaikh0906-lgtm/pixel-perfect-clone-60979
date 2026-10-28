@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { addImportedLeads, type Lead, type LeadType, type Stage } from "@/lib/demo-leads";
 import { addCompanyLeadOrProperty } from "@/lib/company-leads";
+import { saveLeadToSupabase, isValidUuid } from "@/lib/lead-persistence";
 import { AGENCY_BROKERS } from "@/pages/OwnerDashboard";
 
 interface OwnerAddLeadModalProps {
@@ -100,18 +101,21 @@ export function OwnerAddLeadModal({ isOpen, onClose, onLeadAdded }: OwnerAddLead
 
     addImportedLeads([newLead]);
 
-    // 3. Persist to Supabase leads table if online/authenticated
+    // 3. Persist to Supabase leads table with valid schema
     try {
-      await supabase.from("leads").insert({
-        full_name: clientName.trim(),
+      await saveLeadToSupabase({
+        name: clientName.trim(),
         phone: cleanPhone,
         email: email.trim() || null,
-        preferred_location: area,
-        budget_max_aed: numericBudget,
-        notes: `Owner Lead | Assigned to: ${isCompanyFloor ? "Company Floor" : selectedBroker?.name} | Liquidity: ${liquidityTier} | Notes: ${notes}`,
+        preferred_areas: [area],
+        budget_max: numericBudget,
+        bedrooms: String(beds),
+        ai_summary: `Owner Lead | Assigned to: ${isCompanyFloor ? "Company Floor" : selectedBroker?.name} | Liquidity: ${liquidityTier} | Notes: ${notes}`,
         source: "Company Owner Import",
         stage: stage.toLowerCase(),
-        broker_id: isCompanyFloor ? null : selectedBroker?.id,
+        type: type.toLowerCase() === "rent" ? "rent" : type.toLowerCase() === "ready" ? "ready" : "off-plan",
+        priority: numericBudget >= 8000000 ? "hot" : "warm",
+        assigned_to: !isCompanyFloor && isValidUuid(selectedBroker?.id) ? selectedBroker?.id : null,
       });
     } catch {
       // Fallback to local persistence
