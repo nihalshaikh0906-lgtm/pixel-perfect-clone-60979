@@ -14,6 +14,7 @@ import { inventorySummaryOptions, projectPageOptions } from "@/lib/inventory.fun
 import { LEADS, queueLeads, stats, type Lead, formatAed } from "@/lib/demo-leads";
 import { aed, quarterOf } from "@/lib/format";
 import { Button } from "@/components/ui/button";
+import { CompanyLeadBox } from "@/components/leads/CompanyLeadBox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { detectRole, getStoredRole, type DealOSRole } from "@/lib/auth-role";
@@ -311,6 +312,9 @@ When are you free today for a quick 2-minute overview?`;
           </div>
         </div>
       </section>
+
+      {/* ═══ COMPANY IMPORT POOL (FIRST-TO-CLAIM & AGENT TRANSFER) ═══ */}
+      <CompanyLeadBox currentAgentName={userName ? `${userName} (Broker)` : "Tariq Mansoor"} />
 
       {/* ═══ 3. CLEAN SEGMENTED NAVIGATION (GENEROUS SPACING & FONT SIZE) ═══ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3 overflow-x-auto no-scrollbar">

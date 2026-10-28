@@ -2,13 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowUpRight, Info, Mail, MessageCircle, Phone, Plus, Upload,
   Sparkles, Filter, Search, ChevronRight, CheckCircle2, Clock,
-  ArrowRight, ShieldCheck, Flame, Star, Compass
+  ArrowRight, ShieldCheck, Flame, Star, Compass, Eye
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { CsvImporterModal } from "@/components/leads/CsvImporterModal";
+import { CompanyLeadBox } from "@/components/leads/CompanyLeadBox";
 import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
 import {
   ago, formatAed, LEAD_BY_ID, QUEUES, queueCount, queueLeads,
@@ -127,6 +128,9 @@ function Inbox() {
           </div>
         </div>
       </section>
+
+      {/* ═══ COMPANY IMPORT POOL (FIRST-TO-CLAIM & AGENT TRANSFER) ═══ */}
+      <CompanyLeadBox currentAgentName="Tariq Mansoor" />
 
       {/* ═══ PRIORITY QUEUE TABS (GENEROUS CAPSULE RIBBON) ═══ */}
       <div className="flex flex-wrap items-center gap-3 p-2.5 sm:p-3 rounded-2xl bg-card/75 backdrop-blur-md border border-border/80 shadow-sm">

@@ -8,7 +8,7 @@ import {
   Flame, CheckCheck, Megaphone, X, Bell, Volume2, VolumeX,
   UserCheck, AlertCircle, Building, Wallet, RefreshCw,
   Crown, ExternalLink, Download, Copy, FileText, Check, Briefcase,
-  Compass, PieChart, ShieldAlert, ArrowRightLeft, Phone, Mail
+  Compass, PieChart, ShieldAlert, ArrowRightLeft, Phone, Mail, UserPlus
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { aed } from "@/lib/format";
 import { toast } from "sonner";
 import { openWhatsApp, getWhatsAppNativeUrl } from "@/lib/whatsapp-send";
+import { ImportLeadPropertyModal } from "@/components/owner/ImportLeadPropertyModal";
+import { getCompanyPool, type CompanyLeadItem } from "@/lib/company-leads";
 
 // ═══ WEB AUDIO API SYNTHESIZER: MONEY BELL CHIME ═══
 function playMoneyBellChime() {
@@ -1241,9 +1243,30 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
   const [ownerAiChat, setOwnerAiChat] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [ownerAiLoading, setOwnerAiLoading] = useState(false);
 
+  // Company Lead / Property Import Modal State
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [companyPoolItems, setCompanyPoolItems] = useState<CompanyLeadItem[]>(() => getCompanyPool());
+
+  const refreshCompanyPool = () => {
+    setCompanyPoolItems(getCompanyPool());
+  };
+
+  useEffect(() => {
+    const handleUpdate = () => refreshCompanyPool();
+    window.addEventListener("dealos_company_pool_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("dealos_company_pool_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
+
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash;
+      if (hash === "#import-leads") {
+        setImportModalOpen(true);
+      }
       if (hash) {
         const el = document.querySelector(hash);
         if (el) {
@@ -1652,6 +1675,39 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
                 <Users size={14} />
                 <span>Manage 12 Brokers</span>
               </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ IMPORT LEAD / PROPERTY DISTRIBUTION DESK ═══ */}
+      <section id="import-leads" className="rounded-2xl sm:rounded-3xl border border-primary/40 bg-gradient-to-r from-primary/10 via-card to-background p-4 sm:p-6 shadow-sm text-left">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-primary/20 text-primary border border-primary/30">
+                COMPANY FLOOR DISPATCH
+              </span>
+              <span className="text-xs font-mono text-emerald-500 font-bold flex items-center gap-1">
+                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                {companyPoolItems.filter((i) => i.status === "unclaimed").length} Unclaimed in Pool
+              </span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-foreground font-display">
+              Import Lead / Property Distribution Desk
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
+              Add client leads or exclusive landlord properties. They broadcast to all 12 agency brokers in real-time. Any agent who takes action first claims the lead; once claimed, it locks into their personal desk tagged as <strong>Company Lead</strong> with 1-click agent transfer.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0">
+            <Button
+              onClick={() => setImportModalOpen(true)}
+              className="h-11 px-5 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold text-xs sm:text-sm shadow-md gap-2 cursor-pointer"
+            >
+              <UserPlus size={16} />
+              <span>Import Lead / Property ⚡</span>
             </Button>
           </div>
         </div>
@@ -3471,6 +3527,13 @@ Your agency is pacing at **94% operational velocity** with **AED 48.65M YTD Volu
           </DialogContent>
         </Dialog>
       )}
+
+      {/* ═══ IMPORT LEAD / PROPERTY MODAL ═══ */}
+      <ImportLeadPropertyModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onSuccess={refreshCompanyPool}
+      />
     </div>
   );
 }

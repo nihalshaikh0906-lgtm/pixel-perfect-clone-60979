@@ -5,7 +5,7 @@ import {
   Building2, CalendarClock, ChevronsLeft, ChevronsRight, Construction, Home, Inbox, Key, LineChart, MapPinned,
   Menu, Settings, Sparkles, Search, LogOut, User, CalendarDays, Handshake, KeyRound,
   FileSignature, Users, Trees, Activity, Trash2, ShieldCheck, Info,
-  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X, Calculator as CalcIcon, MessageSquare,
+  Video, DollarSign, Layers, Crown, Megaphone, ChevronLeft, X, Calculator as CalcIcon, MessageSquare, UserPlus,
 } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -105,6 +105,7 @@ export function AppShell({ children, userName, initials, agency }: { children: R
       title: "OVERWATCH",
       items: [
         { label: "Executive Cockpit", desc: "Agency Overwatch & Speed to Lead", to: "/owner-dashboard", icon: Home, exact: true },
+        { label: "Import Lead / Property", desc: "Broadcast Leads & Properties to Company Agents", to: "/owner-dashboard#import-leads", icon: UserPlus, badge: "New" },
         { label: "Broker Leaderboard", desc: "32 Licensed Agents & Quotas", to: "/owner-dashboard#brokers", icon: Users, badge: 32 },
         { label: "Deals Stages Radar", desc: "Inbound Leads, Pipeline & Form F", to: "/owner-dashboard#pipeline", icon: Layers },
         { label: "WhatsApp Gateway", desc: "Agency Multi-Device Sync & Webhooks", to: "/whatsapp", icon: MessageSquare },
