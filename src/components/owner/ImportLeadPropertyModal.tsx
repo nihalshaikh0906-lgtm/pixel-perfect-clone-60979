@@ -26,8 +26,10 @@ import {
   addCompanyLeadOrProperty,
   getCompanyPool,
   transferCompanyLead,
+  initCompanyLeadsRealtime,
   COMPANY_AGENTS,
   type CompanyLeadItem,
+  type CallerAuth,
 } from "@/lib/company-leads";
 
 interface ImportLeadPropertyModalProps {
@@ -68,6 +70,12 @@ export function ImportLeadPropertyModal({ isOpen, onClose, onSuccess }: ImportLe
   useEffect(() => {
     if (isOpen) {
       refreshPool();
+      const unsubscribe = initCompanyLeadsRealtime(() => {
+        refreshPool();
+      });
+      return () => {
+        unsubscribe();
+      };
     }
   }, [isOpen]);
 
@@ -127,7 +135,16 @@ export function ImportLeadPropertyModal({ isOpen, onClose, onSuccess }: ImportLe
   };
 
   const handleTransfer = (leadId: string, targetAgentName: string) => {
-    transferCompanyLead(leadId, "Company Owner", targetAgentName);
+    const caller: CallerAuth = {
+      name: "Company Owner",
+      role: "company",
+      email: typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null,
+    };
+    const result = transferCompanyLead(leadId, targetAgentName, caller);
+    if (!result.success) {
+      toast.error(result.message);
+      return;
+    }
     toast.success(`✓ Transferred lead directly to ${targetAgentName}! All data shifted.`);
     setReassignModalLead(null);
     refreshPool();

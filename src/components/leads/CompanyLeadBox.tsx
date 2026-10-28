@@ -24,8 +24,11 @@ import {
   getCompanyPool,
   claimCompanyLead,
   transferCompanyLead,
+  isAuthorizedToTransfer,
+  initCompanyLeadsRealtime,
   COMPANY_AGENTS,
   type CompanyLeadItem,
+  type CallerAuth,
 } from "@/lib/company-leads";
 
 interface CompanyLeadBoxProps {
@@ -36,6 +39,7 @@ interface CompanyLeadBoxProps {
 export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = false }: CompanyLeadBoxProps) {
   const [pool, setPool] = useState<CompanyLeadItem[]>([]);
   const [transferringLead, setTransferringLead] = useState<CompanyLeadItem | null>(null);
+  const [claimingId, setClaimingId] = useState<string | null>(null);
 
   const loadPool = () => {
     setPool(getCompanyPool());
@@ -43,14 +47,20 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
 
   useEffect(() => {
     loadPool();
-    const handleUpdate = () => loadPool();
-    window.addEventListener("dealos_company_pool_updated", handleUpdate);
-    window.addEventListener("storage", handleUpdate);
+    // Subscribes to Supabase Realtime channel across all browsers as well as local storage events
+    const unsubscribe = initCompanyLeadsRealtime(() => {
+      loadPool();
+    });
     return () => {
-      window.removeEventListener("dealos_company_pool_updated", handleUpdate);
-      window.removeEventListener("storage", handleUpdate);
+      unsubscribe();
     };
   }, []);
+
+  const caller: CallerAuth = {
+    name: currentAgentName,
+    role: "agent",
+    email: typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null,
+  };
 
   const unclaimedLeads = pool.filter((i) => i.status === "unclaimed");
   const myClaimedLeads = pool.filter(
@@ -58,13 +68,17 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
   );
 
   const handleClaim = (item: CompanyLeadItem, actionType: "claim" | "whatsapp") => {
-    const claimed = claimCompanyLead(item.id, currentAgentName);
-    if (!claimed) {
-      toast.error("Could not claim lead");
+    if (claimingId) return;
+    setClaimingId(item.id);
+
+    const result = claimCompanyLead(item.id, currentAgentName);
+    setClaimingId(null);
+    loadPool();
+
+    if (!result.success) {
+      toast.error(result.message || "Could not claim lead", { icon: "⚠️" });
       return;
     }
-
-    loadPool();
 
     if (actionType === "whatsapp") {
       const cleanPhone = item.phone.replace(/\D/g, "");
@@ -84,7 +98,13 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
 
   const handleTransfer = (targetAgentName: string) => {
     if (!transferringLead) return;
-    transferCompanyLead(transferringLead.id, currentAgentName, targetAgentName);
+
+    const result = transferCompanyLead(transferringLead.id, targetAgentName, caller);
+    if (!result.success) {
+      toast.error(result.message, { icon: "🚫" });
+      return;
+    }
+
     toast.success(
       `✓ 1-Click Transfer Complete! "${transferringLead.title}" and all data have shifted to ${targetAgentName}'s account.`,
       { icon: "⇄", duration: 4000 }
@@ -172,19 +192,21 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
                 <div className="pt-2 border-t border-border/60 flex items-center gap-2">
                   <Button
                     size="sm"
+                    disabled={claimingId === item.id}
                     onClick={() => handleClaim(item, "whatsapp")}
-                    className="flex-1 h-9 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white gap-1.5 shadow-xs cursor-pointer"
+                    className="flex-1 h-9 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                   >
                     <MessageCircle size={13} />
-                    <span>WhatsApp &amp; Claim ⚡</span>
+                    <span>{claimingId === item.id ? "Locking..." : "WhatsApp & Claim ⚡"}</span>
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
+                    disabled={claimingId === item.id}
                     onClick={() => handleClaim(item, "claim")}
-                    className="h-9 px-3 rounded-xl text-xs font-bold border-border hover:bg-secondary cursor-pointer"
+                    className="h-9 px-3 rounded-xl text-xs font-bold border-border hover:bg-secondary cursor-pointer disabled:opacity-50"
                   >
-                    <span>Claim</span>
+                    <span>{claimingId === item.id ? "Locking..." : "Claim"}</span>
                   </Button>
                 </div>
               </div>

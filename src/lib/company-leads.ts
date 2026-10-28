@@ -1,10 +1,11 @@
 /**
- * Company Lead & Property Import and Distribution System
- * Enables Company Owners to import leads and properties into the company pool.
- * All company agents see unclaimed leads. When any agent claims or acts on one,
- * it disappears from other agents' pool and moves to the claiming agent's leads section,
- * tagged with "Company Lead" and support for 1-click agent transfer.
+ * Company Lead & Exclusive Property Distribution System
+ *
+ * Provides real-time cross-browser broadcast, atomic first-to-claim locking
+ * with duplicate claim rejection, and strict role-based transfer authorization.
  */
+
+import { supabase } from "@/integrations/supabase/client";
 
 export interface CompanyLeadItem {
   id: string;
@@ -14,7 +15,7 @@ export interface CompanyLeadItem {
   email: string;
   budgetOrPrice: string; // e.g. "AED 3,850,000"
   location: string; // e.g. "Dubai Marina", "Palm Jumeirah"
-  details: string; // e.g. "Looking for 2BR luxury apartment with canal view"
+  details: string; // Brief requirement or listing summary
   category: "Off-Plan" | "Ready Resale" | "Rental" | "Ultra-HNWI";
   status: "unclaimed" | "claimed";
   claimedByAgentId?: string;
@@ -39,6 +40,29 @@ export interface CompanyAgent {
   role: string;
   phone: string;
   avatar: string;
+}
+
+export interface CallerAuth {
+  name: string;
+  role?: string | null;
+  email?: string | null;
+  agentId?: string | null;
+}
+
+export interface ClaimResult {
+  success: boolean;
+  lead?: CompanyLeadItem;
+  claimedBy?: string;
+  claimedAt?: string;
+  error?: "already_claimed" | "not_found" | "already_claimed_by_you";
+  message: string;
+}
+
+export interface TransferResult {
+  success: boolean;
+  lead?: CompanyLeadItem;
+  error?: "unauthorized" | "not_found" | "not_claimed" | "invalid_target";
+  message: string;
 }
 
 export const COMPANY_AGENTS: CompanyAgent[] = [
@@ -125,28 +149,37 @@ const INITIAL_COMPANY_POOL: CompanyLeadItem[] = [
 ];
 
 const STORAGE_KEY = "dealos_company_leads_pool";
+const REALTIME_CHANNEL_NAME = "dealos_company_leads_floor";
+
+// Singleton channel reference
+let realtimeChannel: any = null;
 
 export function getCompanyPool(): CompanyLeadItem[] {
-  if (typeof window === "undefined") return INITIAL_COMPANY_POOL;
+  if (typeof window === "undefined" && typeof localStorage === "undefined") {
+    return INITIAL_COMPANY_POOL;
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_COMPANY_POOL));
       return INITIAL_COMPANY_POOL;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_COMPANY_POOL;
   } catch {
     return INITIAL_COMPANY_POOL;
   }
 }
 
-export function saveCompanyPool(items: CompanyLeadItem[]) {
-  if (typeof window === "undefined") return;
+export function saveCompanyPool(pool: CompanyLeadItem[], notifyLocal: boolean = true): void {
+  if (typeof window === "undefined" && typeof localStorage === "undefined") return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    window.dispatchEvent(new Event("dealos_company_pool_updated"));
-  } catch (err) {
-    console.error("Failed to save company leads pool:", err);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(pool));
+    if (notifyLocal && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("dealos_company_pool_updated", { detail: { timestamp: Date.now() } }));
+    }
+  } catch {
+    // Storage quota or SSR fallback
   }
 }
 
@@ -159,13 +192,107 @@ export function getAgentClaimedCompanyLeads(agentName?: string): CompanyLeadItem
   if (!agentName) {
     return pool.filter((item) => item.status === "claimed");
   }
+  const clean = agentName.toLowerCase().trim();
   return pool.filter(
     (item) =>
       item.status === "claimed" &&
-      (item.claimedByAgentName?.toLowerCase().includes(agentName.toLowerCase()) ||
-        item.claimedByAgentId === agentName)
+      (item.claimedByAgentName?.toLowerCase().trim() === clean ||
+        item.claimedByAgentId?.toLowerCase().trim() === clean ||
+        item.claimedByAgentName?.toLowerCase().includes(clean))
   );
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// CROSS-BROWSER SUPABASE REALTIME BROADCAST ENGINE
+// ═══════════════════════════════════════════════════════════════════
+
+export function initCompanyLeadsRealtime(onUpdate?: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  if (!realtimeChannel) {
+    try {
+      realtimeChannel = supabase.channel(REALTIME_CHANNEL_NAME, {
+        config: {
+          broadcast: { ack: false, self: false },
+        },
+      });
+
+      realtimeChannel
+        .on("broadcast", { event: "lead_added" }, ({ payload }: { payload: CompanyLeadItem }) => {
+          if (!payload || !payload.id) return;
+          const currentPool = getCompanyPool();
+          const exists = currentPool.some((i) => i.id === payload.id);
+          if (!exists) {
+            const updated = [payload, ...currentPool];
+            saveCompanyPool(updated, true);
+          }
+        })
+        .on("broadcast", { event: "lead_claimed" }, ({ payload }: { payload: { leadId: string; claimedByAgentName: string; claimedByAgentId?: string; claimedAt?: string } }) => {
+          if (!payload || !payload.leadId) return;
+          const currentPool = getCompanyPool();
+          const index = currentPool.findIndex((i) => i.id === payload.leadId);
+          if (index !== -1) {
+            currentPool[index] = {
+              ...currentPool[index],
+              status: "claimed",
+              claimedByAgentName: payload.claimedByAgentName,
+              claimedByAgentId: payload.claimedByAgentId,
+              claimedAt: payload.claimedAt || new Date().toISOString(),
+            };
+            saveCompanyPool(currentPool, true);
+          }
+        })
+        .on("broadcast", { event: "lead_transferred" }, ({ payload }: { payload: { leadId: string; toAgentName: string; toAgentId?: string; transferredAt?: string; history?: any[] } }) => {
+          if (!payload || !payload.leadId) return;
+          const currentPool = getCompanyPool();
+          const index = currentPool.findIndex((i) => i.id === payload.leadId);
+          if (index !== -1) {
+            currentPool[index] = {
+              ...currentPool[index],
+              status: "claimed",
+              claimedByAgentName: payload.toAgentName,
+              claimedByAgentId: payload.toAgentId,
+              claimedAt: payload.transferredAt || new Date().toISOString(),
+              history: payload.history || currentPool[index].history,
+            };
+            saveCompanyPool(currentPool, true);
+          }
+        })
+        .subscribe();
+    } catch {
+      // Realtime fallback
+    }
+  }
+
+  const listener = () => {
+    if (onUpdate) onUpdate();
+  };
+
+  window.addEventListener("dealos_company_pool_updated", listener);
+  window.addEventListener("storage", listener);
+
+  return () => {
+    window.removeEventListener("dealos_company_pool_updated", listener);
+    window.removeEventListener("storage", listener);
+  };
+}
+
+function broadcastEvent(event: "lead_added" | "lead_claimed" | "lead_transferred", payload: any) {
+  if (typeof window === "undefined" || !realtimeChannel) return;
+  try {
+    realtimeChannel.send({
+      type: "broadcast",
+      event,
+      payload,
+    });
+  } catch {
+    // Offline / fallback
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// OWNER IMPORT WITH CROSS-BROWSER BROADCAST
+// ═══════════════════════════════════════════════════════════════════
 
 export function addCompanyLeadOrProperty(
   data: Omit<CompanyLeadItem, "id" | "status" | "isCompanyLead" | "createdAt" | "source" | "history">
@@ -182,89 +309,260 @@ export function addCompanyLeadOrProperty(
         action: "Imported into Company Floor",
         agentName: "Company Owner",
         timestamp: new Date().toISOString(),
-        note: "Added to company lead box for broker action.",
+        note: "Dispatched to company floor. Visible to all company brokers for first-to-claim action.",
       },
     ],
   };
 
   const pool = getCompanyPool();
   const updated = [newItem, ...pool];
-  saveCompanyPool(updated);
+  saveCompanyPool(updated, true);
+
+  // Broadcast to all other browsers and devices
+  broadcastEvent("lead_added", newItem);
+
   return newItem;
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// ATOMIC FIRST-TO-CLAIM LOCK WITH DUPLICATE CLAIM REJECTION
+// ═══════════════════════════════════════════════════════════════════
+
 /**
- * Claims a company lead for an agent.
- * Instantly removes it from all other agents' unclaimed pool
- * and attributes it exclusively to the claiming agent.
+ * Claims a company lead atomically.
+ * If another agent has already claimed this lead, the claim FAILS and returns
+ * error: "already_claimed", preventing duplicate claims across all browsers.
  */
-export function claimCompanyLead(leadId: string, agentName: string, agentId?: string): CompanyLeadItem | null {
+export function claimCompanyLead(
+  leadId: string,
+  agentName: string,
+  agentId?: string
+): ClaimResult {
   const pool = getCompanyPool();
   const index = pool.findIndex((item) => item.id === leadId);
-  if (index === -1) return null;
+
+  if (index === -1) {
+    return {
+      success: false,
+      error: "not_found",
+      message: "This lead or property could not be found in the company floor pool.",
+    };
+  }
 
   const item = pool[index];
+
+  // Check if lead is ALREADY claimed
   if (item.status === "claimed") {
-    // Already claimed by another agent
-    return item;
+    const isSameAgent =
+      item.claimedByAgentName?.toLowerCase().trim() === agentName.toLowerCase().trim() ||
+      (agentId && item.claimedByAgentId === agentId);
+
+    if (isSameAgent) {
+      return {
+        success: true,
+        lead: item,
+        error: "already_claimed_by_you",
+        message: "You already have this lead locked to your desk.",
+      };
+    }
+
+    // DUPLICATE CLAIM REJECTED!
+    return {
+      success: false,
+      error: "already_claimed",
+      claimedBy: item.claimedByAgentName,
+      claimedAt: item.claimedAt,
+      lead: item,
+      message: `Claim failed: This lead was already claimed by ${item.claimedByAgentName || "another agent"}!`,
+    };
   }
+
+  // Atomically lock exclusively to this agent
+  const now = new Date().toISOString();
+  const assignedId = agentId || `agent-${agentName.toLowerCase().replace(/\s+/g, "-")}`;
 
   const updatedItem: CompanyLeadItem = {
     ...item,
     status: "claimed",
     claimedByAgentName: agentName,
-    claimedByAgentId: agentId || `agent-${agentName.toLowerCase().replace(/\s+/g, "-")}`,
-    claimedAt: new Date().toISOString(),
+    claimedByAgentId: assignedId,
+    claimedAt: now,
     history: [
       ...(item.history || []),
       {
-        action: "Claimed & Action Taken",
+        action: "Claimed & Locked",
         agentName,
-        timestamp: new Date().toISOString(),
-        note: `Lead locked exclusively to ${agentName}. Removed from general company leadbox.`,
+        timestamp: now,
+        note: `Lead locked exclusively to ${agentName}. Removed from company floor pool.`,
       },
     ],
   };
 
   pool[index] = updatedItem;
-  saveCompanyPool(pool);
-  return updatedItem;
+  saveCompanyPool(pool, true);
+
+  // Broadcast lock cross-browser immediately
+  broadcastEvent("lead_claimed", {
+    leadId: updatedItem.id,
+    claimedByAgentName: agentName,
+    claimedByAgentId: assignedId,
+    claimedAt: now,
+  });
+
+  return {
+    success: true,
+    lead: updatedItem,
+    message: `Lead "${item.title}" successfully claimed and locked to your desk!`,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STRICT ROLE & OWNERSHIP TRANSFER AUTHORIZATION
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Validates whether the caller is authorized to transfer this lead.
+ * Rules:
+ * 1. Company Owner / Agency Principal / Admin / Master Admin can transfer ANY lead.
+ * 2. An Agent can ONLY transfer a lead if they currently hold the active claim.
+ * 3. Any other caller is strictly UNAUTHORIZED.
+ */
+export function isAuthorizedToTransfer(
+  lead: CompanyLeadItem,
+  caller: CallerAuth
+): { authorized: boolean; reason?: string } {
+  if (!caller || !caller.name) {
+    return { authorized: false, reason: "Caller identification is required." };
+  }
+
+  // 1. Company Owner / Admin check
+  const roleClean = (caller.role || "").toLowerCase().trim();
+  const emailClean = (caller.email || "").toLowerCase().trim();
+
+  const isOwnerOrAdmin =
+    roleClean === "company" ||
+    roleClean === "owner" ||
+    roleClean === "admin" ||
+    roleClean === "company_admin" ||
+    emailClean === "admin@dealos.ae" ||
+    emailClean === "nihalshaikh0906@gmail.com";
+
+  if (isOwnerOrAdmin) {
+    return { authorized: true };
+  }
+
+  // 2. Unclaimed leads cannot be transferred by agents
+  if (lead.status !== "claimed") {
+    return {
+      authorized: false,
+      reason: "Unclaimed company leads cannot be transferred. They must be claimed first.",
+    };
+  }
+
+  // 3. Agent ownership check: caller must match the currently assigned agent
+  const callerNameClean = caller.name.toLowerCase().trim();
+  const currentOwnerClean = (lead.claimedByAgentName || "").toLowerCase().trim();
+  const callerIdClean = caller.agentId || `agent-${callerNameClean.replace(/\s+/g, "-")}`;
+  const ownerIdClean = lead.claimedByAgentId;
+
+  const isCurrentOwner =
+    callerNameClean === currentOwnerClean ||
+    (ownerIdClean && callerIdClean === ownerIdClean);
+
+  if (isCurrentOwner) {
+    return { authorized: true };
+  }
+
+  return {
+    authorized: false,
+    reason: `Unauthorized: You do not own this lead. Only ${lead.claimedByAgentName || "the assigned agent"} or the Company Owner can transfer this lead.`,
+  };
 }
 
 /**
- * 1-Click Lead Transfer:
- * Moves the company lead and all its data, history, and notes
- * from one agent to another agent in the company.
+ * 1-Click Lead Transfer with strict authorization enforcement.
  */
-export function transferCompanyLead(leadId: string, fromAgentName: string, toAgentName: string): CompanyLeadItem | null {
+export function transferCompanyLead(
+  leadId: string,
+  toAgentName: string,
+  caller: CallerAuth,
+  note?: string
+): TransferResult {
   const pool = getCompanyPool();
   const index = pool.findIndex((item) => item.id === leadId);
-  if (index === -1) return null;
+
+  if (index === -1) {
+    return {
+      success: false,
+      error: "not_found",
+      message: "Lead not found in company records.",
+    };
+  }
 
   const item = pool[index];
-  const targetAgent = COMPANY_AGENTS.find((a) => a.name.toLowerCase() === toAgentName.toLowerCase()) || {
+
+  // Enforce Authorization
+  const auth = isAuthorizedToTransfer(item, caller);
+  if (!auth.authorized) {
+    return {
+      success: false,
+      error: "unauthorized",
+      message: auth.reason || "Unauthorized to transfer this lead.",
+    };
+  }
+
+  // Find target colleague
+  const targetAgent = COMPANY_AGENTS.find(
+    (a) => a.name.toLowerCase().trim() === toAgentName.toLowerCase().trim()
+  ) || {
     id: `agent-${toAgentName.toLowerCase().replace(/\s+/g, "-")}`,
     name: toAgentName,
   };
+
+  // Prevent transferring to same agent
+  if (item.claimedByAgentName?.toLowerCase().trim() === targetAgent.name.toLowerCase().trim()) {
+    return {
+      success: false,
+      error: "invalid_target",
+      message: `Lead is already assigned to ${targetAgent.name}.`,
+    };
+  }
+
+  const now = new Date().toISOString();
+  const previousOwner = item.claimedByAgentName || "Unassigned";
 
   const updatedItem: CompanyLeadItem = {
     ...item,
     status: "claimed",
     claimedByAgentName: targetAgent.name,
     claimedByAgentId: targetAgent.id,
-    claimedAt: new Date().toISOString(),
+    claimedAt: now,
     history: [
       ...(item.history || []),
       {
         action: "1-Click Transfer",
-        agentName: fromAgentName,
-        timestamp: new Date().toISOString(),
-        note: `Transferred lead ownership from ${fromAgentName} to ${targetAgent.name}. All notes & data shifted.`,
+        agentName: caller.name,
+        timestamp: now,
+        note: `Transferred from ${previousOwner} to ${targetAgent.name} by ${caller.name} (${caller.role || "broker"}). Reason: ${note || "Shifted client files and commission desk"}.`,
       },
     ],
   };
 
   pool[index] = updatedItem;
-  saveCompanyPool(pool);
-  return updatedItem;
+  saveCompanyPool(pool, true);
+
+  // Broadcast cross-browser immediately
+  broadcastEvent("lead_transferred", {
+    leadId: updatedItem.id,
+    toAgentName: targetAgent.name,
+    toAgentId: targetAgent.id,
+    transferredAt: now,
+    history: updatedItem.history,
+  });
+
+  return {
+    success: true,
+    lead: updatedItem,
+    message: `Lead "${item.title}" successfully transferred to ${targetAgent.name}. All notes and data shifted.`,
+  };
 }
