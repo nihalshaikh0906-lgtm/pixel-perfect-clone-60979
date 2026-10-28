@@ -25,8 +25,10 @@ import {
   claimCompanyLead,
   claimCompanyLeadAtomic,
   transferCompanyLead,
+  transferCompanyLeadVerified,
   isAuthorizedToTransfer,
   initCompanyLeadsRealtime,
+  getCompanyAgents,
   COMPANY_AGENTS,
   type CompanyLeadItem,
   type CallerAuth,
@@ -41,6 +43,7 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
   const [pool, setPool] = useState<CompanyLeadItem[]>([]);
   const [transferringLead, setTransferringLead] = useState<CompanyLeadItem | null>(null);
   const [claimingId, setClaimingId] = useState<string | null>(null);
+  const [agentsList, setAgentsList] = useState(COMPANY_AGENTS);
 
   const loadPool = () => {
     setPool(getCompanyPool());
@@ -48,7 +51,11 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
 
   useEffect(() => {
     loadPool();
-    // Subscribes to Supabase Realtime channel across all browsers as well as local storage events
+    getCompanyAgents().then((agents) => {
+      if (agents && agents.length > 0) setAgentsList(agents);
+    });
+
+    // Subscribes to company-scoped Realtime channel across browsers as well as local storage events
     const unsubscribe = initCompanyLeadsRealtime(() => {
       loadPool();
     });
@@ -102,10 +109,10 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
     }
   };
 
-  const handleTransfer = (targetAgentName: string) => {
+  const handleTransfer = async (targetAgentName: string, targetAgentId?: string) => {
     if (!transferringLead) return;
 
-    const result = transferCompanyLead(transferringLead.id, targetAgentName, caller);
+    const result = await transferCompanyLeadVerified(transferringLead.id, targetAgentName, targetAgentId, "Transferred from Leadbox");
     if (!result.success) {
       toast.error(result.message, { icon: "🚫" });
       return;
@@ -329,11 +336,11 @@ export function CompanyLeadBox({ currentAgentName = "Tariq Mansoor", compact = f
                 Select Company Agent:
               </span>
               <div className="space-y-1.5">
-                {COMPANY_AGENTS.filter((a) => a.name !== currentAgentName).map((agent) => (
+                {agentsList.filter((a) => a.name !== currentAgentName).map((agent) => (
                   <button
                     key={agent.id}
                     type="button"
-                    onClick={() => handleTransfer(agent.name)}
+                    onClick={() => handleTransfer(agent.name, agent.id)}
                     className="w-full p-2.5 rounded-xl border border-border hover:border-primary/50 bg-secondary/30 hover:bg-primary/10 flex items-center justify-between transition-all cursor-pointer text-left group"
                   >
                     <div className="flex items-center gap-2.5">

@@ -23,7 +23,7 @@ import { OwnerAssignLeadModal } from "@/components/owner/OwnerAssignLeadModal";
 import { CsvImporterModal } from "@/components/leads/CsvImporterModal";
 import { supabase } from "@/integrations/supabase/client";
 import { getCustomLeads, formatAed } from "@/lib/demo-leads";
-import { getCompanyPool, transferCompanyLead, type CompanyLeadItem } from "@/lib/company-leads";
+import { getCompanyPool, transferCompanyLead, transferCompanyLeadVerified, type CompanyLeadItem } from "@/lib/company-leads";
 import { isValidUuid } from "@/lib/lead-persistence";
 
 // ═══ WEB AUDIO API SYNTHESIZER: MONEY BELL CHIME ═══
@@ -1510,12 +1510,8 @@ export function OwnerDashboard({ page = 1, onPage, userName }: { page?: number; 
         localStorage.setItem("dealos_custom_leads", JSON.stringify(updatedCustom));
       } catch {}
 
-      // 3. If it was a company pool lead, transfer ownership
-      transferCompanyLead(leadId, targetBroker.name, {
-        name: "Company Owner",
-        role: "company",
-        email: localStorage.getItem("dealos_active_email"),
-      });
+      // 3. If it was a company pool lead, transfer ownership with verified credentials
+      transferCompanyLeadVerified(leadId, targetBroker.name, targetBroker.id, "Owner Reassignment");
 
       // 4. Dispatch real events to all broker inboxes
       window.dispatchEvent(

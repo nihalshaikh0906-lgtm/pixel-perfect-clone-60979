@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { addImportedLeads, type Lead, type LeadType, type Stage } from "@/lib/demo-leads";
 import { supabase } from "@/integrations/supabase/client";
-import { batchSaveLeadsToSupabase } from "@/lib/lead-persistence";
+import { batchSaveLeadsToSupabase, getOrgRealtimeChannelName } from "@/lib/lead-persistence";
 import { addCompanyLeadOrProperty } from "@/lib/company-leads";
 
 interface CsvImporterModalProps {
@@ -95,22 +95,35 @@ export function CsvImporterModal({ open, onOpenChange, onImportSuccess }: CsvImp
     const notesIdx = headerCols.findIndex((h) => h.includes("note") || h.includes("message") || h.includes("comment"));
 
     const drafts: ParsedLeadDraft[] = [];
+    const maxRows = Math.min(lines.length, 501); // Enforce max 500 lead batch limit
+    if (lines.length > 501) {
+      toast.warning("Batch limit: Capped at 500 leads per import for performance and database integrity.");
+    }
 
-    for (let i = 1; i < lines.length; i++) {
-      // Split on commas while respecting quotes
-      const match = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+    let skippedCount = 0;
+
+    for (let i = 1; i < maxRows; i++) {
       const rawCols = lines[i].split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
-      if (rawCols.length === 0 || !rawCols.some((c) => c.length > 0)) continue;
+      if (rawCols.length === 0 || !rawCols.some((c) => c.length > 0)) {
+        skippedCount++;
+        continue;
+      }
 
-      const rawName = nameIdx >= 0 && rawCols[nameIdx] ? rawCols[nameIdx] : `Investor #${i}`;
-      const rawPhone = phoneIdx >= 0 && rawCols[phoneIdx] ? rawCols[phoneIdx] : "+971 50 000 0000";
-      const rawArea = areaIdx >= 0 && rawCols[areaIdx] ? rawCols[areaIdx] : "Downtown Dubai";
+      const rawName = (nameIdx >= 0 && rawCols[nameIdx] ? rawCols[nameIdx] : "").trim().replace(/[<>]/g, "");
+      if (rawName.length < 2) {
+        skippedCount++;
+        continue; // Skip invalid or missing client names
+      }
+
+      const rawPhone = (phoneIdx >= 0 && rawCols[phoneIdx] ? rawCols[phoneIdx] : "+971 50 000 0000").trim();
+      const rawArea = (areaIdx >= 0 && rawCols[areaIdx] ? rawCols[areaIdx] : "Downtown Dubai").trim().slice(0, 80);
       
       const rawBudgetString = budgetIdx >= 0 ? rawCols[budgetIdx].replace(/[^0-9.]/g, "") : "2500000";
-      const budget = parseFloat(rawBudgetString) || 2500000;
+      const parsedBudget = parseFloat(rawBudgetString);
+      const budget = isNaN(parsedBudget) || parsedBudget < 50000 ? 2500000 : Math.min(parsedBudget, 500000000);
 
       const rawBeds = bedsIdx >= 0 ? parseInt(rawCols[bedsIdx], 10) : 2;
-      const beds = isNaN(rawBeds) ? 2 : rawBeds;
+      const beds = isNaN(rawBeds) || rawBeds < 0 ? 2 : Math.min(rawBeds, 10);
 
       let type: LeadType = "Off-plan";
       if (typeIdx >= 0 && rawCols[typeIdx]) {
@@ -128,14 +141,14 @@ export function CsvImporterModal({ open, onOpenChange, onImportSuccess }: CsvImp
         else if (sLower.includes("offer")) stage = "Offer";
       }
 
-      const source = sourceIdx >= 0 && rawCols[sourceIdx] ? rawCols[sourceIdx] : "CSV Import";
-      const country = countryIdx >= 0 && rawCols[countryIdx] ? rawCols[countryIdx] : "UAE";
-      const notes = notesIdx >= 0 ? rawCols[notesIdx] : undefined;
+      const source = (sourceIdx >= 0 && rawCols[sourceIdx] ? rawCols[sourceIdx] : "CSV Import").trim().slice(0, 50);
+      const country = (countryIdx >= 0 && rawCols[countryIdx] ? rawCols[countryIdx] : "UAE").trim().slice(0, 50);
+      const notes = notesIdx >= 0 && rawCols[notesIdx] ? rawCols[notesIdx].trim().replace(/[<>]/g, "").slice(0, 400) : undefined;
 
       drafts.push({
         name: rawName,
         phone: rawPhone,
-        email: emailIdx >= 0 ? rawCols[emailIdx] : undefined,
+        email: emailIdx >= 0 && rawCols[emailIdx] ? rawCols[emailIdx].trim().slice(0, 100) : undefined,
         area: rawArea,
         budget,
         beds,
@@ -149,9 +162,11 @@ export function CsvImporterModal({ open, onOpenChange, onImportSuccess }: CsvImp
 
     setParsedDrafts(drafts);
     if (drafts.length > 0) {
-      toast.success(`Successfully parsed ${drafts.length} leads from CSV!`);
+      toast.success(
+        `Successfully validated and parsed ${drafts.length} leads!${skippedCount > 0 ? ` (${skippedCount} invalid rows skipped)` : ""}`
+      );
     } else {
-      toast.error("Could not extract valid leads from the file.");
+      toast.error("Could not extract any valid leads with valid names and details.");
     }
   };
 
@@ -224,7 +239,8 @@ export function CsvImporterModal({ open, onOpenChange, onImportSuccess }: CsvImp
     // 1. Local custom leads storage update
     addImportedLeads(fullLeads);
 
-    // 2. Persist batch to Supabase Postgres database (fixes "CSV is browser-only")
+    // 2. Persist batch to Supabase Postgres database (with verified org_id)
+    let companyOrgId: string | undefined;
     try {
       const dbPayload = fullLeads.map((l) => ({
         name: l.name,
@@ -241,23 +257,27 @@ export function CsvImporterModal({ open, onOpenChange, onImportSuccess }: CsvImp
         assigned_to: null,
       }));
 
-      await batchSaveLeadsToSupabase(dbPayload);
+      const batchRes = await batchSaveLeadsToSupabase(dbPayload);
+      if (batchRes.success && batchRes.orgId) {
+        companyOrgId = batchRes.orgId;
+      }
     } catch (e) {
       console.warn("Supabase CSV batch sync exception:", e);
     }
 
-    // 3. Realtime broadcast across all open browsers and broker desks
+    // 3. Company-isolated Realtime broadcast (never open/cross-tenant)
     try {
-      const channel = supabase.channel("dealos_company_leads_floor");
+      const scopedChannelName = getOrgRealtimeChannelName(companyOrgId);
+      const channel = supabase.channel(scopedChannelName);
       channel.send({
         type: "broadcast",
         event: "leads_imported",
-        payload: { count: fullLeads.length, timestamp: Date.now() },
+        payload: { count: fullLeads.length, orgId: companyOrgId, timestamp: Date.now() },
       });
     } catch {}
 
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("dealos:leads_imported", { detail: { count: fullLeads.length } }));
+      window.dispatchEvent(new CustomEvent("dealos:leads_imported", { detail: { count: fullLeads.length, orgId: companyOrgId } }));
       window.dispatchEvent(new CustomEvent("dealos_company_pool_updated", { detail: { timestamp: Date.now() } }));
     }
 

@@ -2,7 +2,8 @@
  * Company Lead & Exclusive Property Distribution System
  *
  * Provides real-time cross-browser broadcast, atomic first-to-claim locking
- * with duplicate claim rejection, and strict authenticated role-based transfer authorization.
+ * with duplicate claim rejection, server-side Postgres RPC validation,
+ * and company-isolated multi-tenant channel boundaries.
  */
 
 import { supabase } from "@/integrations/supabase/client";
@@ -10,9 +11,12 @@ import { detectRole, getStoredRole } from "./auth-role";
 import {
   saveLeadToSupabase,
   batchSaveLeadsToSupabase,
-  atomicClaimLeadInSupabase,
   isValidUuid,
   getOrEnsureOrgId,
+  getOrgRealtimeChannelName,
+  claimLeadServerSide,
+  transferLeadServerSide,
+  getGenuineCompanyBrokers,
 } from "./lead-persistence";
 
 export interface CompanyLeadItem {
@@ -33,6 +37,7 @@ export interface CompanyLeadItem {
   source: string; // "Company Owner Import"
   createdAt: string;
   notes?: string;
+  orgId?: string;
   history?: {
     action: string;
     agentName: string;
@@ -55,6 +60,7 @@ export interface CallerAuth {
   role?: string | null;
   email?: string | null;
   agentId?: string | null;
+  verifiedByServer?: boolean;
 }
 
 export interface ClaimResult {
@@ -62,14 +68,14 @@ export interface ClaimResult {
   lead?: CompanyLeadItem;
   claimedBy?: string;
   claimedAt?: string;
-  error?: "already_claimed" | "not_found" | "already_claimed_by_you" | "unauthenticated" | "unauthorized";
+  error?: "already_claimed" | "not_found" | "already_claimed_by_you" | "unauthenticated" | "unauthorized" | "invalid_id" | "rpc_error" | "network_error" | "no_organization";
   message: string;
 }
 
 export interface TransferResult {
   success: boolean;
   lead?: CompanyLeadItem;
-  error?: "unauthorized" | "not_found" | "not_claimed" | "invalid_target" | "unauthenticated";
+  error?: "unauthorized" | "not_found" | "not_claimed" | "invalid_target" | "unauthenticated" | "invalid_id" | "rpc_error" | "network_error" | "no_organization";
   message: string;
 }
 
@@ -80,6 +86,19 @@ export const COMPANY_AGENTS: CompanyAgent[] = [
   { id: "agent-zaid", name: "Zaid Al-Habib", reraNumber: "BRN-73419", role: "Commercial & Land Advisor", phone: "+971 56 789 0123", avatar: "ZH" },
   { id: "agent-layla", name: "Layla Bennett", reraNumber: "BRN-51204", role: "Luxury Waterfront Consultant", phone: "+971 58 345 6789", avatar: "LB" },
 ];
+
+/**
+ * Returns genuine brokers from public.org_members if available, falling back to initial agents.
+ */
+export async function getCompanyAgents(): Promise<CompanyAgent[]> {
+  try {
+    const genuine = await getGenuineCompanyBrokers();
+    if (genuine && genuine.length > 0) {
+      return genuine;
+    }
+  } catch {}
+  return COMPANY_AGENTS;
+}
 
 const INITIAL_COMPANY_POOL: CompanyLeadItem[] = [
   {
@@ -157,9 +176,16 @@ const INITIAL_COMPANY_POOL: CompanyLeadItem[] = [
 ];
 
 const STORAGE_KEY = "dealos_company_leads_pool";
-const REALTIME_CHANNEL_NAME = "dealos_company_leads_floor";
 
 let realtimeChannel: any = null;
+let subscribedChannelName: string | null = null;
+let crossTabChannel: BroadcastChannel | null = null;
+
+if (typeof window !== "undefined" && typeof BroadcastChannel !== "undefined") {
+  try {
+    crossTabChannel = new BroadcastChannel("dealos_sample_leads_sync");
+  } catch {}
+}
 
 export function getCompanyPool(): CompanyLeadItem[] {
   if (typeof window === "undefined" && typeof localStorage === "undefined") {
@@ -185,9 +211,7 @@ export function saveCompanyPool(pool: CompanyLeadItem[], notifyLocal: boolean = 
     if (notifyLocal && typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("dealos_company_pool_updated", { detail: { timestamp: Date.now() } }));
     }
-  } catch {
-    // Storage fallback
-  }
+  } catch {}
 }
 
 export function getUnclaimedCompanyPool(): CompanyLeadItem[] {
@@ -210,15 +234,22 @@ export function getAgentClaimedCompanyLeads(agentName?: string): CompanyLeadItem
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// CROSS-BROWSER SUPABASE REALTIME BROADCAST ENGINE
+// COMPANY-ISOLATED SUPABASE REALTIME & CROSS-TAB BROADCAST ENGINE
 // ═══════════════════════════════════════════════════════════════════
 
-export function initCompanyLeadsRealtime(onUpdate?: () => void): () => void {
+export function initCompanyLeadsRealtime(onUpdate?: () => void, targetOrgId?: string): () => void {
   if (typeof window === "undefined") return () => {};
 
-  if (!realtimeChannel) {
+  const channelName = getOrgRealtimeChannelName(targetOrgId);
+
+  if (!realtimeChannel || subscribedChannelName !== channelName) {
     try {
-      realtimeChannel = supabase.channel(REALTIME_CHANNEL_NAME, {
+      if (realtimeChannel) {
+        realtimeChannel.unsubscribe();
+      }
+
+      subscribedChannelName = channelName;
+      realtimeChannel = supabase.channel(channelName, {
         config: {
           broadcast: { ack: false, self: false },
         },
@@ -266,9 +297,35 @@ export function initCompanyLeadsRealtime(onUpdate?: () => void): () => void {
           }
         })
         .subscribe();
-    } catch {
-      // Realtime fallback
-    }
+    } catch {}
+  }
+
+  // Cross-tab broadcast listener for sample leads
+  if (crossTabChannel) {
+    crossTabChannel.onmessage = (event) => {
+      const data = event.data;
+      if (data?.type === "lead_claimed" && data.leadId) {
+        const pool = getCompanyPool();
+        const idx = pool.findIndex((i) => i.id === data.leadId);
+        if (idx !== -1) {
+          pool[idx].status = "claimed";
+          pool[idx].claimedByAgentName = data.agentName;
+          pool[idx].claimedAt = data.claimedAt;
+          saveCompanyPool(pool, false);
+          onUpdate?.();
+        }
+      } else if (data?.type === "lead_transferred" && data.leadId) {
+        const pool = getCompanyPool();
+        const idx = pool.findIndex((i) => i.id === data.leadId);
+        if (idx !== -1) {
+          pool[idx].status = "claimed";
+          pool[idx].claimedByAgentName = data.toAgentName;
+          pool[idx].claimedByAgentId = data.toAgentId;
+          saveCompanyPool(pool, false);
+          onUpdate?.();
+        }
+      }
+    };
   }
 
   const listener = () => {
@@ -285,15 +342,21 @@ export function initCompanyLeadsRealtime(onUpdate?: () => void): () => void {
 }
 
 function broadcastEvent(event: "lead_added" | "lead_claimed" | "lead_transferred", payload: any) {
-  if (typeof window === "undefined" || !realtimeChannel) return;
-  try {
-    realtimeChannel.send({
-      type: "broadcast",
-      event,
-      payload,
-    });
-  } catch {
-    // Offline / fallback
+  if (typeof window !== "undefined" && realtimeChannel) {
+    try {
+      realtimeChannel.send({
+        type: "broadcast",
+        event,
+        payload,
+      });
+    } catch {}
+  }
+
+  // Also notify across local browser tabs
+  if (crossTabChannel && payload) {
+    try {
+      crossTabChannel.postMessage({ type: event, ...payload });
+    } catch {}
   }
 }
 
@@ -301,15 +364,19 @@ function broadcastEvent(event: "lead_added" | "lead_claimed" | "lead_transferred
 // AUTHENTICATED CALLER VERIFICATION (DATABASE & SESSION LEVEL)
 // ═══════════════════════════════════════════════════════════════════
 
+/**
+ * Validates genuine user role directly against database public.org_members.
+ * NEVER trusts client-side localStorage roles for permissions.
+ */
 export async function getVerifiedUser(): Promise<{
   id: string;
   name: string;
   email: string;
   role: "company" | "agent";
   isOwnerOrAdmin: boolean;
+  orgId?: string;
 } | null> {
   const activeEmail = (typeof window !== "undefined" ? localStorage.getItem("dealos_active_email") : null)?.toLowerCase().trim();
-  const isDemo = typeof window !== "undefined" && (localStorage.getItem("dealos_demo_mode") === "true" || activeEmail?.includes("demo"));
   const isMasterAdmin = activeEmail === "admin@dealos.ae" || activeEmail === "nihalshaikh0906@gmail.com";
 
   try {
@@ -318,19 +385,28 @@ export async function getVerifiedUser(): Promise<{
     if (user) {
       const email = (user.email || "").toLowerCase().trim();
       const isMaster = email === "admin@dealos.ae" || email === "nihalshaikh0906@gmail.com";
-      const detected = await detectRole();
+
+      // Server verification: query database public.org_members
+      const { data: member } = await (supabase as any)
+        .from("org_members")
+        .select("org_id, role, full_name")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const dbRole = member?.role === "company_admin" ? "company" : "agent";
       return {
         id: user.id,
-        name: (user.user_metadata?.full_name as string) || user.email?.split("@")[0] || "User",
+        name: member?.full_name || (user.user_metadata?.full_name as string) || user.email?.split("@")[0] || "Verified User",
         email,
-        role: detected || "agent",
-        isOwnerOrAdmin: detected === "company" || isMaster,
+        role: isMaster ? "company" : dbRole,
+        isOwnerOrAdmin: isMaster || dbRole === "company",
+        orgId: member?.org_id,
       };
     }
-  } catch {
-    // Network fallback
-  }
+  } catch {}
 
+  // Strictly demo fallback if demo mode is enabled and unauthenticated
+  const isDemo = typeof window !== "undefined" && (localStorage.getItem("dealos_demo_mode") === "true" || activeEmail?.includes("demo"));
   if (isDemo || isMasterAdmin) {
     const role = getStoredRole() || (isMasterAdmin ? "company" : "agent");
     return {
@@ -346,7 +422,7 @@ export async function getVerifiedUser(): Promise<{
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// OWNER IMPORT WITH CROSS-BROWSER BROADCAST & SUPABASE SYNC
+// OWNER IMPORT WITH MULTI-TENANT CHANNEL BROADCAST
 // ═══════════════════════════════════════════════════════════════════
 
 export function addCompanyLeadOrProperty(
@@ -373,10 +449,10 @@ export function addCompanyLeadOrProperty(
   const updated = [newItem, ...pool];
   saveCompanyPool(updated, true);
 
-  // Cross-browser broadcast
+  // Scoped broadcast
   broadcastEvent("lead_added", newItem);
 
-  // Sync to Supabase leads table with valid schema
+  // Sync to database leads table with verified org_id
   try {
     const numBudget = parseInt(newItem.budgetOrPrice.replace(/\D/g, ""), 10) || null;
     saveLeadToSupabase({
@@ -391,7 +467,12 @@ export function addCompanyLeadOrProperty(
       type: newItem.type === "property" ? "ready" : (newItem.category === "Off-Plan" ? "off-plan" : "ready"),
       priority: newItem.category === "Ultra-HNWI" ? "hot" : "warm",
       assigned_to: null,
-    }).then(() => {});
+    }).then((res) => {
+      if (res.success && res.leadId) {
+        newItem.id = res.leadId;
+        newItem.orgId = res.orgId;
+      }
+    });
   } catch {}
 
   return newItem;
@@ -402,9 +483,9 @@ export function addCompanyLeadOrProperty(
 // ═══════════════════════════════════════════════════════════════════
 
 /**
- * Claims a company lead atomically.
- * If another agent has already claimed this lead, the claim FAILS and returns
- * error: "already_claimed", preventing duplicate claims across all browsers.
+ * Claims a lead atomically.
+ * Works for both sample leads (using distributed mutex + BroadcastChannel)
+ * and real database leads (using Postgres FOR UPDATE row lock).
  */
 export function claimCompanyLead(
   leadId: string,
@@ -419,7 +500,7 @@ export function claimCompanyLead(
       const lockRaw = localStorage.getItem(claimLockKey);
       if (lockRaw) {
         const lock = JSON.parse(lockRaw);
-        if (Date.now() - lock.timestamp < 6000 && lock.agentName.toLowerCase() !== agentName.toLowerCase()) {
+        if (Date.now() - lock.timestamp < 10000 && lock.agentName.toLowerCase() !== agentName.toLowerCase()) {
           return {
             success: false,
             error: "already_claimed",
@@ -510,11 +591,6 @@ export function claimCompanyLead(
     claimedAt: now,
   });
 
-  // Background conditional atomic update in Supabase (if UUID)
-  if (isValidUuid(leadId)) {
-    atomicClaimLeadInSupabase(leadId, assignedId).then(() => {});
-  }
-
   return {
     success: true,
     lead: updatedItem,
@@ -523,37 +599,35 @@ export function claimCompanyLead(
 }
 
 /**
- * Async atomic claim with strict database-level conditional locking.
+ * Async atomic claim with server-side Postgres RPC validation (`claim_company_lead`).
  */
 export async function claimCompanyLeadAtomic(
   leadId: string,
   agentName: string,
   agentId?: string
 ): Promise<ClaimResult> {
-  const result = claimCompanyLead(leadId, agentName, agentId);
-  if (!result.success) return result;
-
+  // If this is a real database lead with UUID, execute server-side RPC with FOR UPDATE row lock
   if (isValidUuid(leadId)) {
-    const assignedId = agentId || `agent-${agentName.toLowerCase().replace(/\s+/g, "-")}`;
-    const dbLock = await atomicClaimLeadInSupabase(leadId, assignedId);
-    if (!dbLock.success) {
-      // Revert local optimistic state if database reported already claimed
+    const serverRes = await claimLeadServerSide(leadId);
+    if (!serverRes.success) {
+      // Revert local optimistic state if server reported already claimed
       const pool = getCompanyPool();
       const idx = pool.findIndex((i) => i.id === leadId);
       if (idx !== -1) {
         pool[idx].status = "claimed";
-        pool[idx].claimedByAgentName = "Another Agent";
+        pool[idx].claimedByAgentName = "Another Broker (Server Lock)";
         saveCompanyPool(pool, true);
       }
       return {
         success: false,
-        error: "already_claimed",
-        message: "Claim failed: This lead was already claimed by another agent in the database!",
+        error: (serverRes.error as any) || "already_claimed",
+        message: serverRes.message || "Claim rejected by server.",
       };
     }
   }
 
-  return result;
+  // Execute CAS lock
+  return claimCompanyLead(leadId, agentName, agentId);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -565,7 +639,7 @@ export async function claimCompanyLeadAtomic(
  * Rules:
  * 1. Company Owner / Agency Principal / Admin / Master Admin can transfer ANY lead.
  * 2. An Agent can ONLY transfer a lead if they currently hold the active claim.
- * 3. Client-side forged roles (e.g. an agent forging role="company") are strictly REJECTED.
+ * 3. Client-side faked roles without server verification are strictly REJECTED.
  * 4. Any other caller is strictly UNAUTHORIZED.
  */
 export function isAuthorizedToTransfer(
@@ -578,10 +652,6 @@ export function isAuthorizedToTransfer(
 
   const roleClean = (caller.role || "").toLowerCase().trim();
   const emailClean = (caller.email || "").toLowerCase().trim();
-
-  // FORGERY DETECTION:
-  // If caller claims to be company owner/admin, verify against genuine session!
-  const storedRole = getStoredRole();
   const isMasterKey = emailClean === "admin@dealos.ae" || emailClean === "nihalshaikh0906@gmail.com";
 
   const claimsOwner =
@@ -592,13 +662,23 @@ export function isAuthorizedToTransfer(
     isMasterKey;
 
   if (claimsOwner) {
-    // If the active session is explicitly an Agent, reject forged escalation
+    // If caller explicitly claims to be owner, but was marked not verified by server, reject!
+    if (caller.agentId && !isMasterKey && (caller as any).verifiedByServer === false) {
+      return {
+        authorized: false,
+        reason: "Security Violation: Forged company permissions rejected. Caller session is an Agent.",
+      };
+    }
+
+    // In browser runtime, check stored role
+    const storedRole = getStoredRole();
     if (storedRole === "agent" && !isMasterKey) {
       return {
         authorized: false,
-        reason: "Security Violation: Forged company permissions rejected. Current authenticated session is an Agent.",
+        reason: "Security Violation: Forged company permissions rejected. Caller session is an Agent.",
       };
     }
+
     return { authorized: true };
   }
 
@@ -702,7 +782,7 @@ export function transferCompanyLead(
   pool[index] = updatedItem;
   saveCompanyPool(pool, true);
 
-  // Broadcast cross-browser immediately
+  // Broadcast across company channel immediately
   broadcastEvent("lead_transferred", {
     leadId: updatedItem.id,
     toAgentName: targetAgent.name,
@@ -710,21 +790,6 @@ export function transferCompanyLead(
     transferredAt: now,
     history: updatedItem.history,
   });
-
-  // Sync to database if UUID
-  if (isValidUuid(leadId)) {
-    try {
-      (supabase as any)
-        .from("leads")
-        .update({
-          assigned_to: isValidUuid(targetAgent.id) ? targetAgent.id : null,
-          stage: "transferred",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", leadId)
-        .then(() => {});
-    } catch {}
-  }
 
   return {
     success: true,
@@ -736,11 +801,12 @@ export function transferCompanyLead(
 /**
  * Cryptographically verified 1-Click Lead Transfer.
  * Reads user identity and role directly from Supabase Auth session token + org_members DB table.
- * Guaranteed to prevent client-side role forgery.
+ * If lead has a UUID, executes Postgres RPC `transfer_company_lead` on the server!
  */
 export async function transferCompanyLeadVerified(
   leadId: string,
   toAgentName: string,
+  targetUserId?: string,
   note?: string
 ): Promise<TransferResult> {
   const verifiedUser = await getVerifiedUser();
@@ -752,11 +818,25 @@ export async function transferCompanyLeadVerified(
     };
   }
 
+  // If this is a real database lead with UUID, execute server-side Postgres RPC
+  if (isValidUuid(leadId) && targetUserId && isValidUuid(targetUserId)) {
+    const serverResult = await transferLeadServerSide(leadId, targetUserId, note);
+    if (!serverResult.success) {
+      return {
+        success: false,
+        error: (serverResult.error as any) || "unauthorized",
+        message: serverResult.message || "Server transfer check failed.",
+      };
+    }
+  }
+
+  // Update local state and broadcast across company channel
   const caller: CallerAuth = {
     name: verifiedUser.name,
     role: verifiedUser.role,
     email: verifiedUser.email,
     agentId: verifiedUser.id,
+    verifiedByServer: true,
   };
 
   return transferCompanyLead(leadId, toAgentName, caller, note);

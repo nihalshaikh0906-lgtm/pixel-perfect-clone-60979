@@ -34,6 +34,8 @@ describe("Company Leads & Exclusive Property Distribution System", () => {
       addEventListener: () => {},
       removeEventListener: () => {},
     };
+    // @ts-expect-error mock location
+    globalThis.location = { hostname: "localhost" };
     mockStorage.clear();
   });
 
@@ -265,5 +267,21 @@ describe("Company Leads & Exclusive Property Distribution System", () => {
     const claim3 = claimCompanyLead(lead.id, "Zaid Al-Habib");
     expect(claim3.success).toBe(false);
     expect(claim3.error).toBe("already_claimed");
+  });
+
+  it("multi-tenant realtime channels are strictly isolated by company org_id", async () => {
+    const { getOrgRealtimeChannelName, getOrEnsureOrgId } = await import("@/lib/lead-persistence");
+    
+    // Different companies get completely different, isolated channels
+    const org1Channel = getOrgRealtimeChannelName("11111111-1111-4111-8111-111111111111");
+    const org2Channel = getOrgRealtimeChannelName("22222222-2222-4222-8222-222222222222");
+    
+    expect(org1Channel).toBe("dealos_leads_org_11111111-1111-4111-8111-111111111111");
+    expect(org2Channel).toBe("dealos_leads_org_22222222-2222-4222-8222-222222222222");
+    expect(org1Channel).not.toBe(org2Channel);
+
+    // Unauthenticated user NEVER gets assigned to random companies
+    const unauthOrg = await getOrEnsureOrgId();
+    expect(unauthOrg).toBeNull();
   });
 });
