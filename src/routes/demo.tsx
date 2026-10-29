@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Sparkles,
   Building2,
@@ -13,6 +13,7 @@ import {
   Clock,
   ChevronRight,
   Video,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/auth/AuthShell";
@@ -20,9 +21,13 @@ import { toast } from "sonner";
 import { DemoBookingModal } from "@/components/dealos/DemoBookingModal";
 
 export const Route = createFileRoute("/demo")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    role: typeof search["role"] === "string" ? search["role"] : undefined,
+    auto: search["auto"] === "true",
+  }),
   head: () => ({
     meta: [
-      { title: "Interactive Live Demo · DealOS Dubai" },
+      { title: "Demo Workspace · DealOS Broker & Agency Owner" },
       {
         name: "description",
         content:
@@ -35,28 +40,36 @@ export const Route = createFileRoute("/demo")({
 
 function DemoPage() {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<"agent" | "owner">("agent");
+  const search = Route.useSearch();
+  const initialRole =
+    search.role === "owner" || search.role === "company" ? "owner" : "agent";
+
+  const [selectedRole, setSelectedRole] = useState<"agent" | "owner">(initialRole);
   const [isLaunching, setIsLaunching] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
 
   const handleLaunchDemo = (role: "agent" | "owner") => {
     setIsLaunching(true);
     if (typeof window !== "undefined") {
-      localStorage.setItem("dealos_demo_mode", "true");
-      localStorage.setItem("dealos_subscription_active", "true");
-      localStorage.setItem("dealos_verified", "true");
-      localStorage.setItem("dealos_role", role === "owner" ? "company" : "agent");
-      localStorage.setItem(
-        "dealos_active_email",
-        role === "owner" ? "demo-owner@dealos.ae" : "demo-agent@dealos.ae"
-      );
+      try {
+        localStorage.setItem("dealos_demo_mode", "true");
+        localStorage.setItem("dealos_subscription_active", "true");
+        localStorage.setItem("dealos_verified", "true");
+        localStorage.setItem("dealos_role", role === "owner" ? "company" : "agent");
+        localStorage.setItem(
+          "dealos_active_email",
+          role === "owner" ? "demo-owner@dealos.ae" : "demo-agent@dealos.ae"
+        );
+      } catch (e) {
+        console.warn("Storage warning in demo mode:", e);
+      }
     }
 
     toast.success(
       `✓ Demo Activated! Launching ${
         role === "owner" ? "Agency Owner Overwatch" : "Broker Cockpit"
       }...`,
-      { duration: 3000 }
+      { duration: 2500 }
     );
 
     setTimeout(() => {
@@ -66,8 +79,14 @@ function DemoPage() {
       } else {
         void router.navigate({ to: destination, replace: true });
       }
-    }, 200);
+    }, 150);
   };
+
+  useEffect(() => {
+    if (search.auto) {
+      handleLaunchDemo(initialRole);
+    }
+  }, [search.auto, initialRole]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-primary/20">
@@ -82,16 +101,17 @@ function DemoPage() {
           </span>
           <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            7-DAY OPEN DEMO ACCESS
+            OPEN DEMO ACCESS ACTIVE
           </span>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             to="/welcome"
-            className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border/80 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
           >
-            ← Back to Homepage
+            <span>Exit Demo</span>
+            <X size={13} />
           </Link>
           <Button
             asChild
@@ -99,7 +119,7 @@ function DemoPage() {
             variant="outline"
             className="border-primary/40 text-xs font-bold text-primary hover:bg-primary/10"
           >
-            <Link to="/login">Sign In ↗</Link>
+            <Link to="/login">Log in ↗</Link>
           </Button>
         </div>
       </header>
@@ -107,17 +127,17 @@ function DemoPage() {
       {/* Main Role Selector Container */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-12 sm:py-16 flex flex-col items-center justify-center text-center">
         {/* Eyebrow */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-mono font-bold mb-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-mono font-bold mb-4">
           <Sparkles size={13} />
-          <span>NO SIGNUP · NO PAYMENT FIREWALL · INSTANT EXPLORATION</span>
+          <span>NO PAYMENT REQUIRED · DEDICATED FICTIONAL WORKSPACE</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground font-display max-w-3xl">
-          Experience DealOS in Action
+          DealOS demo workspace
         </h1>
 
-        <p className="mt-4 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
-          Select how you would like to test the operating system. We have pre-seeded the workspace with real Dubai off-plan allocations, buyer leads, and DLD escrow data.
+        <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+          Dedicated fictional workspace · No real client data. Select how you would like to test the operating system with pre-seeded Dubai leads, DLD inventory, and commission ledgers.
         </p>
 
         {/* 2-Role Interactive Cards Grid */}
@@ -145,7 +165,7 @@ function DemoPage() {
               </div>
 
               <h3 className="text-2xl font-black text-foreground font-display mt-4">
-                Demo as Licensed Broker
+                Demo as Broker
               </h3>
 
               <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
@@ -212,7 +232,7 @@ function DemoPage() {
               </div>
 
               <h3 className="text-2xl font-black text-foreground font-display mt-4">
-                Demo as Agency Owner
+                Demo as Owner
               </h3>
 
               <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
@@ -288,15 +308,27 @@ function DemoPage() {
       <footer className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 border-t border-border/60 text-xs text-muted-foreground flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <ShieldCheck size={14} className="text-emerald-400" />
-          <span>DealOS Dubai Real Estate Operating System · Temporary Open Testing</span>
+          <span>Built for Dubai brokerages · Company-scoped access · Open Demo Sandbox</span>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/pricing" className="hover:text-foreground">
-            Pricing Plans
+            Pricing
           </Link>
           <span>•</span>
           <Link to="/faq" className="hover:text-foreground">
             FAQ
+          </Link>
+          <span>•</span>
+          <Link to="/about" className="hover:text-foreground">
+            About
+          </Link>
+          <span>•</span>
+          <Link to="/terms" className="hover:text-foreground">
+            Terms
+          </Link>
+          <span>•</span>
+          <Link to="/privacy" className="hover:text-foreground">
+            Privacy
           </Link>
           <span>•</span>
           <Link to="/welcome" className="hover:text-foreground">
