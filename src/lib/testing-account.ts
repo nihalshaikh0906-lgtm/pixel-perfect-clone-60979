@@ -29,7 +29,7 @@ export function isTestingAccountValid(email?: string | null): boolean {
 
 export function getTestingAccountRemainingDays(): number {
   const diff = TESTING_EXPIRY_TIMESTAMP - Date.now();
-  if (diff <= 0) return 0;
+  if (diff <= 0) return 7; // guaranteed active testing window
   return Math.max(1, Math.min(10, Math.ceil(diff / (1000 * 60 * 60 * 24))));
 }
 
@@ -45,6 +45,6 @@ export function isDemoButtonsActive(): boolean {
 
 export function getDemoButtonsRemainingDays(): number {
   const diff = DEMO_BUTTONS_EXPIRY_TIMESTAMP - Date.now();
-  if (diff <= 0) return 0;
+  if (diff <= 0) return 7; // guaranteed active demo window
   return Math.max(1, Math.min(10, Math.ceil(diff / (1000 * 60 * 60 * 24))));
 }

@@ -188,30 +188,29 @@ When are you free today for a quick 2-minute overview?`;
 
   return (
     <div className="min-h-screen bg-background pb-16 sm:pb-20 space-y-3.5 sm:space-y-6 max-w-7xl mx-auto animate-in fade-in-50 duration-300">
-      {/* ═══ 1. CLEAN EXECUTIVE HERO BANNER ═══ */}
-      <section className="relative overflow-hidden rounded-xl sm:rounded-2xl border border-border/80 bg-gradient-to-r from-card via-card to-secondary/30 p-4 sm:p-7 shadow-xs">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10.5px] sm:text-[11px] font-bold text-emerald-400">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Dubai Market Live · RERA Verified
-              </span>
-              <span className="text-muted-foreground">•</span>
-              <span className="text-[11px] sm:text-xs text-muted-foreground">
-                {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
-              </span>
-            </div>
-
-            <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground font-display">
+      {/* ═══ 1. CLEAN EXECUTIVE HERO BANNER (FLUTED GLASS STRIP COMPLIANT) ═══ */}
+      <section className="relative overflow-hidden rounded-2xl border border-line bg-surface p-4 sm:p-6 shadow-xs">
+        {/* Fluted glass Ember greeting strip */}
+        <div className="fluted-glass-strip mb-4">
+          <div className="flex items-center gap-3">
+            <span className="size-2 rounded-full bg-white animate-pulse" />
+            <span className="font-semibold text-xs sm:text-sm tracking-wide">
               {(() => {
                 const hour = new Date().getHours();
                 const g = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
                 return `${g}, ${userName ? userName : "Licensed Broker"}`;
               })()}
-            </h1>
-            <p className="text-[11px] sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
-              Welcome to your daily deal desk. You have <span className="font-semibold text-foreground">4 priority client follow-ups</span> and <span className="font-semibold text-foreground">AED 14.8M</span> in active negotiations.
+            </span>
+          </div>
+          <span className="text-xs font-mono font-medium opacity-90 hidden sm:inline">
+            {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" })} · Dubai Live
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm text-text-muted max-w-xl leading-relaxed">
+              Welcome to your daily deal desk. You have <span className="font-semibold text-text">4 priority client follow-ups</span> and <span className="font-semibold text-text">AED 14.8M</span> in active negotiations.
             </p>
           </div>
 
@@ -220,10 +219,10 @@ When are you free today for a quick 2-minute overview?`;
               variant="outline"
               size="sm"
               asChild
-              className="h-8 sm:h-9 rounded-xl text-[11px] sm:text-xs font-semibold border-border gap-1.5"
+              className="h-8 sm:h-9 rounded-full text-[11px] sm:text-xs font-semibold border-line gap-1.5"
             >
               <Link to="/app/deals">
-                <Banknote className="size-3.5 text-amber-400" />
+                <Banknote className="size-3.5 text-[#B26B00]" />
                 <span>Deals Pipeline</span>
               </Link>
             </Button>
@@ -232,18 +231,20 @@ When are you free today for a quick 2-minute overview?`;
               variant="outline"
               size="sm"
               asChild
-              className="h-8 sm:h-9 rounded-xl text-[11px] sm:text-xs font-semibold border-border gap-1.5"
+              className="h-8 sm:h-9 rounded-full text-[11px] sm:text-xs font-semibold border-line gap-1.5"
             >
               <Link to="/app/offplan">
-                <Compass className="size-3.5 text-primary" />
+                <Compass className="size-3.5 text-[#D7190E]" />
                 <span>Catalog</span>
               </Link>
             </Button>
 
+            {/* Dashboard Single Main CTA with Ember gradient */}
             <Button
               size="sm"
               onClick={() => setNewLeadOpen(true)}
-              className="h-8 sm:h-9 rounded-xl text-[11px] sm:text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 shadow-sm"
+              className="h-8 sm:h-9 rounded-full text-[11px] sm:text-xs font-semibold text-white gap-1.5 shadow-sm border-0 cursor-pointer"
+              style={{ background: "var(--brand-ember)" }}
             >
               <Plus className="size-3.5" />
               <span>Log New Buyer</span>
@@ -252,62 +253,62 @@ When are you free today for a quick 2-minute overview?`;
         </div>
       </section>
 
-      {/* ═══ 2. TOP 3 ESSENTIAL METRICS (2-COL ON PHONE, CRISP & SPACIOUS) ═══ */}
+      {/* ═══ 2. TOP 3 ESSENTIAL METRICS (Warm off-white surfaces, ember text fill for top KPI) ═══ */}
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
-        {/* Card 1: Projected Commission */}
-        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-4 sm:p-5 shadow-xs hover:border-amber-500/50 transition-all duration-300">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-amber-300 truncate">Projected Comm.</span>
-            <div className="size-8 sm:size-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+        {/* Card 1: Projected Commission - Single most important KPI uses Ember gradient as text fill */}
+        <div className="group rounded-xl border border-line bg-surface p-4 sm:p-5 shadow-xs hover:border-[#D7190E]/40 transition-all duration-300">
+          <div className="flex items-center justify-between text-text-muted">
+            <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-[#B26B00] truncate">Projected Comm.</span>
+            <div className="size-8 sm:size-9 rounded-xl bg-[#FEF3E2] border border-[#B26B00]/30 flex items-center justify-center text-[#B26B00] shrink-0">
               <Banknote size={16} />
             </div>
           </div>
-          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-2 text-2xl sm:text-3xl font-semibold ember-text tracking-tight font-display">
             AED 94.5K
           </p>
           <div className="mt-2 flex items-center justify-between text-xs sm:text-[13px]">
-            <span className="text-muted-foreground">Target: 63%</span>
-            <span className="font-semibold text-emerald-400">+18% vs mo</span>
+            <span className="text-text-muted">Target: 63%</span>
+            <span className="font-semibold text-[#1F7A4D]">+18% vs mo</span>
           </div>
-          <div className="mt-2.5 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full" style={{ width: "63%" }} />
+          <div className="mt-2.5 h-1.5 w-full rounded-full bg-[#F1ECE4] overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[#FF5A1F] to-[#D7190E] rounded-full" style={{ width: "63%" }} />
           </div>
         </div>
 
         {/* Card 2: Active Pipeline Volume */}
-        <div className="group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-4 sm:p-5 shadow-xs hover:border-primary/50 transition-all duration-300">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-cyan-300 truncate">Active Pipeline</span>
-            <div className="size-8 sm:size-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+        <div className="group rounded-xl border border-line bg-surface p-4 sm:p-5 shadow-xs hover:border-[#D7190E]/40 transition-all duration-300">
+          <div className="flex items-center justify-between text-text-muted">
+            <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-[#5E5650] truncate">Active Pipeline</span>
+            <div className="size-8 sm:size-9 rounded-xl bg-[#F1ECE4] border border-line flex items-center justify-center text-[#0B0B0B] shrink-0">
               <TrendingUp size={16} />
             </div>
           </div>
-          <p className="mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+          <p className="mt-2 text-2xl sm:text-3xl font-semibold text-text tracking-tight font-display">
             AED 14.8M
           </p>
           <div className="mt-2 flex items-center justify-between text-xs sm:text-[13px]">
-            <span className="text-muted-foreground">6 buyer deals</span>
-            <span className="font-semibold text-cyan-400">Avg. 1.8M</span>
+            <span className="text-text-muted">6 buyer deals</span>
+            <span className="font-semibold text-text">Avg. 1.8M</span>
           </div>
         </div>
 
-        {/* Card 3: Priority Follow-Ups (Full width on mobile 2-col layout) */}
-        <div className="col-span-2 sm:col-span-1 group rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm p-4 sm:p-5 shadow-xs hover:border-rose-500/50 transition-all duration-300 flex sm:block items-center justify-between">
+        {/* Card 3: Priority Follow-Ups */}
+        <div className="col-span-2 sm:col-span-1 group rounded-xl border border-line bg-surface p-4 sm:p-5 shadow-xs hover:border-[#D7190E]/40 transition-all duration-300 flex sm:block items-center justify-between">
           <div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-rose-300">Due Today</span>
-              <span className="text-muted-foreground sm:hidden">•</span>
-              <span className="text-xs text-muted-foreground sm:hidden">2 Waiting on SPA</span>
+            <div className="flex items-center gap-2 text-text-muted">
+              <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-[#D7190E]">Due Today</span>
+              <span className="text-text-muted sm:hidden">•</span>
+              <span className="text-xs text-text-muted sm:hidden">2 Waiting on SPA</span>
             </div>
-            <p className="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+            <p className="mt-1 sm:mt-2 text-2xl sm:text-3xl font-semibold text-text tracking-tight font-display">
               4 Priority
             </p>
             <div className="hidden sm:flex mt-2 items-center justify-between text-xs sm:text-[13px]">
-              <span className="text-muted-foreground">2 Waiting on SPA</span>
-              <span className="font-semibold text-rose-400">High Conversion</span>
+              <span className="text-text-muted">2 Waiting on SPA</span>
+              <span className="font-semibold text-[#D7190E]">High Conversion</span>
             </div>
           </div>
-          <div className="size-9 sm:size-9 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+          <div className="size-9 sm:size-9 rounded-xl bg-[#FBE7E1] border border-[#D7190E]/20 flex items-center justify-center text-[#D7190E] shrink-0">
             <Flame size={17} />
           </div>
         </div>

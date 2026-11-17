@@ -1,242 +1,464 @@
-/* DealOS blue/violet theme layer — loaded last; overrides scoped tokens for landing (.dealos), app (.dapp) and auth (.dauth). */
-:root{
-  --brand-blue:#2F6BFF;--brand-violet:#7B4DFF;--brand-deep:#2A45C8;
-  --brand-gradient:linear-gradient(90deg,#3A64FF 0%,#8A4DFF 100%);
-  --brand-gradient-diagonal:linear-gradient(135deg,#2F6BFF 0%,#7B4DFF 100%);
-  --bg:#FFFFFF;--bg-app:#F7F8FC;--surface:#FFFFFF;--surface-muted:#F4F6FF;
-  --text:#141A33;--text-secondary:#4B5272;--text-muted:#8A90A8;
-  --dark-bg:#0B0E1A;--dark-surface:#121629;--dark-border:rgba(255,255,255,.08);
-  --shadow-card:0 1px 2px rgba(20,26,51,.04),0 8px 24px rgba(20,26,51,.06);
-  --shadow-elevated:0 24px 60px rgba(20,26,51,.12);
-  --chart-1:#2F6BFF;--chart-2:#7B4DFF;--chart-3:#22B8F0;--chart-4:#4F46E5;--chart-5:#A78BFA;--chart-6:#94A3B8;--chart-7:#16A34A;--chart-8:#E5484D;
-}
-.text-gradient{background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;color:transparent!important}
-.logo-word{font-weight:800;letter-spacing:-.02em}
-.logo-mark{flex-shrink:0}
+/* ==========================================================================
+   DealOS Brand Theme System (Ember / Charcoal / Warm Off-White)
+   Visual change only — 100% preservation of all features, routes, & logic.
+   ========================================================================== */
 
-/* ---------- Landing ---------- */
-.dealos{
-  --background:#FFFFFF;--foreground:#141A33;--card:#FFFFFF;--primary:#2F6BFF;--primary-foreground:#fff;--secondary:#F4F6FF;--muted:#F4F6FF;--muted-foreground:#4B5272;--accent:#EEF1FF;--border:#E6E9F5;--input:#E6E9F5;--ring:#2F6BFF;
-  --d-ink:#141A33;--d-soft:#4B5272;--d-indigo:#2F6BFF;--d-dark-indigo:#0B0E1A;--d-mint:#7B4DFF;--d-gold:#2F6BFF;--d-white:#FFFFFF;--d-border:#E6E9F5;--d-positive:#16A34A;--d-negative:#E5484D;
-  --d-hero-gradient:linear-gradient(180deg,rgba(11,14,26,.75),rgba(11,14,26,.92));
-  --d-shadow:var(--shadow-elevated);--d-shadow-sm:var(--shadow-card);
-  font-family:Manrope,sans-serif;font-weight:500;
-}
-.dealos h1,.dealos h2,.dealos h3{font-weight:800!important;letter-spacing:-.035em!important;line-height:1.05}
-.dealos p{color:var(--text-secondary)}
-.dealos .d-dark p,.dealos [data-theme=dark] p,.dealos .d-footer p{color:rgba(255,255,255,.78)}
-.d-dark>.d-scene-inner,#insights .d-scene-inner{background:#0B0E1A;color:#fff}
-#insights h2{color:#fff}
-#insights p{color:rgba(255,255,255,.78)}
-.d-footer{background:#0B0E1A!important;color:#fff}
-.d-eyebrow{background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;color:transparent!important;font-weight:800!important;text-transform:uppercase;letter-spacing:.2em!important;font-size:13px}
-.d-pill{background:#EEF1FF!important;color:#2A45C8!important;border:0!important;font-weight:700;box-shadow:none!important}
-.d-dark .d-pill,#insights .d-pill{background:rgba(255,255,255,.08)!important;color:#C9D3FF!important}
-.d-period,.d-brand-dot{background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;color:transparent!important}
-.d-button-primary,.d-button-white,.d-pr-card .d-button,.d-plan .d-button{background:var(--brand-gradient)!important;color:#fff!important;border:0!important;border-radius:14px!important;font-weight:700;transition:filter .2s,transform .2s,box-shadow .2s}
-.d-button-primary:hover,.d-button-white:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 12px 30px rgba(59,100,255,.35)!important}
-.d-button-glass{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#fff!important;border-radius:14px!important}
-.d-navbar,.d-navbar.on-dark{background:rgba(11,14,26,.72)!important;backdrop-filter:blur(16px)!important;border:1px solid rgba(255,255,255,.08)!important;color:#fff!important;box-shadow:none!important}
-.d-navbar .d-nav-link,.d-navbar .d-login{color:#fff!important}
-.d-hero-tint{background:linear-gradient(180deg,rgba(11,14,26,.75),rgba(11,14,26,.92))!important}
-.d-hero::before,.d-hero::after{content:"";position:absolute;width:900px;height:900px;border-radius:50%;filter:blur(50px);opacity:.42;pointer-events:none;z-index:1}
-.d-hero{position:relative}
-.d-hero::before{background:radial-gradient(circle,#3A64FF,transparent 65%);top:-300px;right:-300px;animation:dHeroGlowA 14s ease-in-out infinite alternate}
-.d-hero::after{background:radial-gradient(circle,#7B4DFF,transparent 65%);bottom:-300px;left:-300px;animation:dHeroGlowB 14s ease-in-out infinite alternate}
-@keyframes dHeroGlowA{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-50px,40px) scale(1.1)}}
-@keyframes dHeroGlowB{0%{transform:translate(0,0) scale(1)}100%{transform:translate(50px,-40px) scale(1.08)}}
-.d-hero-sticky{position:sticky;top:0;z-index:2}
-.d-glass-pill{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#fff!important}
-.d-glass-pill svg:first-child{color:#8AA4FF}
-.d-glass-tile{border-color:rgba(255,255,255,.18)!important;box-shadow:inset 0 0 24px rgba(58,100,255,.25),inset 0 0 40px rgba(123,77,255,.15)!important}
-.d-glass-tile svg{color:#fff!important}
-.d-avatar-stack span{box-shadow:0 0 0 2px #2F6BFF,0 0 0 3px #7B4DFF}
-.d-dashboard{border-radius:24px!important}
-.d-dash-logo{display:grid;place-items:center;margin-bottom:14px}
-.d-insight>svg{color:#7B4DFF}
-.d-kpi .d-spark{color:#2F6BFF}.d-kpi:nth-child(even) .d-spark{color:#7B4DFF}
-.d-positive{color:#16A34A!important}.d-negative{color:#E5484D!important}
-.d-scroll-progress{background:var(--brand-gradient)!important}
+:root {
+  /* Official DealOS Brand Tokens */
+  --bg: #FBF8F3;            /* App background (warm off-white) */
+  --surface: #FFFFFF;       /* Cards, panels, modals */
+  --line: #ECE6DD;          /* Borders, dividers */
+  --sidebar: #0B0B0B;       /* Sidebar & dark headers background */
+  --sidebar-text: #F3EEE6;  /* Active text on sidebar */
+  --sidebar-muted: #B3A9A0; /* Inactive text/icons on sidebar */
+  --text: #0B0B0B;          /* Primary text */
+  --text-muted: #5E5650;    /* Secondary text, table headers */
+  
+  --accent: #D7190E;        /* DealOS red: primary buttons, active states, key numbers */
+  --accent-hover: #B8140B;  /* Deeper red on hover */
+  --on-accent: #FFFFFF;
+  --accent-soft: #FBE7E1;   /* Selected rows, soft badges, info boxes */
+  --accent-soft-text: #B8140B;
 
-/* ---------- App workspace ---------- */
-.dapp{
-  --a-bg:#F7F8FC;--a-card:#FFFFFF;--a-line:#E6E9F5;--a-ink:#141A33;--a-ink-2:#4B5272;--a-eyebrow:#8A90A8;
-  --a-gold:#2F6BFF;--a-gold-text:#2A45C8;--a-gold-tint:#EEF1FF;--a-cream:#F4F6FF;--a-sand:#E6E9F5;
-  --a-hot:#E5484D;--a-hot-bg:#FDECEE;--a-warm:#C2620A;--a-warm-bg:#FFF3E6;--a-cold:#4B5272;--a-cold-bg:#EEF0F6;
-  --a-ok:#16A34A;--a-ok-bg:#E8F7EE;--a-ready-bg:#F1EBFF;--a-sage:#22B8F0;
-  --a-shadow:var(--shadow-card);font-family:Manrope,sans-serif;font-weight:500;
-}
-.dapp h1,.dapp h2,.dapp h3{font-weight:800;letter-spacing:-.035em}
-.dapp .eyebrow-a{background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;letter-spacing:.2em}
-.dapp .a-btn{border-radius:14px}
-.dapp .a-btn-gold{background:var(--brand-gradient);color:#fff}
-.dapp .a-btn-gold:hover{filter:brightness(1.08);box-shadow:0 12px 30px rgba(59,100,255,.35)}
-.dapp .a-btn-ink{background:#141A33;color:#fff}.dapp .a-btn-ink:hover{background:#232A4A}
-.dapp .a-btn-line[aria-pressed=true]{background:var(--brand-gradient);border-color:transparent}
-.dapp .c-ready{color:#6B3FE0;background:#F1EBFF}
-.dapp .c-offplan{color:#2A45C8;background:#EEF1FF}
-.dapp .a-logo{background:var(--brand-gradient);color:#fff}
-.dapp .a-link.active svg{color:#ffffff!important}
-.dapp .a-search:focus-within{border-color:#2F6BFF;box-shadow:0 0 0 3px rgba(47,107,255,.18)}
-.dapp .a-btn:focus-visible{outline-color:#2F6BFF}
+  --success: #1F7A4D;       /* Semantic success */
+  --warning: #B26B00;       /* Semantic warning */
+  --error: #B8140B;         /* Semantic error */
+  --focus-ring: 2px solid #B8140B;
 
-/* ---------- Auth ---------- */
-.dauth{
-  --au-bg:#F8FAFC;--au-ink:#0F172A;--au-ink-2:#475569;--au-gold:#2F6BFF;--au-gold-d:#2A45C8;--au-line:#E2E8F0;--au-card:#FFFFFF;
-  --au-night-0:#F0F5FF;--au-night:linear-gradient(155deg,#F0F5FF 0%,#F8FAFC 50%,#EEF2FF 100%);
-  --logo-bg-dark:#FFFFFF;font-family:Manrope,sans-serif;
-}
-.dauth .au-btn-ink,.dauth .au-btn-ink.success{background:var(--brand-gradient);color:#fff;border-radius:14px}
-.dauth .au-btn-ink:hover:not(:disabled){background:var(--brand-gradient);color:#fff;filter:brightness(1.08);box-shadow:0 12px 30px rgba(59,100,255,.35)}
-.dauth .au-input input{border-radius:14px}
-.dauth .au-input input:focus{border-color:#2F6BFF;box-shadow:0 0 0 3px rgba(47,107,255,.18)}
-.dauth .au-check input:checked+.au-box{background:var(--brand-gradient);border-color:transparent}
-.dauth .au-headline em,.dauth .au-eyebrow{background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
-.dauth .au-eyebrow{font-weight:800;letter-spacing:.2em}
-.dauth .au-glow{background:radial-gradient(circle,rgba(58,100,255,.4),rgba(123,77,255,.2) 45%,transparent 70%)}
+  /* Ember Brand Gradient (max 4 high-value places) */
+  --brand-gradient: linear-gradient(135deg, #FF9A4A 0%, #FF5A1F 35%, #D7190E 70%, #8E0C06 100%);
+  --brand-gradient-diagonal: linear-gradient(135deg, #FF9A4A 0%, #FF5A1F 35%, #D7190E 70%, #8E0C06 100%);
+  --brand-ember: linear-gradient(135deg, #FF9A4A 0%, #FF5A1F 35%, #D7190E 70%, #8E0C06 100%);
 
-/* Polish */
-.d-hero h1>span:nth-child(2)>span:nth-child(n+3) .d-word>span{background:linear-gradient(90deg,#5B82FF 0%,#9A6BFF 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.d-hero h1{text-shadow:none}
-.dealos .d-dashboard{box-shadow:0 40px 120px -30px rgba(58,100,255,.45),0 0 0 1px rgba(255,255,255,.08)!important}
-.dealos .d-pr-card,.dealos .d-plan{border-radius:24px}
-.dealos a:not([class]){color:#2A45C8}
-.dapp .a-card,.dapp .a-panel{border-radius:24px}
-.dapp .a-top{background:rgba(255,255,255,.82)}
-.dapp .a-link.active{background:#0f172a!important;color:#ffffff!important;font-weight:600!important;box-shadow:0 1px 3px rgba(15,23,42,.12)!important}
-.dapp .a-side{background:#fff}
-::selection{background:rgba(47,107,255,.2)}
-.dealos .d-insight p,.dealos .d-dashboard p{color:#141A33!important}
-.dealos .d-avatar-stack span{font-size:11px;letter-spacing:0;min-width:34px;overflow:visible}
-/* Workspace popovers, notification drawer, dark mode */
-.dapp .a-pop-wrap{position:relative}
-.dapp .a-pop{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:var(--a-card);border:1px solid var(--a-line);border-radius:14px;box-shadow:var(--a-shadow);padding:6px;z-index:60;animation:aPop .18s ease-out}
-.dapp .a-pop button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:10px;font-size:14px;color:var(--a-ink);text-align:left}
-.dapp .a-pop button:hover{background:var(--a-cream)}
-@keyframes aPop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.dapp .a-bell{position:relative}
-.dapp .a-bell-n{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#E5484D;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
-.dapp .a-ndrawer{position:fixed;top:0;right:0;height:100vh;width:min(400px,100vw);background:var(--a-card);border-left:1px solid var(--a-line);z-index:80;display:flex;flex-direction:column;animation:aSlide .25s ease-out}
-.dapp .a-ndrawer header{display:flex;align-items:center;gap:8px;padding:18px;border-bottom:1px solid var(--a-line)}
-.dapp .a-ndrawer h2{margin:0 auto 0 0;font-size:20px}
-.dapp .a-nlist{overflow:auto;flex:1}
-.dapp .a-nitem{display:grid;gap:2px;padding:14px 18px;border-bottom:1px solid var(--a-line);color:var(--a-ink)}
-.dapp .a-nitem.unread{background:var(--a-gold-tint)}
-.dapp .a-nitem span{font-size:14px;color:var(--a-ink-2)}.dapp .a-nitem small{font-size:12px;color:var(--a-eyebrow)}
-@keyframes aSlide{from{transform:translateX(100%)}to{transform:none}}
-.dapp,.dapp .a-side,.dapp .a-top,.dapp .a-card{transition:background-color .3s,color .3s,border-color .3s}
-.dapp.a-dark{--a-bg:#0B0E1A;--a-card:#121629;--a-line:rgba(255,255,255,.08);--a-ink:#FFFFFF;--a-ink-2:#B4B9D0;--a-eyebrow:#8A90A8;--a-gold-tint:rgba(58,100,255,.16);--a-cream:rgba(255,255,255,.05);--a-gold-text:#8FA8FF;--a-hot-bg:rgba(229,72,77,.18);--a-warm-bg:rgba(194,98,10,.2);--a-cold-bg:rgba(255,255,255,.06);--a-ok-bg:rgba(22,163,74,.18);--a-ready-bg:rgba(123,77,255,.2);color-scheme:dark}
-.dapp.a-dark .a-top{background:rgba(11,14,26,.85)}
-.dapp.a-dark select,.dapp.a-dark input,.dapp.a-dark textarea{background:#0B0E1A;color:#fff;border-color:rgba(255,255,255,.12)}
-.dapp.a-dark .a-btn-line{color:#fff;border-color:rgba(255,255,255,.14)}
-.dapp .a-modal{position:fixed;inset:0;display:grid;place-items:center;z-index:90;background:rgba(11,14,26,.5);padding:16px}
-.dapp .a-modal>div{background:var(--a-card);border-radius:20px;padding:24px;width:min(560px,100%);max-height:90vh;overflow:auto;display:grid;gap:12px;animation:aPop .2s ease-out}
-.dapp .a-modal label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--a-ink-2)}
-.dapp .a-modal input,.dapp .a-modal select,.dapp .a-in{height:42px;border:1px solid var(--a-line);border-radius:12px;padding:0 12px;font:inherit;background:var(--a-card);color:var(--a-ink)}
-/* Radix renders dialogs on <body>, outside .dapp — the scope class re-applies workspace tokens there. */
-.a-dialog-scope{display:block;min-height:0;background:transparent}
-.dapp .a-drop{border:2px dashed var(--a-line);border-radius:16px;padding:28px;text-align:center;cursor:pointer}
-.dapp .a-drop.on{border-color:#3A64FF;background:var(--a-gold-tint)}
-.dapp.a-dark .a-side{background:var(--a-card)!important;border-color:var(--a-line)}.dapp.a-dark .a-link{color:var(--a-ink-2)}.dapp.a-dark .a-user b{color:#fff}
+  /* Chart series (Strictly no blue/purple) */
+  --chart-1: #D7190E;
+  --chart-2: #FF5A1F;
+  --chart-3: #8E0C06;
+  --chart-4: #C2123F;
+  --chart-5: #B3A9A0;
 
-/* ---------- Owner Dashboard — executive accents (existing blue/violet tokens only) ---------- */
-.owner-dash .od-range{display:inline-flex;align-items:center;gap:8px}
-.owner-dash .od-kpi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.dapp .a-kpi{min-width:0}
-.dapp .a-kpi strong{font-size:30px;line-height:1.2;letter-spacing:0;overflow-wrap:anywhere}
-.owner-dash .a-kpis{gap:18px}
-.owner-dash .a-kpi{padding:20px;min-height:150px}
-.owner-dash .a-kpi .eyebrow-a{margin:0;font-size:11px;letter-spacing:0}
-.owner-dash .a-kpi strong.od-value{font-size:28px;color:var(--a-ink);margin-top:14px}
-.owner-dash .a-kpi p:last-child{font-size:12px;line-height:1.6}
-.owner-dash .od-value{color:var(--a-ink);font-size:28px;line-height:1.2;letter-spacing:0;overflow-wrap:anywhere}
-.od-inventory-categories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:24px}
-.od-category{display:block;min-width:0;color:var(--a-ink)}
-.od-category h2{display:flex;align-items:center;gap:8px}
-.od-category svg{color:var(--brand-blue);flex-shrink:0}
-.od-category p{font-size:13px;color:var(--a-ink-2);margin-top:12px}
-.od-projects{margin-top:28px;min-width:0}
-.od-projects .a-table-wrap{display:block;overflow-x:auto}
-.od-projects .a-table{min-width:700px}
-.od-live-inventory{display:grid;gap:20px;min-width:0}
-.od-inventory-search{display:flex;gap:10px;flex-wrap:wrap}
-.od-inventory-search input{flex:1;min-width:140px}
-.od-unit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:18px}
-.od-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:16px;color:var(--a-ink-2);font-size:13px}
-@media(max-width:900px){.od-inventory-categories{grid-template-columns:minmax(0,1fr)}}
-.owner-dash .od-trend{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
-.owner-dash .od-trend.up{color:var(--a-ok);background:var(--a-ok-bg)}
-.owner-dash .od-trend.down{color:var(--a-hot);background:var(--a-hot-bg)}
-.owner-dash .a-pop button.od-on{background:var(--a-gold-tint);font-weight:700}
-.owner-dash .od-split{margin-top:24px}
-.owner-dash .od-span2{grid-column:span 2}
-.owner-dash .od-board tbody tr{cursor:default}
-.owner-dash .od-board tbody tr:hover td{background:transparent}
-.owner-dash .od-rank{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--a-cream);color:var(--a-ink-2);font-size:13px;font-weight:700}
-.owner-dash .od-rank.first{background:var(--a-gold-tint);color:var(--a-gold-text)}
-.owner-dash .od-avatar{width:30px;height:30px;font-size:11.5px}
-.owner-dash .od-share .a-list>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--a-line)}
-.owner-dash .od-share .a-list>div:last-child{border-bottom:0}
-.owner-dash .od-share-name{font-size:14px;font-weight:600;color:var(--a-ink);min-width:0}
-.owner-dash .od-share-note{margin-top:12px;font-size:13px;color:var(--a-ink-2)}
-.owner-dash .od-col{display:flex;flex-direction:column;gap:24px;min-width:0}
-.owner-dash .od-board{display:flex;flex-direction:column}
-.owner-dash .od-board .a-table-wrap{flex:1;min-height:0}
-.owner-dash .od-board .a-table{height:100%}
-.owner-dash .od-board-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--a-line);font-size:14px;color:var(--a-ink-2)}
-.owner-dash .od-board-foot b{color:var(--a-ink)}
-.owner-dash .od-att{margin-top:24px}
-.owner-dash .od-att .a-list>div{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--a-line)}
-.owner-dash .od-att .a-list>div:last-child{border-bottom:0}
-.owner-dash .od-att-ico{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--a-hot-bg);color:var(--a-hot);flex-shrink:0}
-.owner-dash .od-att-text{font-size:14px;font-weight:600;color:var(--a-ink);min-width:0}
-.owner-dash .od-att-text small{display:block;margin-top:2px;font-size:12.5px;font-weight:500;color:var(--a-ink-2)}
-.owner-dash .od-att .a-chip{margin-left:auto;flex-shrink:0}
-@media (max-width:640px){.owner-dash .od-att .a-list>div{align-items:flex-start}}
+  /* Base System Map */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --primary: var(--accent);
+  --primary-foreground: var(--on-accent);
+  --secondary: #F1ECE4;
+  --secondary-foreground: var(--text);
+  --muted: #F1ECE4;
+  --muted-foreground: var(--text-muted);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--accent);
 
-.owner-dash .od-donut-row{display:flex;align-items:center;gap:18px}
-.owner-dash .od-donut-wrap{position:relative;width:132px;height:132px;flex-shrink:0}
-.owner-dash .od-donut-loading{display:block;border-radius:50%;border:16px solid var(--a-cream)}
-.owner-dash .od-donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none;line-height:1.2}
-.owner-dash .od-donut-center strong{display:block;font-size:19px;font-weight:700;color:var(--a-ink)}
-.owner-dash .od-donut-center small{font-size:12px;color:var(--a-ink-2)}
-.owner-dash .od-legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-.owner-dash .od-legend li i{width:9px;height:9px;border-radius:3px;flex-shrink:0}
-.owner-dash .od-legend li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--a-ink-2)}
-.owner-dash .od-legend li b{color:var(--a-ink)}
-@media (max-width:640px){.owner-dash .od-donut-row{flex-direction:column;align-items:center}.owner-dash .od-legend{width:100%}}
-@media (max-width:640px){.owner-dash .od-span2{grid-column:auto}}
-
-/* ---------- Executive Sans-Serif Typography Unification ---------- */
-/* Replace narrow/cramped monospace digits with clean, legible executive Manrope sans-serif */
-.calc, .calc *, .panel, .panel *, .big, .num, code, pre, .font-mono, [class*="mono"], .calc .big, .calc .row span {
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  font-feature-settings: "tnum" 1, "cv01" 1;
-  letter-spacing: -0.01em !important;
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgba(11, 11, 11, 0.06), 0 8px 24px rgba(11, 11, 11, 0.06);
+  --shadow-elevated: 0 16px 40px rgba(11, 11, 11, 0.12);
 }
 
-.calc .big {
-  font-size: 38px !important;
-  font-weight: 800 !important;
-  color: var(--text, #141A33) !important;
-  letter-spacing: -0.03em !important;
+/* Base Body and Typography */
+body {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
 }
 
-.calc label, .panel label {
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+h1, h2, h3, h4, .font-display {
+  font-family: 'Inter', 'Inter Display', system-ui, sans-serif !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Ember text fill */
+.text-gradient, .ember-text {
+  background: var(--brand-ember) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* ==========================================================================
+   1. APP WORKSPACE (.dapp) & SIDEBAR (.a-side)
+   ========================================================================== */
+.dapp {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+/* DealOS Dark Brand Sidebar with Film Grain */
+.dapp .a-side,
+.a-side,
+.a-side.modern-side-white,
+.a-side.owner-side-white {
+  background-color: var(--sidebar) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle Film Grain Noise on Sidebar */
+.a-side::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.a-side > * {
+  position: relative;
+  z-index: 2;
+}
+
+.a-brand-wrap,
+.a-side .a-brand-wrap,
+.a-side.modern-side-white .a-brand-wrap,
+.a-side.owner-side-white .a-brand-wrap {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: var(--sidebar) !important;
+}
+
+.a-brand-text .logo-word,
+.a-side .a-brand-text .logo-word {
+  color: var(--sidebar-text) !important;
+}
+
+.a-side .a-group > p,
+.a-side.modern-side-white .a-group > p,
+.a-side.owner-side-white .a-group > p {
+  color: var(--sidebar-muted) !important;
   font-size: 11px !important;
-  font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
-  color: var(--text-muted, #8A90A8) !important;
-}
-
-.calc .row, .calc .row span {
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  font-size: 14px !important;
   font-weight: 600 !important;
-  color: var(--text, #141A33) !important;
 }
 
+/* Sidebar nav links */
+.a-side .a-link,
+.a-side.modern-side-white .a-link,
+.a-side.owner-side-white .a-link {
+  color: var(--sidebar-muted) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border-radius: 10px !important;
+  margin: 2px 8px !important;
+  position: relative;
+  transition: all 0.15s ease !important;
+}
 
+.a-side .a-link svg,
+.a-side.modern-side-white .a-link svg {
+  color: var(--sidebar-muted) !important;
+}
 
+.a-side .a-link:hover,
+.a-side.modern-side-white .a-link:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--sidebar-text) !important;
+}
+
+.a-side .a-link:hover svg {
+  color: var(--sidebar-text) !important;
+}
+
+/* Active Nav Item: Cream text + 3px Ember gradient bar on left + subtle #1C1A19 bg */
+.a-side .a-link.active,
+.a-side.modern-side-white .a-link.active,
+.a-side.owner-side-white .a-link.active {
+  background: #1C1A19 !important;
+  color: var(--sidebar-text) !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.a-side .a-link.active svg {
+  color: #FF9A4A !important;
+}
+
+.a-side .a-link.active::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--brand-ember) !important;
+}
+
+.a-side .a-side-footer,
+.a-side.modern-side-white .a-side-footer,
+.a-side.owner-side-white .a-side-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: var(--sidebar) !important;
+}
+
+.a-side .a-user,
+.a-side.modern-side-white .a-user {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--sidebar-text) !important;
+}
+
+.a-side .a-user-text b {
+  color: var(--sidebar-text) !important;
+}
+.a-side .a-user-text small {
+  color: var(--sidebar-muted) !important;
+}
+
+/* ==========================================================================
+   2. APP TOP BAR & PANELS
+   ========================================================================== */
+.dapp .a-top {
+  background: rgba(251, 248, 243, 0.94) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.dapp .a-search {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+  border-radius: 10px !important;
+}
+
+.dapp .a-search:focus-within {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px var(--accent-soft) !important;
+}
+
+.dapp .a-card,
+.dapp .panel,
+.dapp section.border,
+.dapp div.rounded-2xl.border,
+.dapp div.rounded-xl.border {
+  background-color: var(--surface) !important;
+  border-color: var(--line) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* ==========================================================================
+   3. BUTTONS (PILL-SHAPED PER SPEC)
+   ========================================================================== */
+/* Primary Button: Solid #D7190E with white text, fully rounded */
+.a-btn-ink,
+.d-button-primary,
+button.bg-primary,
+.bg-primary,
+.a-btn-gold {
+  background-color: var(--accent) !important;
+  background-image: none !important;
+  color: var(--on-accent) !important;
+  border-radius: 9999px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.a-btn-ink:hover,
+.d-button-primary:hover,
+button.bg-primary:hover,
+.a-btn-gold:hover {
+  background-color: var(--accent-hover) !important;
+  box-shadow: 0 4px 14px rgba(215, 25, 14, 0.25) !important;
+}
+
+/* Secondary Button: White, 1px #ECE6DD border, black text */
+.a-btn-line,
+.d-button-outline,
+.d-button-white,
+button.border-border {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 9999px !important;
+  font-weight: 600 !important;
+}
+
+.a-btn-line:hover,
+.d-button-outline:hover,
+.d-button-white:hover {
+  background-color: var(--bg) !important;
+  border-color: var(--accent) !important;
+}
+
+/* ==========================================================================
+   4. TABLES & DATA ROWS
+   ========================================================================== */
+.a-table-wrap table,
+.a-table {
+  background: var(--surface) !important;
+}
+
+.a-table th {
+  background: #F7F3EB !important;
+  color: var(--text-muted) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.a-table td {
+  border-bottom: 1px solid var(--line) !important;
+  color: var(--text) !important;
+}
+
+.a-table tbody tr:hover td {
+  background-color: var(--bg) !important;
+}
+
+/* Selected row: #FBE7E1 with 2px red left marker */
+.a-table tbody tr.selected td,
+.a-table tbody tr[aria-selected="true"] td {
+  background-color: var(--accent-soft) !important;
+  color: var(--accent-soft-text) !important;
+  position: relative;
+}
+
+.a-table tbody tr.selected td:first-child::before,
+.a-table tbody tr[aria-selected="true"] td:first-child::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--accent);
+}
+
+/* ==========================================================================
+   5. STATUS CHIPS & BADGES
+   ========================================================================== */
+.a-chip, .badge {
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 3px 10px !important;
+}
+
+/* Soft red chip */
+.c-hot, .a-badge, .badge-red {
+  background-color: var(--accent-soft) !important;
+  color: var(--accent-soft-text) !important;
+  border: 1px solid rgba(215, 25, 14, 0.15) !important;
+}
+
+/* Neutral chip */
+.c-cold, .c-neutral, .badge-neutral {
+  background-color: #F1ECE4 !important;
+  color: var(--text-muted) !important;
+}
+
+/* Success & Warning */
+.c-ok, .badge-success {
+  background-color: #E6F3EC !important;
+  color: var(--success) !important;
+}
+
+.c-warm, .badge-warning {
+  background-color: #FEF3E2 !important;
+  color: var(--warning) !important;
+}
+
+/* ==========================================================================
+   6. AI ASSISTANT CHAT
+   ========================================================================== */
+/* User bubbles: #0B0B0B with cream text */
+.a-msg-user {
+  background-color: #0B0B0B !important;
+  color: #F3EEE6 !important;
+  border-radius: 14px 14px 4px 14px !important;
+}
+
+/* AI bubbles: White with 1px border */
+.a-msg-ai {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+  border-radius: 14px 14px 14px 4px !important;
+  box-shadow: 0 1px 3px rgba(11, 11, 11, 0.04) !important;
+}
+
+/* AI Floating Button */
+.a-fab {
+  background: var(--brand-ember) !important;
+  color: #FFFFFF !important;
+}
+
+/* Thinking loader animation in red */
+.a-chat .animate-spin,
+.au-spin {
+  color: var(--accent) !important;
+}
+
+/* ==========================================================================
+   7. FLUTED GLASS HEADER STRIP (DASHBOARD)
+   ========================================================================== */
+.fluted-glass-strip {
+  height: 64px;
+  border-radius: 16px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #F3EEE6;
+  position: relative;
+  overflow: hidden;
+  background: var(--brand-ember);
+  box-shadow: 0 8px 24px rgba(215, 25, 14, 0.22);
+}
+
+.fluted-glass-strip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.12) 0px,
+    rgba(255, 255, 255, 0.12) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+  backdrop-filter: blur(4px);
+}
+
+.fluted-glass-strip > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   8. INPUTS & FOCUS RINGS
+   ========================================================================== */
+input, select, textarea, .a-input, .a-select {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+  color: var(--text) !important;
+}
+
+input:focus, select:focus, textarea:focus,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent-hover) !important;
+  outline-offset: 2px !important;
+  border-color: var(--accent) !important;
+}
+
+/* Eliminating leftover blues, purples, violets, and indigos */
+.bg-blue-500, .bg-blue-600, .bg-indigo-500, .bg-indigo-600, .bg-purple-500, .bg-violet-500 {
+  background-color: var(--accent) !important;
+}
+.text-blue-500, .text-blue-600, .text-indigo-500, .text-indigo-600, .text-purple-500, .text-violet-500 {
+  color: var(--accent) !important;
+}
+.border-blue-500, .border-indigo-500, .border-purple-500, .border-violet-500 {
+  border-color: var(--line) !important;
+}

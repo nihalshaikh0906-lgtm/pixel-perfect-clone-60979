@@ -1,5 +1,6 @@
 import { Loader2, Send, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { LogoMark } from "@/components/Logo";
 
 import { ChatText } from "@/components/ChatText";
 import { supabase } from "@/integrations/supabase/client";
@@ -91,7 +92,9 @@ export function AiChat({ title, context, suggestions = [], onClose, onSaveSummar
   return (
     <div className="a-chat">
       <div className="a-chat-head">
-        <span className="a-logo" aria-hidden>✦</span>
+        <span className="inline-flex items-center justify-center size-6 rounded-lg bg-[#1C1A19]" aria-hidden>
+          <LogoMark size={16} variant="gradient" />
+        </span>
         <b>{title}</b>
         {onClose ? <button type="button" className="a-btn a-btn-line a-btn-sm" style={{ marginLeft: "auto", width: 34, padding: 0 }} aria-label="Close assistant" onClick={onClose}><X size={16} /></button> : null}
       </div>
@@ -105,7 +108,16 @@ export function AiChat({ title, context, suggestions = [], onClose, onSaveSummar
         {msgs.map((m, i) => m.role === "user"
           ? <div key={i} className="a-msg-user">{m.content}</div>
           : <div key={i} className="a-msg-ai"><ChatText text={m.content} /></div>)}
-        {busy ? <div className="a-msg-ai muted" style={{ display: "flex", gap: 8, alignItems: "center" }}><Loader2 size={15} className="animate-spin" /> Thinking…</div> : null}
+        {busy ? (
+          <div className="a-msg-ai text-muted-foreground" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <span className="inline-flex items-center gap-1">
+              <span className="size-1.5 rounded-full bg-[#D7190E] animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="size-1.5 rounded-full bg-[#FF5A1F] animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="size-1.5 rounded-full bg-[#FF9A4A] animate-bounce" style={{ animationDelay: "300ms" }} />
+            </span>
+            <span className="text-xs font-semibold text-[#5E5650]">Thinking…</span>
+          </div>
+        ) : null}
         {error ? <div className="a-err" role="alert">{error}</div> : null}
       </div>
       {onSaveSummary && msgs.some((m) => m.role === "assistant") ? (

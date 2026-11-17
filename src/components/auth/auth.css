@@ -1,494 +1,152 @@
-/* DealOS Authentication System — Luxury Centered Executive Portal */
-.dauth {
-  --au-bg: #F8FAFD;
-  --au-ink: #0F172A;
-  --au-ink-2: #475569;
-  --au-gold: #2F6BFF;
-  --au-gold-d: #1D4ED8;
-  --au-line: #E2E8F0;
-  --au-card: #FFFFFF;
-  --au-bad: #E5484D;
-  --au-ok: #10B981;
-  --au-ease: cubic-bezier(.22, 1, .36, 1);
+/* DealOS Brand Authentication Styles (Split Layout + Grain + Warm Off-White) */
+
+.dauth-split-wrapper {
+  display: flex;
   min-height: 100vh;
   width: 100%;
-  background: var(--au-bg);
-  color: var(--au-ink);
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-variant-numeric: lining-nums tabular-nums;
-  position: relative;
+  background-color: #FBF8F3;
+  color: #0B0B0B;
+  font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 16px;
 }
 
-.dauth * {
-  box-sizing: border-box;
+/* ═══ LEFT HALF: DARK GRADIENT FIELD WITH GRAIN ═══ */
+.dauth-brand-pane {
+  display: none;
+  width: 48%;
+  background-color: #0B0B0B;
+  position: relative;
+  overflow: hidden;
+  padding: 48px;
 }
 
-.dauth :focus-visible {
-  outline: 2px solid var(--au-gold);
-  outline-offset: 2px;
-  border-radius: 10px;
+@media (min-width: 1024px) {
+  .dauth-brand-pane {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 }
 
-/* ═══ LUMINOUS AMBIENT BACKDROP (ELIMINATES PALE FLATNESS) ═══ */
-.au-ambient-glow {
-  position: fixed;
+/* Subtle Film Grain Noise at 5% Opacity */
+.dauth-grain-overlay {
+  position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Ambient Radial Glows (Base #0B0B0B, glows of #3A0B0E, #8E0C06, #D7190E and #FF5A1F / #FF9A4A in top-right) */
+.dauth-radial-glows {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
-  overflow: hidden;
 }
 
-.au-orb {
+.dauth-glow-corner {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(130px);
-  pointer-events: none;
+  top: -100px;
+  right: -100px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #FF5A1F 0%, #FF9A4A 25%, transparent 70%);
+  filter: blur(80px);
+  opacity: 0.45;
 }
 
-.au-orb-blue {
-  width: 600px;
-  height: 600px;
-  top: -150px;
-  left: 20%;
-  background: radial-gradient(circle, rgba(47, 107, 255, 0.18), transparent 70%);
-  animation: orb-drift-1 18s ease-in-out infinite alternate;
-}
-
-.au-orb-purple {
-  width: 550px;
-  height: 550px;
-  top: 10%;
-  right: 15%;
-  background: radial-gradient(circle, rgba(123, 77, 255, 0.15), transparent 70%);
-  animation: orb-drift-2 22s ease-in-out infinite alternate;
-}
-
-.au-orb-emerald {
+.dauth-glow-mid {
+  position: absolute;
+  top: 40%;
+  left: 10%;
   width: 500px;
   height: 500px;
-  bottom: -100px;
-  left: 30%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.12), transparent 70%);
-  animation: orb-drift-3 16s ease-in-out infinite alternate;
+  background: radial-gradient(circle, #D7190E 0%, #8E0C06 40%, transparent 75%);
+  filter: blur(100px);
+  opacity: 0.35;
 }
 
-@keyframes orb-drift-1 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(60px, 40px) scale(1.12); }
+.dauth-glow-deep {
+  position: absolute;
+  bottom: -150px;
+  right: 15%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, #3A0B0E 0%, transparent 70%);
+  filter: blur(120px);
+  opacity: 0.55;
 }
 
-@keyframes orb-drift-2 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-50px, 60px) scale(1.08); }
-}
-
-@keyframes orb-drift-3 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, -30px) scale(1.1); }
-}
-
-/* ═══ CENTERED CONTAINER ═══ */
-.au-centered-wrapper {
-  width: 100%;
-  max-width: 540px;
-  margin: 0 auto;
+.dauth-brand-content {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  justify-content: space-between;
+  height: 100%;
 }
 
-.au-top-nav {
+/* ═══ RIGHT HALF: FORM PANE ON #FBF8F3 ═══ */
+.dauth-form-pane {
+  flex: 1;
+  background-color: #FBF8F3;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 0 4px;
+  justify-content: center;
+  padding: 32px 20px;
+  min-height: 100vh;
 }
 
-/* ═══ LUXURY GLASS CARD ═══ */
-.au-centered-card {
+.dauth-form-container {
   width: 100%;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1.5px solid rgba(226, 232, 240, 0.95);
-  border-radius: 28px;
-  padding: 38px 34px;
-  box-shadow:
-    0 24px 60px -15px rgba(20, 26, 51, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.9) inset,
-    0 4px 16px -2px rgba(47, 107, 255, 0.04);
-  transition: transform 0.25s var(--au-ease), box-shadow 0.25s var(--au-ease);
+  max-width: 480px;
+  margin: 0 auto;
 }
 
-.au-logo {
-  color: var(--au-ink);
-  display: inline-flex;
+.dauth-form-card {
+  background: #FFFFFF;
+  border: 1px solid #ECE6DD;
+  border-radius: 14px;
+  padding: 32px 28px;
+  box-shadow: 0 1px 2px rgba(11, 11, 11, 0.06), 0 8px 24px rgba(11, 11, 11, 0.06);
 }
 
-/* ═══ BUTTONS & FORM ELEMENTS ═══ */
+/* Form fields & buttons inside login/signup */
 .au-btn {
   width: 100%;
-  height: 52px;
-  border-radius: 14px;
-  border: 0;
-  font-size: 15px;
-  font-weight: 800;
+  height: 48px;
+  border-radius: 9999px !important;
+  font-size: 14px;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
-  transition: background 0.25s, color 0.25s, transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  transition: all 0.15s ease;
+  border: none;
 }
 
 .au-btn-ink {
-  background: linear-gradient(90deg, #2F6BFF 0%, #7B4DFF 100%);
-  color: #FFFFFF;
-  box-shadow: 0 8px 24px rgba(47, 107, 255, 0.28);
+  background: #D7190E !important;
+  color: #FFFFFF !important;
 }
 
 .au-btn-ink:hover:not(:disabled) {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-  box-shadow: 0 12px 30px rgba(47, 107, 255, 0.38);
-}
-
-.au-btn-ink:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #94A3B8;
-  box-shadow: none;
-}
-
-.au-btn-ink.success {
-  background: #10B981;
-  color: #FFFFFF;
-  opacity: 1;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  background: #B8140B !important;
+  box-shadow: 0 4px 14px rgba(215, 25, 14, 0.25);
 }
 
 .au-btn-line {
-  background: var(--au-card);
-  color: var(--au-ink);
-  border: 1.5px solid var(--au-line);
+  background: #FFFFFF;
+  border: 1px solid #ECE6DD;
+  color: #0B0B0B;
 }
 
 .au-btn-line:hover {
-  border-color: var(--au-gold);
-  background: #F8FAFC;
-}
-
-.au-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.au-field label {
-  display: block;
-  font-size: 13.5px;
-  font-weight: 700;
-  margin-bottom: 7px;
-  color: var(--au-ink);
-  transition: color 0.2s;
-}
-
-.au-field:focus-within label {
-  color: var(--au-gold);
-}
-
-.au-input {
-  position: relative;
-}
-
-.au-input input {
-  width: 100%;
-  height: 52px;
-  border-radius: 14px;
-  border: 1.5px solid #CBD5E1;
-  background: #FFFFFF;
-  padding: 0 46px 0 16px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--au-ink);
-  font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.au-input input::placeholder {
-  color: #94A3B8;
-  font-weight: 500;
-}
-
-.au-input input:focus {
-  outline: none;
-  border-color: var(--au-gold);
-  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.2);
-}
-
-.au-input input:disabled {
-  opacity: 0.6;
-  background: #F1F5F9;
-}
-
-.au-field.bad input {
-  border-color: var(--au-bad);
-}
-
-.au-ok {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  translate: 0 -50%;
-  color: var(--au-ok);
-  display: flex;
-}
-
-.au-eye {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  translate: 0 -50%;
-  width: 38px;
-  height: 38px;
-  border: 0;
-  background: transparent;
-  color: var(--au-ink-2);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  border-radius: 10px;
-}
-
-.au-eye:hover {
-  color: var(--au-ink);
-}
-
-.au-err {
-  margin: 7px 0 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--au-bad);
-}
-
-.au-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.au-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--au-ink);
-}
-
-.au-check input {
-  position: absolute;
-  opacity: 0;
-  width: 1px;
-  height: 1px;
-}
-
-.au-box {
-  width: 19px;
-  height: 19px;
-  border-radius: 6px;
-  border: 1.5px solid #CBD5E1;
-  background: #FFFFFF;
-  display: grid;
-  place-items: center;
-  color: #FFFFFF;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.au-box svg {
-  scale: 0;
-  transition: scale 0.25s var(--au-ease);
-}
-
-.au-check input:checked + .au-box {
-  background: var(--au-gold);
-  border-color: var(--au-gold);
-}
-
-.au-check input:checked + .au-box svg {
-  scale: 1;
-}
-
-.au-link {
-  background: none;
-  border: 0;
-  padding: 0;
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--au-gold);
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.au-link:hover {
-  text-decoration: underline;
-}
-
-.au-alt {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 13.5px;
-  color: var(--au-ink-2);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.au-msg {
-  margin: 12px 0 0;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 13.5px;
-  line-height: 1.5;
-}
-
-.au-msg.bad {
-  background: rgba(229, 72, 77, 0.08);
-  border: 1px solid rgba(229, 72, 77, 0.25);
-  color: var(--au-bad);
-}
-
-.au-msg.good {
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  color: #047857;
-}
-
-.au-shake {
-  animation: au-shake 0.3s ease;
-}
-
-@keyframes au-shake {
-  0%, 100% { translate: 0; }
-  25% { translate: -6px 0; }
-  75% { translate: 6px 0; }
-}
-
-.au-spin {
-  animation: au-spin 0.8s linear infinite;
-}
-
-@keyframes au-spin {
-  to { rotate: 360deg; }
-}
-
-/* ═══ ROLE SELECTOR BUTTONS ═══ */
-.dauth .au-roles {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 4px 0 16px;
-}
-
-.dauth .au-role {
-  text-align: left;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1.5px solid #E2E8F0;
-  background: #FFFFFF;
-  cursor: pointer;
-  display: grid;
-  gap: 3px;
-  transition: all 0.2s var(--au-ease);
-  color: #0F172A;
-  font: inherit;
-}
-
-.dauth .au-role b {
-  font-size: 14px;
-  font-weight: 800;
-  color: #0F172A;
-}
-
-.dauth .au-role small {
-  font-size: 11.5px;
-  color: #64748B;
-  line-height: 1.35;
-}
-
-.dauth .au-role:hover:not(.on) {
-  border-color: #CBD5E1;
-  background: #F8FAFC;
-}
-
-.dauth .au-role.on {
-  border-color: #2F6BFF;
-  background: #EEF4FF;
-  box-shadow: 0 4px 16px rgba(47, 107, 255, 0.15);
-  transform: translateY(-1px);
-}
-
-.dauth .au-role.on b {
-  color: #1D4ED8;
-}
-
-/* ═══ CENTERED FOOTER ═══ */
-.au-foot-centered {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-  padding-top: 8px;
-}
-
-.dauth.is-leaving {
-  opacity: 0;
-  transform: scale(0.98);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-/* ═══ RESPONSIVE ADJUSTMENTS ═══ */
-@media (max-width: 640px) {
-  .dauth {
-    padding: 20px 12px;
-    align-items: flex-start;
-  }
-  .au-centered-card {
-    padding: 26px 20px;
-    border-radius: 22px;
-  }
-  .au-top-nav {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .dauth .au-roles {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dauth *, .dauth *::before, .dauth *::after {
-    animation: none !important;
-    transition: none !important;
-  }
+  background: #FBF8F3;
+  border-color: #D7190E;
 }
